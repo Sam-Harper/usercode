@@ -10,6 +10,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 
+
 HEEPAnalyzer::HEEPAnalyzer(const edm::ParameterSet& iPara):
   evtHelper_(),heepEvt_(),nrPass_(0),nrFail_(0)
 {
@@ -24,9 +25,18 @@ void HEEPAnalyzer::beginJob(const edm::EventSetup& iSetup)
 }
 
 void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
-{
+{ 
+
+ 
   //make the heep event (see easy isnt it)
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
+  std::cout <<"made event "<<std::endl;
+ 
+  //edm::Handle<reco::IsoDepositMap> ecalIsolHandle;
+  //iEvent.getByLabel("eleIsoDepositEcalFromHitsFast",ecalIsolHandle);
+  //const reco::IsoDepositMap& ecalIsol = *ecalIsolHandle.product();
+
+  
 
   //do what ever you want
   //lets get the heep electrons and count the number that pass / fail cuts
@@ -41,6 +51,11 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
     for(size_t ele2Nr=ele1Nr+1;ele2Nr<eles.size();ele2Nr++){
       const heep::Ele& ele1 = eles[ele1Nr];
       const heep::Ele& ele2 = eles[ele2Nr];
+      
+      std::cout <<"ele1 ecal isol "<<ele1.isolEm()<<" ele 2 ecal isol "<<ele2.isolEm()<<std::endl;
+      
+      //const reco::IsoDeposit& iso = ecalIsol[ele1.gsfEle()];
+      //std::cout <<"isol "<<iso.sumWithin(0.4)<<std::endl;
 
       float mass = (ele1.p4()+ele2.p4()).mag();
       massHist_->Fill(mass);

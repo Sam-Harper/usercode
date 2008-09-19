@@ -44,6 +44,7 @@ namespace heep {
       float sigmaIEtaIEta;
       float e2x5MaxOver5x5;
       float e1x5Over5x5;
+      float e5x5;
     };
     
     
@@ -73,7 +74,7 @@ namespace heep {
     //void setTrigBits(TrigCodes::TrigBitSet bits){trigBits_=bits;}
 
     const reco::GsfElectron& gsfEle()const{return *gsfEle_;}
-    
+    const reco::SuperCluster& superCluster()const{return *(gsfEle_->superCluster());}
     //kinematic and geometric methods
     float et()const{return gsfEle_->et();}
     float energy()const{return gsfEle_->energy();}
@@ -112,6 +113,7 @@ namespace heep {
     float sigmaIEtaIEta()const;						
     float e1x5Over5x5()const{return clusShapeData_.e1x5Over5x5;}
     float e2x5MaxOver5x5()const{return clusShapeData_.e2x5MaxOver5x5;}
+    float e5x5()const{return clusShapeData_.e5x5;}
     float bremFrac()const{return (pVtx()-pCalo())/pVtx();}
     float invEOverInvP()const{return 1./gsfEle_->caloEnergy() - 1./gsfEle_->trackMomentumAtVtx().R();}
     

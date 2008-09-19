@@ -17,8 +17,10 @@
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
@@ -31,13 +33,19 @@ namespace heep {
     edm::ESHandle<CaloTopology> caloTopology;
     edm::Handle<EcalRecHitCollection> ebRecHits;
     edm::Handle<EcalRecHitCollection> eeRecHits;
-   
+    edm::Handle<EcalRecHitCollection> ebReducedRecHits;
+    edm::Handle<EcalRecHitCollection> eeReducedRecHits;
+    edm::Handle<HBHERecHitCollection> hbheRecHits;
     edm::Handle<edm::View<pat::Muon> > muon;
     edm::Handle<edm::View<pat::Jet> > jet;
     edm::Handle<edm::View<pat::Electron> > electron;
     edm::Handle<edm::View<pat::MET> > met;
     edm::Handle<edm::View<pat::Photon> > pho;
     edm::Handle<edm::View<pat::Tau> > tau;
+
+    edm::Handle<reco::SuperClusterCollection> superClusEB;
+    edm::Handle<reco::SuperClusterCollection> superClusEE; 
+    edm::Handle<reco::TrackCollection> ctfTrack;
 
   };
 }

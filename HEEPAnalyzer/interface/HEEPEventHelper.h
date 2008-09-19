@@ -16,7 +16,10 @@
 
 namespace reco{
   class BasicCluster;
-  class GsfElectron;
+}
+
+namespace pat{
+  class Electron;
 }
 
 namespace edm{
@@ -42,7 +45,12 @@ namespace heep {
     //Ecal Hits
     edm::InputTag ecalRecHitsEBTag_;
     edm::InputTag ecalRecHitsEETag_;
-    
+    edm::InputTag ecalReducedRecHitsEBTag_;
+    edm::InputTag ecalReducedRecHitsEETag_;
+    edm::InputTag hcalRecHitsTag_;
+    edm::InputTag superClusterEBTag_;
+    edm::InputTag superClusterEETag_; 
+    edm::InputTag ctfTrackTag_;
     //the selection object we need
     heep::EleSelector cuts_;
     
@@ -52,15 +60,16 @@ namespace heep {
     //we own nothing so default copy/assignments are fine
 
     void setup(const edm::ParameterSet& conf);    
-    void setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles);
+    void setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles)const throw();
     
 
-    void fillHEEPElesFromPat(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles); 
-    void addHEEPEle(const reco::GsfElectron& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles);
-    void fillClusShapeData(const reco::BasicCluster& seedClus,const heep::EvtHandles& handles,heep::Ele::ClusShapeData& clusShapeData);
+    void fillHEEPElesFromPat(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const; 
+    void addHEEPEle(const pat::Electron& patEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const;
+    void fillIsolData(const pat::Electron &patEle,heep::Ele::IsolData& isolData)const;
+    void fillClusShapeData(const reco::BasicCluster& seedClus,const heep::EvtHandles& handles,heep::Ele::ClusShapeData& clusShapeData)const;
    
     //this function just calles setHandles and then fillHEEPElesFromPat but it allows us to make the HEEPEvent in one function
-    void makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent);
+    void makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const;
 
   };
 }

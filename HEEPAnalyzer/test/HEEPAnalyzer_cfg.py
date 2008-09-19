@@ -23,12 +23,15 @@ process.GlobalTag.globaltag = cms.string('IDEAL_V9::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # this defines the input files
+#process.load("SHarper.HEEPAnalyzer.qcd_20_30_RelVal_212_cfi");
 process.load("SHarper.HEEPAnalyzer.zee_RelVal_214_cfi");
 
-
+#process.load("RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHitsFast_cff")
+#process.load("RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHits_cff")
+#process.load("RecoEgamma.EgammaIsolationAlgos.eleIsoDepositHcalFromHits_cff")
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(200)
+    input = cms.untracked.int32(1000)
 )
 
 
@@ -46,6 +49,9 @@ process.TFileService = cms.Service("TFileService",
 # define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
 process.p = cms.Path(process.patLayer0*
                      process.patLayer1*
+#                     process.eleIsoDepositEcalFromHitsFast*
+#                     process.eleIsoDepositEcalFromHits*
+#                      process.eleIsoDepositHcalFromHits*
                      process.heepAnalyzer)
 
 

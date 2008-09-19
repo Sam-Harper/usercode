@@ -21,12 +21,9 @@
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Common/interface/View.h"
+#include "FWCore/Framework/interface/Event.h"
 
 #include <vector>
-
-namespace edm{
-  class Event;
-}
 
 namespace heep{
 
@@ -44,6 +41,9 @@ namespace heep{
     Event(){}
     ~Event(){}
     
+    int runnr()const{return edmEvent_->id().run();}
+    int eventnr()const{return edmEvent_->id().event();}
+
     const edm::View<pat::Muon>& muons()const{return *handles_.muon;}
     const edm::View<pat::Jet>& jets()const{return *handles_.jet;}
     const edm::View<pat::Electron>& patElectrons()const{return *handles_.electron;}
@@ -51,7 +51,13 @@ namespace heep{
     const edm::View<pat::Photon>& photons()const{return *handles_.pho;}
     const edm::View<pat::Tau>& taus()const{return *handles_.tau;}
     //const std::vector<heep::Ele>& electrons()const{return heepEles_;}
-   
+    const std::vector<reco::SuperCluster>& superClustersEB()const{return *handles_.superClusEB;}   
+    const std::vector<reco::SuperCluster>& superClustersEE()const{return *handles_.superClusEE;}
+    const EcalRecHitCollection* ebHitsFull()const{return &(*handles_.ebRecHits);}
+    const EcalRecHitCollection* eeHitsFull()const{return &(*handles_.eeRecHits);}
+    const HBHERecHitCollection* hbheHits()const{return &(*handles_.hbheRecHits);}
+    const std::vector<reco::Track>& ctfTracks()const{return *handles_.ctfTrack;}
+
     const edm::Event& event()const{return *edmEvent_;}
     heep::EvtHandles& handles(){return handles_;}
     const heep::EvtHandles& handles()const{return handles_;}
