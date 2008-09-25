@@ -110,7 +110,7 @@ namespace heep {
     //variables with no direct method
     float sigmaEtaEta()const;
     float sigmaEtaEtaUnCorr()const{return clusShapeData_.sigmaEtaEta;}
-    float sigmaIEtaIEta()const;						
+    float sigmaIEtaIEta()const{return clusShapeData_.sigmaIEtaIEta;}
     float e1x5Over5x5()const{return clusShapeData_.e1x5Over5x5;}
     float e2x5MaxOver5x5()const{return clusShapeData_.e2x5MaxOver5x5;}
     float e5x5()const{return clusShapeData_.e5x5;}

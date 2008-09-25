@@ -48,9 +48,13 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   //I hate most about CMSSW (and theres a lot of competion)
   //words can not express how f**king stupid this is
   //WTF is wrong with just setting the handle to invalid
-  // try{
-  event.getByLabel(ecalRecHitsEBTag_,handles.ebRecHits);
-    //  }catch(cms::Exception &ex){} //I hate you CMSSW developers I really really do
+  //try{
+  //edm::InputTag test("dummy");
+  // event.getByLabel(test,handles.ebRecHits);
+     event.getByLabel(ecalRecHitsEBTag_,handles.ebRecHits);
+     // }catch(cms::Exception &ex){//I hate you CMSSW developers I really really do
+     // std::cout <<"exception caught"<<std::endl;
+    //} 
     //try{ //do or do not, there is no try
   event.getByLabel(ecalRecHitsEETag_,handles.eeRecHits);
     //}catch(cms::Exception &ex){}
@@ -120,7 +124,7 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
   clusShapeData.sigmaIEtaIEta=999.;
   clusShapeData.e2x5MaxOver5x5=-1.; 
   clusShapeData.e1x5Over5x5=-1.;
-
+  clusShapeData.e5x5=-999.;
   
   const DetId firstDetId = seedClus.getHitsByDetId()[0]; //note this  not actually be the seed hit but it doesnt matter because all hits will be in the barrel OR endcap (it is also incredably inefficient as it getHitsByDetId passes the vector by value not reference)
 
@@ -131,7 +135,7 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
 
   if(firstDetId.subdetId()==EcalBarrel){
     std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,ebRecHits,caloTopology,caloGeom,4.2);
-    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,ebRecHits,caloTopology,caloGeom);
+    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,ebRecHits,caloTopology,4.2);
     clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
     clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
     float e5x5 =  EcalClusterTools::e5x5(seedClus,ebRecHits,caloTopology);
@@ -141,8 +145,12 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
       clusShapeData.e1x5Over5x5 = EcalClusterTools::e5x1(seedClus,ebRecHits,caloTopology)/e5x5; //dont ask
     }
   }else if(firstDetId.subdetId()==EcalEndcap){ //only fill sigmaEtaEta at the moment
-    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,eeRecHits,caloTopology,caloGeom,4.2);
+ 
+    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,eeRecHits,caloTopology,caloGeom,4.2); 
+   
+    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,eeRecHits,caloTopology,4.2);
     clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
+    clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
     float e5x5 =  EcalClusterTools::e5x5(seedClus,eeRecHits,caloTopology);
     clusShapeData.e5x5=e5x5;
   }

@@ -10,6 +10,11 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 
+//delete these
+#include "DataFormats/RecoCandidate/interface/IsoDepositFwd.h"
+#include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPDebug.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h" 
 
 HEEPAnalyzer::HEEPAnalyzer(const edm::ParameterSet& iPara):
   evtHelper_(),heepEvt_(),nrPass_(0),nrFail_(0)
@@ -26,7 +31,7 @@ void HEEPAnalyzer::beginJob(const edm::EventSetup& iSetup)
 
 void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 { 
-
+//heep::listAllProducts<EcalRecHitCollection>(iEvent,"HEEPAnalyzer");
  
   //make the heep event (see easy isnt it)
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
