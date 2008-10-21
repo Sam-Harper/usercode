@@ -31,6 +31,7 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   superClusterEBTag_ =conf.getParameter<edm::InputTag>("superClusterEBTag");
   superClusterEETag_ =conf.getParameter<edm::InputTag>("superClusterEETag");
   ctfTrackTag_ = conf.getParameter<edm::InputTag>("ctfTrackTag");
+  genParticleTag_ = conf.getParameter<edm::InputTag>("genParticleTag");
 }
 
 
@@ -64,6 +65,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(superClusterEBTag_,handles.superClusEB);
   event.getByLabel(superClusterEETag_,handles.superClusEE); 
   event.getByLabel(ctfTrackTag_,handles.ctfTrack);
+  event.getByLabel(genParticleTag_,handles.genParticle);
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);
  
@@ -134,8 +136,8 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
   const EcalRecHitCollection* eeRecHits = handles.eeReducedRecHits.product();
 
   if(firstDetId.subdetId()==EcalBarrel){
-    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,ebRecHits,caloTopology,caloGeom,4.2);
-    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,ebRecHits,caloTopology,4.2);
+    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,ebRecHits,caloTopology,caloGeom);
+    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,ebRecHits,caloTopology);
     clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
     clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
     float e5x5 =  EcalClusterTools::e5x5(seedClus,ebRecHits,caloTopology);
@@ -146,9 +148,9 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
     }
   }else if(firstDetId.subdetId()==EcalEndcap){ //only fill sigmaEtaEta at the moment
  
-    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,eeRecHits,caloTopology,caloGeom,4.2); 
+    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,eeRecHits,caloTopology,caloGeom); 
    
-    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,eeRecHits,caloTopology,4.2);
+    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,eeRecHits,caloTopology);
     clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
     clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
     float e5x5 =  EcalClusterTools::e5x5(seedClus,eeRecHits,caloTopology);

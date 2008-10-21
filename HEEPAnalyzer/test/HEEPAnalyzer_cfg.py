@@ -23,21 +23,18 @@ process.GlobalTag.globaltag = cms.string('IDEAL_V9::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # this defines the input files
-#process.load("SHarper.HEEPAnalyzer.qcd_20_30_RelVal_212_cfi");
 process.load("SHarper.HEEPAnalyzer.zee_RelVal_214_cfi");
 
-#process.load("RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHitsFast_cff")
-#process.load("RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHits_cff")
-#process.load("RecoEgamma.EgammaIsolationAlgos.eleIsoDepositHcalFromHits_cff")
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
 )
 
-
-# input pat sequences
-process.load("PhysicsTools.PatAlgos.patLayer0_cff")
-process.load("PhysicsTools.PatAlgos.patLayer1_cff")
+#time to patify things with custom heep settings
+#this reconfigures PAT to our needs, specifically turns of all pat selection except dup removal for electrons
+#sets up the correct isolation
+#and defines the heepPATSequence which runs the pat and our modifications
+process.load("SHarper.HEEPAnalyzer.HEEPPatConfig_cfi");
 
 # input heep analyzer sequence
 process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
@@ -46,36 +43,8 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string('output.root')
 )
 
-# define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
-process.p = cms.Path(process.patLayer0*
-                     process.patLayer1*
-#                     process.eleIsoDepositEcalFromHitsFast*
-#                     process.eleIsoDepositEcalFromHits*
-#                      process.eleIsoDepositHcalFromHits*
+#run the heep analyzer
+process.p = cms.Path(process.heepPATSequence*
                      process.heepAnalyzer)
-
-
-# load the pat layer 1 event content
-#process.load("PhysicsTools.PatAlgos.patLayer1_EventContent_cff")
-
-# setup event content: drop everything before PAT
-#process.patEventContent = cms.PSet(
-#    outputCommands = cms.untracked.vstring('drop *')
-#)
-
-# extend event content to include PAT objects
-#process.patEventContent.outputCommands.extend(process.patLayer1EventContent.outputCommands)
-
-
-# talk to output module
-#process.out = cms.OutputModule("PoolOutputModule",
-#    process.patEventSelection,
-#    process.patEventContent,
-#    verbose = cms.untracked.bool(False),
-#    fileName = cms.untracked.string('PatAnalyzerSkeletonSkim.root')
-#)
-
-# define output path
-#process.outpath = cms.EndPath(process.out)
 
 

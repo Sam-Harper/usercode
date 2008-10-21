@@ -51,6 +51,7 @@ namespace heep {
     edm::InputTag superClusterEBTag_;
     edm::InputTag superClusterEETag_; 
     edm::InputTag ctfTrackTag_;
+    edm::InputTag genParticleTag_;
     //the selection object we need
     heep::EleSelector cuts_;
     

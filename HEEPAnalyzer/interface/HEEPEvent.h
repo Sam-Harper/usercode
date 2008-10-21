@@ -57,6 +57,7 @@ namespace heep{
     const EcalRecHitCollection* eeHitsFull()const{return &(*handles_.eeRecHits);}
     const HBHERecHitCollection* hbheHits()const{return &(*handles_.hbheRecHits);}
     const std::vector<reco::Track>& ctfTracks()const{return *handles_.ctfTrack;}
+    const std::vector<reco::GenParticle>& genParticles()const{return *handles_.genParticle;}
 
     const edm::Event& event()const{return *edmEvent_;}
     heep::EvtHandles& handles(){return handles_;}
