@@ -1,0 +1,8 @@
+#dataset & Nr Events & Nr Files & Cross-Section & Filter Eff & dataset code & nr jobs
+/Zee/Summer08_IDEAL_V9_v1/GEN-SIM-RECO & 1042810 & 201 & 1232. & 0.701 & 1 & 100
+
+
+#enriched qcd
+/QCD_EMenriched_Pt20to30/Summer08_IDEAL_V9_v1/GEN-SIM-RECO & 5166176 & 705 & 400000000 & 0.008 & 101 & 200
+/QCD_EMenriched_Pt30to80/Summer08_IDEAL_V9_v1/GEN-SIM-RECO & 11940139 & 1823 & 100000000 & 0.047 & 102 & 200
+/QCD_EMenriched_Pt80to170/Summer08_IDEAL_V9_v1/GEN-SIM-RECO & 5661833 & 1046 & 1900000 & 0.15 & 103 & 200
