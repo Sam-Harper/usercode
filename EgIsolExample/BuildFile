@@ -1,0 +1,12 @@
+
+<use name=FWCore/ServiceRegistry>
+<use name=root>
+<use name=FWCore/Framework>
+<use name=DataFormats/Common>
+
+<export> 
+  <lib name=SHarperEgIsolExample> 
+  <use name=root>
+  <use name=FWCore/Framework>
+  <use name=DataFormats/Common>
+</export>
