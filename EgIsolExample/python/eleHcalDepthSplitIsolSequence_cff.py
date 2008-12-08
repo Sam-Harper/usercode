@@ -44,7 +44,7 @@ eleIsoFromDepsHcalDepth1FromTowers = cms.EDFilter("CandIsolatorFromDeposits",
         src = cms.InputTag("eleIsoDepositHcalDepth1FromTowers"), #the input isodeposits
         deltaR = cms.double(0.4), #outer cone size
         weight = cms.string('1'),
-        vetos = cms.vstring('0.1'), # the veto (here vetoing inner cone of 0.1)
+        vetos = cms.vstring('0.0'), # the veto (a value of 0.1 would veto an inner cone of 0.1
         skipDefaultVeto = cms.bool(True), #default veto is depreciated and usually skipped, using the vetoes specifed in veto above
         mode = cms.string('sum') #sum the Ets
     ))
