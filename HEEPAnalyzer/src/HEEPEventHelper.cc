@@ -144,9 +144,9 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
     clusShapeData.e5x5=e5x5;
     if(e5x5!=0.) {
       clusShapeData.e2x5MaxOver5x5 = EcalClusterTools::e2x5Max(seedClus,ebRecHits,caloTopology)/e5x5;
-      clusShapeData.e1x5Over5x5 = EcalClusterTools::e5x1(seedClus,ebRecHits,caloTopology)/e5x5; //dont ask
+      clusShapeData.e1x5Over5x5 = EcalClusterTools::e1x5(seedClus,ebRecHits,caloTopology)/e5x5; //from V00-05-19 of RecoEcal/EgammaCoreTools e1x5 now gives e1x5
     }
-  }else if(firstDetId.subdetId()==EcalEndcap){ //only fill sigmaEtaEta at the moment
+  }else if(firstDetId.subdetId()==EcalEndcap){ 
  
     std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,eeRecHits,caloTopology,caloGeom); 
    
@@ -154,7 +154,11 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
     clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
     clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
     float e5x5 =  EcalClusterTools::e5x5(seedClus,eeRecHits,caloTopology);
-    clusShapeData.e5x5=e5x5;
+    clusShapeData.e5x5=e5x5; 
+    if(e5x5!=0.) {
+      clusShapeData.e2x5MaxOver5x5 = EcalClusterTools::e2x5Max(seedClus,ebRecHits,caloTopology)/e5x5;
+      clusShapeData.e1x5Over5x5 = EcalClusterTools::e1x5(seedClus,ebRecHits,caloTopology)/e5x5; //from V00-05-19 of RecoEcal/EgammaCoreTools e1x5 now gives e1x5
+    }
   }
 }
 

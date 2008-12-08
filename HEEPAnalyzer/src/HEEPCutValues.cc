@@ -3,7 +3,7 @@
 void heep::CutValues::setEBHighNrgy(int inputCutMask)
 {
   cutMask = inputCutMask;
-  minEtCut = 30.; //from 20
+  minEtCut = 25.; //from 20
   minEtaCut = 0.;
   maxEtaCut = 1.442; //now 1.442 rather than 1.4442 
   rejectCracks = true;
@@ -34,8 +34,8 @@ void heep::CutValues::setEBHighNrgy(int inputCutMask)
   minIsolEmRecHitConstCut = 8.;
   isolEmRecHitGradCut = 0.025;
   //isol Em+had, new for v12
-  minIsolEmHadDepth1ConstCut =5;
-  isolEmHadDepth1GradCut= 0.02;
+  minIsolEmHadDepth1ConstCut =10;
+  isolEmHadDepth1GradCut= 0.05;
   //isol had, no defined for v12
   minIsolHadConstCut = 4.;
   isolHadGradCut = 0.005;
@@ -86,7 +86,7 @@ void heep::CutValues::setEEPreSel(int inputCutMask)
 void heep::CutValues::setEEHighNrgy(int inputCutMask)
 {
   cutMask = inputCutMask;
-  minEtCut = 30.; //from 20
+  minEtCut = 25.; //from 20
   minEtaCut = 1.560;
   maxEtaCut = 2.5;
   rejectCracks = true;
@@ -116,8 +116,8 @@ void heep::CutValues::setEEHighNrgy(int inputCutMask)
 
   minIsolHadDepth2ConstCut =1; //new
   isolHadDepth2GradCut= 0.005;//new
-  minIsolEmHadDepth1ConstCut =4;//new
-  isolEmHadDepth1GradCut= 0.04;//new
+  minIsolEmHadDepth1ConstCut =11;//new
+  isolEmHadDepth1GradCut= 0.1;//new
 
   minIsolPtTrksConstCut = 15.; //from zero
   isolPtTrksGradCut =  0.; //from 0.2

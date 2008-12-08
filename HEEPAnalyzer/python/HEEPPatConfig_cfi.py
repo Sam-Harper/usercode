@@ -44,8 +44,8 @@ allLayer1Electrons.isolation = cms.PSet(
     # source IsoDeposit
     src = cms.InputTag("patLayer0HEEPElectronIsolations","eleIsoDepositEcalFromHits"),
     # parameters to compute isolation (Egamma POG defaults)
-    deltaR = cms.double(0.4),
-    vetos = cms.vstring('EcalBarrel:0.040', 'EcalBarrel:RectangularEtaPhiVeto(-0.01,0.01,-0.5,0.5)',  # Barrel (|eta| < 1.479)
+    deltaR = cms.double(0.3),
+    vetos = cms.vstring('EcalBarrel:0.045', 'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',  # Barrel (|eta| < 1.479)
                         'EcalEndcaps:0.070','EcalEndcaps:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)'),
     skipDefaultVeto = cms.bool(True),
     ),
@@ -53,23 +53,23 @@ allLayer1Electrons.isolation = cms.PSet(
     hcal = cms.PSet(
     src = cms.InputTag("layer0ElectronIsolations","eleIsoDepositHcalFromTowers"),
     # parameters to compute isolation (Egamma POG defaults)
-    deltaR = cms.double(0.4),
-    vetos = cms.vstring('0.1'),
+    deltaR = cms.double(0.3),
+    vetos = cms.vstring('0.15'),
     skipDefaultVeto = cms.bool(True),
     ),
     user = cms.VPSet(
     cms.PSet(
     src = cms.InputTag("patLayer0HEEPElectronIsolations","eleIsoDepositHcalFromTowersDepth1"),
     # parameters to compute isolation (Egamma POG defaults)
-    deltaR = cms.double(0.4),
-    vetos = cms.vstring('0.1'),
+    deltaR = cms.double(0.3),
+    vetos = cms.vstring('0.15'),
     skipDefaultVeto = cms.bool(True),
     ),
 
     cms.PSet(
     src = cms.InputTag("patLayer0HEEPElectronIsolations","eleIsoDepositHcalFromTowersDepth2"),
     # parameters to compute isolation (Egamma POG defaults)
-    deltaR = cms.double(0.4),
+    deltaR = cms.double(0.3),
     vetos = cms.vstring(),
     skipDefaultVeto = cms.bool(True),
     )
