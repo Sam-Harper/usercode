@@ -110,8 +110,7 @@ void IsolDeltaRPlotter::fillHcalIsolDRHist(TH1* hist,const math::XYZPoint& centr
     double towerEta=caloTower.eta();
     double towerPhi=caloTower.phi();
     double deltaR = reco::deltaR(centreEta,centrePhi,towerEta,towerPhi);
-    double nrgyCut = fabs(towerEta) < 1.5 ? 0.9 : 1.4;
-    if(deltaR<=maxDeltaR && caloTower.hadEnergy()>nrgyCut) hist->Fill(deltaR);
+    if(deltaR<=maxDeltaR && caloTower.hadEnergy()>0) hist->Fill(deltaR);
   }
 }
 
