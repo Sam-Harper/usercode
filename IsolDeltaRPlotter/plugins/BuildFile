@@ -1,0 +1,13 @@
+
+<use name=FWCore/ServiceRegistry>
+<use name=root>
+<use name=FWCore/Framework>
+<use name=PhysicsTools/UtilAlgos>
+<use name=DataFormats/EgammaCandidates>
+<use name=DataFormats/EgammaReco>
+<use name=DataFormats/CaloTowers>
+
+<export></export>
+<library name=SHarperIsolDeltaRPlotter_plugins file=IsolDeltaRPlotter.cc>
+
+</library>
