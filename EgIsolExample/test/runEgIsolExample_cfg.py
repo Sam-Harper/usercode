@@ -21,7 +21,7 @@ process.MessageLogger.cerr.INFO = cms.untracked.PSet(
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 #end intialising the MessageLogger
 
-# Load geometry
+# Load geometry and conditions
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = cms.string('IDEAL_V9::All')
@@ -42,8 +42,9 @@ process.maxEvents = cms.untracked.PSet(
 #define the main isolation sequence which produces ecal, hcal, track
 #it is called PAT as it uses IsoDeposits which is what PAT uses
 process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequencePAT_cff")
+process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
 #define our additional isolation sequences which produce hcal depth1, hcal depth2
-process.load("SHarper.EgIsolExample.eleHcalDepthSplitIsolSequence_cff")
+#process.load("SHarper.EgIsolExample.eleHcalDepthSplitIsolSequence_cff")
 
 #configure our example module
 process.load("SHarper.EgIsolExample.EgIsolExample_cfi");
@@ -55,6 +56,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 #run the test analyzer
-process.p = cms.Path(process.egammaIsolationSequencePAT*process.eleHcalDepthSplitIsolSequence*process.egIsolExample)
+#process.p = cms.Path(process.egammaIsolationSequence*process.egammaIsolationSequencePAT*process.egIsolExample)
+process.p = cms.Path(process.egammaIsolationSequence*process.egammaIsolationSequencePAT*process.egIsolExample)
 
-
+#process.p = cms.Path(process.egIsolExample)
