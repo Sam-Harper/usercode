@@ -2,6 +2,9 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPEleTypeCodes.h"
+
 heep::EleCutValues::EleCutValues(const edm::ParameterSet& iConfig)
 {
   cutMask = CutCodes::getCode(iConfig.getParameter<std::string>("cuts"));
@@ -9,7 +12,6 @@ heep::EleCutValues::EleCutValues(const edm::ParameterSet& iConfig)
   minEt = iConfig.getParameter<double>("minEt");
   minEta = iConfig.getParameter<double>("minEta");
   maxEta = iConfig.getParameter<double>("maxEta");
-
 
   maxDEtaIn = iConfig.getParameter<double>("maxDEtaIn");
   maxDPhiIn = iConfig.getParameter<double>("maxDPhiIn");

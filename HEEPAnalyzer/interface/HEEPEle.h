@@ -147,7 +147,7 @@ namespace heep {
     
     //selection cuts
     int cutCode()const{return cutCode_;}
-    bool passCuts(int cutMask=~0x0)const{ (cutCode() & cutMask) ==0x0;} //defaults to all cuts, note: bit wise operators (&,|,^) are of lower presendence than == and != operators hence the ( ) are very necessary 
+    bool passCuts(int cutMask=~0x0)const{return (cutCode() & cutMask)==0x0;} //defaults to all cuts, note: bit wise operators (&,|,^) are of lower presendence than == and != operators hence the ( ) are very necessary 
     
     //trigger info
     heep::TrigCodes::TrigBitSet trigBits()const{return trigBits_;}
