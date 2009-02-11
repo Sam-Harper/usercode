@@ -3,6 +3,7 @@
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvtHandles.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPTrigTools.h"
 
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
@@ -16,7 +17,7 @@
 
 void heep::EventHelper::setup(const edm::ParameterSet& conf)
 {
-
+  cuts_.setup(conf);
   eleLabel_ = conf.getUntrackedParameter<edm::InputTag>("electronTag");
   muoLabel_ = conf.getUntrackedParameter<edm::InputTag>("muonTag");
   jetLabel_ = conf.getUntrackedParameter<edm::InputTag>("jetTag");
@@ -32,12 +33,26 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   superClusterEETag_ =conf.getParameter<edm::InputTag>("superClusterEETag");
   ctfTrackTag_ = conf.getParameter<edm::InputTag>("ctfTrackTag");
   genParticleTag_ = conf.getParameter<edm::InputTag>("genParticleTag");
+  trigEventTag_ = conf.getParameter<edm::InputTag>("trigEventTag");
+
+  //trig matching parameters
+  hltProcName_ = conf.getParameter<std::string>("hltProcName");
+  maxDRTrigMatch_ = conf.getParameter<double>("maxDRTrigMatch");
+  maxPtRelDiffTrigMatch_ = conf.getParameter<double>("maxPtRelDiffTrigMatch");
+  hltFiltersToCheck_ = conf.getParameter<std::vector<std::string> >("hltFiltersToCheck");
+  heep::TrigCodes::setCodes(hltFiltersToCheck_); //this assigns a unique bit to each trigger name, without this no trigger codes are defined. If you recieve a trigger not found error, its because it wasnt in the vector passed to this function
+}
+
+void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const
+{
+  setHandles(edmEvent,setup,heepEvent.handles());
+  fillHEEPElesFromPat(heepEvent.handles(),heepEvent.heepElectrons());
+  heepEvent.setEvent(edmEvent);
 }
 
 
-void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles)const throw()
-{
-  
+void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles)const
+{ 
   //yay, now in 2_1 we dont have to program by exception
   event.getByLabel(muoLabel_,handles.muon);
   event.getByLabel(jetLabel_,handles.jet);
@@ -45,20 +60,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(metLabel_,handles.met);
   event.getByLabel(phoLabel_,handles.pho);
   event.getByLabel(tauLabel_,handles.tau);
-  //ah yes we do have to program by exception, my this is the thing 
-  //I hate most about CMSSW (and theres a lot of competion)
-  //words can not express how f**king stupid this is
-  //WTF is wrong with just setting the handle to invalid
-  //try{
-  //edm::InputTag test("dummy");
-  // event.getByLabel(test,handles.ebRecHits);
-     event.getByLabel(ecalRecHitsEBTag_,handles.ebRecHits);
-     // }catch(cms::Exception &ex){//I hate you CMSSW developers I really really do
-     // std::cout <<"exception caught"<<std::endl;
-    //} 
-    //try{ //do or do not, there is no try
+  event.getByLabel(ecalRecHitsEBTag_,handles.ebRecHits);
   event.getByLabel(ecalRecHitsEETag_,handles.eeRecHits);
-    //}catch(cms::Exception &ex){}
   event.getByLabel(ecalReducedRecHitsEBTag_,handles.ebReducedRecHits);
   event.getByLabel(ecalReducedRecHitsEETag_,handles.eeReducedRecHits);
   event.getByLabel(hcalRecHitsTag_,handles.hbheRecHits);
@@ -66,6 +69,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(superClusterEETag_,handles.superClusEE); 
   event.getByLabel(ctfTrackTag_,handles.ctfTrack);
   event.getByLabel(genParticleTag_,handles.genParticle);
+  event.getByLabel(trigEventTag_,handles.trigEvent);
+  
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);
  
@@ -75,51 +80,50 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
 void heep::EventHelper::fillHEEPElesFromPat(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
 {
   heepEles.clear();
-  const edm::View<pat::Electron> eles = *handles.electron;
+  const edm::View<pat::Electron>& eles = *handles.electron;
   for(edm::View<pat::Electron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){
     addHEEPEle(*eleIt,handles,heepEles);
   }
+  //the electrons are now filled, lets add trigger info
+  heep::trigtools::setHLTFiltersObjPasses(heepEles,hltFiltersToCheck_,handles.trigEvent,hltProcName_,
+					  maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
 }
 
-//this converts the gsfElectron into a heep::Ele and adds it to the vector
-//the reason we are passing in one at a time is so we can use pat or normal electrons
-//as a pat electron inherits from GsfElectron but a pat collection wouldnt
+//this converts the pat::Electron into a heep::Electron
 void heep::EventHelper::addHEEPEle(const pat::Electron& patEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
 {
- 
-  //for now use dummy isolation data
   heep::Ele::IsolData isolData;
- 
   fillIsolData(patEle,isolData);
-
-  const reco::BasicCluster& seedClus = *(patEle.superCluster()->seed());
   heep::Ele::ClusShapeData clusShapeData;
-  fillClusShapeData(seedClus,handles,clusShapeData);
-  
+  fillClusShapeData(patEle,clusShapeData); 
   heepEles.push_back(heep::Ele(patEle,clusShapeData,isolData));
   
   //now we would like to set the cut results
   heep::Ele& ele =  heepEles.back();
-  ele.setCutCode(cuts_.getCutCode(ele));
-  
+  ele.setCutCode(cuts_.getCutCode(ele)); 
 
 }
 
 void heep::EventHelper::fillIsolData(const pat::Electron &patEle,heep::Ele::IsolData& isolData)const
 { 
-  isolData.nrTrks=999;
-  isolData.ptTrks=999.;
-  isolData.em=999.;
-  isolData.hadDepth1=999.;
-  isolData.hadDepth2=999.;
-
   isolData.em = patEle.ecalIso();
   isolData.hadDepth1 = patEle.userIso(0);
   isolData.hadDepth2 = patEle.userIso(1);
-  isolData.ptTrks = patEle.trackIso();
+  isolData.ptTrks = patEle.trackIso(); 
+  isolData.nrTrks=999; //not defined
 }
 
+//fills it directly from the PAT electron
+void heep::EventHelper::fillClusShapeData(const pat::Electron &patEle,heep::Ele::ClusShapeData& clusShapeData)const
+{
+  clusShapeData.sigmaEtaEta=patEle.scSigmaEtaEta();
+  clusShapeData.sigmaIEtaIEta=patEle.scSigmaIEtaIEta();
+  clusShapeData.e2x5MaxOver5x5=patEle.scE2x5Max()/patEle.scE5x5();
+  clusShapeData.e1x5Over5x5=patEle.scE1x5()/patEle.scE5x5();
+  clusShapeData.e5x5=patEle.scE5x5();
+}
 
+//recalculates cluster shape variables from scratch
 void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,const heep::EvtHandles& handles,heep::Ele::ClusShapeData& clusShapeData)const
 {
   clusShapeData.sigmaEtaEta=999.;
@@ -147,24 +151,18 @@ void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,con
       clusShapeData.e1x5Over5x5 = EcalClusterTools::e1x5(seedClus,ebRecHits,caloTopology)/e5x5; //from V00-05-19 of RecoEcal/EgammaCoreTools e1x5 now gives e1x5
     }
   }else if(firstDetId.subdetId()==EcalEndcap){ 
+
  
     std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,eeRecHits,caloTopology,caloGeom); 
-   
     std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,eeRecHits,caloTopology);
     clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
     clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
     float e5x5 =  EcalClusterTools::e5x5(seedClus,eeRecHits,caloTopology);
-    clusShapeData.e5x5=e5x5; 
+    clusShapeData.e5x5=e5x5;
     if(e5x5!=0.) {
-      clusShapeData.e2x5MaxOver5x5 = EcalClusterTools::e2x5Max(seedClus,ebRecHits,caloTopology)/e5x5;
-      clusShapeData.e1x5Over5x5 = EcalClusterTools::e1x5(seedClus,ebRecHits,caloTopology)/e5x5; //from V00-05-19 of RecoEcal/EgammaCoreTools e1x5 now gives e1x5
+      clusShapeData.e2x5MaxOver5x5 = EcalClusterTools::e2x5Max(seedClus,eeRecHits,caloTopology)/e5x5;
+      clusShapeData.e1x5Over5x5 = EcalClusterTools::e1x5(seedClus,eeRecHits,caloTopology)/e5x5; //from V00-05-19 of RecoEcal/EgammaCoreTools e1x5 now gives e1x5
     }
   }
 }
 
-void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const
-{
-  setHandles(edmEvent,setup,heepEvent.handles());
-  fillHEEPElesFromPat(heepEvent.handles(),heepEvent.heepElectrons());
-  heepEvent.setEvent(edmEvent);
-}

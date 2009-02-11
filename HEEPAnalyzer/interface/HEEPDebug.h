@@ -20,6 +20,7 @@ namespace heep {
 
   //function prints to LogInfo the names of all products of type PROD in event
   //it returns the number of products it finds
+  //module name is just the message category of the LogInfo
   template<typename PROD> int listAllProducts(const edm::Event& iEvent,const char* moduleName);
 
 }
@@ -31,10 +32,8 @@ template<typename PROD> int heep::listAllProducts(const edm::Event& iEvent,const
   iEvent.getManyByType(products);
   
   for(size_t i=0;i<products.size();i++){
-    //edm::LogInfo(moduleName) <<"for product "<<i+1<<"/"<<products.size()<<" "<<products[i].provenance()->moduleLabel()<<" "<<products[i].provenance()->moduleName()<<std::endl;
+    edm::LogInfo(moduleName) <<"for product "<<i+1<<"/"<<products.size()<<" "<<products[i].provenance()->moduleLabel()<<" "<<products[i].provenance()->moduleName()<<std::endl;
     
-    std::cout <<"for product "<<i+1<<"/"<<products.size()<<" "<<products[i].provenance()->productID()<<" "<<products[i].provenance()->moduleLabel()<<" "<<products[i].provenance()->moduleName()<<std::endl;
-    std::cout <<*(products[i].provenance())<<std::endl;
   }
   return products.size();
 }

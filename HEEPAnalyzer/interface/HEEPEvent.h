@@ -50,7 +50,6 @@ namespace heep{
     const edm::View<pat::MET>& mets()const{return *handles_.met;}
     const edm::View<pat::Photon>& photons()const{return *handles_.pho;}
     const edm::View<pat::Tau>& taus()const{return *handles_.tau;}
-    //const std::vector<heep::Ele>& electrons()const{return heepEles_;}
     const std::vector<reco::SuperCluster>& superClustersEB()const{return *handles_.superClusEB;}   
     const std::vector<reco::SuperCluster>& superClustersEE()const{return *handles_.superClusEE;}
     const EcalRecHitCollection* ebHitsFull()const{return &(*handles_.ebRecHits);}
@@ -64,7 +63,9 @@ namespace heep{
     const heep::EvtHandles& handles()const{return handles_;}
     std::vector<heep::Ele>& heepElectrons(){return heepEles_;}
     const std::vector<heep::Ele>& heepElectrons()const{return heepEles_;}
-   
+    const trigger::TriggerEvent & triggerEvent()const{return *handles_.trigEvent;}
+    
+
     //our one set method
     void setEvent(const edm::Event& event){edmEvent_ = &event;}
     

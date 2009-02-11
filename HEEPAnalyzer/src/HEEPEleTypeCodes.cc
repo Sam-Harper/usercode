@@ -1,5 +1,7 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleTypeCodes.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 heep::ComCodes heep::EleTypeCodes::codes_ = EleTypeCodes::setCodes_();
 
 heep::ComCodes heep::EleTypeCodes::setCodes_()
@@ -28,6 +30,6 @@ int heep::EleTypeCodes::makeTypeCode(int eleType)
   else if(eleType/10==2) typeCode |= BIGBREM;
   else if(eleType/10==3) typeCode |= SHOWERING;
   else if(eleType/10==4) typeCode |= CRACK;
-  else std::cout <<"EleTypeCode::makeTypeCode Warning :ele type "<<eleType<<" unrecognised "<<std::endl;
+  else edm::LogWarning("heep::EleTypeCodes") <<"EleTypeCode::makeTypeCode Warning :ele type "<<eleType<<" unrecognised ";
   return typeCode;
 }

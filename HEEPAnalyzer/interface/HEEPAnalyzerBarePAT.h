@@ -1,13 +1,12 @@
-#ifndef SHarper_HEEPAnalyzer_HEEPAnalyzer_h
-#define SHarper_HEEPAnalyzer_HEEPAnalyzer_h
+#ifndef SHarper_HEEPAnalyzer_HEEPAnalyzerBarePat_h
+#define SHarper_HEEPAnalyzer_HEEPAnalyzerBarePat_h
 
 
 
 // Description: A simple example HEEPAnalyzer which makes a mass spectrum of selected electron pairs
 
 // Implementation: 
-//    The magic all happens in heep::EventHelper which makes a heep::Event. This contains all the links to 
-//    things like superclusters and pat::Electrons as well as the heep::Ele wrappers. 
+//    This does it using just bare PAT with only heep::EleSelector which does the heep selection
 //
  
 //
@@ -19,9 +18,10 @@
 
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
 
-#include "SHarper/HEEPAnalyzer/interface/HEEPEventHelper.h"
-#include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
+
 
 class TH1;
 
@@ -32,11 +32,11 @@ namespace edm {
 }
 
 
-class HEEPAnalyzer : public edm::EDAnalyzer {
+class HEEPAnalyzerBarePAT : public edm::EDAnalyzer {
 
 private:
-  heep::EventHelper evtHelper_; //this is our magic class where all the nastyness is contained
-  heep::Event heepEvt_;
+  heep::EleSelector cuts_; //allows us to apply the heep selection
+  edm::InputTag eleLabel_;
 
   //the next three variables are simply for the example analysis
   int nrPass_;
@@ -46,12 +46,12 @@ private:
   //disabling copy and assignment 
   //this class is in theory copyable but it seems odd to allow it
 private:
-  HEEPAnalyzer(const HEEPAnalyzer& rhs){}
-  HEEPAnalyzer& operator=(const HEEPAnalyzer& rhs){return *this;}
+  HEEPAnalyzerBarePAT(const HEEPAnalyzerBarePAT& rhs){}
+  HEEPAnalyzerBarePAT& operator=(const HEEPAnalyzerBarePAT& rhs){return *this;}
 
 public:
-  explicit HEEPAnalyzer(const edm::ParameterSet& iPara);
-  virtual ~HEEPAnalyzer(){}
+  explicit HEEPAnalyzerBarePAT(const edm::ParameterSet& iPara);
+  virtual ~HEEPAnalyzerBarePAT(){}
   
 private:
   virtual void beginJob(const edm::EventSetup& iSetup) ;

@@ -1,5 +1,6 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPComCodes.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 void heep::ComCodes::setCode(const char* descript,int code)
 {
@@ -8,8 +9,7 @@ void heep::ComCodes::setCode(const char* descript,int code)
     if(_codeDefs[i].first.compare(descript)==0) found=true;
   }
   if(!found) _codeDefs.push_back(std::make_pair<std::string,int>(descript,code));
- 
-  //_codeDefs[descript] = code;
+  
 }
 
 
@@ -34,7 +34,7 @@ int heep::ComCodes::getCode(const char* descript)const
        }
     }
    
-    if(!found)  std::cout<<"ComCodes::getCode : Error, Key "<<codeKey<<" not found"<<std::endl;
+    if(!found)  edm::LogWarning("ComCodes")<<"ComCodes::getCode : Error, Key "<<codeKey<<" not found";
     codeKey = strtok(NULL,":"); //getting new substring
     
   }

@@ -25,7 +25,7 @@ process.MessageLogger.cerr.INFO = cms.untracked.PSet(
 )
 
 
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
@@ -46,26 +46,22 @@ process.maxEvents = cms.untracked.PSet(
 #this reconfigures PAT to our needs, specifically turns of all pat selection except dup removal for electrons
 #sets up the correct isolation
 #and defines the heepPATSequence which runs the pat and our modifications
-process.load("SHarper.HEEPAnalyzer.HEEPPatConfig_cfi");
-# input heep analyzer sequence
-process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
+process.load("SHarper.HEEPAnalyzer.HEEPPatConfig_cfi")
+
+#now define our bare pat analysis module
+process.load("SHarper.HEEPAnalyzer.HEEPAnalyzerBarePAT_cfi")
+
+
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string('output.root')
 )
 
-#process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronsNoCuts_cfi")
-
-#run the heep analyzer
-
-#
-
 #very very important if you want to run on summer08 samples (it drops particle flow so unless you want to use PF, then always run this)
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run22XonSummer08AODSIM
 run22XonSummer08AODSIM(process)
 
-process.p = cms.Path(#process.pixelMatchGsfElectronsNoCuts*
-                    process.heepPATSequence*
-                    process.heepAnalyzer)
+process.p = cms.Path(process.heepPATSequence*
+                     process.heepAnalyzerBarePAT)
 
 

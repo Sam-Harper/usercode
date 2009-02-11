@@ -4,140 +4,97 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleTypeCodes.h"
 
-heep::EleSelector::EleSelector()
-{
+#include "DataFormats/PatCandidates/interface/Electron.h"
 
+
+void heep::EleSelector::setup(const edm::ParameterSet& iConfig)
+{ 
+  cutValues_.clear();
+  EleCutValues ebCuts(iConfig.getParameter<edm::ParameterSet>("barrelCuts"));
+  EleCutValues eeCuts(iConfig.getParameter<edm::ParameterSet>("endcapCuts"));
+  addCuts(ebCuts);
+  addCuts(eeCuts);
 }
 
 
 int heep::EleSelector::getCutCode(const heep::Ele& ele,int cutMask)const
 {
-  const heep::CutValues* cuts = getCuts(ele.classification());
+  const EleCutValues* cuts = getCuts(ele.classification());
   if(cuts!=NULL) return getCutCode(ele,*cuts,cutMask);
-  else return ~0x0;
+  else return CutCodes::INVALID;
 }
 
-
-const heep::CutValues* heep::EleSelector::getCuts(int type)const
-{
-  int cutIndex=0;
-  int nrMatches = 0;
-  for(unsigned index=0;index<cutValues_.size();index++){
-    //std::cout <<"valid ele type code "<<std::hex<<cutValues_[index].validEleTypes<<" ele type code "<< EleTypeCodes::makeTypeCode(type) <<" should have code "<<EleTypeCodes::getCode("barrel:golden:narrow:bigBrem:showering")<<std::dec<<" ele type "<<type<<std::endl;
-    if( (heep::EleTypeCodes::makeTypeCode(type) & cutValues_[index].validEleTypes) == heep::EleTypeCodes::makeTypeCode(type)){
-      if(nrMatches==0) cutIndex = index;
-      nrMatches++;
-    }
-  }
-  if(nrMatches>=1){
-    if(nrMatches>1) std::cout <<"heep::EleSelector::getCuts: Warning have "<<nrMatches<<" for electron type "<<type<<std::endl;
-    return &cutValues_[cutIndex];
-  }else return NULL;
-}
-
-heep::CutValues* heep::EleSelector::getCuts(int type)
-{
-  const heep::EleSelector* constThis = this;
-  const heep::CutValues* constCuts = constThis->getCuts(type);
-  heep::CutValues* cuts = const_cast<heep::CutValues*>(constCuts); //is this evil code? Possibly, but I think its safe as all I'm doing is basically code reuse by using the const function and then casting the returned value to non const as in this case the object is really non-const 
-  return cuts;
-
-}
-
-int heep::EleSelector::getCutCode(const heep::Ele& ele,const CutValues& cuts,int cutMask)
+//if it fails a cut, set the bit
+//use the enums for speed
+int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,int cutMask)
 { 
   int cutCode = 0x0;
-  if(ele.et()< cuts.minEtCut) cutCode |= CutCodes::ET;
-  if(fabs(ele.etaSC())< cuts.minEtaCut || fabs(ele.etaSC())>cuts.maxEtaCut) cutCode |= CutCodes::DETETA;
-  if(ele.classification()==40 && cuts.rejectCracks) cutCode |= CutCodes::CRACK;
-  if((ele.epIn()< cuts.minEpInCut || ele.epIn()> cuts.maxEpInCut) &&  ele.etSC()<cuts.epInReleaseEtCut ) cutCode |=CutCodes::EPIN;
-  if(fabs(ele.dEtaIn()) > cuts.maxDEtaInCut ) cutCode |=CutCodes::DETAIN;
-  if(fabs(ele.dPhiIn()) > cuts.maxDPhiInCut ) cutCode |=CutCodes::DPHIIN;
-  if(ele.hOverE()> cuts.maxHademCut) cutCode |= CutCodes::HADEM;
-  if(ele.epOut()< cuts.minEpOutCut || ele.epOut()>cuts.maxEpOutCut) cutCode |=CutCodes::EPOUT;
-  if(fabs(ele.dPhiOut()) > cuts.maxDPhiOutCut) cutCode |=CutCodes::DPHIOUT;
-  if(ele.invEOverInvP() > cuts.maxInvEInvPCut) cutCode |= CutCodes::INVEINVP;
-  if(ele.bremFrac() < cuts.minBremFracCut) cutCode |= CutCodes::BREMFRAC;
-  //if(ele.e9OverE25() < cuts.minE9E25Cut) cutCode |= CutCodes::E9OVERE25;
-  if(ele.sigmaEtaEta()<cuts.minSigmaEtaEtaCut || ele.sigmaEtaEta()>cuts.maxSigmaEtaEtaCut) cutCode |= CutCodes::SIGMAETAETA;
-  //if(ele.sigmaPhiPhi()<cuts.minSigmaPhiPhiCut || ele.sigmaPhiPhi()>cuts.maxSigmaPhiPhiCut) cutCode |= CutCodes::SIGMAPHIPHI;
-  if(ele.isolEm()>( cuts.minIsolEmConstCut + cuts.isolEmGradCut*ele.et())) cutCode |=CutCodes::ISOLEM;
-  if(ele.isolHad()> (cuts.minIsolHadConstCut + cuts.isolHadGradCut*ele.et())) cutCode |=CutCodes::ISOLHAD;
-  if(ele.isolPtTrks() > (cuts.minIsolPtTrksConstCut + cuts.isolPtTrksGradCut*ele.et())) cutCode |=CutCodes::ISOLPTTRKS;
-  if(ele.isolNrTrks() > cuts.minIsolNrTrksConstCut) cutCode |=CutCodes::ISOLNRTRKS;
+  if(ele.et()< cuts.minEt) cutCode |= CutCodes::ET;
+  if(ele.detEtaAbs()< cuts.minEta || ele.detEtaAbs()>cuts.maxEta) cutCode |= CutCodes::DETETA;
+  if(ele.classification()==40) cutCode |= CutCodes::CRACK;
+  if(fabs(ele.dEtaIn()) > cuts.maxDEtaIn ) cutCode |=CutCodes::DETAIN;
+  if(fabs(ele.dPhiIn()) > cuts.maxDPhiIn ) cutCode |=CutCodes::DPHIIN;
+  if(ele.hOverE()> cuts.maxHadem) cutCode |= CutCodes::HADEM;
+  if(ele.scSigmaIEtaIEta()>cuts.maxSigmaIEtaIEta) cutCode |= CutCodes::SIGMAIETAIETA;
+  if(ele.isolEmHadDepth1()>( cuts.isolEmHadDepth1ConstTerm + cuts.isolEmHadDepth1GradTerm*(ele.et()<cuts.isolEmHadDepth1GradStart ? 0. : (ele.et()-cuts.isolEmHadDepth1GradStart)))) cutCode |=CutCodes::ISOLEMHADDEPTH1;
+  if(ele.scE2x5MaxOver5x5()< cuts.minE2x5Over5x5 && ele.scE1x5Over5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
+  if(ele.isolHadDepth2()> (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(ele.et()<cuts.isolHadDepth2GradStart ? 0. : (ele.et()-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
+  if(ele.isolPtTrks() > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(ele.et()<cuts.isolPtTrksGradStart ? 0. : (ele.et()-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
+  if(ele.isolNrTrks() > cuts.isolNrTrksConstTerm) cutCode |=CutCodes::ISOLNRTRKS;
+
+  return (cutCode & cuts.cutMask & cutMask) ;
+}
+
+int heep::EleSelector::getCutCode(const pat::Electron& ele,int cutMask)const
+{
+  const EleCutValues* cuts = getCuts(ele.classification());
+  if(cuts!=NULL) return getCutCode(ele,*cuts,cutMask);
+  else return CutCodes::INVALID;
+}
+
+//if it fails a cut, set the bit
+//use the enums for speed
+int heep::EleSelector::getCutCode(const pat::Electron& ele,const EleCutValues& cuts,int cutMask)
+{ 
+  int cutCode = 0x0;
+  if(ele.et()< cuts.minEt) cutCode |= CutCodes::ET;
+  if(fabs(ele.superCluster()->eta())< cuts.minEta || fabs(ele.superCluster()->eta())>cuts.maxEta) cutCode |= CutCodes::DETETA;
+  if(ele.classification()==40) cutCode |= CutCodes::CRACK;
+  if(fabs(ele.deltaEtaSuperClusterTrackAtVtx()) > cuts.maxDEtaIn ) cutCode |=CutCodes::DETAIN;
+  if(fabs(ele.deltaPhiSuperClusterTrackAtVtx()) > cuts.maxDPhiIn ) cutCode |=CutCodes::DPHIIN;
+  if(ele.hadronicOverEm()> cuts.maxHadem) cutCode |= CutCodes::HADEM;
+  if(ele.scSigmaIEtaIEta()>cuts.maxSigmaIEtaIEta) cutCode |= CutCodes::SIGMAIETAIETA;
+  if(ele.ecalIso()+ele.userIso(0)>( cuts.isolEmHadDepth1ConstTerm + cuts.isolEmHadDepth1GradTerm*(ele.et()<cuts.isolEmHadDepth1GradStart ? 0. : (ele.et()-cuts.isolEmHadDepth1GradStart)))) cutCode |=CutCodes::ISOLEMHADDEPTH1; 
+  if(ele.scE2x5Max()/ele.scE5x5()< cuts.minE2x5Over5x5 && ele.scE1x5()/ele.scE5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
+  if(ele.userIso(1)> (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(ele.et()<cuts.isolHadDepth2GradStart ? 0. : (ele.et()-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
+  if(ele.trackIso() > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(ele.et()<cuts.isolPtTrksGradStart ? 0. : (ele.et()-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
+  //no nr trk isolation defined (currently its not defined for heep::Ele either)
+  //if(ele.isolNrTrks() > cuts.isolNrTrksConstTerm) cutCode |=CutCodes::ISOLNRTRKS;
 
   return (cutCode & cuts.cutMask & cutMask) ;
 }
 
 
-void heep::EleSelector::setHighNrgy()
-{
-  clearCuts();
- 
-  CutValues ebCuts;
-  CutValues eeCuts;
-  ebCuts.setEBHighNrgy(CutCodes::getCode("et:detEta:crack:dEtaIn:dPhiIn:hadem:sigmaEtaEta:isolEm:isolHad:isolPtTrks"));
-  ebCuts.validEleTypes = EleTypeCodes::getCode("barrel:golden:narrow:bigBrem:showering:crack");
-  eeCuts.setEEHighNrgy(CutCodes::getCode("et:detEta:crack:dEtaIn:dPhiIn:hadem:sigmaEtaEta:isolEm:isolHad:isolPtTrks"));
-  eeCuts.validEleTypes = EleTypeCodes::getCode("endcap:golden:narrow:bigBrem:showering:crack");
-  addCuts(ebCuts);
-  addCuts(eeCuts);
-}  
 
 
-void heep::EleSelector::setPreSel()
+const heep::EleCutValues* heep::EleSelector::getCuts(int type)const
 {
-  clearCuts();
- 
-  CutValues ebCuts;
-  CutValues eeCuts;
-  ebCuts.setEBPreSel(CutCodes::getCode("et:detEta:crack:dEtaIn:dPhiIn:hadem"));
-  ebCuts.validEleTypes = EleTypeCodes::getCode("barrel:golden:narrow:bigBrem:showering:crack");
-  eeCuts.setEEPreSel(CutCodes::getCode("et:detEta:crack:dEtaIn:dPhiIn:hadem"));
-  eeCuts.validEleTypes = EleTypeCodes::getCode("endcap:golden:narrow:bigBrem:showering:crack");
-  addCuts(ebCuts);
-  addCuts(eeCuts);
-}  
-
-void heep::EleSelector::setPreSelWithEp()
-{
-  clearCuts();
- 
-  CutValues ebCuts;
-  CutValues eeCuts;
-  ebCuts.setEBPreSel(CutCodes::getCode("et:detEta:crack:dEtaIn:dPhiIn:hadem:epIn"));
-  ebCuts.validEleTypes = EleTypeCodes::getCode("barrel:golden:narrow:bigBrem:showering:crack");
-  eeCuts.setEEPreSel(CutCodes::getCode("et:detEta:crack:dEtaIn:dPhiIn:hadem:epIn"));
-  eeCuts.validEleTypes = EleTypeCodes::getCode("endcap:golden:narrow:bigBrem:showering:crack");
-  addCuts(ebCuts);
-  addCuts(eeCuts);
-}
-
-void heep::EleSelector::setCutMask(int cutMask,int eleType)
-{
-  for(size_t cutValNr=0;cutValNr<cutValues_.size();cutValNr++){
-    if((eleType&cutValues_[cutValNr].validEleTypes)!=0){
-      cutValues_[cutValNr].cutMask = cutMask;
+  int cutIndex=0;
+  int nrMatches = 0;
+  for(unsigned index=0;index<cutValues_.size();index++){
+    if( (EleTypeCodes::makeTypeCode(type) & cutValues_[index].validEleTypes) == EleTypeCodes::makeTypeCode(type)){
+      if(nrMatches==0) cutIndex = index;
+      nrMatches++;
     }
   }
-   
+  if(nrMatches==1) return &cutValues_[cutIndex];
+  else return NULL;
 }
 
-void heep::EleSelector::removeCuts(int cutCode,int eleType)
+heep::EleCutValues* heep::EleSelector::getCuts(int type)
 {
-  for(size_t cutValNr=0;cutValNr<cutValues_.size();cutValNr++){
-    if((eleType&cutValues_[cutValNr].validEleTypes)!=0){
-      cutValues_[cutValNr].cutMask &= ~cutCode;
-    }
-  }
-}
+  const heep::EleSelector* constThis = this;
+  const EleCutValues* constCuts = constThis->getCuts(type);
+  return const_cast<EleCutValues*>(constCuts); //is this evil code? Possibly, but I think its safe as all I'm doing is basically code reuse by using the const function and then casting the returned value to non const as in this case the object is really non-const 
 
-void heep::EleSelector::setMinEt(float minEt,int eleType)
-{
-  for(size_t cutValNr=0;cutValNr<cutValues_.size();cutValNr++){
-    if((eleType&cutValues_[cutValNr].validEleTypes)!=0){
-      cutValues_[cutValNr].minEtCut = minEt;
-    }
-  }
 }
-  

@@ -1,36 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-#from RecoEgamma.EgammaIsolationAlgos.eleIsoDeposits_cff import *
+#because e/gamma isolation was a bit of a mess and the pat isnt upto date
+#this file effectively replaces PhysicsTools/PatAlgos/python/recoLayer0/electronIsolation_cff.py
 
-from RecoEgamma.EgammaIsolationAlgos.eleHcalExtractorBlocks_cff import *
-
-#so the first section is just defining the modules to create our isolation, identical to how you would
-#do it in a normal non pat way
-#this bit is commented out as already defined in previous configs
-#eleIsoDepositHcalFromTowers = cms.EDProducer("CandIsoDepositProducer",
-#    src = cms.InputTag("pixelMatchGsfElectrons"),
-#    MultipleDepositsFlag = cms.bool(False),
-#    trackType = cms.string('candidate'),
-#    ExtractorPSet = cms.PSet( EleIsoHcalFromTowersExtractorBlock )
-#)
-
-
-
-eleIsoDepositHcalFromTowersDepth1 = cms.EDProducer("CandIsoDepositProducer",
-    src = cms.InputTag("pixelMatchGsfElectrons"),
-    MultipleDepositsFlag = cms.bool(False),
-    trackType = cms.string('candidate'),
-    ExtractorPSet = cms.PSet( EleIsoHcalFromTowersExtractorBlock )
-)
-eleIsoDepositHcalFromTowersDepth1.ExtractorPSet.hcalDepth = cms.int32(1)
-
-eleIsoDepositHcalFromTowersDepth2 = cms.EDProducer("CandIsoDepositProducer",
-    src = cms.InputTag("pixelMatchGsfElectrons"),
-    MultipleDepositsFlag = cms.bool(False),
-    trackType = cms.string('candidate'),
-    ExtractorPSet = cms.PSet( EleIsoHcalFromTowersExtractorBlock )
-)
-eleIsoDepositHcalFromTowersDepth2.ExtractorPSet.hcalDepth = cms.int32(2)
 
 #this is a list of all the isolation deposits we need to convert to value maps
 #so pat can use them
@@ -40,8 +12,10 @@ eleIsoDepositHcalFromTowersDepth2.ExtractorPSet.hcalDepth = cms.int32(2)
 
 patHEEPElectronIsolationLabels = cms.VInputTag(
         cms.InputTag("eleIsoDepositEcalFromHits"),
-        cms.InputTag("eleIsoDepositHcalFromTowersDepth1"),
-        cms.InputTag("eleIsoDepositHcalFromTowersDepth2")
+        cms.InputTag("eleIsoDepositTk"),
+        cms.InputTag("eleIsoDepositHcalFromTowers"),
+        cms.InputTag("eleIsoDepositHcalDepth1FromTowers"),
+        cms.InputTag("eleIsoDepositHcalDepth2FromTowers")
 )
 
 # read and convert to ValueMap<IsoDeposit> keyed to Candidate
@@ -59,14 +33,8 @@ patLayer0HEEPElectronIsolations = cms.EDFilter("CandManyValueMapsSkimmerIsoDepos
     associations = patHEEPElectronIsolationLabels,
 )
 
-#now we need a sequence to actually run
-#patLayer0HEEPIsolSequence = cms.Sequence(eleIsoDepositEcalFromHits*eleIsoDepositHcalFromTowersDepth1*
-#                                         eleIsoDepositHcalFromTowersDepth2)
-heepIsolSequence = cms.Sequence(eleIsoDepositHcalFromTowersDepth1*
-                                         eleIsoDepositHcalFromTowersDepth2)
 
-patLayer0HEEPIsolSequence = cms.Sequence(heepIsolSequence*
-                                         patHEEPElectronIsolationMaps*
+patLayer0HEEPIsolSequence = cms.Sequence(patHEEPElectronIsolationMaps*
                                          patLayer0HEEPElectronIsolations)
 
 #now in theory if we run this sequence before the pat electron producer, we should be able

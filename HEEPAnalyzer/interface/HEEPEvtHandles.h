@@ -22,6 +22,8 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
@@ -48,7 +50,9 @@ namespace heep {
     edm::Handle<reco::SuperClusterCollection> superClusEE; 
     edm::Handle<reco::TrackCollection> ctfTrack;
     edm::Handle<reco::GenParticleCollection> genParticle;
-
+    edm::Handle<trigger::TriggerEvent> trigEvent;
+    edm::Handle<trigger::TriggerObjectCollection> trigObjColl;
+    
   };
 }
 

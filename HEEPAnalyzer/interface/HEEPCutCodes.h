@@ -3,7 +3,10 @@
 
 //class: heep::CutCodes
 //Description: defines which bits correspond to which cuts
-//
+//Implimentation:
+//   defined as both a enum (which means it can be accessed fast)
+//   and a std::string to bit map (slightly slower access but more convient)
+//   It is a static class so only one defination of HEEPCutCodes allowed at one time
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPComCodes.h"
 
@@ -24,26 +27,20 @@ namespace heep {
     
     enum CutCode{
       //common cuts
-      ET            =0x0001,
-      PT            =0x0002,
-      DETETA        =0x0004,
-      CRACK         =0x0008,
+      ET              =0x0001,
+      PT              =0x0002,
+      DETETA          =0x0004,
+      CRACK           =0x0008,
       
-      EPIN          =0x0010,
-      DETAIN        =0x0020,
-      DPHIIN        =0x0040,
-      HADEM         =0x0080,
-      EPOUT         =0x0100,
-      DPHIOUT       =0x0200,
-      INVEINVP      =0x0400,
-      BREMFRAC      =0x0800,
-      E9OVERE25     =0x1000,
-      SIGMAETAETA   =0x2000,
-      SIGMAPHIPHI   =0x4000,
-      ISOLEM        =0x8000,
-      ISOLHAD       =0x00010000,
-      ISOLPTTRKS    =0x00020000,
-      ISOLNRTRKS    =0x00040000,
+      DETAIN          =0x0010,
+      DPHIIN          =0x0020,
+      HADEM           =0x0040,
+      SIGMAIETAIETA   =0x0080,
+      E2X5OVER5X5     =0x0100,
+      ISOLEMHADDEPTH1 =0x0200,
+      ISOLHADDEPTH2   =0x0400,
+      ISOLPTTRKS      =0x0800,
+      ISOLNRTRKS      =0x1000,
       
       //flag that if its set, shows the code is invalid
       INVALID       =0x10000000
@@ -58,11 +55,12 @@ namespace heep {
     ~CutCodes(){}
     
   public:
-    static int getCode(const char *descript){return codes_.getCode(descript);}
+    static int getCode(const std::string& descript){return codes_.getCode(descript.c_str());}
     static void getCodeName(int code,std::string& id){return codes_.getCodeName(code,id);}
-    
+    static std::string getCodeName(int code){return codes_.getCodeName(code);}
+
   private:
-    static heep::ComCodes setCodes_();
+    static heep::ComCodes makeCodeMap_();
   
   };
 }

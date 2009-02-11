@@ -9,14 +9,21 @@
 //    or more usefully a 'cutCode' whose bits tell if the cut failed or not
 //    note: bit=1 means the cut was failed
 //    The bits each cut corresponds to is defined in HEEPCutCodes
+//    It can be either used with a heep or pat electron (and the two *should* give identical results)
 
-//this class works out which cuts the electron passes/fails
 
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutValues.h"
 
+
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
 #include <vector>
 #include <iostream>
+
+namespace pat {
+  class Electron;
+}
 
 namespace heep { 
 
@@ -24,37 +31,35 @@ namespace heep {
 
   class EleSelector  {
     
-  private:
-    
-    std::vector<heep::CutValues> cutValues_;
+  private: 
+    std::vector<EleCutValues> cutValues_;
     
   public:
-    EleSelector();  
+    EleSelector(){}//default, it doesnt to anything
+    explicit EleSelector(const edm::ParameterSet& config){setup(config);}
     EleSelector(const EleSelector& rhs):cutValues_(rhs.cutValues_){}
     ~EleSelector(){} 
     
+    EleSelector& operator=(const EleSelector& rhs){cutValues_=rhs.cutValues_;return *this;} //no owned resources, so self assignment "okay"
+      
+    void setup(const edm::ParameterSet&);  
 
     bool passCuts(const heep::Ele& ele,int cutMask=~0x0)const{return getCutCode(ele,cutMask)==0x0;}
     int getCutCode(const heep::Ele& ele,int cutMask=~0x0)const;
+    static int getCutCode(const heep::Ele& ele,const EleCutValues& cuts,int cutMask=~0x0);
     
-    static int getCutCode(const heep::Ele& ele,const CutValues& cuts,int cutMask=~0x0);
-    
-    void addCuts(const CutValues& cuts){cutValues_.push_back(cuts);}
-    heep::CutValues* getCuts(int type); //gets the cuts appropriate to the type of the electron
-    const heep::CutValues* getCuts(int type)const;
-    heep::CutValues* getCutsByIndx(int cutNr){return &cutValues_[cutNr];} 
-    const heep::CutValues* getCutsByIndx(int cutNr)const{return &cutValues_[cutNr];}
+    bool passCuts(const pat::Electron& ele,int cutMask=~0x0)const{return getCutCode(ele,cutMask)==0x0;}
+    int getCutCode(const pat::Electron& ele,int cutMask=~0x0)const;
+    static int getCutCode(const pat::Electron& ele,const EleCutValues& cuts,int cutMask=~0x0);
+
+
+    EleCutValues* getCuts(int type); //gets the cuts appropriate to the type of the electron
+    const EleCutValues* getCuts(int type)const;
     int nrCuts()const{return cutValues_.size();}
-    
-    void setHighNrgy();
-    void setPreSel();
-    void setPreSelWithEp();
-    void setCutMask(int cutMask,int eleType=~0x0);
-    void removeCuts(int cutCode,int eleType=~0x0);
-    void setMinEt(float minEt,int eleType=~0x0);
-    
-    void clearCuts(){cutValues_.clear();}
-    
+  
+  
+  private:
+    void addCuts(const EleCutValues& cuts){cutValues_.push_back(cuts);}
   };
 }
 

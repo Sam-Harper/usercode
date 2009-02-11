@@ -6,15 +6,19 @@
 //author: Sam Harper (July 2008)
 //
 //
-//aim: to allow easy access to electron ID variables
-//     currently the CMSSW electron classes are a mess with key electron selection variables not being accessable from GsfElectron
+//aim: to allow easy access to electron ID variables for heep analyses
 //     this a stop gap to produce a simple electron class with all variables easily accessable via methods 
-//     note as this is meant for HLT Offline DQM, I do not want the overhead of converting to pat
+//     this class is supposed to quickly react to electron ID changes (ie when data comes)
+//     as this class can and will change (allthough the interface should be stable), users are discouraged 
+//     from writing it to file
 //
-//implimentation: aims to be a wrapper for GsfElectron methods, it is hoped that in time these methods will be directly added to GsfElectron and so
-//                make this class obsolute
-//                unfortunately can not be a pure wrapper as needs to store isol and cluster shape
-//
+//implimentation: 
+//    aims to be a wrapper for GsfElectron / pat::Electron methods, 
+//    it is hoped that in time these methods will be directly added to GsfElectron and so make this 
+//    class obsolute
+//    Sadly I think we will always need this class as it can react to changes much faster than pat::Electron 
+//    or GsfElectron
+
 
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
@@ -22,7 +26,7 @@
 
  
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
-//#include "SHarper/HEEPAnalyzer/interface/TrigCodes.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPTrigCodes.h"
 
 namespace heep {
   class Ele { 
@@ -50,7 +54,8 @@ namespace heep {
     
   private:
     const reco::GsfElectron* gsfEle_; //pointers to the underlying electron (we do not own this)
-    // const reco::ClusterShape* clusShape_; //pointers to the underlying cluster shape (we do not own this and it may be null)
+                                      //remember that a pat::Electron inherits from a GsfElectron...
+ 
     ClusShapeData clusShapeData_;
     IsolData isolData_;
     
@@ -60,7 +65,7 @@ namespace heep {
     //and these are the trigger bits stored
     //note that the trigger bits are defined at the begining of each job
     //and do not necessaryly map between jobs
-    //TrigCodes::TrigBitSet trigBits_;
+    heep::TrigCodes::TrigBitSet trigBits_;
     
   public:
     
@@ -71,26 +76,29 @@ namespace heep {
     
     //modifiers  
     void setCutCode(int code){cutCode_=code;}
-    //void setTrigBits(TrigCodes::TrigBitSet bits){trigBits_=bits;}
+    void setTrigBits(TrigCodes::TrigBitSet bits){trigBits_=bits;}
 
     const reco::GsfElectron& gsfEle()const{return *gsfEle_;}
     const reco::SuperCluster& superCluster()const{return *(gsfEle_->superCluster());}
     //kinematic and geometric methods
     float et()const{return gsfEle_->et();}
+    float scEt()const{return gsfEle_->superCluster()->position().rho()/gsfEle_->superCluster()->position().r()*caloEnergy();}
     float energy()const{return gsfEle_->energy();}
-    float eta()const{return gsfEle_->eta();}
-    float phi()const{return gsfEle_->phi();}
-    float etSC()const{return gsfEle_->superCluster()->position().rho()/gsfEle_->superCluster()->position().r()*caloEnergy();}
     float caloEnergy()const{return gsfEle_->caloEnergy();}
-    float etaSC()const{return gsfEle_->superCluster()->eta();}
-    float detEta()const{return etaSC();}
-    float phiSC()const{return gsfEle_->superCluster()->phi();}
+    float eta()const{return gsfEle_->eta();}  
+    float scEta()const{return gsfEle_->superCluster()->eta();}
+    float detEta()const{return scEta();} //det stands for detector, ie with respect to 0,0,0 (same as supercluster)
+    float detEtaAbs()const{return fabs(detEta());}
+    float phi()const{return gsfEle_->phi();}
+    float scPhi()const{return gsfEle_->superCluster()->phi();}
     float zVtx()const{return gsfEle_->TrackPositionAtVtx().z();}
     const math::XYZTLorentzVector& p4()const{return gsfEle_->p4();}
     
     //classification (couldnt they have just named it 'type')
     int classification()const{return gsfEle_->classification();}
-    
+    //0 fiduical barrel, 1 fiducial endcap, -2 not fiduical in either
+    int region()const{return detEtaAbs()<1.442 ? 0 : detEtaAbs()>1.5 && detEtaAbs()<2.5 ? 1 : -2;}
+
     //track methods
     int charge()const{return gsfEle_->charge();}
     float pVtx()const{return gsfEle_->trackMomentumAtVtx().R();}
@@ -106,20 +114,26 @@ namespace heep {
     float dPhiOut()const{return gsfEle_->deltaPhiSeedClusterTrackAtCalo();}
     float epIn()const{return gsfEle_->eSuperClusterOverP();}
     float epOut()const{return gsfEle_->eSeedClusterOverPout();}
-  
-    //variables with no direct method
-    float sigmaEtaEta()const;
-    float sigmaEtaEtaUnCorr()const{return clusShapeData_.sigmaEtaEta;}
-    float sigmaIEtaIEta()const{return clusShapeData_.sigmaIEtaIEta;}
-    float e1x5Over5x5()const{return clusShapeData_.e1x5Over5x5;}
-    float e2x5MaxOver5x5()const{return clusShapeData_.e2x5MaxOver5x5;}
-    float e5x5()const{return clusShapeData_.e5x5;}
     float bremFrac()const{return (pVtx()-pCalo())/pVtx();}
     float invEOverInvP()const{return 1./gsfEle_->caloEnergy() - 1./gsfEle_->trackMomentumAtVtx().R();}
-    
+
+    //cluster shape variables (the sc infront of them is due to the gsfElectron naming scheme,
+    //standing for supercluster)
+    //note in 3_X, we can directly access these from the GsfElectron and do away with the 
+    //clusShapeData struct
+    float scSigmaEtaEta()const;
+    float scSigmaEtaEtaUnCorr()const{return clusShapeData_.sigmaEtaEta;}
+    float scSigmaIEtaIEta()const{return clusShapeData_.sigmaIEtaIEta;}
+    float scE1x5()const{return clusShapeData_.e1x5Over5x5*clusShapeData_.e5x5;}
+    float scE2x5Max()const{return clusShapeData_.e2x5MaxOver5x5*clusShapeData_.e5x5;}
+    float scE1x5Over5x5()const{return clusShapeData_.e1x5Over5x5;}
+    float scE2x5MaxOver5x5()const{return clusShapeData_.e2x5MaxOver5x5;}
+    float scE5x5()const{return clusShapeData_.e5x5;}
+   
     //isolation
     float isolEm()const{return isolData_.em;} 
     float isolHad()const{return isolData_.hadDepth1+isolData_.hadDepth2;}
+    float isolEmHadDepth1()const{return isolEm()+isolHadDepth1();}
     float isolHadDepth1()const{return isolData_.hadDepth1;}
     float isolHadDepth2()const{return isolData_.hadDepth2;}
     float isolNrTrks()const{return isolData_.nrTrks;}
@@ -128,9 +142,8 @@ namespace heep {
     //selection cuts
     int cutCode()const{return cutCode_;}
     
-    //trigger
-    //TrigCodes::TrigBitSet trigBits()const{return trigBits_;}
-    
+    //trigger info
+    heep::TrigCodes::TrigBitSet trigBits()const{return trigBits_;}
 
   };
 }

@@ -3,19 +3,20 @@
 
 
 //defines bitwise commincation codes for the electron type
+//this was intended to allow different cuts for crack, golden, narrow etc
+//but is only really used today to seperate barrel and endcap for
+//heep::EleSelector and thats mainly historical
 
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPComCodes.h"
 
 #include <cstring>
-#include <map>
 #include <string>
 #include <iostream>
 
 namespace heep {
   
   class EleTypeCodes { 
-
   public:
     
     enum EleTypeCode{
@@ -40,9 +41,10 @@ namespace heep {
   public:
     
     static int makeTypeCode(int eleType);
-    static int getCode(const char *descript){return codes_.getCode(descript);}
-    void getCodeName(int code,std::string& id){return codes_.getCodeName(code,id);}
-    
+    static int getCode(const std::string& descript){return codes_.getCode(descript.c_str());}
+    static void getCodeName(int code,std::string& id){return codes_.getCodeName(code,id);}
+    static std::string getCodeName(int code){return codes_.getCodeName(code);}
+
   private:
     static ComCodes setCodes_();
     

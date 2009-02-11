@@ -1,29 +1,24 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
 
 
-heep::ComCodes heep::CutCodes::codes_(CutCodes::setCodes_());
+heep::ComCodes heep::CutCodes::codes_(CutCodes::makeCodeMap_());
 
-//horribly inefficient I know but its done once
-heep::ComCodes heep::CutCodes::setCodes_()
+//slightly inefficiency but its done once per job
+heep::ComCodes heep::CutCodes::makeCodeMap_()
 {
   heep::ComCodes codes;
   codes.setCode("et",ET);
   codes.setCode("pt",PT);
   codes.setCode("detEta",DETETA);
   codes.setCode("crack",CRACK);
-  codes.setCode("epIn",EPIN);
+
   codes.setCode("dEtaIn",DETAIN);
   codes.setCode("dPhiIn",DPHIIN);
   codes.setCode("hadem",HADEM);
-  codes.setCode("epOut",EPOUT);
-  codes.setCode("dPhiOut",DPHIOUT);
-  codes.setCode("invEInvP",INVEINVP);
-  codes.setCode("bremFrac",BREMFRAC);
-  codes.setCode("e9OverE25",E9OVERE25);
-  codes.setCode("sigmaEtaEta",SIGMAETAETA);
-  codes.setCode("sigmaPhiPhi",SIGMAPHIPHI);
-  codes.setCode("isolEm",ISOLEM);
-  codes.setCode("isolHad",ISOLHAD);
+  codes.setCode("sigmaIEtaIEta",SIGMAIETAIETA);
+  codes.setCode("e2x5Over5x5",E2X5OVER5X5);
+  codes.setCode("isolEmHadDepth1",ISOLEMHADDEPTH1);
+  codes.setCode("isolHadDepth2",ISOLHADDEPTH2);
   codes.setCode("isolPtTrks",ISOLPTTRKS);
   codes.setCode("isolNrTrks",ISOLNRTRKS);
   codes.setCode("invalid",INVALID);

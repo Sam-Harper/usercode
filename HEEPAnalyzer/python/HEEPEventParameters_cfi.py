@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
+
 heepEventPara  = cms.PSet (
     #intentionally using allLayer1 objects rather than selectedLayer1
     #because quite frankly I dont trust the selection
@@ -18,7 +20,18 @@ heepEventPara  = cms.PSet (
     superClusterEBTag = cms.InputTag("correctedHybridSuperClusters"),
     superClusterEETag = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower"),
     ctfTrackTag = cms.InputTag("generalTracks"),
-    genParticleTag = cms.InputTag("genParticles")
+    genParticleTag = cms.InputTag("genParticles"),
+    trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT"),
+    hltProcName = cms.string("HLT"), #HLT process name, always HLT unless it was rerun...
+    maxDRTrigMatch = cms.double(0.2), #max DR for a reco object trigger object match
+    maxPtRelDiffTrigMatch = cms.double(1.), #max relative difference in pt between reco object and trig obj
+    hltFiltersToCheck = cms.vstring('hltL1NonIsoHLTNonIsoSingleElectronLWEt15TrackIsolFilter',
+                                    'hltL1NonIsoHLTNonIsoSingleElectronEt15TrackIsolFilter',
+                                    'hltL1NonIsoSingleEMHighEtTrackIsolFilter',
+                                    'hltL1NonIsoSinglePhotonEMVeryHighEtEtFilter'),#only these filters are checked
+    barrelCuts = cms.PSet(heepBarrelCuts),
+    endcapCuts = cms.PSet(heepEndcapCuts)
+   
 )
 
 

@@ -1,78 +1,49 @@
 #ifndef SHARPER_HEEPANALYZER_HEEPCUTVALUES
 #define SHARPER_HEEPANALYZER_HEEPCUTVALUES
 
-//This is a simple struct to hold the values of a particular set of cuts
-//may end up being promoted to a class
+//This is a simple struct to hold the values of a particular set of cuts, eg barrel heep cuts
+//Some cuts dont make sense for both barrel and endcap but its easier to just have a common struct
 
 
 #include <iostream>
 #include <string>
 
-namespace heep {
-  struct CutValues  {
-    //identifier
-    std::string id; //id in a human readable format (unused)
-    int idWord; //allows fast comparisions, really this tells you all about the cuts (unused)
-    int validEleTypes; //what electrons types are valid (eg barrel, endcap)
-    int cutMask; //allows cuts to be turned off/on
-    
-    //cut values
-    //kinmatic cuts
-    float minEtCut;
-    float minEtaCut;
-    float maxEtaCut;
-    bool rejectCracks;
-    
-    //id cuts
-    float minEpInCut;
-    float maxEpInCut;
-    float epInReleaseEtCut;
-    float maxDEtaInCut;
-    float maxDPhiInCut;
-    float maxHademCut; 
-    float maxHadCell2ConstCut; 
-    float maxHadCell2GradCut;
-    float minEpOutCut;
-    float maxEpOutCut;
-    float maxDPhiOutCut;
-    float minInvEInvPCut;
-    float maxInvEInvPCut;
-    float minBremFracCut;
-    float minE9E25Cut;
-    float minSigmaEtaEtaCut;
-    float maxSigmaEtaEtaCut;
-    float minSigmaPhiPhiCut;
-    float maxSigmaPhiPhiCut;
+namespace edm{
+  class ParameterSet;
+}
   
-    //isol cut values
-    float minIsolEmConstCut;
-    float isolEmGradCut; 
-    float minIsolEmRecHitConstCut;
-    float isolEmRecHitGradCut;
-    float minIsolHadConstCut;
-    float isolHadGradCut;
-    float minIsolHadDepth2ConstCut;
-    float isolHadDepth2GradCut;
-    float minIsolPtTrksConstCut;
-    float isolPtTrksGradCut;
-    int minIsolNrTrksConstCut;
+namespace heep {
+  struct EleCutValues  {
+  public:
+    int cutMask;  
+    int validEleTypes;
+    double minEt;
+    double minEta;
+    double maxEta;
+    double maxDEtaIn;
+    double maxDPhiIn;
+    double maxHadem;
+    double maxSigmaIEtaIEta;
+    double minE2x5Over5x5;
+    double minE1x5Over5x5;
+    double isolEmHadDepth1ConstTerm;
+    double isolEmHadDepth1GradTerm;
+    double isolEmHadDepth1GradStart;
+    double isolHadDepth2ConstTerm;
+    double isolHadDepth2GradTerm;
+    double isolHadDepth2GradStart;
+    double isolPtTrksConstTerm;
+    double isolPtTrksGradTerm;
+    double isolPtTrksGradStart;
+    int isolNrTrksConstTerm;
     
-    float minIsolEmHadDepth1ConstCut;
-    float isolEmHadDepth1GradCut;
-    
-    
+    explicit EleCutValues(const edm::ParameterSet& iConfig);
 
-    
-    CutValues(){}
-    virtual ~CutValues(){}
-    
-    void setEBHighNrgy(int inputCutMask=~0x0);
-    void setEEHighNrgy(int inputCutMask=~0x0);
-    void setEBPreSel(int inputCutMask=~0x0);
-    void setEEPreSel(int inputCutMask=~0x0);
-    
   };
 }
+
+
+ 
 
 
 #endif
