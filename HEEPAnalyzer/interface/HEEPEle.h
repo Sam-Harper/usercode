@@ -3,7 +3,7 @@
 
 //class: HEEP Ele (HEEP Electron)
 //
-//author: Sam Harper (July 2008)
+//author: Sam Harper (July 2008) (sharper@<at you know where>.ch)
 //
 //
 //aim: to allow easy access to electron ID variables for heep analyses
@@ -19,7 +19,15 @@
 //    Sadly I think we will always need this class as it can react to changes much faster than pat::Electron 
 //    or GsfElectron
 
-
+//the methods of most interest (EB = barrel var, EE= endcap var, note an barrel var will be defined for
+//the endcap and vice versa but they often they are not used for id in the other detector)
+//p4(),et(),energy(),eta(),phi() : electron based 4-fourmomentum, use this for physics (eg making a mass spectrum)
+//scEta(),scPhi() : supercluster eta/phi w.r.t to 0,0,0 (otherwise known as detector coordinates, use for fiducial cuts
+//dEtaIn(),dPhiIn(),hOverE(),scE2x5MaxOver5x5() (EB),scE1x5Over5x5() (EB),scSigmaIEtaIEta() (EE): 'robust' ID variables
+//isolEmHadDepth1(),isolHadDepth2() (EE),isolPtTrks(): isolation varibles
+//cutCode() : list of cuts failed, ==0x0 all passed 
+//passCuts(int cutMask) : simplifies the test whether it passed the specified cuts (defaults to all)
+//trigBits() : list of triggers passed, !=0x0 a trigger was fired
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
@@ -96,9 +104,7 @@ namespace heep {
     
     //classification (couldnt they have just named it 'type')
     int classification()const{return gsfEle_->classification();}
-    //0 fiduical barrel, 1 fiducial endcap, -2 not fiduical in either
-    int region()const{return detEtaAbs()<1.442 ? 0 : detEtaAbs()>1.5 && detEtaAbs()<2.5 ? 1 : -2;}
-
+   
     //track methods
     int charge()const{return gsfEle_->charge();}
     float pVtx()const{return gsfEle_->trackMomentumAtVtx().R();}
@@ -141,6 +147,7 @@ namespace heep {
     
     //selection cuts
     int cutCode()const{return cutCode_;}
+    bool passCuts(int cutMask=~0x0)const{ (cutCode() & cutMask) ==0x0;} //defaults to all cuts, note: bit wise operators (&,|,^) are of lower presendence than == and != operators hence the ( ) are very necessary 
     
     //trigger info
     heep::TrigCodes::TrigBitSet trigBits()const{return trigBits_;}

@@ -1,5 +1,8 @@
 #shamelessly stolen from PatAnalyzerSkeleton_cfg.py
 
+#this config file configures the PAT to be suitable for HEEP analyses and then runs an example analyzer
+#this uses only bare pat and does not use the HEEP event
+
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -50,7 +53,7 @@ process.load("SHarper.HEEPAnalyzer.HEEPPatConfig_cfi")
 
 #now define our bare pat analysis module
 process.load("SHarper.HEEPAnalyzer.HEEPAnalyzerBarePAT_cfi")
-
+process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
 
 
 process.TFileService = cms.Service("TFileService",
@@ -62,6 +65,7 @@ from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run22XonSummer08AODSIM
 run22XonSummer08AODSIM(process)
 
 process.p = cms.Path(process.heepPATSequence*
+                     process.heepAnalyzer*
                      process.heepAnalyzerBarePAT)
 
 

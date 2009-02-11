@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+#this is where the HEEP selection is defined
+
 heepBarrelCuts = cms.PSet (
     cuts=cms.string("et:detEta:dEtaIn:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks"),
     validEleTypes=cms.string("barrel:golden:showering:bigBrem:narrow:crack"),
