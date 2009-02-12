@@ -19,10 +19,6 @@ namespace heep {
   class CutCodes { //class to handle the cutcodes used in electron cutting
     
   public:
-    //redefining the codes to be unique (currently use the same ones for some cem only and plug only cuts)
-    //this will save a lot of hassle (cem uses first word, pem uses 2nd word
-    //with common cuts using the first nibble
-    //above comment very out of date (note references to CDF detector...)
     
     
     enum CutCode{
@@ -43,7 +39,7 @@ namespace heep {
       ISOLNRTRKS      =0x1000,
       
       //flag that if its set, shows the code is invalid
-      INVALID       =0x10000000
+      INVALID       =0x80000000
       
     };
     
