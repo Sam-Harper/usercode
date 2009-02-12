@@ -64,7 +64,6 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
 
 void HEEPAnalyzer::endJob()
 {
-  std::cout <<"Nr pass "<<nrPass_<<" nr fail "<<nrFail_<<" eff "<<static_cast<float>(nrPass_)/static_cast<float>(nrFail_+nrPass_)<<std::endl;
   edm::LogInfo("HEEPAnalyzer") <<"Nr pass "<<nrPass_<<" nr fail "<<nrFail_<<" eff "<<static_cast<float>(nrPass_)/static_cast<float>(nrFail_+nrPass_);
 }
 

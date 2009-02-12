@@ -53,8 +53,6 @@ process.load("SHarper.HEEPAnalyzer.HEEPPatConfig_cfi")
 
 #now define our bare pat analysis module
 process.load("SHarper.HEEPAnalyzer.HEEPAnalyzerBarePAT_cfi")
-process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
-
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string('output.root')

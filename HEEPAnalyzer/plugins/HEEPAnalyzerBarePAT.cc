@@ -56,7 +56,7 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
 
 void HEEPAnalyzerBarePAT::endJob()
 {
-  std::cout <<"Nr pass "<<nrPass_<<" nr fail "<<nrFail_<<" eff "<<static_cast<float>(nrPass_)/static_cast<float>(nrFail_+nrPass_)<<std::endl;
+ 
   edm::LogInfo("HEEPAnalyzerBarePAT") <<"Nr pass "<<nrPass_<<" nr fail "<<nrFail_<<" eff "<<static_cast<float>(nrPass_)/static_cast<float>(nrFail_+nrPass_);
 }
 
