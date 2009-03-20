@@ -34,7 +34,7 @@ process.GlobalTag.globaltag = cms.string('IDEAL_V9::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # this defines the input files
-process.load("SHarper.HEEPAnalyzer.relVal_Zee_219_cfi");
+process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('dummy'))
 process.PoolSource.fileNames = ['file:/scratch/sharper/cmsswDataFiles/zee_relVal_219.root']
 
 # set the number of events

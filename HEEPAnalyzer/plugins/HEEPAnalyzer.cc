@@ -37,6 +37,8 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
  
   //make the heep event (see easy isnt it)
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
+
+  std::cout <<"event pt hat "<<heepEvt_.genEventPtHat()<<std::endl;
  
   //do what ever you want
   //lets get the heep electrons and count the number that pass / fail cuts
@@ -45,7 +47,8 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
     if(eles[eleNr].cutCode()==0x0) nrPass_++;
     else nrFail_++;
   }
-  
+
+
   //lets fill a mass hist
   for(size_t ele1Nr=0;ele1Nr<eles.size();ele1Nr++){
     for(size_t ele2Nr=ele1Nr+1;ele2Nr<eles.size();ele2Nr++){

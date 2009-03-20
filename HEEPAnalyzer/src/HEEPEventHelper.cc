@@ -34,6 +34,7 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   ctfTrackTag_ = conf.getParameter<edm::InputTag>("ctfTrackTag");
   genParticleTag_ = conf.getParameter<edm::InputTag>("genParticleTag");
   trigEventTag_ = conf.getParameter<edm::InputTag>("trigEventTag");
+  genEventPtHatTag_ = conf.getParameter<edm::InputTag>("genEventPtHatTag");
 
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -70,6 +71,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(ctfTrackTag_,handles.ctfTrack);
   event.getByLabel(genParticleTag_,handles.genParticle);
   event.getByLabel(trigEventTag_,handles.trigEvent);
+  event.getByLabel(genEventPtHatTag_,handles.genEventPtHat);
   
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);

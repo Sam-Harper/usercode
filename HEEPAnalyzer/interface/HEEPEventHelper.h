@@ -50,6 +50,7 @@ namespace heep {
     edm::InputTag ctfTrackTag_;
     edm::InputTag genParticleTag_;
     edm::InputTag trigEventTag_;  
+    edm::InputTag genEventPtHatTag_;
     //trigger matching parameters
     std::string hltProcName_;
     double maxDRTrigMatch_;

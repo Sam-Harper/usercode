@@ -64,7 +64,7 @@ namespace heep{
     std::vector<heep::Ele>& heepElectrons(){return heepEles_;}
     const std::vector<heep::Ele>& heepElectrons()const{return heepEles_;}
     const trigger::TriggerEvent & triggerEvent()const{return *handles_.trigEvent;}
-    
+    double genEventPtHat()const{return handles_.genEventPtHat.isValid() ? *handles_.genEventPtHat: -1.;}
 
     //our one set method
     void setEvent(const edm::Event& event){edmEvent_ = &event;}

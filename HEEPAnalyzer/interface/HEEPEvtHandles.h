@@ -52,6 +52,7 @@ namespace heep {
     edm::Handle<reco::GenParticleCollection> genParticle;
     edm::Handle<trigger::TriggerEvent> trigEvent;
     edm::Handle<trigger::TriggerObjectCollection> trigObjColl;
+    edm::Handle<double> genEventPtHat;
     
   };
 }
