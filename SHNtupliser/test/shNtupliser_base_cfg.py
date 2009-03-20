@@ -58,7 +58,10 @@ process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('dum
 
 process.PoolSource.fileNames = ['file:/scratch/sharper/cmsswDataFiles/zee_relVal_219.root']
 
+process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronsNoCuts_cfi")
 
+#run the heep analyzer
+#process.p = cms.Path(process.pixelMatchGsfElectronsNoCuts*
 
 # define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
 process.p = cms.Path(#process.patLayer0*
@@ -66,6 +69,7 @@ process.p = cms.Path(#process.patLayer0*
 #                     process.eleIsoDepositEcalFromHitsFast*
 #                     process.eleIsoDepositEcalFromHits*
 #                      process.eleIsoDepositHcalFromHits*
+                     process.pixelMatchGsfElectronsNoCuts*
                      process.heepPATSequence*
                      process.shNtupliser)
 

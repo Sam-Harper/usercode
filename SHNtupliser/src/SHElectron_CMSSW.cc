@@ -47,8 +47,8 @@ dEtaIn_(ele.gsfEle().deltaEtaSuperClusterTrackAtVtx()),
 dEtaOut_(ele.gsfEle().deltaEtaSeedClusterTrackAtCalo()),
 dPhiIn_(ele.gsfEle().deltaPhiSuperClusterTrackAtVtx()),
 dPhiOut_(ele.gsfEle().deltaPhiSeedClusterTrackAtCalo()),
-sigmaEtaEta_(ele.sigmaEtaEta()),
-sigmaIEtaIEta_(ele.sigmaIEtaIEta()),
+sigmaEtaEta_(ele.scSigmaEtaEta()),
+sigmaIEtaIEta_(ele.scSigmaIEtaIEta()),
 //links to tracks, superClusters
 superClusIndx_(superClusNr),
  //new isolation variables (filled elsewhere)

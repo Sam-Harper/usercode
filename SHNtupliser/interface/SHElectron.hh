@@ -159,14 +159,15 @@ private:
   float epIn()const{return epIn_;}
   float epOut()const{return epOut_;}
   float hadem()const{return hadem_;}
+  float hademDepth1()const{return hademDepth1_;}
+  float hademDepth2()const{return hademDepth2_;}
   float dEtaIn()const{return dEtaIn_;}
   float dEtaOut()const{return dEtaOut_;}
   float dPhiIn()const{return dPhiIn_;}
   float dPhiOut()const{return dPhiOut_;}
 
-  float sigmaEtaEta()const{return sigmaEtaEtaCorr();}
-  float sigmaEtaEtaUnCorr()const{return sigmaEtaEta_;}
-  float sigmaEtaEtaCorr()const{return type()<100 ? sigmaEtaEta_ : sigmaEtaEta_ -0.02*(fabs(eta()) -2.3);}
+  float sigmaEtaEta()const{return sigmaEtaEta_;}
+  
   float sigmaIEtaIEta()const{return sigmaIEtaIEta_;}
 
   float invEinvP()const{return 1/nrgy() - 1/trkPt();}

@@ -122,29 +122,29 @@ int DetIdTools::makeEcalEndcapId(int ix,int iy,int iz)
   return detId;
 }
 
-int DetIdTools::getHashEcal(int detId)
-{
-  if(isEcal(detId)){
-    if(isBarrel(detId)) return getHashEcalBarrel(detId);
-    else if(isEndcap(detId)) return getHashEcalEndcap(detId)+kNrCrysBarrel;
-  }
-  //not ecal barrel or endcap
-  std::cout <<"DetIdTools::getHashEcal, detId "<<std::hex<<detId<<std::dec<<" is invalid"<<std::endl;
-  return -1;
-}
+// int DetIdTools::getHashEcal(int detId)
+// {
+//   if(isEcal(detId)){
+//     if(isBarrel(detId)) return getHashEcalBarrel(detId);
+//     else if(isEndcap(detId)) return getHashEcalEndcap(detId)+kNrCrysBarrel;
+//   }
+//   //not ecal barrel or endcap
+//   std::cout <<"DetIdTools::getHashEcal, detId "<<std::hex<<detId<<std::dec<<" is invalid"<<std::endl;
+//   return -1;
+// }
 
 
-int DetIdTools::getHashEcalBarrel(int detId)
-{
-  int etaBandNr =  kMaxIEtaBarrel + (positiveZBarrel(detId) ? iEtaAbsBarrel(detId)-1 : -iEtaAbsBarrel(detId)); // 0 - 189 starting at lowest eta (~-1.5) to highest
-  return etaBandNr* kMaxIPhiBarrel + iPhiBarrel(detId)-1;
-}
+// int DetIdTools::getHashEcalBarrel(int detId)
+// {
+//   int etaBandNr =  kMaxIEtaBarrel + (positiveZBarrel(detId) ? iEtaAbsBarrel(detId)-1 : -iEtaAbsBarrel(detId)); // 0 - 189 starting at lowest eta (~-1.5) to highest
+//   return etaBandNr* kMaxIPhiBarrel + iPhiBarrel(detId)-1;
+// }
 
 
-int DetIdTools::getHashEcalEndcap(int detId)
-{
-  return iYEndcap(detId) - nBegin_[iXEndcap(detId)-1] + nIntegral_[iXEndcap(detId) -1 ] + (positiveZEndcap(detId) ? kICrFee_ : 0);
-}
+// int DetIdTools::getHashEcalEndcap(int detId)
+// {
+//   return iYEndcap(detId) - nBegin_[iXEndcap(detId)-1] + nIntegral_[iXEndcap(detId) -1 ] + (positiveZEndcap(detId) ? kICrFee_ : 0);
+// }
   
 int DetIdTools::makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth)
 {
@@ -239,6 +239,7 @@ bool DetIdTools::isValidHcalId(int iEta,int iPhi,int depth)
 
 //depth 1= all towers up to and including tower 17 + depth 1 18-29 + depth 2 27-29
 //depth 2= depth 2 18-26, depth 3 27-29
+//warning, emulating calo tower bug where depth 2 tower 27 is depth 2 and depth 3 is depth 1
 int DetIdTools::getEffectiveHcalDepth(int detId)
 {
   if(!isHcal(detId)){
@@ -249,7 +250,9 @@ int DetIdTools::getEffectiveHcalDepth(int detId)
     int depth = depthHcal(detId);
     if(iEtaAbs<=17 || 
        (iEtaAbs<=29 && depth==1) ||
-       (iEtaAbs>=27 && iEtaAbs<=29 && depth==2)){
+       // (iEtaAbs>=27 && iEtaAbs<=29 && depth==2)){   
+       (iEtaAbs>=28 && iEtaAbs<=29 && depth==2) || 
+       (iEtaAbs==27 && depth==3)){
       return 1;
     }else return 2;
   }

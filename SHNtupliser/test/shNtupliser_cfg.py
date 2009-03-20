@@ -55,15 +55,24 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 #process.load("SHarper.HEEPAnalyzer.qcd_20_30_RelVal_212_cfi");
 #process.load("SHarper.SHNtupliser.relVal_QCD_Pt_80_120_218_cfi");
 
+process.load("RecoLocalTracker.SiPixelRecHits.SiPixelRecHits_cfi")
+process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitConverter_cfi")
+process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitMatcher_cfi")
+process.load("RecoLocalTracker.SiStripRecHitConverter.StripCPEfromTrackAngle_cfi")
+process.load("RecoLocalTracker.SiStripZeroSuppression.SiStripZeroSuppression_cfi")
+process.load("RecoLocalTracker.SiStripClusterizer.SiStripClusterizer_cfi")
+process.load("RecoLocalTracker.SiPixelClusterizer.SiPixelClusterizer_cfi")
+process.load("RecoLocalTracker.SiPixelRecHits.PixelCPEESProducers_cff")
+process.load("RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff")
 
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+    input = cms.untracked.int32(-1)
 )
 
-
-
+#process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronsNoCuts_cfi")
+process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronSequenceNoCuts_cff")
 # input pat sequences
 #from PhysicsTools.PatAlgos.patLayer0_cff import *
 #from PhysicsTools.PatAlgos.patLayer1_cff import *
@@ -73,25 +82,45 @@ process.load("SHarper.HEEPAnalyzer.HEEPPatConfig_cfi");
 # input heep analyzer sequence
 process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
+#process.shNtupliser.barrelRecHitTag = cms.InputTag("caloRecHits","EcalRecHitsEB")
+#process.shNtupliser.endcapRecHitTag = cms.InputTag("caloRecHits","EcalRecHitsEE")
 process.shNtupliser.datasetCode = 2
 process.shNtupliser.sampleWeight = .1
-
-process.load("SHarper.SHNtupliser.relVal_QCD_Pt_80_120_2110_cfi");
+#process.eleIsoDepositEcalFromHits.barrelEcalHits =  cms.InputTag("caloRecHits","EcalRecHitsEB")
+#process.eleIsoDepositEcalFromHits.endcapEcalHits =  cms.InputTag("caloRecHits","EcalRecHitsEE")
+#process.shNtupliser.hbheRecHitsTag =  cms.InputTag("caloRecHits")
+process.load("SHarper.SHNtupliser.relVal_Zee_220_full_cfi");
 process.PoolSource.fileNames = ['file:/scratch/sharper/cmsswDataFiles/zee_relVal_219.root']
-process.shNtupliser.outputFilename="test.root"
+#process.PoolSource.fileNames = ['file:/media/usbdisk1/fastSimFiles/QCD_Pt_80_120_cfi_GEN_FASTSIM_IDEAL_0.root']
+
+process.shNtupliser.outputFilename="relVal_eleGunPt1000_220_fastSimV4.root"
 #process.TFileService = cms.Service("TFileService",
 #                                   fileName = cms.string('output.root')
 #)
+#process.PoolSource.fileNames = ['file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_0.root',
+#                                'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_1.root',
+#                                'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_10.root',
+#                                'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_2.root',
+#                                'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_3.root',
+ #                               'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_4.root',
+  #                              'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_5.root',
+   #                             'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_6.root',
+    #                            'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_7.root',
+     #                           'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_8.root',
+      #                          'file:/media/usbdisk1/fastSimFiles/SingleElectronPt1000_cfi_GEN_FASTSIM_IDEAL_9.root']
 
-
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run22XonSummer08AODSIM
+run22XonSummer08AODSIM(process)
 
 
 # define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
-process.p = cms.Path(#process.patLayer0*
+process.p = cms.Path(process.siPixelRecHits*process.siStripMatchedRecHits*process.newSeedFromPairs*process.newSeedFromTriplets*process.newCombinedSeeds*
                      #process.patLayer1*
 #                     process.eleIsoDepositEcalFromHitsFast*
 #                     process.eleIsoDepositEcalFromHits*
 #                      process.eleIsoDepositHcalFromHits*
+    process.pixelMatchGsfElectronSequenceNoCuts*
+    #                 process.pixelMatchGsfElectronsNoCuts*
                      process.heepPATSequence*
                      process.shNtupliser)
 

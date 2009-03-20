@@ -17,10 +17,12 @@ workingDir=`echo $datasetPath | awk -F "/" '{print $2}'`.`date +%y%m%d`_`date +%
 copyData=1
 returnData=0
 
-#nrEvents=500
+#nrEvents=2000
 #nrJobs=2
 
 echo $workingDir
+
+echo $baseCfg
 
 sed 's|DATASETPATH|'$datasetPath'|' crab_base.cfg | \
 sed 's|NREVENTS|'$nrEvents'|' | \

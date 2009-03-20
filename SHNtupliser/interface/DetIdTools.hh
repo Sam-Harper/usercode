@@ -127,9 +127,14 @@ private:
   static int normEndcapIXOrIY(int iXorIY);
   //this functions convert an ECAL detId into an array index
   //note barrel is first then endcap
-  static int getHashEcal(int detId);
-  static int getHashEcalEndcap(int detId);
-  static int getHashEcalBarrel(int detId);
+  static int getHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? getHashEcalBarrel(detId) : getHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}
+  static int getHashEcalEndcap(int detId) {
+    return iYEndcap(detId) - nBegin_[iXEndcap(detId)-1] + nIntegral_[iXEndcap(detId) -1 ] + (positiveZEndcap(detId) ? kICrFee_ : 0);
+  }
+  static int getHashEcalBarrel(int detId){
+    int etaBandNr =  kMaxIEtaBarrel + (positiveZBarrel(detId) ? iEtaAbsBarrel(detId)-1 : -iEtaAbsBarrel(detId)); // 0 - 189 starting at lowest eta (~-1.5) to highest
+    return etaBandNr* kMaxIPhiBarrel + iPhiBarrel(detId)-1;
+  }
   static int getHashHcal(int detId);
 
 

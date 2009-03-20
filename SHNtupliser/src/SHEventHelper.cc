@@ -123,7 +123,24 @@ void SHEventHelper::addHcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
 
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  
+  const trigger::TriggerEvent& trigEvt = heepEvent.triggerEvent();
+  //  const trigger::TriggerObjectCollection& trigObjs = heepEvent.trigObjColl();
+  for(size_t filterNr=0;filterNr<trigEvt.sizeFilters();filterNr++){
+    SHTrigInfo trigInfo;
+    trigInfo.setTrigId(-1);
+    trigInfo.setTrigName(trigEvt.filterTag(filterNr).label());
+    const trigger::Keys& trigKeys = trigEvt.filterKeys(filterNr);  //trigger::Keys is actually a vector<uint16_t> holding the position of trigger objects in the trigger collection passing the filter
+    const trigger::TriggerObjectCollection & trigObjColl(trigEvt.getObjects());
+    for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){
+      const trigger::TriggerObject& obj = trigObjColl[*keyIt];
+      TLorentzVector p4;
+      //note I call this function as its probably the fastest way to get info out of  TriggerObject in 22X (look at how it calculates et, its impressive, it might be possible to do it slower but I doubt it)
+      p4.SetPtEtaPhiM(obj.pt(),obj.eta(),obj.phi(),obj.mass());
+      trigInfo.addObj(p4);
+    }
+    shEvent.addTrigInfo(trigInfo);
+  } 
+
 }
 
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const

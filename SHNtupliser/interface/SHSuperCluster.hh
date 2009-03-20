@@ -39,9 +39,11 @@ class SHSuperCluster : public TObject {
 
 
   float nrgy()const{return nrgy_;}
+  float et()const{return nrgy()*pos().Perp()/pos().Mag();}
   float rawNrgy()const;
   float preShowerNrgy()const{return preShowerNrgy_;}
   const TVector3& position()const{return pos_;}
+  const TVector3& pos()const{return pos_;}
   int nrCrys()const{return nrCrys_;}
   int nrClus()const{return clusterArray_.GetLast()+1;}
   float eta()const{return eta_;}

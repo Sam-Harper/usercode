@@ -5,8 +5,8 @@
 SHJet::SHJet(const pat::Jet & jet):
   p4_(jet.px(),jet.py(),jet.pz(),jet.energy()),
   hadFrac_(jet.energyFractionHadronic()),
-  // caloArea_(jet.towersArea()),
-  caloArea_(0.), //not in 1_3_5
+  caloArea_(jet.towersArea()),
+  //caloArea_(0.), //not in 1_3_5
   maxNrgyInEmTowers_(jet.maxEInEmTowers()),
   maxNrgyInHadTowers_(jet.maxEInHadTowers()),
   hadNrgyInH0_(jet.hadEnergyInHO()),
@@ -15,7 +15,12 @@ SHJet::SHJet(const pat::Jet & jet):
   hadNrgyInHE_(jet.hadEnergyInHE()),
   emNrgyInEB_(jet.emEnergyInEB()),
   emNrgyInEE_(jet.emEnergyInEE()),
-  emNrgyInHF_(jet.emEnergyInHF())
+  emNrgyInHF_(jet.emEnergyInHF()),
+  trkCountHighEffBTag_(jet.bDiscriminator("trackCountingHighEffBJetTag")),
+  trkCountHighPureBTag_(jet.bDiscriminator("trackCountingHighPureBJetTag")),
+  jetBProbBTag_(jet.bDiscriminator("jetBProbabilityBJetTags")),
+  jetProbBTag_(jet.bDiscriminator("jetProbabilityBJetTags")),
+  partonFlavour_(jet.partonFlavour()) 
 {
 
 }

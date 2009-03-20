@@ -56,7 +56,7 @@ void SHNtupliser::beginJob(const edm::EventSetup& iSetup)
 
 void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
-  //heep::listAllProducts<reco::TrackCollection>(iEvent,"SHNtupliser");
+  //   heep::listAllProducts<CaloTowerCollection>(iEvent,"SHNtupliser");
 
 
   //make the heep event (see easy isnt it)

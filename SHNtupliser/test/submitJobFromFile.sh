@@ -22,9 +22,9 @@ cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}' | \
 outputFile=${dataset}_ntuples_${cmsswVersion}_v10.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
-outputPath=21X/v10/$dataset/
+outputPath=21X/v10b_noPreSel/$dataset/
 #dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet"
-baseCfg="shNtupliser_base_cfg.py"
+baseCfg="shNtupliserNoPreSel_base_cfg.py"
 
 #baseCfg="runSHNtupliser_base.cfg"
 
