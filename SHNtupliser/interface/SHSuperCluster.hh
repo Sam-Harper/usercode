@@ -48,8 +48,9 @@ class SHSuperCluster : public TObject {
   int nrClus()const{return clusterArray_.GetLast()+1;}
   float eta()const{return eta_;}
   float phi()const{return position().Phi();}
-
-  const SHBasicCluster* seedClus()const{return getClus(0);} 
+  //  int seedCrys()const;
+  
+  const SHBasicCluster* seedClus()const;
   const SHBasicCluster* getClus(int clusNr)const; //clusNr=0 always seed cluster
  
   

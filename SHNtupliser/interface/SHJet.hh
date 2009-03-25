@@ -29,9 +29,12 @@ private:
   float emNrgyInEB_;
   float emNrgyInEE_;
   float emNrgyInHF_;
-
-  float jetNrgyScale_; //! transient variable to store jet energy scale, will be made perminate in next release
-
+  float jetNrgyScale_; //new for v2
+  float trkCountHighEffBTag_;
+  float trkCountHighPureBTag_;
+  float jetBProbBTag_;
+  float jetProbBTag_;
+  int partonFlavour_;
 public:
   SHJet();
   SHJet(const pat::Jet & caloJet); //CMSSW hook

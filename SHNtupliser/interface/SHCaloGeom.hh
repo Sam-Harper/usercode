@@ -6,6 +6,7 @@
 //using the standard hashing functions
 
 #include "SHarper/SHNtupliser/interface/SHCaloCellGeom.hh"
+#include "SHarper/SHNtupliser/interface/DetIdTools.hh"
 
 #include "TVector3.h"
 #include <vector>
@@ -33,7 +34,7 @@ public:
   const TVector3& cellPos(int detId)const{return getCell(detId).pos();}
   double cellEta(int detId)const{return getCell(detId).eta();}
   double cellPhi(int detId)const{return getCell(detId).phi();}
-  const SHCaloCellGeom& getCell(int detId)const;
+  inline const SHCaloCellGeom& getCell(int detId)const;
 
   const SHCaloCellGeom& getCellByIndx(int indx)const{return cellGeoms_[indx];}
   int nrCellsStored()const{return cellGeoms_.size();}
@@ -55,5 +56,19 @@ public:
   ClassDef(SHCaloGeom,1)
   
 };
+
+//this really needs to be here for inlining
+const SHCaloCellGeom& SHCaloGeom::getCell(int detId)const
+{
+  int indx=-2;
+   if(detCode_==ECAL) indx = DetIdTools::getHashEcal(detId);
+   else if(detCode_==HCAL) indx = DetIdTools::getHashHcal(detId);
+   if(indx>=0 && indx<(int)cellGeoms_.size())  return cellGeoms_[indx];
+   else {
+     std::cout <<"SHCaloGeom::getCell : Warning indx "<<indx<<" is invalid, detid "<<std::hex<<detId<<std::dec<<" detCode "<<detCode_<<std::endl;
+     return nullCell_;
+   }
+}
+
 
 #endif

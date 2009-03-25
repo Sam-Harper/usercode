@@ -22,7 +22,7 @@ cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}' | \
 outputFile=${dataset}_ntuples_${cmsswVersion}_v10.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
-outputPath=21X/v10b_noPreSel/$dataset/
+outputPath=21X/v10c_noPreSel/$dataset/
 #dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet"
 baseCfg="shNtupliserNoPreSel_base_cfg.py"
 
@@ -35,6 +35,7 @@ datasetCode=`echo $line | awk -F "&" '{print $6}'`
 
 if [[ "$live" == "ON" ]] ; then
 echo about to submit for real ./submitCrabJob.sh $datasetPath $nrEvents $nrJobs $outputFile $outputPath $datasetCode $weight $baseCfg $dbsUrl 
+sleep 5s
 ./submitCrabJob.sh $datasetPath $nrEvents $nrJobs $outputFile $outputPath $datasetCode $weight  $baseCfg $dbsUrl
 #sleep 30m
 else

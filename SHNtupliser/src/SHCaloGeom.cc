@@ -39,18 +39,18 @@ void SHCaloGeom::setCellPos(int detId,const TVector3& pos,int towerId,
 }
 
 
-//getEcalArrayIndx,getHcalArrayIndx automatically check that the det id is in correct det
-const SHCaloCellGeom& SHCaloGeom::getCell(int detId)const
-{
-  int indx=-2;
-  if(detCode_==ECAL) indx = DetIdTools::getHashEcal(detId);
-  else if(detCode_==HCAL) indx = DetIdTools::getHashHcal(detId);
-  if(indx>=0 && indx<(int)cellGeoms_.size())  return cellGeoms_[indx];
-  else {
-    std::cout <<"SHCaloGeom::getCell : Warning indx "<<indx<<" is invalid, detid "<<std::hex<<detId<<std::dec<<" detCode "<<detCode_<<std::endl;
-    return nullCell_;
-  }
-}
+// //getEcalArrayIndx,getHcalArrayIndx automatically check that the det id is in correct det
+// const SHCaloCellGeom& SHCaloGeom::getCell(int detId)const
+// {
+//   int indx=-2;
+//   if(detCode_==ECAL) indx = DetIdTools::getHashEcal(detId);
+//   else if(detCode_==HCAL) indx = DetIdTools::getHashHcal(detId);
+//   if(indx>=0 && indx<(int)cellGeoms_.size())  return cellGeoms_[indx];
+//   else {
+//     std::cout <<"SHCaloGeom::getCell : Warning indx "<<indx<<" is invalid, detid "<<std::hex<<detId<<std::dec<<" detCode "<<detCode_<<std::endl;
+//     return nullCell_;
+//   }
+// }
 
 const SHCaloCellGeom& SHCaloGeom::getClosestCell(double centreEta,double centrePhi)const
 {

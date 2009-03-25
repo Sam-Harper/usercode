@@ -13,6 +13,7 @@
 #include "TVector3.h"
 
 #include <iostream>
+#include <cmath>
 
 class SHCaloCellGeom {
 public:
@@ -39,7 +40,9 @@ private:
   CellEdges frontEdges_;
   CellEdges rearEdges_;
 
-
+  //transiant variables for speed
+  mutable float sinTheta_; //!
+  mutable int detIdParityCheck_; //! a duplicate of the det id field to ensure that root doesnt change the data under us (ie root doesnt use constructors so I have no way of knowing when root loads a new cell in this memory location and it wont change the transistant data members so by having this I can check for it)
 public:
   SHCaloCellGeom();
   SHCaloCellGeom(int detId,const TVector3& pos,int towerId);
@@ -53,11 +56,15 @@ public:
   const TVector3& pos()const{return pos_;}
   float eta()const{return eta_;}
   float phi()const{return phi_;}
-  float sinTheta()const{return pos().Pt()/pos().Mag();}
+  float sinTheta()const{checkAndSetSinTheta_();return sinTheta_;}
   int detId()const{return detId_;}
   int towerId()const{return towerId_;}
   const CellEdges& frontEdges()const{return frontEdges_;}
   const CellEdges& rearEdges()const{return rearEdges_;}
+
+private:
+  void checkAndSetSinTheta_()const{if(detIdParityCheck_!=detId_) {sinTheta_=pos().Pt()/pos().Mag();detIdParityCheck_=detId_;}}
+ 
 
   ClassDef(SHCaloCellGeom,3)
 

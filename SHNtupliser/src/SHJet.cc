@@ -15,7 +15,12 @@ SHJet::SHJet():
   emNrgyInEB_(0.),
   emNrgyInEE_(0.),
   emNrgyInHF_(0.),
-  jetNrgyScale_(1.)
+  jetNrgyScale_(1.),  
+  trkCountHighEffBTag_(-10.),
+  trkCountHighPureBTag_(-10.),
+  jetBProbBTag_(-1.),
+  jetProbBTag_(-1.),
+  partonFlavour_(0)
 {
 
 }
@@ -33,7 +38,12 @@ SHJet::SHJet(const SHJet& rhs):
   emNrgyInEB_(rhs.emNrgyInEB_),
   emNrgyInEE_(rhs.emNrgyInEE_),
   emNrgyInHF_(rhs.emNrgyInHF_),
-  jetNrgyScale_(rhs.jetNrgyScale_)
+  jetNrgyScale_(rhs.jetNrgyScale_),
+  trkCountHighEffBTag_(rhs.trkCountHighEffBTag_),
+  trkCountHighPureBTag_(rhs.trkCountHighPureBTag_),
+  jetBProbBTag_(rhs.jetBProbBTag_),
+  jetProbBTag_(rhs.jetBProbBTag_),
+  partonFlavour_(rhs.partonFlavour_)
 {
 
 }
@@ -53,7 +63,12 @@ SHJet& SHJet::operator=(const SHJet &rhs)
     emNrgyInEB_ = rhs.emNrgyInEB_;
     emNrgyInEE_ = rhs.emNrgyInEE_;
     emNrgyInHF_ = rhs.emNrgyInHF_;
-    jetNrgyScale_ = rhs.jetNrgyScale_;
+    jetNrgyScale_ = rhs.jetNrgyScale_; 
+    trkCountHighEffBTag_ = rhs.trkCountHighEffBTag_;
+    trkCountHighPureBTag_ = rhs.trkCountHighPureBTag_;
+    jetBProbBTag_ = rhs.jetBProbBTag_;
+    jetProbBTag_ = rhs.jetBProbBTag_;
+    partonFlavour_ = rhs.partonFlavour_;
   } 
   return *this;
 }

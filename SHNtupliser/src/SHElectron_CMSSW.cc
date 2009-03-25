@@ -20,7 +20,7 @@ rawNrgy_(ele.gsfEle().superCluster()->rawEnergy()),
 preShowerNrgy_(ele.gsfEle().superCluster()->preshowerEnergy()),
 nrgyErr_(ele.gsfEle().caloEnergyError()),
 posCal_(ele.gsfEle().caloPosition().X(),ele.gsfEle().caloPosition().Y(),ele.gsfEle().caloPosition().Z()),
-e5x5_(ele.e5x5()),
+e5x5_(ele.scE5x5()),
 eta_(ele.eta()),
 detEta_(ele.detEta()),
 //track quantities (momentum + positions)
@@ -59,8 +59,8 @@ isolHadDepth2_(ele.isolHadDepth2()),
 isolPtTrks_(ele.isolPtTrks()),
 isolNrTrks_(ele.isolNrTrks()),
 cutCode_(ele.cutCode()),
-e1x5Over5x5_(ele.e1x5Over5x5()),
-e2x5Over5x5_(ele.e2x5MaxOver5x5()),
+e1x5Over5x5_(ele.scE1x5Over5x5()),
+e2x5Over5x5_(ele.scE2x5MaxOver5x5()),
 mEvent_(NULL)
 {
  

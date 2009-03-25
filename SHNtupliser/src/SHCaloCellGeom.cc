@@ -10,9 +10,11 @@ SHCaloCellGeom::SHCaloCellGeom():
   detId_(0),
   towerId_(0),
   frontEdges_(-999.,-999.,-999.,-999.),
-  rearEdges_(-999.,-999.,-999.,-999.)
+  rearEdges_(-999.,-999.,-999.,-999.),
+  sinTheta_(999.),
+  detIdParityCheck_(0)
 {
-
+  checkAndSetSinTheta_();
 }
 
 SHCaloCellGeom::SHCaloCellGeom(int detId,const TVector3& pos,int towerId):
@@ -22,9 +24,11 @@ SHCaloCellGeom::SHCaloCellGeom(int detId,const TVector3& pos,int towerId):
   detId_(detId),  
   towerId_(towerId),
   frontEdges_(-999.,-999.,-999.,-999.),
-  rearEdges_(-999.,-999.,-999.,-999.)
+  rearEdges_(-999.,-999.,-999.,-999.),
+  sinTheta_(999.),
+  detIdParityCheck_(0)
 {
-
+  checkAndSetSinTheta_();
 
 }
 
@@ -36,9 +40,11 @@ SHCaloCellGeom::SHCaloCellGeom(int detId,const TVector3& pos,int towerId,
   detId_(detId),   
   towerId_(towerId),
   frontEdges_(front),
-  rearEdges_(rear)
+  rearEdges_(rear),
+  sinTheta_(999.),
+  detIdParityCheck_(0)
 {
-
+  checkAndSetSinTheta_();
 
 }
 
@@ -51,6 +57,7 @@ void SHCaloCellGeom::setCellGeom(int detId,const TVector3& pos,int towerId)
   towerId_=towerId;
   frontEdges_.clear(); //I want to ensure that this struct is set into a null state
   rearEdges_.clear();
+  checkAndSetSinTheta_();
 }
 
 void SHCaloCellGeom::setCellGeom(int detId,const TVector3& pos,int towerId,const CellEdges& front,const CellEdges& rear)
@@ -62,6 +69,7 @@ void SHCaloCellGeom::setCellGeom(int detId,const TVector3& pos,int towerId,const
   towerId_=towerId;
   frontEdges_=front;
   rearEdges_=rear;
+  checkAndSetSinTheta_();
 }
 
 SHCaloCellGeom::CellEdges::CellEdges():

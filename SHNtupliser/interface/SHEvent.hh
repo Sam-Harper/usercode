@@ -54,6 +54,7 @@ class SHEvent : public TObject {
   int datasetCode_;
   double weight_;
   SHMet metData_; //new for v9
+  double genEventPtHat_; 
 
   SHEvent(const SHEvent &rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent& rhs){return *this;}//disabling assignment
@@ -96,6 +97,7 @@ class SHEvent : public TObject {
   void setDatasetCode(int datasetCode){datasetCode_=datasetCode;}
   void setWeight(double weight){weight_=weight;}
   void setMet(const SHMet& met){metData_=met;}
+  void setGenEventPtHat(double ptHat){genEventPtHat_=ptHat;}
   void copyEventPara(const SHEvent& rhs);
   void clear();
 
@@ -132,6 +134,7 @@ class SHEvent : public TObject {
   SHMet& metData(){return metData_;}
   bool isMC()const{return isMC_;}
   const SHCaloHitContainer& getCaloHits()const{return caloHits_;}
+  double genEventPtHat(){return genEventPtHat_;}
 
   //first function gets the triggers passed for the event
   //second to functions get the triggers passed for a particlar object
@@ -153,7 +156,7 @@ class SHEvent : public TObject {
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
 
-  ClassDef(SHEvent,9) //5 is v3, 6 is v4
+  ClassDef(SHEvent,10) //5 is v3, 6 is v4
 
 };
   

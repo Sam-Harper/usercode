@@ -4,7 +4,7 @@
 #include "SHarper/SHNtupliser/interface/SHCaloHitContainer.hh"
 
 #include "TObject.h"
-
+#include "TVector3.h"
 
 #include <iostream>
 #include <vector>
@@ -53,10 +53,12 @@ class SHBasicCluster : public TObject {
   //float e4x4()const{return e4x4_;} 
   //float e5x5()const{return e5x5_;} 
   float totNrgy()const{return totNrgy_;}
+  float nrgy()const{return totNrgy_;}
   int nrCrys()const{return nrCrys_;}
   int eMaxId()const{return eMaxId_;}
   int e2ndId()const{return e2ndId_;}
-
+  
+  TVector3 pos()const{TVector3 thePos;thePos.SetPtEtaPhi(1.,eta_,phi_);return thePos;}
   int crysDetId(int crysNr)const{return hitDetIds_[crysNr];}
   int nrCrysStored()const{return hitDetIds_.size();}
 

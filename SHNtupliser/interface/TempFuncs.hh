@@ -3,13 +3,16 @@
 
 //I appreciate this is an unforunate name. This is a collection of TEMPLATE functions not TEMPORARY functions which I find usefull
 
+
 #include "TClonesArray.h"
 
 namespace TempFuncs {
 
   template<class T> void copyTClonesArray(TClonesArray& lhs,const TClonesArray& rhs);
  
-
+  template<class T,class Y,class CompType> struct PairComp : public std::binary_function<std::pair<T,Y>,std::pair<T,Y>,bool> {
+    bool operator()(const std::pair<T,Y>& lhs,const std::pair<T,Y>& rhs,const CompType& compObj = CompType()){return compObj(lhs.first,rhs.first);}
+  };
 }
 
 template<class T> void TempFuncs::copyTClonesArray(TClonesArray& lhs,const TClonesArray& rhs)
@@ -20,5 +23,6 @@ template<class T> void TempFuncs::copyTClonesArray(TClonesArray& lhs,const TClon
     new(lhs[i]) T(*obj);
   }
 }
+
 
 #endif

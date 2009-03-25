@@ -188,6 +188,8 @@ private:
   float isolNrTrks()const{return isolNrTrks_;}
  
   std::pair<int,float> isolTrk(double minDeltaR,double maxDeltaR,double lipCut,double ptCut)const;
+
+  int cutCode()const{return cutCode_;}
  
   int calPhiRoad()const;
 

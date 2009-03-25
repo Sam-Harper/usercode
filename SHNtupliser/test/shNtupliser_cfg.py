@@ -24,22 +24,7 @@ process.MessageLogger.cerr.INFO = cms.untracked.PSet(
     PATLayer0Summary = cms.untracked.PSet( limit = cms.untracked.int32(-1) )
 )
 
-#process.load("SHarper.HEEPAnalyzer.HEEPMessageLogger_cfi")
-#process.MessageLogger.cerr.threshold = 'INFO'
-#process.MessageLogger.categories.append('PATLayer0Summary')
-#process.MessageLogger.cerr.INFO = cms.untracked.PSet(
-#    default          = cms.untracked.PSet( limit = cms.untracked.int32(0)  ),
-#    PATLayer0Summary = cms.untracked.PSet( limit = cms.untracked.int32(-1) )
-#)
-#process.MessageLogger.suppressWarning = cms.untracked.vstring('HemisphereAlgo')
-#process.MessageLogger.FwkSummary = cms.untracked.PSet(
-#    reportEvery = cms.untracked.int32(500),
-#    limit = cms.untracked.int32(10000000)
-#)
-#process.MessageLogger.Report = cms.untracked.PSet(
-#    reportEvery = cms.untracked.int32(500),
-#    limit = cms.untracked.int32(10000000)
-#)
+
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
@@ -55,16 +40,20 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 #process.load("SHarper.HEEPAnalyzer.qcd_20_30_RelVal_212_cfi");
 #process.load("SHarper.SHNtupliser.relVal_QCD_Pt_80_120_218_cfi");
 
-process.load("RecoLocalTracker.SiPixelRecHits.SiPixelRecHits_cfi")
-process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitConverter_cfi")
-process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitMatcher_cfi")
-process.load("RecoLocalTracker.SiStripRecHitConverter.StripCPEfromTrackAngle_cfi")
-process.load("RecoLocalTracker.SiStripZeroSuppression.SiStripZeroSuppression_cfi")
-process.load("RecoLocalTracker.SiStripClusterizer.SiStripClusterizer_cfi")
-process.load("RecoLocalTracker.SiPixelClusterizer.SiPixelClusterizer_cfi")
-process.load("RecoLocalTracker.SiPixelRecHits.PixelCPEESProducers_cff")
-process.load("RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff")
+#process.load("RecoLocalTracker.SiPixelRecHits.SiPixelRecHits_cfi")
+#process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitConverter_cfi")
+#process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitMatcher_cfi")
+#process.load("RecoLocalTracker.SiStripRecHitConverter.StripCPEfromTrackAngle_cfi")
+#process.load("RecoLocalTracker.SiStripZeroSuppression.SiStripZeroSuppression_cfi")
+#process.load("RecoLocalTracker.SiStripClusterizer.SiStripClusterizer_cfi")
+#process.load("RecoLocalTracker.SiPixelClusterizer.SiPixelClusterizer_cfi")
+#process.load("RecoLocalTracker.SiPixelRecHits.PixelCPEESProducers_cff")
+#process.load("RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff")
 
+
+# this defines the input files
+process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('dummy'))
+process.PoolSource.fileNames = ['file:/scratch/sharper/cmsswDataFiles/zee_relVal_219.root']
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
@@ -72,7 +61,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 #process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronsNoCuts_cfi")
-process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronSequenceNoCuts_cff")
+#process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronSequenceNoCuts_cff")
 # input pat sequences
 #from PhysicsTools.PatAlgos.patLayer0_cff import *
 #from PhysicsTools.PatAlgos.patLayer1_cff import *
@@ -80,7 +69,7 @@ process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronSequenceNo
 process.load("SHarper.HEEPAnalyzer.HEEPPatConfig_cfi");
 
 # input heep analyzer sequence
-process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
+#process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 #process.shNtupliser.barrelRecHitTag = cms.InputTag("caloRecHits","EcalRecHitsEB")
 #process.shNtupliser.endcapRecHitTag = cms.InputTag("caloRecHits","EcalRecHitsEE")
@@ -89,11 +78,11 @@ process.shNtupliser.sampleWeight = .1
 #process.eleIsoDepositEcalFromHits.barrelEcalHits =  cms.InputTag("caloRecHits","EcalRecHitsEB")
 #process.eleIsoDepositEcalFromHits.endcapEcalHits =  cms.InputTag("caloRecHits","EcalRecHitsEE")
 #process.shNtupliser.hbheRecHitsTag =  cms.InputTag("caloRecHits")
-process.load("SHarper.SHNtupliser.relVal_Zee_220_full_cfi");
-process.PoolSource.fileNames = ['file:/scratch/sharper/cmsswDataFiles/zee_relVal_219.root']
+#process.load("SHarper.SHNtupliser.relVal_Zee_220_full_cfi");
+#process.PoolSource.fileNames = ['file:/scratch/sharper/cmsswDataFiles/zee_relVal_219.root']
 #process.PoolSource.fileNames = ['file:/media/usbdisk1/fastSimFiles/QCD_Pt_80_120_cfi_GEN_FASTSIM_IDEAL_0.root']
 
-process.shNtupliser.outputFilename="relVal_eleGunPt1000_220_fastSimV4.root"
+process.shNtupliser.outputFilename="relVal_Zee_219.root"
 #process.TFileService = cms.Service("TFileService",
 #                                   fileName = cms.string('output.root')
 #)
@@ -114,12 +103,12 @@ run22XonSummer08AODSIM(process)
 
 
 # define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
-process.p = cms.Path(process.siPixelRecHits*process.siStripMatchedRecHits*process.newSeedFromPairs*process.newSeedFromTriplets*process.newCombinedSeeds*
+process.p = cms.Path(#process.siPixelRecHits*process.siStripMatchedRecHits*process.newSeedFromPairs*process.newSeedFromTriplets*process.newCombinedSeeds*
                      #process.patLayer1*
 #                     process.eleIsoDepositEcalFromHitsFast*
 #                     process.eleIsoDepositEcalFromHits*
 #                      process.eleIsoDepositHcalFromHits*
-    process.pixelMatchGsfElectronSequenceNoCuts*
+    #process.pixelMatchGsfElectronSequenceNoCuts*
     #                 process.pixelMatchGsfElectronsNoCuts*
                      process.heepPATSequence*
                      process.shNtupliser)

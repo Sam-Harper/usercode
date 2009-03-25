@@ -33,7 +33,7 @@ public:
     int goWest(int nrSteps=1){return goEast(nrSteps*-1);}
     int getIdAtPos(int nrStepsEast,int nrStepsNorth)const;
     int curPos()const; //where we currently are
-    void look()const{std::cout <<"you are surrounded by crystals, in the distance, you see a shambling electron clawing its way out of the nearby chasim"<<std::endl;}
+    void look()const{std::cout <<"you are surrounded by crystals, in the distance, you see a shambling electron clawing its way out of the nearby chasm"<<std::endl;}
 
   private:
     void initPosCoords_();
@@ -50,6 +50,14 @@ private:
   static const int kICrFee_ = 7740;
   static const int nBegin_[kIXMax_];
   static const int nIntegral_[kIXMax_];
+
+  //my hashing function is a little slow
+  //this is a bandaid, a precomputed tables of all the hashes
+  //it keys of the detId - detector+subdetector code
+  //it wastes a little memory but gives fast results (1mb for hcal, 0.5mb for eb, 128k for ee, I think its well worth it)
+  static const std::vector<int> ebFastHashTable_;
+  static const std::vector<int> eeFastHashTable_;
+  static const std::vector<int> hcalFastHashTable_;
 
  public:
   static const int kDetOffset = 28;
@@ -100,6 +108,7 @@ private:
 
 
   static bool isValidEcalBarrelId(int iEta,int iPhi);
+  static bool isValidEcalBarrelId(int detId){return isEcalBarrel(detId) && isValidEcalBarrelId(iEtaBarrel(detId),iPhiBarrel(detId));}
   static bool positiveZBarrel(int detId){return detId&0x10000;}
   static int iEtaAbsBarrel(int detId){return (detId>>9) & 0x7F ;}
   static int iEtaBarrel(int detId){return positiveZBarrel(detId) ? iEtaAbsBarrel(detId) : -1*iEtaAbsBarrel(detId) ;}
@@ -119,6 +128,7 @@ private:
   static int makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth);
 
   static bool isValidEcalEndcapId(int crystal_ix,int crystal_iy,int iz);
+  static bool isValidEcalEndcapId(int detId){return isEcalEndcap(detId) && isValidEcalEndcapId(iXEndcap(detId),iYEndcap(detId),zEndcap(detId));}
   static int makeEcalEndcapId(int ix,int iy,int iz);
   static bool positiveZEndcap(int detId){return detId&0x4000;}
   static int zEndcap(int detId){return positiveZEndcap(detId) ? 1 : -1;}
@@ -127,19 +137,24 @@ private:
   static int normEndcapIXOrIY(int iXorIY);
   //this functions convert an ECAL detId into an array index
   //note barrel is first then endcap
-  static int getHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? getHashEcalBarrel(detId) : getHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}
-  static int getHashEcalEndcap(int detId) {
+  static int calHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? calHashEcalBarrel(detId) : calHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}
+  static int calHashEcalEndcap(int detId) {
     return iYEndcap(detId) - nBegin_[iXEndcap(detId)-1] + nIntegral_[iXEndcap(detId) -1 ] + (positiveZEndcap(detId) ? kICrFee_ : 0);
   }
-  static int getHashEcalBarrel(int detId){
+  static int calHashEcalBarrel(int detId){
     int etaBandNr =  kMaxIEtaBarrel + (positiveZBarrel(detId) ? iEtaAbsBarrel(detId)-1 : -iEtaAbsBarrel(detId)); // 0 - 189 starting at lowest eta (~-1.5) to highest
     return etaBandNr* kMaxIPhiBarrel + iPhiBarrel(detId)-1;
   }
-  static int getHashHcal(int detId);
+  static int calHashHcal(int detId);
 
+  static int getHashHcal(int detId){return hcalFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
+  static int getHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? getHashEcalBarrel(detId) : getHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}
+  static int getHashEcalBarrel(int detId){return ebFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
+  static int getHashEcalEndcap(int detId){return eeFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
 
   static void getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::vector<int>& ids);
   static bool isValidHcalId(int iEta,int iPhi,int depth); 
+  static bool isValidHcalId(int detId){return isHcal(detId)&& isValidHcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
   static bool isValidHcalBarrelId(int iEta,int iPhi,int depth); 
   static bool isValidHcalEndcapId(int iEta,int iPhi,int depth);
 
@@ -149,6 +164,14 @@ private:
   static float endcapEtaRingFloat(int ix,int iy);
   static void printHcalDetId(int detId);
 
+  
+
+private:
+  //yes I'm aware these functions pass 1MB vectors by value, they
+  //are only called once and its the only way I can see
+  static std::vector<int> makeEBFastHashTable_();
+  static std::vector<int> makeEEFastHashTable_();
+  static std::vector<int> makeHcalFastHashTable_();
  
 
 };

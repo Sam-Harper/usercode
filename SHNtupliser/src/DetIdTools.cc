@@ -96,6 +96,12 @@ int DetIdTools::EcalNavigator::getDetId_(int etaOrX,int phiOrY)const
 const int DetIdTools::nBegin_[kIXMax_] = { 41, 41, 41, 36, 36, 26, 26, 26, 21, 21, 21, 21, 21, 16, 16, 14, 14, 14, 14, 14, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9, 14, 14, 14, 14, 14, 16, 16, 21, 21, 21, 21, 21, 26, 26, 26, 36, 36, 41, 41, 41 };
 const int DetIdTools::nIntegral_[kIXMax_] = { 0, 20, 40, 60, 90, 120, 170, 220, 270, 330, 390, 450, 510, 570, 640, 710, 784, 858, 932, 1006, 1080, 1164, 1248, 1332, 1416, 1500, 1590, 1680, 1770, 1860, 1950, 2040, 2130, 2220, 2310, 2400, 2494, 2588, 2682, 2776, 2870, 2970, 3070, 3170, 3270, 3370, 3470, 3570, 3670, 3770, 3870, 3970, 4070, 4170, 4270, 4370, 4470, 4570, 4670, 4770, 4870, 4964, 5058, 5152, 5246, 5340, 5430, 5520, 5610, 5700, 5790, 5880, 5970, 6060, 6150, 6240, 6324, 6408, 6492, 6576, 6660, 6734, 6808, 6882, 6956, 7030, 7100, 7170, 7230, 7290, 7350, 7410, 7470, 7520, 7570, 7620, 7650, 7680, 7700, 7720 };
 
+const std::vector<int> DetIdTools::ebFastHashTable_(DetIdTools::makeEBFastHashTable_());
+const std::vector<int> DetIdTools::eeFastHashTable_(DetIdTools::makeEEFastHashTable_());
+const std::vector<int> DetIdTools::hcalFastHashTable_(DetIdTools::makeHcalFastHashTable_());
+
+
+
 DetIdTools::DetIdTools()
 {
 
@@ -163,11 +169,69 @@ void DetIdTools::printHcalDetId(int detId)
   std::cout <<"detId "<<std::hex<<detId<<std::dec<<" isHcal "<<isHcal(detId)<<" isBarrel "<<isBarrel(detId)<<" isEndcap "<<isEndcap(detId)<<" iEta "<<iEtaHcal(detId)<<" iPhi "<<iPhiHcal(detId)<<" depth "<<depthHcal(detId)<<std::endl;
 }
 
+
+// int DetIdTools::getHashHcal(int detId)
+// {
+//   //if(!DetIdTools::isHcal(detId)){
+//     //std::cout <<"DetIdTools::getHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
+//     // return -1;
+//     //}
+
+//   //removing the detector and sub detector info
+//   int index = detId & ~(kDetMask | kSubDetMask);
+//   //if(index<0 || index >= static_cast<int>(hcalFastHashTable_.size())){
+//     //std::cout <<"DetIdTools::getHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" gives index "<<index<<" which is not valid (max="<<hcalFastHashTable_.size()<<")"<<std::endl;
+//     // }
+//   return hcalFastHashTable_[index];
+// }
+
+
+// int DetIdTools::getHashEcal(int detId)
+// {
+//   if(DetIdTools::isEcalBarrel(detId)) return getHashEcalBarrel(detId);
+//   else if(DetIdTools::isEcalEndcap(detId)) return getHashEcalEndcap(detId)+  kNrEcalCellsBarrel;
+//   else{
+//     std::cout <<"DetIdTools::getHashEcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not ecal barrel or endcap"<<std::endl;
+//     return -1;
+//   }
+// }
+
+ 
+// int DetIdTools::getHashEcalBarrel(int detId)
+// {
+//   //if(!DetIdTools::isEcalBarrel(detId)){
+//     //std::cout <<"DetIdTools::getHashEcalBarrel: Warning det id "<<std::hex<<detId<<std::dec<<" is not ecal barrel"<<std::endl;
+//     //return -1;
+//     //}
+//   //removing the detector and sub detector info
+//   int index = detId & ~(kDetMask | kSubDetMask);
+//   //if(index<0 || index >= static_cast<int>(ebFastHashTable_.size())){
+//   // std::cout <<"DetIdTools::getHashEcalBarrel: Warning det id "<<std::hex<<detId<<std::dec<<" gives index "<<index<<" which is not valid (max="<<ebFastHashTable_.size()<<")"<<std::endl;
+//   //}
+
+//   return ebFastHashTable_[index];
+// }
+
+// int DetIdTools::getHashEcalEndcap(int detId)
+// {
+//   //if(!DetIdTools::isEcalEndcap(detId)){
+//   // std::cout <<"DetIdTools::getHashEcalEndcap: Warning det id "<<std::hex<<detId<<std::dec<<" is not ecal endcap"<<std::endl;
+//   // return -1;
+//   //}
+//   //removing the detector and sub detector info
+//   int index = detId & ~(kDetMask | kSubDetMask);
+//   //if(index<0 || index >= static_cast<int>(eeFastHashTable_.size())){
+//   // std::cout <<"DetIdTools::getHashEcalEndcap: Warning det id "<<std::hex<<detId<<std::dec<<" gives index "<<index<<" which is not valid (max="<<eeFastHashTable_.size()<<")"<<std::endl;
+//   //}
+
+//   return eeFastHashTable_[index];
+// }
+
 //ported from HcalDetId.hash_index in CMSSW
-int DetIdTools::getHashHcal(int detId)
+int DetIdTools::calHashHcal(int detId)
 {
   if(!DetIdTools::isHcal(detId)){
-    std::cout <<"DetIdTools::getHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
+    std::cout <<"DetIdTools::calHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
     return -1;
   }
   
@@ -433,4 +497,60 @@ int DetIdTools::normEndcapIXOrIY(int iXOrIY)
   if(iXOrIYNorm<=0) iXOrIYNorm--;
   return iXOrIYNorm;
 
+}
+
+
+std::vector<int> DetIdTools::makeEBFastHashTable_()
+{
+  //not all entries will be filled, the 0x20000 is because the z, eta,phi max bit is 0x10000 so we are guaranteed to have enough space
+  //note that later it might be better to work out the max value for more eff memory use
+  const int nrEntries = 0x20000;
+  std::vector<int> hashTable(nrEntries,-1);
+  for(int index=0;index<nrEntries;index++){
+    const int detId = index+ kEcalCode + kBarrelCode;
+    if(isValidEcalBarrelId(detId)){ //its valid get the hash
+      hashTable[index]=calHashEcalBarrel(detId);
+    }
+  }
+  return hashTable;
+}
+
+std::vector<int> DetIdTools::makeEEFastHashTable_()
+{
+  //not all entries will be filled, the 0x8000 is because the z, eta,phi max bit is 0x4000 so we are guaranteed to have enough space
+  //note that later it might be better to work out the max value for more eff memory use
+  const int nrEntries = 0x8000;
+  std::vector<int> hashTable(nrEntries,-1);
+  for(int index=0;index<nrEntries;index++){
+    const int detId = index+ kEcalCode + kEndcapCode;
+    if(isValidEcalEndcapId(detId)){ //its valid get the hash
+      hashTable[index]=calHashEcalEndcap(detId);
+    }
+  }
+  return hashTable;
+}
+
+std::vector<int> DetIdTools::makeHcalFastHashTable_()
+{
+  //not all entries will be filled, the 0x40000 is because the z, eta,phi depth max bit is 0x20000 so we are guaranteed to have enough space
+  //note that later it might be better to work out the max value for more eff memory use
+  const int nrEntries = 0x40000;
+  std::vector<int> hashTable(nrEntries,-1);
+  for(int index=0;index<nrEntries;index++){
+    //right this is complicated as we dont know if its the barrel or endcap
+    //but we need to know this to make the hcal det id
+    //so we check if either is valid
+    int depth =depthHcal(index);
+    int iEta =iEtaHcal(index);
+    int iPhi =iPhiHcal(index);
+    
+    if(isValidHcalBarrelId(iEta,iPhi,depth)){
+      const int detId = index+ kHcalCode + kBarrelCode;
+      hashTable[index]=calHashHcal(detId);
+    }else if(isValidHcalEndcapId(iEta,iPhi,depth)){
+      const int detId = index+ kHcalCode + kEndcapCode;
+      hashTable[index]=calHashHcal(detId);
+    }
+  }
+  return hashTable;
 }

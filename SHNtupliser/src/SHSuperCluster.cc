@@ -40,7 +40,20 @@ const SHBasicCluster* SHSuperCluster::getClus(int clusNr)const
 }
 
 
+const SHBasicCluster* SHSuperCluster::seedClus()const
+{
+  double maxNrgy=0.;
+  const SHBasicCluster* seedClus = NULL;
+  for(int clusNr=0;clusNr<nrClus();clusNr++){
+    const SHBasicCluster* clus = getClus(clusNr);
+    if(clus->nrgy()>maxNrgy){
+      maxNrgy = clus->nrgy();
+      seedClus = clus;
+    }
+  }
+  return seedClus;
 
+}
 
 
 
