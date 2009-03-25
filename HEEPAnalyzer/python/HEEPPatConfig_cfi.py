@@ -29,6 +29,9 @@ patElectronIds.associations = cms.VInputTag() #we handle our own ID using heep::
 allLayer1Electrons.addElectronID = cms.bool(False) #we handle our own ID using heep::EleSelector
 allLayer1Electrons.electronIDSources = cms.PSet() #we handle our own ID using heep::EleSelector
 
+#basically we try and stop PAT screwing around with our Jets
+allLayer0Jets.removeOverlaps = cms.PSet()
+allLayer0Jets.saveAll = 'yes'
 
 #adding in heep isolations to the PAT electron
 #this bit is the iso deposits
