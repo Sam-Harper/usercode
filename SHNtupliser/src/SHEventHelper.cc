@@ -47,6 +47,7 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
   shEvent.setIsMC(isMC_);
   shEvent.setDatasetCode(datasetCode_);
   shEvent.setWeight(eventWeight_);
+  shEvent.setGenEventPtHat(heepEvent.genEventPtHat());
 }
 
 
