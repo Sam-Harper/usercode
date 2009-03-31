@@ -54,18 +54,12 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string('output.root')
 )
 
-#process.load("RecoEgamma.EgammaElectronProducers.pixelMatchGsfElectronsNoCuts_cfi")
-
-#run the heep analyzer
-
-#
 
 #very very important if you want to run on summer08 samples (it drops particle flow so unless you want to use PF, then always run this)
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run22XonSummer08AODSIM
 run22XonSummer08AODSIM(process)
 
-process.p = cms.Path(#process.pixelMatchGsfElectronsNoCuts*
-                    process.heepPATSequence*
-                    process.heepAnalyzer)
+process.p = cms.Path(process.heepPATSequence* #runs PAT with HEEP settings
+                     process.heepAnalyzer) #runs heep analyzer
 
 
