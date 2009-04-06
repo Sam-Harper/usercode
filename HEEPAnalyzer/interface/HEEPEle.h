@@ -31,6 +31,7 @@
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
 
  
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
@@ -63,7 +64,8 @@ namespace heep {
   private:
     const reco::GsfElectron* gsfEle_; //pointers to the underlying electron (we do not own this)
                                       //remember that a pat::Electron inherits from a GsfElectron...
- 
+    const pat::Electron* patEle_; //the electron as a pat electron (not that the address is same as gsfEle_, we could have just done some nasty casting but its better this way). Note that if we do not orginally have a pat electron, it is NULL
+
     ClusShapeData clusShapeData_;
     IsolData isolData_;
     
@@ -77,8 +79,14 @@ namespace heep {
     
   public:
     
+    //this uses dynamic_casting to see if we really have a pat electron or not as well, patEle_ is null if its not
     Ele(const reco::GsfElectron& ele,const ClusShapeData& shapeData,const IsolData& isolData):
-      gsfEle_(&ele),clusShapeData_(shapeData),isolData_(isolData),
+      gsfEle_(&ele),patEle_(dynamic_cast<const pat::Electron*>(&ele)),clusShapeData_(shapeData),isolData_(isolData),
+      cutCode_(heep::CutCodes::INVALID){}
+  
+
+    Ele(const pat::Electron& ele,const ClusShapeData& shapeData,const IsolData& isolData):
+      gsfEle_(&ele),patEle_(&ele),clusShapeData_(shapeData),isolData_(isolData),
       cutCode_(heep::CutCodes::INVALID){}
     ~Ele(){}
     
@@ -87,7 +95,9 @@ namespace heep {
     void setTrigBits(TrigCodes::TrigBitSet bits){trigBits_=bits;}
 
     const reco::GsfElectron& gsfEle()const{return *gsfEle_;}
+    const pat::Electron& patEle()const{return *patEle_;} //this can be NULL, damn it, I have 3 awkward choices here, none are good
     const reco::SuperCluster& superCluster()const{return *(gsfEle_->superCluster());}
+    bool isPatEle()const{return patEle_!=NULL;}
     //kinematic and geometric methods
     float et()const{return gsfEle_->et();}
     float scEt()const{return gsfEle_->superCluster()->position().rho()/gsfEle_->superCluster()->position().r()*caloEnergy();}
