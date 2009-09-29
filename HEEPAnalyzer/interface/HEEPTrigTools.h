@@ -5,7 +5,7 @@
 
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/Common/interface/Handle.h"
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPTrigCodes.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"

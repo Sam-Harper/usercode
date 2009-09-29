@@ -20,7 +20,7 @@ heep::ComCodes heep::CutCodes::makeCodeMap_()
   codes.setCode("isolEmHadDepth1",ISOLEMHADDEPTH1);
   codes.setCode("isolHadDepth2",ISOLHADDEPTH2);
   codes.setCode("isolPtTrks",ISOLPTTRKS);
-  codes.setCode("isolNrTrks",ISOLNRTRKS);
+  codes.setCode("ecalDriven",ECALDRIVEN);
   codes.setCode("invalid",INVALID);
   codes.sort();
   return codes;

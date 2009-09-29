@@ -12,7 +12,8 @@
 <use name=DataFormats/PatCandidates> 
 <use name=Geometry/CaloGeometry>
 <use name=Geometry/CaloTopology>
-
+<use name=DataFormats/L1GlobalTrigger>
+<use name=CondFormats/L1TObjects>
 <export> 
   <lib name=SHarperHEEPAnalyzer> 
   <use name=root>

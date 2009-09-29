@@ -15,8 +15,7 @@ namespace edm{
 namespace heep {
   struct EleCutValues  {
   public:
-    int cutMask;  
-    int validEleTypes;
+    int cutMask;  //the cuts which we wish to check  
     double minEt;
     double minEta;
     double maxEta;
@@ -35,9 +34,11 @@ namespace heep {
     double isolPtTrksConstTerm;
     double isolPtTrksGradTerm;
     double isolPtTrksGradStart;
-    int isolNrTrksConstTerm;
+  
     
+    EleCutValues();
     explicit EleCutValues(const edm::ParameterSet& iConfig);
+    EleCutValues& operator=(const edm::ParameterSet& iConfig);
 
   };
 }

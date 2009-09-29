@@ -5,10 +5,42 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleTypeCodes.h"
 
+heep::EleCutValues::EleCutValues():
+  cutMask(0x0),
+  minEt(0),
+  minEta(0),
+  maxEta(0),
+  //id variables
+  maxDEtaIn(0),
+  maxDPhiIn(0),
+  maxHadem(0),
+  maxSigmaIEtaIEta(0),
+  minE2x5Over5x5(0),
+  minE1x5Over5x5(0),
+  //em+had D1 calo isolation
+  isolEmHadDepth1ConstTerm(0),
+  isolEmHadDepth1GradTerm(0),
+  isolEmHadDepth1GradStart(0),
+  //had D1 isolation
+  isolHadDepth2ConstTerm(0),
+  isolHadDepth2GradTerm(0),
+  isolHadDepth2GradStart(0),
+  //track pt isolation
+  isolPtTrksConstTerm(0),
+  isolPtTrksGradTerm(0),
+  isolPtTrksGradStart(0)
+{
+
+}
+
 heep::EleCutValues::EleCutValues(const edm::ParameterSet& iConfig)
 {
+  *this=iConfig;
+}
+
+heep::EleCutValues& heep::EleCutValues::operator=(const edm::ParameterSet& iConfig)
+{
   cutMask = CutCodes::getCode(iConfig.getParameter<std::string>("cuts"));
-  validEleTypes = EleTypeCodes::getCode(iConfig.getParameter<std::string>("validEleTypes"));
   minEt = iConfig.getParameter<double>("minEt");
   minEta = iConfig.getParameter<double>("minEta");
   maxEta = iConfig.getParameter<double>("maxEta");
@@ -32,6 +64,6 @@ heep::EleCutValues::EleCutValues(const edm::ParameterSet& iConfig)
   isolPtTrksGradTerm = iConfig.getParameter<double>("isolPtTrksGradTerm");
   isolPtTrksGradStart = iConfig.getParameter<double>("isolPtTrksGradStart");
   
-  isolNrTrksConstTerm = iConfig.getParameter<int>("isolNrTrksConstTerm");
-
+ 
+  return *this;
 }

@@ -31,10 +31,14 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   hcalRecHitsTag_ = conf.getParameter<edm::InputTag>("hbheRecHitsTag");
   superClusterEBTag_ =conf.getParameter<edm::InputTag>("superClusterEBTag");
   superClusterEETag_ =conf.getParameter<edm::InputTag>("superClusterEETag");
+  gsfEleTag_ = conf.getParameter<edm::InputTag>("gsfEleTag");
   ctfTrackTag_ = conf.getParameter<edm::InputTag>("ctfTrackTag");
   genParticleTag_ = conf.getParameter<edm::InputTag>("genParticleTag");
   trigEventTag_ = conf.getParameter<edm::InputTag>("trigEventTag");
-  genEventPtHatTag_ = conf.getParameter<edm::InputTag>("genEventPtHatTag");
+  genEventInfoTag_ = conf.getParameter<edm::InputTag>("genEventInfoTag");
+  l1RecordTag_ = conf.getParameter<edm::InputTag>("l1RecordTag");
+  l1EmNonIsoTag_ = conf.getParameter<edm::InputTag>("l1EmNonIsoTag");
+  l1EmIsoTag_ = conf.getParameter<edm::InputTag>("l1EmIsoTag");
 
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -42,19 +46,22 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   maxPtRelDiffTrigMatch_ = conf.getParameter<double>("maxPtRelDiffTrigMatch");
   hltFiltersToCheck_ = conf.getParameter<std::vector<std::string> >("hltFiltersToCheck");
   heep::TrigCodes::setCodes(hltFiltersToCheck_); //this assigns a unique bit to each trigger name, without this no trigger codes are defined. If you recieve a trigger not found error, its because it wasnt in the vector passed to this function
+
+  onlyAddEcalDriven_ = conf.getParameter<bool>("onlyAddEcalDriven");
+  heepEleSource_ = conf.getParameter<int>("heepEleSource");
 }
 
 void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const
 {
-  setHandles(edmEvent,setup,heepEvent.handles());
-  fillHEEPElesFromPat(heepEvent.handles(),heepEvent.heepElectrons());
-  heepEvent.setEvent(edmEvent);
+  setHandles(edmEvent,setup,heepEvent.handles()); 
+  if(heepEleSource_==0) fillHEEPElesFromGsfEles(heepEvent.handles(),heepEvent.heepElectrons());
+  else if(heepEleSource_==1) fillHEEPElesFromPat(heepEvent.handles(),heepEvent.heepElectrons());
+  heepEvent.setEvent(edmEvent); 
 }
 
 
 void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles)const
 { 
-  //yay, now in 2_1 we dont have to program by exception
   event.getByLabel(muoLabel_,handles.muon);
   event.getByLabel(jetLabel_,handles.jet);
   event.getByLabel(eleLabel_,handles.electron);
@@ -66,16 +73,20 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(ecalReducedRecHitsEBTag_,handles.ebReducedRecHits);
   event.getByLabel(ecalReducedRecHitsEETag_,handles.eeReducedRecHits);
   event.getByLabel(hcalRecHitsTag_,handles.hbheRecHits);
+  event.getByLabel(gsfEleTag_,handles.gsfEle);
   event.getByLabel(superClusterEBTag_,handles.superClusEB);
   event.getByLabel(superClusterEETag_,handles.superClusEE); 
   event.getByLabel(ctfTrackTag_,handles.ctfTrack);
   event.getByLabel(genParticleTag_,handles.genParticle);
   event.getByLabel(trigEventTag_,handles.trigEvent);
-  event.getByLabel(genEventPtHatTag_,handles.genEventPtHat);
-  
+  event.getByLabel(genEventInfoTag_,handles.genEventInfo);
+  event.getByLabel(l1RecordTag_,handles.l1Record);
+  event.getByLabel(l1EmNonIsoTag_,handles.l1EmNonIso);
+  event.getByLabel(l1EmIsoTag_,handles.l1EmIso);
+ 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);
- 
+  //setup.get<L1GtTriggerMenuRcd>().get(handles.l1Menu);
 }
 
 //fills the heepEles vector using pat electrons as starting point
@@ -83,88 +94,37 @@ void heep::EventHelper::fillHEEPElesFromPat(const heep::EvtHandles& handles,std:
 {
   heepEles.clear();
   const edm::View<pat::Electron>& eles = *handles.electron;
-  for(edm::View<pat::Electron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){
-    addHEEPEle(*eleIt,handles,heepEles);
+  for(edm::View<pat::Electron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
+    if(!onlyAddEcalDriven_ || eleIt->isEcalDriven()){
+      addHEEPEle_(*eleIt,handles,heepEles);
+    }
   }
   //the electrons are now filled, lets add trigger info
   heep::trigtools::setHLTFiltersObjPasses(heepEles,hltFiltersToCheck_,handles.trigEvent,hltProcName_,
-					  maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
+  					  maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
 }
 
-//this converts the pat::Electron into a heep::Electron
-void heep::EventHelper::addHEEPEle(const pat::Electron& patEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
+//fills the heepEles vector using GsfElectrons as starting point
+void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
 {
-  heep::Ele::IsolData isolData;
-  fillIsolData(patEle,isolData);
-  heep::Ele::ClusShapeData clusShapeData;
-  fillClusShapeData(patEle,clusShapeData); 
-  heepEles.push_back(heep::Ele(patEle,clusShapeData,isolData));
-  
+  heepEles.clear();
+  const std::vector<reco::GsfElectron>& eles = *handles.gsfEle;
+  for(std::vector<reco::GsfElectron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
+    if(!onlyAddEcalDriven_ || eleIt->isEcalDriven()){
+      addHEEPEle_(*eleIt,handles,heepEles);
+    }
+  }
+  //the electrons are now filled, lets add trigger info
+  heep::trigtools::setHLTFiltersObjPasses(heepEles,hltFiltersToCheck_,handles.trigEvent,hltProcName_,
+  					  maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
+}
+
+//this converts the pat::Electron / reco::GsfElectron into a heep::Electron
+void heep::EventHelper::addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
+{
+  heepEles.push_back(heep::Ele(gsfEle));
   //now we would like to set the cut results
   heep::Ele& ele =  heepEles.back();
   ele.setCutCode(cuts_.getCutCode(ele)); 
-
-}
-
-void heep::EventHelper::fillIsolData(const pat::Electron &patEle,heep::Ele::IsolData& isolData)const
-{ 
-  isolData.em = patEle.ecalIso();
-  isolData.hadDepth1 = patEle.userIso(0);
-  isolData.hadDepth2 = patEle.userIso(1);
-  isolData.ptTrks = patEle.trackIso(); 
-  isolData.nrTrks=999; //not defined
-}
-
-//fills it directly from the PAT electron
-void heep::EventHelper::fillClusShapeData(const pat::Electron &patEle,heep::Ele::ClusShapeData& clusShapeData)const
-{
-  clusShapeData.sigmaEtaEta=patEle.scSigmaEtaEta();
-  clusShapeData.sigmaIEtaIEta=patEle.scSigmaIEtaIEta();
-  clusShapeData.e2x5MaxOver5x5=patEle.scE2x5Max()/patEle.scE5x5();
-  clusShapeData.e1x5Over5x5=patEle.scE1x5()/patEle.scE5x5();
-  clusShapeData.e5x5=patEle.scE5x5();
-}
-
-//recalculates cluster shape variables from scratch
-void heep::EventHelper::fillClusShapeData(const reco::BasicCluster& seedClus,const heep::EvtHandles& handles,heep::Ele::ClusShapeData& clusShapeData)const
-{
-  clusShapeData.sigmaEtaEta=999.;
-  clusShapeData.sigmaIEtaIEta=999.;
-  clusShapeData.e2x5MaxOver5x5=-1.; 
-  clusShapeData.e1x5Over5x5=-1.;
-  clusShapeData.e5x5=-999.;
-  
-  const DetId firstDetId = seedClus.getHitsByDetId()[0]; //note this  not actually be the seed hit but it doesnt matter because all hits will be in the barrel OR endcap (it is also incredably inefficient as it getHitsByDetId passes the vector by value not reference)
-
-  const CaloGeometry* caloGeom = handles.caloGeom.product();
-  const CaloTopology* caloTopology = handles.caloTopology.product();
-  const EcalRecHitCollection* ebRecHits = handles.ebReducedRecHits.product();
-  const EcalRecHitCollection* eeRecHits = handles.eeReducedRecHits.product();
-
-  if(firstDetId.subdetId()==EcalBarrel){
-    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,ebRecHits,caloTopology,caloGeom);
-    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,ebRecHits,caloTopology);
-    clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
-    clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
-    float e5x5 =  EcalClusterTools::e5x5(seedClus,ebRecHits,caloTopology);
-    clusShapeData.e5x5=e5x5;
-    if(e5x5!=0.) {
-      clusShapeData.e2x5MaxOver5x5 = EcalClusterTools::e2x5Max(seedClus,ebRecHits,caloTopology)/e5x5;
-      clusShapeData.e1x5Over5x5 = EcalClusterTools::e1x5(seedClus,ebRecHits,caloTopology)/e5x5; //from V00-05-19 of RecoEcal/EgammaCoreTools e1x5 now gives e1x5
-    }
-  }else if(firstDetId.subdetId()==EcalEndcap){ 
-
- 
-    std::vector<float> stdCov = EcalClusterTools::covariances(seedClus,eeRecHits,caloTopology,caloGeom); 
-    std::vector<float> crysCov = EcalClusterTools::localCovariances(seedClus,eeRecHits,caloTopology);
-    clusShapeData.sigmaEtaEta = sqrt(stdCov[0]);
-    clusShapeData.sigmaIEtaIEta =  sqrt(crysCov[0]); 
-    float e5x5 =  EcalClusterTools::e5x5(seedClus,eeRecHits,caloTopology);
-    clusShapeData.e5x5=e5x5;
-    if(e5x5!=0.) {
-      clusShapeData.e2x5MaxOver5x5 = EcalClusterTools::e2x5Max(seedClus,eeRecHits,caloTopology)/e5x5;
-      clusShapeData.e1x5Over5x5 = EcalClusterTools::e1x5(seedClus,eeRecHits,caloTopology)/e5x5; //from V00-05-19 of RecoEcal/EgammaCoreTools e1x5 now gives e1x5
-    }
-  }
 }
 

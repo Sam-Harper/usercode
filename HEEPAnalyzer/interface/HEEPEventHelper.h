@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace reco{
-  class BasicCluster;
+  class CaloCluster;
 }
 
 namespace pat{
@@ -45,12 +45,17 @@ namespace heep {
     edm::InputTag ecalReducedRecHitsEBTag_;
     edm::InputTag ecalReducedRecHitsEETag_;
     edm::InputTag hcalRecHitsTag_;
+    edm::InputTag gsfEleTag_;
     edm::InputTag superClusterEBTag_;
     edm::InputTag superClusterEETag_; 
     edm::InputTag ctfTrackTag_;
     edm::InputTag genParticleTag_;
     edm::InputTag trigEventTag_;  
-    edm::InputTag genEventPtHatTag_;
+    edm::InputTag genEventInfoTag_;
+    edm::InputTag l1RecordTag_;
+    edm::InputTag l1EmNonIsoTag_;
+    edm::InputTag l1EmIsoTag_;
+
     //trigger matching parameters
     std::string hltProcName_;
     double maxDRTrigMatch_;
@@ -59,6 +64,10 @@ namespace heep {
     //the selection object we need
     heep::EleSelector cuts_;
     
+    //if true we only promote ecal driven electrons to heep electron status
+    bool onlyAddEcalDriven_;
+    int heepEleSource_; // 0=fill from GsfElectrons, 1 fill from pat::Electrons
+
   public:
     EventHelper(){}
     ~EventHelper(){}
@@ -74,11 +83,11 @@ namespace heep {
     //the remaining functions are all called by makeHeepEvent 
     void setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles)const;
     void fillHEEPElesFromPat(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const; 
-    void addHEEPEle(const pat::Electron& patEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const;
-    void fillIsolData(const pat::Electron &patEle,heep::Ele::IsolData& isolData)const;
-    void fillClusShapeData(const pat::Electron &patEle,heep::Ele::ClusShapeData& isolData)const;
-    void fillClusShapeData(const reco::BasicCluster& seedClus,const heep::EvtHandles& handles,heep::Ele::ClusShapeData& clusShapeData)const; //legacy function from before the time pat had cluster shape variables
-
+    void fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const;
+    
+  private:
+    void addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const;
+   
   };
 }
 

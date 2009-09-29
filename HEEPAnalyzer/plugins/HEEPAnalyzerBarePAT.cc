@@ -43,9 +43,11 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
       const pat::Electron& ele2 = eles[ele2Nr];
       int ele1CutCode = cuts_.getCutCode(ele1);
       int ele2CutCode = cuts_.getCutCode(ele2);
-      //std::cout <<"ele "<<ele1Nr<<" cutcode "<<std::hex<<ele1.cutCode()<<std::dec<<" ele "<<ele2Nr<<" cut code "<<std::hex<<ele2.cutCode()<<std::dec<<std::endl;
-      if(ele1CutCode==0x0 && ele2CutCode==0x0 && ele1.classification()+ele2.classification()<200){ //EB-EB, EE-EE
-	float mass = (ele1.p4()+ele2.p4()).mag();
+    
+      if(ele1CutCode==0x0 && ele2CutCode==0x0 && !(ele1.isEE() && ele2.isEE())){ //EB-EB, EE-EE
+	math::XYZTLorentzVector ele1P4 = ele1.p4()*ele1.caloEnergy()/ele1.energy();
+	math::XYZTLorentzVector ele2P4 = ele2.p4()*ele2.caloEnergy()/ele2.energy();	
+	float mass = (ele1P4+ele2P4).mag();
 	massHist_->Fill(mass);
       }
     }

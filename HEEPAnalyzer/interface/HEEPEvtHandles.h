@@ -28,6 +28,15 @@
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 
+#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
+#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
+
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetup.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 namespace heep {
   struct EvtHandles { 
@@ -47,13 +56,17 @@ namespace heep {
     edm::Handle<edm::View<pat::Tau> > tau;
 
     edm::Handle<reco::SuperClusterCollection> superClusEB;
-    edm::Handle<reco::SuperClusterCollection> superClusEE; 
+    edm::Handle<reco::SuperClusterCollection> superClusEE;  
+    edm::Handle<reco::GsfElectronCollection> gsfEle; 
     edm::Handle<reco::TrackCollection> ctfTrack;
     edm::Handle<reco::GenParticleCollection> genParticle;
     edm::Handle<trigger::TriggerEvent> trigEvent;
     edm::Handle<trigger::TriggerObjectCollection> trigObjColl;
-    edm::Handle<double> genEventPtHat;
-    
+    edm::Handle<GenEventInfoProduct> genEventInfo;
+    edm::Handle<L1GlobalTriggerReadoutRecord> l1Record;
+    edm::Handle<l1extra::L1EmParticleCollection> l1EmNonIso;
+    edm::Handle<l1extra::L1EmParticleCollection> l1EmIso;
+    edm::ESHandle<L1GtTriggerMenu> l1Menu;
   };
 }
 

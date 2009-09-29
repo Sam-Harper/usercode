@@ -52,6 +52,7 @@ namespace heep{
     const edm::View<pat::Tau>& taus()const{return *handles_.tau;}
     const std::vector<reco::SuperCluster>& superClustersEB()const{return *handles_.superClusEB;}   
     const std::vector<reco::SuperCluster>& superClustersEE()const{return *handles_.superClusEE;}
+    const std::vector<reco::GsfElectron>& gsfEle()const{return *handles_.gsfEle;}
     const EcalRecHitCollection* ebHitsFull()const{return &(*handles_.ebRecHits);}
     const EcalRecHitCollection* eeHitsFull()const{return &(*handles_.eeRecHits);}
     const HBHERecHitCollection* hbheHits()const{return &(*handles_.hbheRecHits);}
@@ -64,9 +65,12 @@ namespace heep{
     std::vector<heep::Ele>& heepElectrons(){return heepEles_;}
     const std::vector<heep::Ele>& heepElectrons()const{return heepEles_;}
     const trigger::TriggerEvent & triggerEvent()const{return *handles_.trigEvent;}
-    double genEventPtHat()const{return handles_.genEventPtHat.isValid() ? *handles_.genEventPtHat: -1.;}
+    double genEventPtHat()const{return handles_.genEventInfo.isValid() ? handles_.genEventInfo->qScale(): -1.;}
+    const std::vector<bool> l1Decision()const{return handles_.l1Record->decisionWord();} //as decisionWord returns by value so we do to
+    const std::vector<l1extra::L1EmParticle>& l1EmNonIso()const{return *handles_.l1EmNonIso;}
+    const std::vector<l1extra::L1EmParticle>& l1EmIso()const{return *handles_.l1EmIso;}
 
-    //our one set method
+      //our one set method
     void setEvent(const edm::Event& event){edmEvent_ = &event;}
     
   };
