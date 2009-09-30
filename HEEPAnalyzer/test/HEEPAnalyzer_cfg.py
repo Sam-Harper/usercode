@@ -16,13 +16,6 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
     reportEvery = cms.untracked.int32(500),
     limit = cms.untracked.int32(10000000)
 )
-#process.MessageLogger.suppressWarning = cms.untracked.vstring("selectedLayer1Hemispheres")
-#process.MessageLogger.cerr.threshold = 'INFO'
-#process.MessageLogger.categories.append('PATLayer0Summary')
-#process.MessageLogger.cerr.INFO = cms.untracked.PSet(
-#    default          = cms.untracked.PSet( limit = cms.untracked.int32(100)  ),
-#    PATLayer0Summary = cms.untracked.PSet( limit = cms.untracked.int32(-1) )
-#)
 
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
@@ -34,12 +27,13 @@ process.GlobalTag.globaltag = cms.string('MC_31X_V3::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # this defines the input files
-process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('dummy'))
-process.PoolSource.fileNames = ['file:/media/usbdisk1/zee_relVal_312_F0303A91-9278-DE11-AADC-001D09F25456.root']
+#process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('dummy'))
+process.load("SHarper.HEEPAnalyzer.RelValZee_312_cfi")
+#process.PoolSource.fileNames = ['file:/media/usbdisk1/zee_relVal_312_F0303A91-9278-DE11-AADC-001D09F25456.root']
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 #no configuration is necessary for us at the moment
@@ -48,7 +42,7 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff");
 process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string('output.root')
+                                   fileName = cms.string('zee_output.root')
 )
 
 

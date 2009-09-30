@@ -42,7 +42,7 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
  
   //do what ever you want
   //lets get the heep electrons and count the number that pass / fail cuts
-  const std::vector<heep::Ele>& eles = heepEvt_.heepElectrons();
+  const std::vector<heep::Ele>& eles = heepEvt_.heepEles();
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     if(eles[eleNr].cutCode()==0x0) nrPass_++;
     else nrFail_++;

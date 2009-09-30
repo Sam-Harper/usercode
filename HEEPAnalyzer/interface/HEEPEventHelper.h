@@ -61,6 +61,7 @@ namespace heep {
     double maxDRTrigMatch_;
     double maxPtRelDiffTrigMatch_;
     std::vector<std::string> hltFiltersToCheck_;
+    std::vector<std::pair<std::string,int> > hltFiltersToCheckWithNrCands_;
     //the selection object we need
     heep::EleSelector cuts_;
     

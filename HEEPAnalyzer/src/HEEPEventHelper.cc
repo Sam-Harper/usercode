@@ -44,7 +44,14 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
   maxDRTrigMatch_ = conf.getParameter<double>("maxDRTrigMatch");
   maxPtRelDiffTrigMatch_ = conf.getParameter<double>("maxPtRelDiffTrigMatch");
-  hltFiltersToCheck_ = conf.getParameter<std::vector<std::string> >("hltFiltersToCheck");
+ 
+  hltFiltersToCheck_ =conf.getParameter<std::vector<std::string> >("hltFiltersToCheck");
+  //now get the trigger names, however we also need the number of objects each filter requires, which we read from the provenace
+  hltFiltersToCheckWithNrCands_.clear();
+  for(size_t filterNr=0;filterNr<hltFiltersToCheck_.size();filterNr++){
+    const std::string& filterName = hltFiltersToCheck_[filterNr];
+    hltFiltersToCheckWithNrCands_.push_back(std::make_pair(filterName,heep::trigtools::getMinNrObjsRequiredByFilter(filterName)));
+  }
   heep::TrigCodes::setCodes(hltFiltersToCheck_); //this assigns a unique bit to each trigger name, without this no trigger codes are defined. If you recieve a trigger not found error, its because it wasnt in the vector passed to this function
 
   onlyAddEcalDriven_ = conf.getParameter<bool>("onlyAddEcalDriven");
@@ -54,9 +61,11 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
 void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const
 {
   setHandles(edmEvent,setup,heepEvent.handles()); 
-  if(heepEleSource_==0) fillHEEPElesFromGsfEles(heepEvent.handles(),heepEvent.heepElectrons());
-  else if(heepEleSource_==1) fillHEEPElesFromPat(heepEvent.handles(),heepEvent.heepElectrons());
+  if(heepEleSource_==0) fillHEEPElesFromGsfEles(heepEvent.handles(),heepEvent.heepEles());
+  else if(heepEleSource_==1) fillHEEPElesFromPat(heepEvent.handles(),heepEvent.heepEles());
   heepEvent.setEvent(edmEvent); 
+  heep::TrigCodes::TrigBitSet bits = heep::trigtools::getHLTFiltersPassed(hltFiltersToCheckWithNrCands_,heepEvent.handles().trigEvent,hltProcName_);
+  heepEvent.setTrigBits(bits);
 }
 
 
