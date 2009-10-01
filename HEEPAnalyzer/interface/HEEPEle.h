@@ -148,7 +148,7 @@ namespace heep {
     float scSigmaIEtaIEta()const{return gsfEle_->scSigmaIEtaIEta();}
     float scE1x5()const{return gsfEle_->scE1x5();}
     float scE2x5Max()const{return gsfEle_->scE2x5Max();}
-    float scE5x5()const{return scE5x5();}
+    float scE5x5()const{return gsfEle_->scE5x5();}
     float scE1x5Over5x5()const{return scE5x5()!=0 ? scE1x5()/scE5x5() : 0.;}
     float scE2x5MaxOver5x5()const{return scE5x5()!=0 ? scE2x5Max()/scE5x5() : 0.;}
     

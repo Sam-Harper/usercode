@@ -57,8 +57,8 @@ namespace heep {
 
     EleCutValues* getBarrelCuts(){return &barrelCutValues_;}
     const EleCutValues* getBarrelCuts()const{return &barrelCutValues_;}
-    EleCutValues* getEndcapCuts(){return &barrelCutValues_;}
-    const EleCutValues* getEndcapCuts()const{return &barrelCutValues_;} 
+    EleCutValues* getEndcapCuts(){return &endcapCutValues_;}
+    const EleCutValues* getEndcapCuts()const{return &endcapCutValues_;} 
     EleCutValues* getCuts(int type){return type<100 ? getBarrelCuts() : getEndcapCuts();}
     const EleCutValues* getCuts(int type)const{return type<100 ? getBarrelCuts() : getEndcapCuts();}
 
