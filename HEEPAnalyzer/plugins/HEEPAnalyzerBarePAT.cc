@@ -23,6 +23,9 @@ void HEEPAnalyzerBarePAT::beginJob(const edm::EventSetup& iSetup)
   massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 5 GeV/c^{2}",290,50,1500); 
 }
 
+//this analyser shows you how to apply the heep selection to pat electrons straight out of pat
+//it will also work if you replace  const edm::View<pat::Electron>& eles  by const reco::GsfElectronCollection& eles
+//the energy correction will have no effect if the energy correction is already applied
 void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 { 
   edm::Handle<edm::View<pat::Electron> > eleHandle;
@@ -43,7 +46,7 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
       const pat::Electron& ele2 = eles[ele2Nr];
       int ele1CutCode = cuts_.getCutCode(ele1);
       int ele2CutCode = cuts_.getCutCode(ele2);
-    
+     
       if(ele1CutCode==0x0 && ele2CutCode==0x0 && !(ele1.isEE() && ele2.isEE())){ //EB-EB, EE-EE
 	math::XYZTLorentzVector ele1P4 = ele1.p4()*ele1.caloEnergy()/ele1.energy();
 	math::XYZTLorentzVector ele2P4 = ele2.p4()*ele2.caloEnergy()/ele2.energy();	
