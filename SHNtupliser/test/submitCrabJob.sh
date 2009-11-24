@@ -13,12 +13,12 @@ baseCfg=$8
 dbsUrl=$9
 
 scheduler=glitecoll
-workingDir=`echo $datasetPath | awk -F "/" '{print $2}'`.`date +%y%m%d`_`date +%H%M%S`
-copyData=0
-returnData=1
+workingDir=`echo $datasetPath | awk -F "/" '{print $2"_"$3}' `.`date +%y%m%d`_`date +%H%M%S`
+copyData=1
+returnData=0
 
-nrEvents=2000
-nrJobs=2
+#nrEvents=2000
+#nrJobs=2
 
 echo $workingDir
 

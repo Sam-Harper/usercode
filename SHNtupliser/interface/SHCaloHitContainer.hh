@@ -71,6 +71,9 @@ class SHCaloHitContainer : public TObject {
   unsigned nrHcalHitsStored()const{return hcalHitArray_.GetLast()+1;} 
 
   void clear();
+  void clearEcalBarrel(){hitIndxTable_.clear();ecalBarrelHitArray_.Delete();}
+  void clearEcalEndcap(){hitIndxTable_.clear();ecalEndcapHitArray_.Delete();}
+  void clearEcal(){clearEcalBarrel();clearEcalEndcap();}
 
   void flushIndxTable()const{hitIndxTable_.clear();}
 

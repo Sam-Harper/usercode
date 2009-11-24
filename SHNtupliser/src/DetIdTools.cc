@@ -296,6 +296,74 @@ void DetIdTools::getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::v
   }//end of eta loop
 }
 
+
+bool DetIdTools::isNextToBarrelPhiGap(int detId)
+{
+  if(isEcalBarrel(detId)) { //ecal
+    if((iPhiBarrel(detId)%20)<=1) return true;
+    else return false;
+  }else if(isHcal(detId) && iEtaAbsHcal(detId)<=17){ //17 is in the endcap of hcal but covers barrel region of ecal
+    if((iPhiHcal(detId)%4)<=1) return true;
+    else return false;
+  }
+  return false;
+
+}
+
+
+bool DetIdTools::isNextToBarrelEtaGap(int detId,int maxDistToGap)
+{
+  if(isEcalBarrel(detId)) { //ecal
+    int iEtaAbs = iEtaAbsBarrel(detId);
+    const int nrCellsNextToGap = 8;
+    const int cellsNextToGap[nrCellsNextToGap]={1,25,26,45,46,65,66,85};
+    for(int cellNr=0;cellNr<nrCellsNextToGap;cellNr++){
+      if(abs(iEtaAbs-cellsNextToGap[cellNr])<=maxDistToGap) return true;
+    }
+  }else if(isHcal(detId)) { //hcal
+    int iEtaAbs = iEtaAbsHcal(detId);
+    const int nrCellsNextToGap = 8;
+    const int cellsNextToGap[nrCellsNextToGap]={1,5,6,9,10,13,14,17};
+    for(int cellNr=0;cellNr<nrCellsNextToGap;cellNr++){
+      if(abs(iEtaAbs-cellsNextToGap[cellNr])<=maxDistToGap) return true;
+    }
+  }
+  return false;
+}
+
+
+
+int DetIdTools::nrOfNearestGap(int detId)
+{
+  const int errorCode=-10;
+  if(isEcalBarrel(detId)) { //ecal
+    int iEtaAbs = iEtaAbsBarrel(detId);
+    int gapNr=0;
+    if(iEtaAbs>=1 && iEtaAbs<=13) gapNr=0; //13 = special case as its the only one equidistant from two cracks, will go for the centre crack (as its so far away from gap it doesnt really matter)
+    else if(iEtaAbs>=14 && iEtaAbs<=35) gapNr=1;
+    else if(iEtaAbs>=36 && iEtaAbs<=55) gapNr=2;
+    else if(iEtaAbs>=56 && iEtaAbs<=75) gapNr=3;
+    else if(iEtaAbs>=76 && iEtaAbs<=85) gapNr=4;
+    else return errorCode;
+   
+
+    return iEtaBarrel(detId) > 0 ? gapNr : gapNr*-1;
+  }else if(isHcal(detId)){
+    int iEtaAbs = iEtaAbsHcal(detId);
+    int gapNr=0;
+    if(iEtaAbs>=1 && iEtaAbs<=3) gapNr=0; //3 special case as equidistance, go for centre gap
+    else if(iEtaAbs>=4 && iEtaAbs<=7) gapNr=1;
+    else if(iEtaAbs>=8 && iEtaAbs<=11) gapNr=2;
+    else if(iEtaAbs>=12 && iEtaAbs<=15) gapNr=3;
+    else if(iEtaAbs>=16 && iEtaAbs<=17) gapNr=4;
+    else return errorCode;
+    
+    return iEtaHcal(detId) > 0 ? gapNr : gapNr*-1;
+  }
+  return errorCode;
+}
+
+
 bool DetIdTools::isValidHcalId(int iEta,int iPhi,int depth)
 {
   return isValidHcalBarrelId(iEta,iPhi,depth) || isValidHcalEndcapId(iEta,iPhi,depth);
@@ -314,9 +382,9 @@ int DetIdTools::getEffectiveHcalDepth(int detId)
     int depth = depthHcal(detId);
     if(iEtaAbs<=17 || 
        (iEtaAbs<=29 && depth==1) ||
-       // (iEtaAbs>=27 && iEtaAbs<=29 && depth==2)){   
-       (iEtaAbs>=28 && iEtaAbs<=29 && depth==2) || 
-       (iEtaAbs==27 && depth==3)){
+       (iEtaAbs>=27 && iEtaAbs<=29 && depth==2)){   
+      //(iEtaAbs>=28 && iEtaAbs<=29 && depth==2) || 
+      // (iEtaAbs==27 && depth==3)){
       return 1;
     }else return 2;
   }

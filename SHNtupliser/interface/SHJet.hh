@@ -47,7 +47,7 @@ public:
 
   const TLorentzVector& p4()const{return p4_;}
   float et()const{return p4_.Et();}	
-  float etUnCorr()const{return et();}
+  float etUnCorr()const{return et()/jetNrgyScale_;}
   float eta()const{return p4_.Eta();}
   float nrgy()const{return p4_.E();}
   float hadFrac()const{return hadFrac_;}
@@ -61,12 +61,20 @@ public:
   float emNrgyInEB()const{return emNrgyInEB_;}
   float emNrgyInEE()const{return emNrgyInEE_;}
   float emNrgyInHF()const{return emNrgyInHF_;}
+  float rawHadNrgy()const{return hadNrgyInHB()+hadNrgyInHF()+hadNrgyInHE();}
+  float rawEmNrgy()const{return emNrgyInEB()+emNrgyInEE()+emNrgyInHF();}
+  float rawNrgy()const{return rawHadNrgy()+rawEmNrgy();}
 
   float jetNrgyScale()const{return jetNrgyScale_;}
   void setJetNrgyScale(float scale){jetNrgyScale_=scale;}
+   
+  float trkCountHighEffBTag()const{return trkCountHighEffBTag_;}
+  float trkCountHighPureBTag()const{return trkCountHighPureBTag_;}
+  float jetBProbBTag()const{return jetBProbBTag_;}
+  float jetProbBTag()const{return jetProbBTag_;}
+  int partonFlavour()const{return partonFlavour_;}
   
-  
-  ClassDef(SHJet,1)
+  ClassDef(SHJet,2)
 
 };
 

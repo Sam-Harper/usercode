@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 class SHCaloCellGeom {
 public:
@@ -23,6 +24,7 @@ public:
     CellEdges();
     CellEdges(float minEtaInput,float maxEtaInput,
 	      float minPhiInput, float maxPhiInput);
+    virtual ~CellEdges(){}
     void fill(float minEtaInput,float maxEtaInput,
 	      float minPhiInput, float maxPhiInput);
     void clear(); //sets all variables to -999.
@@ -37,8 +39,12 @@ private:
   int towerId_; //usefull to know what CaloTower it is in
 
   //cell edges, currently optional to fill, in the future will not be
+  //possibly made redundant by corners (it definately is redundant now but whether catching eta makes speed sense)
   CellEdges frontEdges_;
   CellEdges rearEdges_;
+
+  std::vector<TVector3> corners_;
+  TVector3 rearPos_; //redundant but usefull for speed
 
   //transiant variables for speed
   mutable float sinTheta_; //!
@@ -46,15 +52,18 @@ private:
 public:
   SHCaloCellGeom();
   SHCaloCellGeom(int detId,const TVector3& pos,int towerId);
-  SHCaloCellGeom(int detId,const TVector3& pos,int towerId,const CellEdges& front,const CellEdges& rear);
+  SHCaloCellGeom(int detId,const TVector3& pos,int towerId,const std::vector<TVector3>& corners);
   virtual ~SHCaloCellGeom(){}
   
   //modifiers (necessary as I make the vector in one go and then fill in the cell information
   void setCellGeom(int detId,const TVector3& pos,int towerId);
-  void setCellGeom(int detId,const TVector3& pos,int towerId,const CellEdges& front,const CellEdges& rear);
+  void setCellGeom(int detId,const TVector3& pos,int towerId,const std::vector<TVector3>& corners);
+ 
   //accessors
   const TVector3& pos()const{return pos_;}
+  TVector3 pos(float depth)const;
   float eta()const{return eta_;}
+  float eta(float depth)const;
   float phi()const{return phi_;}
   float sinTheta()const{checkAndSetSinTheta_();return sinTheta_;}
   int detId()const{return detId_;}
@@ -64,9 +73,10 @@ public:
 
 private:
   void checkAndSetSinTheta_()const{if(detIdParityCheck_!=detId_) {sinTheta_=pos().Pt()/pos().Mag();detIdParityCheck_=detId_;}}
- 
+  void setEdgesFromCorners_(const std::vector<TVector3>& corners);
+  void setRearPos_(const std::vector<TVector3>& corners);
 
-  ClassDef(SHCaloCellGeom,3)
+  ClassDef(SHCaloCellGeom,4)
 
 };
 

@@ -52,7 +52,9 @@ void SHGeomFiller::fillEcalGeomBarrel(SHCaloGeom& ecalGeom)
       if(EBDetId::validDetId(etaNr,phiNr)){
 	EBDetId detId(etaNr,phiNr);
 	getCellPosition(detId,pos);
-	ecalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId());
+	std::vector<TVector3> corners;
+	getCellCorners(detId,corners);
+	ecalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId(),corners);
       }
     }//end phi loop
   }//end eta loop
@@ -66,8 +68,10 @@ void SHGeomFiller::fillEcalGeomEndcap(SHCaloGeom& ecalGeom)
       for(int zSide=-1;zSide<=1;zSide+=2){
 	if(EEDetId::validDetId(xNr,yNr,zSide)){
 	  EEDetId detId(xNr,yNr,zSide);
-	  getCellPosition(detId,pos);
-	  ecalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId());
+	  getCellPosition(detId,pos);   
+	  std::vector<TVector3> corners;
+	  getCellCorners(detId,corners);
+	  ecalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId(),corners);
 	  //std::cout <<"EEHash x "<<xNr<<" y "<<yNr<<" zSide "<<zSide<<" hash "<<detId.hashedIndex()<<std::endl;
 	}
       }//z side loop
@@ -84,9 +88,9 @@ void SHGeomFiller::fillHcalGeomBarrel(SHCaloGeom& hcalGeom)
 	if(HackedFuncs::validHcalDetId(HcalBarrel,etaNr,phiNr,depth)){
 	  HcalDetId detId(HcalBarrel,etaNr,phiNr,depth);
 	  getCellPosition(detId,pos); 
-	  SHCaloCellGeom::CellEdges frontEdges,rearEdges;
-	  getCellEdges(detId,frontEdges,rearEdges);
-	  hcalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId(),frontEdges,rearEdges);
+	  std::vector<TVector3> corners;
+	  getCellCorners(detId,corners);
+	  hcalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId(),corners);
 	}
       }//end depth
     }//end phi loop
@@ -105,10 +109,10 @@ void SHGeomFiller::fillHcalGeomEndcap(SHCaloGeom& hcalGeom)
 	  if(HackedFuncs::validHcalDetId(HcalEndcap,iEta,iPhi,depth)){
 	    HcalDetId detId(HcalEndcap,iEta,iPhi,depth);
 	    TVector3 pos;
-	    getCellPosition(detId,pos);
-	    SHCaloCellGeom::CellEdges frontEdges,rearEdges;
-	    getCellEdges(detId,frontEdges,rearEdges);
-	    hcalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId(),frontEdges,rearEdges);
+	    getCellPosition(detId,pos); 
+	    std::vector<TVector3> corners;
+	    getCellCorners(detId,corners);
+	    hcalGeom.setCellPos(detId.rawId(),pos,calTowersConstits_->towerOf(detId).rawId(),corners);
 	  }
 	}//end depth loop
       }//end iphi loop
@@ -140,12 +144,49 @@ void SHGeomFiller::getCellEdges(const DetId& detId,SHCaloCellGeom::CellEdges& fr
   if(cellGeom!=NULL){
     const EZArrayFL<GlobalPoint>& corners = cellGeom->getCorners();
     if(corners[0].eta()==corners[2].eta() || corners[0].phi()==corners[2].phi()) edm::LogInfo("SHGeomFiller") <<"getCellEdges: Warning corner structure has changed, edges will be incorrectly filled";
-    frontEdges.fill(corners[2].eta(),corners[0].eta(),corners[2].phi(),corners[0].phi());
-    rearEdges.fill(corners[6].eta(),corners[4].eta(),corners[6].phi(),corners[4].phi());
+    //std::cout <<"nr corners "<<corners.size()<<" det id "<<detId.det()<<" sub det "<<detId.subdetId()<<std::endl;
+    // for(size_t i=0;i<corners.size();i++) std::cout <<"corner "<<i<<" eta "<<corners[i].eta()<<" phi "<<corners[i].phi()<<std::endl;
+    
+    float minEtaFront = std::min(corners[0].eta(),corners[2].eta());
+    float maxEtaFront = std::max(corners[0].eta(),corners[2].eta());
+    float minPhiFront = std::min(corners[0].phi(),corners[2].phi());
+    float maxPhiFront = std::max(corners[0].phi(),corners[2].phi());
+    
+    float minEtaRear = std::min(corners[4].eta(),corners[6].eta());
+    float maxEtaRear = std::max(corners[4].eta(),corners[6].eta());
+    float minPhiRear = std::min(corners[4].phi(),corners[6].phi());
+    float maxPhiRear = std::max(corners[4].phi(),corners[6].phi());
+
+    frontEdges.fill(minEtaFront,maxEtaFront,minPhiFront,maxPhiFront);
+    rearEdges.fill(minEtaRear,maxEtaRear,minPhiRear,maxPhiRear);
   }else{
+    std::cout <<"problem "<<std::endl;
     if(detId.rawId()!=0) edm::LogInfo("SHGeomFiller")<<"getCellEdges Warning : Geometry not found for "<<std::hex<<detId.rawId()<<std::dec<<", subDetGeom "<<subDetGeom<<" cellGeom "<<cellGeom;
     frontEdges.clear();
     rearEdges.clear();
+  }
+
+}
+
+
+void SHGeomFiller::getCellCorners(const DetId& detId,std::vector<TVector3>& cornerVec)
+{
+  const CaloSubdetectorGeometry* subDetGeom =  calGeometry_->getSubdetectorGeometry(detId);
+  const CaloCellGeometry* cellGeom = subDetGeom!=NULL ? subDetGeom->getGeometry(detId) : NULL;
+  if(cellGeom!=NULL){
+    const EZArrayFL<GlobalPoint>& cmsswCorners = cellGeom->getCorners();
+    
+    if(cmsswCorners.size()!=8) std::cout <<"SHGeomFiller: getCornerVec : Error corner vec has "<<cmsswCorners.size()<<" corners, not 8 "<<std::endl;
+    cornerVec.clear();
+    cornerVec.resize(cmsswCorners.size());
+    for(size_t cornerNr=0;cornerNr<cmsswCorners.size();cornerNr++){
+      cornerVec[cornerNr].SetXYZ(cmsswCorners[cornerNr].x(),cmsswCorners[cornerNr].y(),cmsswCorners[cornerNr].z());
+    }
+  }else{
+    std::cout <<"problem "<<std::endl;
+    if(detId.rawId()!=0) edm::LogInfo("SHGeomFiller")<<"getCornerVec Warning : Geometry not found for "<<std::hex<<detId.rawId()<<std::dec<<", subDetGeom "<<subDetGeom<<" cellGeom "<<cellGeom;
+    cornerVec.clear();
+    cornerVec.resize(8);
   }
 
 }

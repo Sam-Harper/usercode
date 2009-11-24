@@ -18,8 +18,9 @@
 <use name=PhysicsTools/PatAlgos>
 <use name=RecoEgamma/EgammaIsolationAlgos>
 <use name=DataFormats/RecoCandidate>
-<use name=EgammaAnalysis/EgammaIsolationProducers>
 
+<use name=DataFormats/L1GlobalTrigger>
+<use name=CondFormats/L1TObjects>
 <export> 
   <lib name=SHarperSHNtupliser> 
   <use name=root>
@@ -37,5 +38,5 @@
   <use name=RecoEcal/EgammaCoreTools>
   <use name=RecoEgamma/EgammaIsolationAlgos>
   <use name=DataFormats/RecoCandidate>
-  <use name=EgammaAnalysis/EgammaIsolationProducers>
+
 </export>

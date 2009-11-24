@@ -28,6 +28,9 @@
 namespace heep{
   class Ele;
 }
+namespace reco{
+  class GsfElectron;
+}
 
 class SHEvent;
 
@@ -89,7 +92,25 @@ class SHElectron : public TObject {
   int cutCode_;
   float e1x5Over5x5_;
   float e2x5Over5x5_;
- 
+
+  //new 310 varibles (next 4 are really for validation purposes)
+  bool isEcalDriven_;
+  bool isTrackerDriven_;
+  float isolEmDR04_;
+  float isolHadDepth1DR04_;
+  float isolHadDepth2DR04_;
+  float isolPtTrksDR04_;
+  float epCombNrgy_; //the e-p combined energy 
+  int seedId_;
+  bool isBarrel_;
+  bool isEBEEGap_;   // true if particle is in the crack between EB and EE
+  bool isEBEtaGap_;  // true if particle is in EB, and inside the eta gaps between modules
+  bool isEBPhiGap_;  // true if particle is in EB, and inside the phi gaps between modules
+  bool isEEDeeGap_;  // true if particle is in EE, and inside the gaps between dees
+  bool isEERingGap_; // true if particle is in EE, and inside the gaps between rings
+  bool posChargeTrk_;
+
+
   //backwards link to the mother event
   //needs to be set everytime the event is read
   const SHEvent* mEvent_;//! transient, not stored in root
@@ -101,7 +122,8 @@ private:
   SHElectron();
   SHElectron(const SHElectron& rhs);
   SHElectron(const heep::Ele& ele,int superClusNr=-1);
- 
+ //fills off a GsfElectron, doesnt fill nr trks isol or cutcode
+  SHElectron(const reco::GsfElectron& ele,int superClusNr=-1);
   ~SHElectron(){}
 
   //modifiers (as these arent members of PixelMatchGsfElectrons so are hacked in for now)
@@ -112,6 +134,7 @@ private:
   //void setIsolHad(double isol){isolHad_=isol;}
   //void setPassStdSel(bool pass){passStdSel_=pass;}
 
+  void setSeedId(int seedId){seedId_=seedId;} //bug fix func
   void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   void fixTrkIsol();
   //accessors
@@ -121,9 +144,13 @@ private:
   //have any seed/super clusters and want those calls to degrade gracefully
   const SHSuperCluster* superClus()const;
   const SHBasicCluster* seedClus()const;
+  int seedId()const;
 
   //classification variables
   int type()const{return type_;}
+  int region()const;
+  bool isBarrel()const{return fabs(detEta_)<1.5;}
+  bool isEndcap()const{return !isBarrel();}
 
   //kinematic quantities
   float nrgy()const{return p4_.E();}
@@ -141,6 +168,7 @@ private:
   float phi()const{return p4().Phi();}
   float detEta()const{return detEta_;} 
   float detPhi()const{return posCal().Phi();}
+
   
   //track quantities
   float trkPt()const{return p3TrackVtx().Pt();}
@@ -175,7 +203,7 @@ private:
   float e1x5Over5x5()const{return e1x5Over5x5_;}
   float e2x5Over5x5()const{return e2x5Over5x5_;}
 
-
+  float trkChi2()const{return trkChi2_;}
   int nrDof()const{return nrDof_;}
   int charge()const{return posCharge_ ? 1 : -1;}
 
@@ -187,6 +215,15 @@ private:
   float isolPtTrks()const{return isolPtTrks_;}
   float isolNrTrks()const{return isolNrTrks_;}
  
+  float isolEmDR04()const{return isolEmDR04_;}
+  float isolHadDR04()const{return isolHadDepth1DR04()+isolHadDepth2DR04();}
+  float isolHadDepth1DR04()const{return isolHadDepth1DR04_;}
+  float isolHadDepth2DR04()const{return isolHadDepth2DR04_;}
+  float isolPtTrksDR04()const{return isolPtTrksDR04_;}
+
+  bool isEcalDriven()const{return isEcalDriven_;}
+  bool isTrackerDriven()const{return isTrackerDriven_;}
+
   std::pair<int,float> isolTrk(double minDeltaR,double maxDeltaR,double lipCut,double ptCut)const;
 
   int cutCode()const{return cutCode_;}
@@ -208,7 +245,7 @@ private:
   const SHEvent* motherEvent()const{return mEvent_;}
 
 
-  ClassDef(SHElectron,11) 
+  ClassDef(SHElectron,13) 
 
 };
 

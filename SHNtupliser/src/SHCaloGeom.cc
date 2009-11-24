@@ -28,13 +28,13 @@ void SHCaloGeom::setCellPos(int detId,const TVector3& pos,int towerId)
 }
 
 void SHCaloGeom::setCellPos(int detId,const TVector3& pos,int towerId,
-			    const SHCaloCellGeom::CellEdges& front,
-			    const SHCaloCellGeom::CellEdges& rear)
+			    const std::vector<TVector3> corners)
+			    
 {
   int indx=-2;
   if(detCode_==ECAL) indx = DetIdTools::getHashEcal(detId);
   else if(detCode_==HCAL) indx = DetIdTools::getHashHcal(detId);
-  if(indx>=0 && indx<(int)cellGeoms_.size()) cellGeoms_[indx].setCellGeom(detId,pos,towerId,front,rear);
+  if(indx>=0 && indx<(int)cellGeoms_.size()) cellGeoms_[indx].setCellGeom(detId,pos,towerId,corners);
   else std::cout <<"SHCaloGeom::addCell : Warning indx "<<indx<<" is invalid, detid "<<std::hex<<detId<<std::dec<<" detCode "<<detCode_<<std::endl;
 }
 
@@ -77,7 +77,7 @@ const SHCaloCellGeom& SHCaloGeom::getClosestCell(double centreEta,double centreP
 
 }
 
-//this really only makes sense for hcal geometries but will gracefull return
+//this really only makes sense for hcal geometries but will gracefully return
 //a vector of one for the ecal
 //the hcal has multiple depths which is why we need this function
 //it also has complications for tower 16 and 28/29

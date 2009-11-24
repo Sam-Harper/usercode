@@ -15,7 +15,6 @@
 
 namespace reco{
   class SuperCluster;
-  class BasicCluster;
   class ClusterShape;
 }
 

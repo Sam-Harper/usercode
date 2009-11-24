@@ -14,16 +14,21 @@
 #include "SHarper/SHNtupliser/interface/SHIsolTrack.hh"
 #include "SHarper/SHNtupliser/interface/SHTrigInfo.hh"
 #include "SHarper/SHNtupliser/interface/SHMet.hh"
+#include "SHarper/SHNtupliser/interface/SHL1Cand.hh"
 
 #include "TObject.h"
 #include "TClonesArray.h"
+#include "TBits.h"
 
 #include <map>
 #include <vector>
+#include <bitset>
+
 
 namespace reco{
   class SuperCluster;
-  class BasicCluster;
+  class CaloCluster;
+  class GsfElectron;
 }
 
 namespace pat{
@@ -56,7 +61,12 @@ class SHEvent : public TObject {
   SHMet metData_; //new for v9
   double genEventPtHat_; 
 
-  SHEvent(const SHEvent &rhs){}//disabling copying for now
+  TBits l1Bits_;
+  TClonesArray l1CandArray_; //new for v11
+  
+  
+
+  SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent& rhs){return *this;}//disabling assignment
 
  public:
@@ -67,13 +77,14 @@ class SHEvent : public TObject {
   //shapeMap : all the clusters + shape making up the cluster with seed 1st
   //dominoVec : all the dominos starting at -phi to +phi with seed in middle
 
-  void addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits);
+  void addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits); 
+  void addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer& hits);
   void addElectron(const SHElectron& ele,const SHSuperCluster& superClus);
   void addElectron(const SHElectron& ele);
   void addJet(const pat::Jet& jet);
   void addJet(const SHJet& jet);
   void addSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits);
-  void addIsolCluster(const reco::BasicCluster& clus);
+  void addIsolCluster(const reco::CaloCluster& clus);
   void addIsolSuperCluster(const reco::SuperCluster& superClus);
   void addIsolTrk(const SHIsolTrack& trk);
   void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge);
@@ -86,8 +97,11 @@ class SHEvent : public TObject {
   void addHcalHits(const std::vector<SHCaloHit> & hitVec);  
   void addMCParticle(const SHMCParticle& mcPart);
   void addTrigInfo(const SHTrigInfo& trigInfo);
+  void addL1Cand(const SHL1Cand& cand);
+  void addL1Cand(const TLorentzVector& p4,int type);
 
   //usefull for copying an event
+  void addCaloHits(const SHCaloHitContainer& hits){caloHits_ = hits;}
   void addCaloHits(const SHEvent& rhs);
   void addIsolInfo(const SHEvent& rhs);
   
@@ -98,6 +112,7 @@ class SHEvent : public TObject {
   void setWeight(double weight){weight_=weight;}
   void setMet(const SHMet& met){metData_=met;}
   void setGenEventPtHat(double ptHat){genEventPtHat_=ptHat;}
+  void setL1Bits(const TBits& bits){l1Bits_=bits;}
   void copyEventPara(const SHEvent& rhs);
   void clear();
 
@@ -113,6 +128,7 @@ class SHEvent : public TObject {
   const SHIsolTrack* getIsolTrk(int trkNr)const;
   SHElectron* getElectron(int eleNr); //allows the event to modify the electron
   const SHTrigInfo* getTrigInfo(int trigNr)const;
+  const SHL1Cand* getL1Cand(int candNr)const;
 
   int getSuperClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
   int getIsolClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
@@ -125,6 +141,7 @@ class SHEvent : public TObject {
   int nrIsolSuperClus()const{return isolSuperClusArray_.GetLast()+1;}
   int nrIsolTrks()const{return isolTrkArray_.GetLast()+1;}
   int nrTrigs()const{return trigArray_.GetLast()+1;}
+  int nrL1Cands()const{return l1CandArray_.GetLast()+1;}
 
   int runnr()const{return runnr_;}
   int eventnr()const{return eventnr_;}
@@ -133,14 +150,19 @@ class SHEvent : public TObject {
   const SHMet& metData()const{return metData_;}
   SHMet& metData(){return metData_;}
   bool isMC()const{return isMC_;}
-  const SHCaloHitContainer& getCaloHits()const{return caloHits_;}
-  double genEventPtHat(){return genEventPtHat_;}
-
+  const SHCaloHitContainer& getCaloHits()const{return caloHits_;} 
+  SHCaloHitContainer& getCaloHits(){return caloHits_;}
+  double genEventPtHat()const{return genEventPtHat_;}
+  const TBits& l1Bits()const{return l1Bits_;}
   //first function gets the triggers passed for the event
   //second to functions get the triggers passed for a particlar object
   int getTrigCode()const;
   int getTrigCode(const TLorentzVector& p4){return getTrigCode(p4.Eta(),p4.Phi());}
-  int getTrigCode(double eta,double phi);
+  int getTrigCode(double eta,double phi); 
+  bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());}
+  bool passTrig(const std::string& trigName,double eta,double phi)const;
+  // bool passTrig(const std::string& trigName);
+  void printTrigs()const;
 
   //some objects have a temporary transisent data cache which root doesnt
   //override when it fills them
@@ -149,6 +171,7 @@ class SHEvent : public TObject {
   
   //a tempory function, this removes all the duplicate electrons in the event
   void removeDupEles(std::vector<int>& dupEleNrs);
+  void dropTrackerOnlyEles();
 
   void printTruth(int nrLines=-1)const;
 
@@ -156,7 +179,7 @@ class SHEvent : public TObject {
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
 
-  ClassDef(SHEvent,10) //5 is v3, 6 is v4
+  ClassDef(SHEvent,11) //5 is v3, 6 is v4
 
 };
   

@@ -56,7 +56,22 @@ SHElectron::SHElectron():
   isolNrTrks_(999),
   cutCode_(~0x0),
   e1x5Over5x5_(-999.),
-  e2x5Over5x5_(-999.),
+  e2x5Over5x5_(-999.), 
+  isEcalDriven_(false), 
+  isTrackerDriven_(false),
+  isolEmDR04_(-999.),
+  isolHadDepth1DR04_(-999.),
+  isolHadDepth2DR04_(-999.),
+  isolPtTrksDR04_(-999.), 
+  epCombNrgy_(-999.),
+  seedId_(0),
+  isBarrel_(false),
+  isEBEEGap_(false), 
+  isEBEtaGap_(false),  
+  isEBPhiGap_(false), 
+  isEEDeeGap_(false),  
+  isEERingGap_(false),
+  posChargeTrk_(false),
   mEvent_(NULL)
 {
 
@@ -114,12 +129,36 @@ SHElectron::SHElectron(const SHElectron &rhs):
   cutCode_(rhs.cutCode_),
   e1x5Over5x5_(rhs.e1x5Over5x5_),
   e2x5Over5x5_(rhs.e2x5Over5x5_),
+  isEcalDriven_(rhs.isEcalDriven_), 
+  isTrackerDriven_(rhs.isTrackerDriven_),
+  isolEmDR04_(rhs.isolEmDR04_),
+  isolHadDepth1DR04_(rhs.isolHadDepth1DR04_),
+  isolHadDepth2DR04_(rhs.isolHadDepth2DR04_),
+  isolPtTrksDR04_(rhs.isolPtTrksDR04_), 
+  epCombNrgy_(rhs.epCombNrgy_),
+  seedId_(0),
+  isBarrel_(rhs.isBarrel_),
+  isEBEEGap_(rhs.isEBEEGap_), 
+  isEBEtaGap_(rhs.isEBEtaGap_),  
+  isEBPhiGap_(rhs.isEBPhiGap_), 
+  isEEDeeGap_(rhs.isEEDeeGap_),  
+  isEERingGap_(rhs.isEERingGap_),
+  posChargeTrk_(rhs.posChargeTrk_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
 
 }
 
-
+int SHElectron::region()const
+{
+  if(type()<100){//barrel
+    if(fabs(detEta())<1.442) return 0;
+    else return 10;
+  }else{//endcap
+    if(fabs(detEta())>1.56 && fabs(detEta())<2.5) return 1;
+    else return 11;
+  }
+}
 const SHSuperCluster* SHElectron::superClus()const
 {
   if(mEvent_==NULL ||  superClusIndx_>=mEvent_->nrSuperClus()) return NULL; //cant get super clus as have no mother event
@@ -131,6 +170,13 @@ const SHBasicCluster* SHElectron::seedClus()const
 {
   if(superClus()==NULL || superClus()->nrClus()<=0) return NULL; //cant get super clus as have no mother event
   else return superClus()->seedClus();
+}
+
+int SHElectron::seedId()const
+{
+  const SHBasicCluster* seed = seedClus();
+  if(seed) return seed->seedId();
+  else return 0;
 }
 
 

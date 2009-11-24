@@ -22,7 +22,9 @@ SHEvent::SHEvent():
   runnr_(0),eventnr_(0),
   isMC_(0),datasetCode_(0),
   weight_(0.),
-  metData_()
+  metData_(),
+  l1Bits_(0x0),
+  l1CandArray_("SHL1Cand",20)
 {
  
 }
@@ -37,7 +39,7 @@ SHEvent::~SHEvent()
   isolClusArray_.Delete();
   isolTrkArray_.Delete();
   trigArray_.Delete();
-  
+  l1CandArray_.Delete();
 }
 
 void SHEvent::addMCParticle(int partIndx,int partStdhep,int partIdhep,
@@ -112,6 +114,16 @@ void SHEvent::addTrigInfo(const SHTrigInfo& trigInfo)
   
 }
 
+void SHEvent::addL1Cand(const SHL1Cand& l1Cand)
+{
+  new(l1CandArray_[nrL1Cands()]) SHL1Cand(l1Cand);
+  
+}
+void SHEvent::addL1Cand(const TLorentzVector& p4,int type)
+{
+  new(l1CandArray_[nrL1Cands()]) SHL1Cand(p4,type);
+  
+}
 //we only store hits which actually have information
 void SHEvent::addEcalHits(const std::vector<SHCaloHit> & hitVec)
 {
@@ -181,7 +193,11 @@ const SHTrigInfo* SHEvent::getTrigInfo(int trigNr)const
   return trigInfo;
 }
 
-
+const SHL1Cand* SHEvent::getL1Cand(int candNr)const
+{
+  SHL1Cand* l1Cand = (SHL1Cand*) l1CandArray_[candNr];
+  return l1Cand;
+}
 
 //non const acccess
 SHElectron* SHEvent::getElectron(int eleNr)
@@ -203,6 +219,7 @@ const SHIsolSuperCluster* SHEvent::getIsolSuperClus(int clusNr)const
   return clus;
 }
 
+
 int SHEvent::getSuperClusIndx(float rawNrgy,float eta,float phi)const
 {
   for(int superClusNr=0;superClusNr<nrSuperClus();superClusNr++){
@@ -210,7 +227,7 @@ int SHEvent::getSuperClusIndx(float rawNrgy,float eta,float phi)const
     float dNrgyAbs = fabs(superClus->rawNrgy()-rawNrgy);
     float dEtaAbs = fabs(superClus->eta()-eta);
     float dPhiAbs = fabs(superClus->phi()-phi);
-    if(dNrgyAbs<1.0E-10 && dEtaAbs<1.0E-10 && dPhiAbs<1.0E-10) return superClusNr;
+    if(dNrgyAbs<1.0E-3 && dEtaAbs<1.0E-3 && dPhiAbs<1.0E-3) return superClusNr;
   }
   return -1;//didnt find it
 }
@@ -226,6 +243,7 @@ int SHEvent::getIsolClusIndx(float rawNrgy,float eta,float phi)const
   }
   return -1;//didnt find it
 }
+
 
 void SHEvent::copyEventPara(const SHEvent& rhs)
 {
@@ -254,11 +272,27 @@ void SHEvent::clear()
   isMC_=0;
   datasetCode_=0;
   weight_=0.;
-  metData_.clear();
+  metData_.clear(); 
+  l1CandArray_.Delete();
+  l1Bits_.ResetAllBits();
 }
 
 
-
+void SHEvent::dropTrackerOnlyEles()
+{
+  //okay it is late and I am tired, hence crap hack
+  std::vector<std::pair<const SHElectron*,const SHSuperCluster*> >  ecalEles;
+  for(int eleNr=0;eleNr<nrElectrons();eleNr++){
+    const SHElectron* ele = getElectron(eleNr);
+    if(ele->isEcalDriven()) ecalEles.push_back(std::make_pair(new SHElectron(*ele),ele->superClus()));
+  }
+  electronArray_.Delete();
+  for(size_t eleNr=0;eleNr<ecalEles.size();eleNr++){
+    addElectron(*ecalEles[eleNr].first,*ecalEles[eleNr].second);
+    delete ecalEles[eleNr].first;
+  }
+  
+}
 
 void SHEvent::flushTempData()const
 {
@@ -304,6 +338,28 @@ int SHEvent::getTrigCode(double eta,double phi)
   
 
   return trigCode;
+}
+
+
+bool SHEvent::passTrig(const std::string& trigName,double eta,double phi)const
+{
+  for(int trigNr=0;trigNr<nrTrigs();trigNr++){
+    const SHTrigInfo* trig= getTrigInfo(trigNr);
+    if(trigName==trig->name()) {
+      //  std::cout <<"found trig "<<trigName<<" nr pass "<<trig->nrPass()<<" eta "<<eta<<" phi "<<phi<<" pass "<<trig->passTrig(eta,phi)<<std::endl;
+      return trig->passTrig(eta,phi);
+    }
+  }
+  return false;
+}
+
+
+void SHEvent::printTrigs()const
+{
+  std::cout <<"nr triggers fired "<<nrTrigs()<<std::endl;
+  for(int i=0;i<nrTrigs();i++){
+    std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" nr pass "<<getTrigInfo(i)->nrPass()<<std::endl;
+  }
 }
 
 

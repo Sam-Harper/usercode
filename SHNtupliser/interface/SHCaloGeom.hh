@@ -27,8 +27,8 @@ public:
   //modifier (adds a cell)
   void setCellPos(int detId,const TVector3& pos,int towerId);
   void setCellPos(int detId,const TVector3& pos,int towerId,
-		  const SHCaloCellGeom::CellEdges& front,
-		  const SHCaloCellGeom::CellEdges& rear);
+		  const std::vector<TVector3> corners);
+		 
   //accessors (first 4 look up via detId, last looks up by indx)
   //unless otherwise stated, all lookups are by detId rather than indx
   const TVector3& cellPos(int detId)const{return getCell(detId).pos();}

@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace reco{
-  class BasicCluster;
+  class CaloCluster;
 }
 
 class SHBasicCluster : public TObject {
@@ -41,7 +41,7 @@ class SHBasicCluster : public TObject {
  public:
   SHBasicCluster();
   SHBasicCluster(const SHBasicCluster& rhs);
-  SHBasicCluster(const reco::BasicCluster& clus,const SHCaloHitContainer& hits);
+  SHBasicCluster(const reco::CaloCluster& clus,const SHCaloHitContainer& hits);
 
   ~SHBasicCluster(){}
 
@@ -57,6 +57,7 @@ class SHBasicCluster : public TObject {
   int nrCrys()const{return nrCrys_;}
   int eMaxId()const{return eMaxId_;}
   int e2ndId()const{return e2ndId_;}
+  int seedId()const{return eMaxId_;} //seed!=eMax 100% of the time in future
   
   TVector3 pos()const{TVector3 thePos;thePos.SetPtEtaPhi(1.,eta_,phi_);return thePos;}
   int crysDetId(int crysNr)const{return hitDetIds_[crysNr];}

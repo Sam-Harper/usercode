@@ -11,15 +11,14 @@ SHSuperCluster::SHSuperCluster(const reco::SuperCluster& superClus,const SHCaloH
   preShowerNrgy_(superClus.preshowerEnergy()),
   pos_(superClus.position().X(),superClus.position().Y(),superClus.position().Z()), 
   eta_(pos_.Eta()),
-  nrCrys_(superClus.getHitsByDetId().size()),
+  nrCrys_(superClus.hitsAndFractions().size()),
   clusterArray_("SHBasicCluster",4)
 {
   
-  for(reco::basicCluster_iterator clusIt  = superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
+  for(reco::CaloCluster_iterator clusIt  = superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
     new(clusterArray_[nrClus()]) SHBasicCluster(**clusIt,hits);
   }
   
   
 
 }
-

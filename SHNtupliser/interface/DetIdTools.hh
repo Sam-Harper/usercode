@@ -95,6 +95,7 @@ private:
   static const int kHcalDepthMin = 1;
   static const int kHcalDepthMax = 3;
 
+  //detector id
   static bool isEcal(int detId){return (detId&kDetMask) == kEcalCode;}
   static bool isHcal(int detId){return (detId&kDetMask) == kHcalCode;}
   static bool isBarrel(int detId){return (detId&kSubDetMask) == kBarrelCode;}
@@ -103,38 +104,62 @@ private:
   static bool isEcalEndcap(int detId){return isEcal(detId) && isEndcap(detId);}
   static bool isHcalBarrel(int detId){return isHcal(detId) && isBarrel(detId);}
   static bool isHcalEndcap(int detId){return isHcal(detId) && isEndcap(detId);}
+  static int detSubDet(int detId){return detId&(kDetMask | kSubDetMask);}
 
-  static bool detSubDet(int detId){return detId&(kDetMask | kSubDetMask);}
-
-
+  //to make det ids
+  static int makeEcalBarrelId(int iEta,int iPhi);
+  static int makeEcalEndcapId(int ix,int iy,int iz);
+  static int makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth);
+  static int makeHcalBarrelDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kBarrelCode,iEta,iPhi,depth);}
+  static int makeHcalEndcapDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kEndcapCode,iEta,iPhi,depth);}
+ 
+  //check ids are valid
   static bool isValidEcalBarrelId(int iEta,int iPhi);
   static bool isValidEcalBarrelId(int detId){return isEcalBarrel(detId) && isValidEcalBarrelId(iEtaBarrel(detId),iPhiBarrel(detId));}
-  static bool positiveZBarrel(int detId){return detId&0x10000;}
-  static int iEtaAbsBarrel(int detId){return (detId>>9) & 0x7F ;}
-  static int iEtaBarrel(int detId){return positiveZBarrel(detId) ? iEtaAbsBarrel(detId) : -1*iEtaAbsBarrel(detId) ;}
-  static int iPhiBarrel(int detId){return detId&0x1FF;}
-  static int makeEcalBarrelId(int iEta,int iPhi);
+  static bool isValidEcalEndcapId(int crystal_ix,int crystal_iy,int iz);
+  static bool isValidEcalEndcapId(int detId){return isEcalEndcap(detId) && isValidEcalEndcapId(iXEndcap(detId),iYEndcap(detId),zEndcap(detId));}
+  static bool isValidHcalId(int iEta,int iPhi,int depth); 
+  static bool isValidHcalId(int detId){return isHcal(detId)&& isValidHcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
+  static bool isValidHcalBarrelId(int iEta,int iPhi,int depth); 
+  static bool isValidHcalEndcapId(int iEta,int iPhi,int depth);
 
+  //gap tools, maxDistToGap is number of crystals the gap is away (0=this crys is next to gap)
+  static bool isNextToBarrelPhiGap(int detId);
+  static bool isNextToBarrelEtaGap(int detId,int maxDistToGap=0);
+  static int nrOfNearestGap(int detId);
+ 
+  
+  //ECAL barrel tools
+  static int iEtaBarrel(int detId){return positiveZBarrel(detId) ? iEtaAbsBarrel(detId) : -1*iEtaAbsBarrel(detId) ;}
+  static int iEtaAbsBarrel(int detId){return (detId>>9) & 0x7F ;}
+  static int iPhiBarrel(int detId){return detId&0x1FF;}
+  static bool positiveZBarrel(int detId){return detId&0x10000;}
+  
+  //ECAL endcap tools
+  static int iYEndcap(int detId){return detId&0x7f;}
+  static int iXEndcap(int detId){return (detId>>7)&0x7F;} 
+  static int normEndcapIXOrIY(int iXorIY); //x/y distance from centre 
+  static bool positiveZEndcap(int detId){return detId&0x4000;}
+  static int zEndcap(int detId){return positiveZEndcap(detId) ? 1 : -1;}
+  static int endcapEtaRing(int detId); //these tools calculate eta = sqrt(x*x+y*y)
+  static int endcapEtaRing(int ix,int iy);
+  static float endcapEtaRingFloat(int detId);
+  static float endcapEtaRingFloat(int ix,int iy);
+
+  //HCAL tools (unified for HB/HE)
   static int iPhiHcal(int detId){return detId&0x7F;}
   static int iEtaAbsHcal(int detId){return (detId>>7)&0x3f;}
   static int iEtaHcal(int detId){return zSideHcal(detId)*iEtaAbsHcal(detId);}
   static int zSideHcal(int detId){return (detId&0x2000) ? (1) : (-1);}
   static int depthHcal(int detId){return (detId>>14)&0x7;}
-  static int getEffectiveHcalDepth(int detId);
+  static int getEffectiveHcalDepth(int detId); //effective depth is for isolation and accounts for not all depths being equal
   static int getNrDepthsInHcalTower(int detId);
+  static void getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::vector<int>& ids);
+  static void printHcalDetId(int detId);
 
-  static int makeHcalBarrelDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kBarrelCode,iEta,iPhi,depth);}
-  static int makeHcalEndcapDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kEndcapCode,iEta,iPhi,depth);}
-  static int makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth);
+  
+  //hashes for fast lookup
 
-  static bool isValidEcalEndcapId(int crystal_ix,int crystal_iy,int iz);
-  static bool isValidEcalEndcapId(int detId){return isEcalEndcap(detId) && isValidEcalEndcapId(iXEndcap(detId),iYEndcap(detId),zEndcap(detId));}
-  static int makeEcalEndcapId(int ix,int iy,int iz);
-  static bool positiveZEndcap(int detId){return detId&0x4000;}
-  static int zEndcap(int detId){return positiveZEndcap(detId) ? 1 : -1;}
-  static int iYEndcap(int detId){return detId&0x7f;}
-  static int iXEndcap(int detId){return (detId>>7)&0x7F;}
-  static int normEndcapIXOrIY(int iXorIY);
   //this functions convert an ECAL detId into an array index
   //note barrel is first then endcap
   static int calHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? calHashEcalBarrel(detId) : calHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}
@@ -152,19 +177,7 @@ private:
   static int getHashEcalBarrel(int detId){return ebFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
   static int getHashEcalEndcap(int detId){return eeFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
 
-  static void getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::vector<int>& ids);
-  static bool isValidHcalId(int iEta,int iPhi,int depth); 
-  static bool isValidHcalId(int detId){return isHcal(detId)&& isValidHcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
-  static bool isValidHcalBarrelId(int iEta,int iPhi,int depth); 
-  static bool isValidHcalEndcapId(int iEta,int iPhi,int depth);
-
-  static int endcapEtaRing(int detId);
-  static int endcapEtaRing(int ix,int iy);
-  static float endcapEtaRingFloat(int detId);
-  static float endcapEtaRingFloat(int ix,int iy);
-  static void printHcalDetId(int detId);
-
-  
+ 
 
 private:
   //yes I'm aware these functions pass 1MB vectors by value, they

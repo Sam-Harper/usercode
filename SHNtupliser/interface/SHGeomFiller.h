@@ -41,7 +41,7 @@ public:
   void fillHcalGeomEndcap(SHCaloGeom& hcalGeom);
   void getCellPosition(const DetId &detId,TVector3 & pos);
   void getCellEdges(const DetId& detId,SHCaloCellGeom::CellEdges& frontEdges,SHCaloCellGeom::CellEdges& rearEdges);
-
+  void getCellCorners(const DetId& detId,std::vector<TVector3>& cornerVec);
 };
 
 

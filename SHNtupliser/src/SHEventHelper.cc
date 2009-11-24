@@ -13,6 +13,7 @@
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 
 #include "TVector3.h"
+#include "TBits.h"
 
 SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
   datasetCode_(datasetCode),
@@ -30,10 +31,12 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
   addCaloHits(heepEvent,shEvent);
   addEventPara(heepEvent,shEvent);
-  addElectrons(heepEvent,shEvent);
   addSuperClusters(heepEvent,shEvent);
+  addElectrons(heepEvent,shEvent);
+ 
 
-  addTrigInfo(heepEvent,shEvent);
+   addTrigInfo(heepEvent,shEvent);
+  // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
   addJets(heepEvent,shEvent);
   addMet(heepEvent,shEvent);
   addMCParticles(heepEvent,shEvent);
@@ -42,21 +45,33 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
 {
+  // std::cout <<"atart"<<std::endl;
+  //std::cout <<" adding event "<<&(heepEvent.event())<<std::endl;
+  //std::cout <<"run nr "<< heepEvent.runnr()<<std::endl;
+  //std::cout <<"getting run nr "<<std::endl;
   shEvent.setRunnr(heepEvent.runnr());
+  //std::cout <<"eventnr "<<std::endl;
   shEvent.setEventnr(heepEvent.eventnr());
+  //std::cout <<"mv "<<std::endl;
   shEvent.setIsMC(isMC_);
+  //std::cout <<"dataset "<<std::endl;
   shEvent.setDatasetCode(datasetCode_);
+  //std::cout <<"weight "<<std::endl;
   shEvent.setWeight(eventWeight_);
+  //std::cout <<"gen pt hat "<<std::endl;
   shEvent.setGenEventPtHat(heepEvent.genEventPtHat());
+  //std::cout <<"done "<<std::endl;
 }
 
 
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {
-  const std::vector<heep::Ele>& electrons = heepEvent.heepElectrons();
+  const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
+  //const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
   for(size_t eleNr=0;eleNr<electrons.size();eleNr++){
     shEvent.addElectron(electrons[eleNr],shEvent.getCaloHits());
-  }
+  } 
+  
 }
 
 void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -139,10 +154,34 @@ void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)co
       p4.SetPtEtaPhiM(obj.pt(),obj.eta(),obj.phi(),obj.mass());
       trigInfo.addObj(p4);
     }
-    shEvent.addTrigInfo(trigInfo);
+    if(!trigKeys.empty()) shEvent.addTrigInfo(trigInfo); //only adding triggers which actually have objects passing
   } 
 
 }
+
+void SHEventHelper::addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+ 
+  const std::vector<bool>& l1Word = heepEvent.l1Decision(); 
+  TBits myL1Bits(l1Word.size()); 
+  for(size_t bitNr=0;bitNr<l1Word.size();bitNr++){
+    if(l1Word[bitNr]) myL1Bits.SetBitNumber(bitNr);
+  }
+  shEvent.setL1Bits(myL1Bits);
+  for(size_t candNr=0;candNr<heepEvent.l1EmNonIso().size();candNr++){
+    const l1extra::L1EmParticle& cand = heepEvent.l1EmNonIso()[candNr];
+    TLorentzVector p4;
+    p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
+    shEvent.addL1Cand(p4,cand.type());
+  }
+  for(size_t candNr=0;candNr<heepEvent.l1EmIso().size();candNr++){
+    const l1extra::L1EmParticle& cand = heepEvent.l1EmIso()[candNr];
+    TLorentzVector p4;
+    p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
+    shEvent.addL1Cand(p4,cand.type());
+  }
+}
+  
 
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
@@ -233,7 +272,7 @@ int SHEventHelper::ecalHitHash_(const DetId detId)const
       return ebDetId.hashedIndex();
     }else if(detId.subdetId()==EcalEndcap){
       EEDetId eeDetId(detId);
-      return eeDetId.hashedIndex()+EBDetId::SIZE_HASH;
+      return eeDetId.hashedIndex()+EBDetId::MAX_HASH+1;
     }
   } 
   return -1; //not in ecal barrel or endcap  
@@ -251,7 +290,7 @@ void SHEventHelper::initEcalHitVec_()const
 {
   //first make sure the vector is the approprate size and has all null entries
   SHCaloHit nullHit(0,-999.);
-  std::vector<SHCaloHit> tempVector(EBDetId::SIZE_HASH+EEDetId::SIZE_HASH,nullHit);
+  std::vector<SHCaloHit> tempVector(EBDetId::MAX_HASH+1+(EEDetId::kSizeForDenseIndexing),nullHit);
   ecalHitVec_.swap(tempVector);
 
   
@@ -270,7 +309,7 @@ void SHEventHelper::initEcalHitVec_()const
       for(int zSide=-1;zSide<=1;zSide+=2){
 	if(EEDetId::validDetId(xNr,yNr,zSide)){
 	  EEDetId detId(xNr,yNr,zSide);
-	  ecalHitVec_[detId.hashedIndex()+EBDetId::SIZE_HASH].setDetId(detId.rawId());
+	  ecalHitVec_[detId.hashedIndex()+EBDetId::MAX_HASH+1].setDetId(detId.rawId());
 	}//end valid det id check
       }//z side loop
     }//end phi loop

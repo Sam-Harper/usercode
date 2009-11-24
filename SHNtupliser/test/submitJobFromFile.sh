@@ -16,15 +16,15 @@ datasetPath=`echo $line | awk -F "&" '{print $1}'`
 dataset=`echo $datasetPath | awk -F "/" '{print $2}'`
 nrEvents=`echo $line | awk -F "&" '{print $2}'`
 weight=`echo $line | awk -F "&" '{print $4*$5}'`
-cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}' | \
-              awk -F "-" '{print $1}' | \
-               awk -F "_" '{print $2"_"$3"_"$4}'`
-outputFile=${dataset}_ntuples_${cmsswVersion}_v10.root
+cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}'`
+outputFile=${dataset}_ntuples_${cmsswVersion}_v12NoHE.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
-outputPath=21X/v10c_noPreSel/$dataset/
+#outputPath=312/Oct09ExoEleSkim/$dataset/
+outputPath=312/v12NoHE_minimal/$dataset/
 #dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet"
-baseCfg="shNtupliserNoPreSel_base_cfg.py"
+#dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
+baseCfg="shNtupliserNoHEPreSel_base_cfg.py"
 
 #baseCfg="runSHNtupliser_base.cfg"
 

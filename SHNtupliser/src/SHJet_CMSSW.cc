@@ -2,7 +2,6 @@
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
-std::string jetCorrFactorStringHack("ABS"); //because pat code has a bug meaning the argument of jetCorrFactor is not a const string so its a pain in the arse to pass in an arguement to
 
 SHJet::SHJet(const pat::Jet & jet):
   p4_(jet.px(),jet.py(),jet.pz(),jet.energy()),
@@ -17,7 +16,7 @@ SHJet::SHJet(const pat::Jet & jet):
   emNrgyInEB_(jet.emEnergyInEB()),
   emNrgyInEE_(jet.emEnergyInEE()),
   emNrgyInHF_(jet.emEnergyInHF()),  
-  jetNrgyScale_(jet.jetCorrFactor(jetCorrFactorStringHack)),
+  jetNrgyScale_(jet.corrFactor("ABS")),
   trkCountHighEffBTag_(jet.bDiscriminator("trackCountingHighEffBJetTag")),
   trkCountHighPureBTag_(jet.bDiscriminator("trackCountingHighPureBJetTag")),
   jetBProbBTag_(jet.bDiscriminator("jetBProbabilityBJetTags")),

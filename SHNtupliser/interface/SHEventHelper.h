@@ -61,6 +61,7 @@ public:
   void addIsolClus(const heep::Event& heepEvent,SHEvent& shEvent)const{}
   void addMet(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
 private:
   //the hashing functions for vector positions

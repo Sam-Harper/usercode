@@ -33,7 +33,7 @@ public:
   int nrPass()const{return trigObjs_.size();}
   const TLorentzVector & getObjP4(int indx)const{return trigObjs_[indx];}
   int trigId()const{return trigId_;}
-  const std::string& trigName()const{return trigName_;}
+  const std::string& name()const{return trigName_;}
 
   //trigger pass functions
 

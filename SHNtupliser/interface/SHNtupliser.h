@@ -53,6 +53,9 @@ private:
   TFile* outFile_; //we own it
 
   std::string outputFilename_;
+  int nrTot_;
+  int nrPass_;
+
 
   //disabling copy and assignment 
   //I cant think of a reason why I would want to copy this class and its complicated to do right due to TTree
