@@ -40,7 +40,7 @@ namespace heep {
       ECALDRIVEN      =0x2000,
       
       //flag that if its set, shows the code is invalid
-      INVALID       =0x80000000
+      INVALID       =0x40000000
       
     };
     
@@ -53,8 +53,13 @@ namespace heep {
     
   public:
     static int getCode(const std::string& descript){return codes_.getCode(descript.c_str());}
-    static void getCodeName(int code,std::string& id){return codes_.getCodeName(code,id);}
+    //both of these functions do the same thing, except one returns a string by value which is slightly slower but often more convenient
+    static void getCodeName(int code,std::string& id){return codes_.getCodeName(code,id);} 
     static std::string getCodeName(int code){return codes_.getCodeName(code);}
+    
+    static bool passCuts(int cutsResult,int cutsToCheck){return (cutsResult&cutsToCheck)==0;}
+    static bool passCuts(int cutsResult,const std::string& cutsToCheck){return passCuts(cutsResult,getCode(cutsToCheck));}
+
 
   private:
     static heep::ComCodes makeCodeMap_();
