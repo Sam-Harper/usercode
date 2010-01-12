@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 namespace heep {
   class ComCodes { 

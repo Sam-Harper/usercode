@@ -104,7 +104,7 @@ void heep::EventHelper::fillHEEPElesFromPat(const heep::EvtHandles& handles,std:
   heepEles.clear();
   const edm::View<pat::Electron>& eles = *handles.electron;
   for(edm::View<pat::Electron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
-    if(!onlyAddEcalDriven_ || eleIt->isEcalDriven()){
+    if(!onlyAddEcalDriven_ || eleIt->ecalDrivenSeed()){
       addHEEPEle_(*eleIt,handles,heepEles);
     }
   }
@@ -119,7 +119,7 @@ void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,
   heepEles.clear();
   const std::vector<reco::GsfElectron>& eles = *handles.gsfEle;
   for(std::vector<reco::GsfElectron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
-    if(!onlyAddEcalDriven_ || eleIt->isEcalDriven()){
+    if(!onlyAddEcalDriven_ || eleIt->ecalDrivenSeed()){
       addHEEPEle_(*eleIt,handles,heepEles);
     }
   }

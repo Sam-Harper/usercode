@@ -13,6 +13,7 @@
 #include <string>
 #include <iostream>
 #include <bitset>
+#include <algorithm>
 
 //unforunately hard coded limit of 64 bits which needs to be checked when setting it up
 //if this becomes a problem, will be replaced by boost::dynamic_bitset

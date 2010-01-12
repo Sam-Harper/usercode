@@ -63,7 +63,7 @@ int heep::EleSelector::getCutCode(const reco::GsfElectron& ele,const EleCutValue
   if(et< cuts.minEt) cutCode |= CutCodes::ET;
   if(fabs(ele.superCluster()->eta())< cuts.minEta || fabs(ele.superCluster()->eta())>cuts.maxEta) cutCode |= CutCodes::DETETA;
   if(ele.isEBEtaGap()) cutCode |= CutCodes::CRACK;
-  if(!ele.isEcalDriven()) cutCode |= CutCodes::ECALDRIVEN;
+  if(!ele.ecalDrivenSeed()) cutCode |= CutCodes::ECALDRIVEN;
   if(fabs(ele.deltaEtaSuperClusterTrackAtVtx()) > cuts.maxDEtaIn ) cutCode |=CutCodes::DETAIN;
   if(fabs(ele.deltaPhiSuperClusterTrackAtVtx()) > cuts.maxDPhiIn ) cutCode |=CutCodes::DPHIIN;
   if(ele.hadronicOverEm()> cuts.maxHadem) cutCode |= CutCodes::HADEM;

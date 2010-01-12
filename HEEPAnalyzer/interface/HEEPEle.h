@@ -105,8 +105,8 @@ namespace heep {
     
     //classification (couldnt they have just named it 'type')
     int classification()const{return gsfEle_->classification();}
-    bool isEcalDriven()const{return gsfEle_->isEcalDriven();}
-    bool isTrackerDriven()const{return gsfEle_->isTrackerDriven();}
+    bool isEcalDriven()const{return gsfEle_->ecalDrivenSeed();}
+    bool isTrackerDriven()const{return gsfEle_->trackerDrivenSeed();}
     bool isEB()const{return gsfEle_->isEB();}
     bool isEE()const{return gsfEle_->isEE();}
    
