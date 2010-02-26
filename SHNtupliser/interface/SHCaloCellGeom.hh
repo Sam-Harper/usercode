@@ -70,6 +70,9 @@ public:
   int towerId()const{return towerId_;}
   const CellEdges& frontEdges()const{return frontEdges_;}
   const CellEdges& rearEdges()const{return rearEdges_;}
+  TVector3 cell3Vec()const{return (rearPos_-pos_).Unit();}
+  float cellOPTheta()const;
+  const std::vector<TVector3>& corners()const{return corners_;}
 
 private:
   void checkAndSetSinTheta_()const{if(detIdParityCheck_!=detId_) {sinTheta_=pos().Pt()/pos().Mag();detIdParityCheck_=detId_;}}

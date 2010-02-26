@@ -71,7 +71,12 @@ public:
   static double calDeltaR(const TVector3& a, const TVector3& b){return sqrt(calDeltaR2(a.Eta(),a.Phi(),b.Eta(),b.Phi()));}
   static double calDeltaR2(double eta1,double phi1, const TLorentzVector& p4){return calDeltaR2(eta1,phi1,p4.Eta(),p4.Phi());}
   static double calDeltaR2(double eta1,double phi1, const TVector3& p3){return calDeltaR2(eta1,phi1,p3.Eta(),p3.Phi());}
-  static double calDeltaR2(double eta1,double phi1, double eta2,double phi2);
+  static double calDeltaR2(double eta1,double phi1, double eta2,double phi2);  static double deltaPhi(double phi1,double phi2){
+    double dPhi = phi1-phi2;
+    if(dPhi>kPi) dPhi -= 2*kPi;
+    if(dPhi<=-kPi) dPhi += 2*kPi;
+    return dPhi;
+  }
   static double getMedian(std::list<double> &list); //assumes list is sorted
   static double getUpConfidIntValue(std::list<double> &list,double confInt){return getWeightedListValue(list,(1+confInt)*0.5*list.size());}//assumes list is sorted 
   static double getLowConfidIntValue(std::list<double> &list,double confInt){return getWeightedListValue(list,(1-confInt)*0.5*list.size());}//assumes list is sorted

@@ -14,11 +14,11 @@ dbsUrl=$9
 
 scheduler=glitecoll
 workingDir=`echo $datasetPath | awk -F "/" '{print $2"_"$3}' `.`date +%y%m%d`_`date +%H%M%S`
-copyData=1
-returnData=0
+copyData=0
+returnData=1
 
-#nrEvents=2000
-#nrJobs=2
+nrEvents=100000
+nrJobs=10
 
 echo $workingDir
 

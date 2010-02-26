@@ -99,6 +99,16 @@ TVector3 SHCaloCellGeom::pos(float depth)const
 
 }
 
+float SHCaloCellGeom::cellOPTheta()const
+{
+  double posT = pos_.Pt();
+  double rearT = rearPos_.Pt();
+  
+  return atan((rearT-posT)/(rearPos_.Z()-pos_.Z()));
+}
+
+
+
 void SHCaloCellGeom::setEdgesFromCorners_(const std::vector<TVector3>& corners)
 {
   float minEtaFront = std::min(corners[0].Eta(),corners[2].Eta());

@@ -24,7 +24,14 @@ SHEvent::SHEvent():
   weight_(0.),
   metData_(),
   l1Bits_(0x0),
-  l1CandArray_("SHL1Cand",20)
+  l1CandArray_("SHL1Cand",20),
+  lumiSec_(0),
+  bx_(0),
+  orbNr_(0),
+  time_(0),
+  nrVertices_(-1),
+  vertex_(-999,-999,-999),
+  beamSpot_(-999,-999,-999)
 {
  
 }
@@ -45,12 +52,12 @@ SHEvent::~SHEvent()
 void SHEvent::addMCParticle(int partIndx,int partStdhep,int partIdhep,
 			    int partJmo1,int partJmo2,int partNrMo,
 			    int partJda1,int partJda2,int partNrDa,
-			    TLorentzVector& p4)
+			    const TLorentzVector& p4,const TVector3& pos)
 {
   if(partIndx!=nrMCParticles()) std::cout <<"SHEvent::addMCParticle : Error particle should be at index "<<partIndx<<" but will be added in index "<<nrMCParticles()<<std::endl;
   new(mcPartArray_[nrMCParticles()]) SHMCParticle(partIndx,partStdhep,partIdhep,
 						  partJmo1,partJmo2,partNrMo,
-						  partJda1,partJda2,partNrDa,p4);
+						  partJda1,partJda2,partNrDa,p4,pos);
 }
 
 void SHEvent::addMCParticle(const SHMCParticle& mcPart)
@@ -253,6 +260,14 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   datasetCode_=rhs.datasetCode_;
   weight_=rhs.weight_;
   metData_=rhs.metData_;
+  l1Bits_ =rhs.l1Bits_;
+  bx_ =rhs.bx_;
+  lumiSec_ =rhs.lumiSec_;
+  time_ = rhs.time_;
+  orbNr_ = rhs.orbNr_;
+  nrVertices_ = rhs.nrVertices_;
+  vertex_ = rhs.vertex_;
+  beamSpot_ = rhs.beamSpot_;
 }
 
 //I have a memory leak from some where....
@@ -271,10 +286,17 @@ void SHEvent::clear()
   eventnr_=0;
   isMC_=0;
   datasetCode_=0;
-  weight_=0.;
+  weight_=0.;  
+  lumiSec_=0;
+  bx_=0;
+  orbNr_=0;
+  time_=0;
   metData_.clear(); 
   l1CandArray_.Delete();
   l1Bits_.ResetAllBits();
+  nrVertices_=-1;
+  vertex_.SetXYZ(-999,-999,-999); 
+  beamSpot_.SetXYZ(-999,-999,-999);
 }
 
 
@@ -314,28 +336,30 @@ void SHEvent::printTruth(int nrLines)const
   }
 }
 
-//this has to do some bug fixing as very high and high et trigger objs may not be stored
+
 int SHEvent::getTrigCode()const
 {
   int trigCode = 0x0;
-
-  for(int trigNr=0;trigNr<3;trigNr++){ //very high and high broken
-    if(!getTrigInfo(trigNr)->passTrig()) trigCode |=(0x1<<trigNr);
-  }
+  const std::string ele15("hltL1NonIsoHLTNonIsoSingleElectronEt15PixelMatchFilter");
+  const std::string pho15("hltL1NonIsoHLTNonIsoSinglePhotonEt15HcalIsolFilter"); 
+  const std::string ele15Id("hltL1NonIsoHLTNonIsoSingleElectronEt15EleIdDphiFilter"); 
+  if(passTrig(ele15)) trigCode |=0x1;
+  if(passTrig(ele15Id)) trigCode |=0x2;
+  if(passTrig(pho15)) trigCode |=0x4;
   
   return trigCode;
 }
 
 
-int SHEvent::getTrigCode(double eta,double phi)
+int SHEvent::getTrigCode(double eta,double phi)const
 {
   int trigCode = 0x0;
-  
-  for(int trigNr=0;trigNr<3;trigNr++){ //very high and high broken
-    if(!getTrigInfo(trigNr)->passTrig(eta,phi)) trigCode |=(0x1<<trigNr);
-  }
-
-  
+  const std::string ele15("hltL1NonIsoHLTNonIsoSingleElectronEt15PixelMatchFilter");
+  const std::string pho15("hltL1NonIsoHLTNonIsoSinglePhotonEt15HcalIsolFilter"); 
+  const std::string ele15Id("hltL1NonIsoHLTNonIsoSingleElectronEt15EleIdDphiFilter"); 
+  if(passTrig(ele15,eta,phi)) trigCode |=0x1;
+  if(passTrig(ele15Id,eta,phi)) trigCode |=0x2;
+  if(passTrig(pho15,eta,phi)) trigCode |=0x4;
 
   return trigCode;
 }
@@ -353,12 +377,23 @@ bool SHEvent::passTrig(const std::string& trigName,double eta,double phi)const
   return false;
 }
 
+bool SHEvent::passTrig(const std::string& trigName)const
+{
+  for(int trigNr=0;trigNr<nrTrigs();trigNr++){
+    const SHTrigInfo* trig= getTrigInfo(trigNr);
+    if(trigName==trig->name()) {
+      //  std::cout <<"found trig "<<trigName<<" nr pass "<<trig->nrPass()<<" eta "<<eta<<" phi "<<phi<<" pass "<<trig->passTrig(eta,phi)<<std::endl;
+      return trig->passTrig();
+    }
+  }
+  return false;
+}
 
 void SHEvent::printTrigs()const
 {
-  std::cout <<"nr triggers fired "<<nrTrigs()<<std::endl;
+  // std::cout <<"nr triggers fired "<<nrTrigs()<<std::endl;
   for(int i=0;i<nrTrigs();i++){
-    std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" nr pass "<<getTrigInfo(i)->nrPass()<<std::endl;
+    if(getTrigInfo(i)->passTrig()) std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" global pass "<<getTrigInfo(i)->passTrig()<<" nr pass "<<getTrigInfo(i)->nrPass()<<std::endl;
   }
 }
 

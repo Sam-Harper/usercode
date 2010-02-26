@@ -23,13 +23,6 @@ void SHEvent::addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits)
   new(electronArray_[nrElectrons()]) SHElectron(ele,superClusIndx);
   getElectron(nrElectrons()-1)->setMotherEvent(this); //telling the electron which event owns it
  
-  //now we are going to fix the fact that seed of the supercluster is not set properly in summer09
-  //this is a bug fix which will eventually be removed
-  SHElectron* shEle = getElectron(nrElectrons()-1);
-  if(fabs(shEle->detEta())<1.5){
-    shEle->setSeedId(shEle->superClus()->seedClus()->eMaxId());
-  }
-
 }
 
 //note: change pointers to reference variables
@@ -50,6 +43,26 @@ void SHEvent::addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer&
   getElectron(nrElectrons()-1)->setMotherEvent(this); //telling the electron which event owns it
  
 }
+
+void SHEvent::addElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus, //for trackless electrons
+			  const cmssw::FiducialFlags& fid,
+			  const cmssw::ShowerShape& shape,
+			  const cmssw::IsolationVariables& isol03,
+			  const cmssw::IsolationVariables& isol04,
+			  const SHCaloHitContainer& hits)
+{
+  int superClusIndx = getSuperClusIndx(superClus.rawEnergy(),superClus.position().Eta(),superClus.position().Phi()); //matches on raw energy, eta and phi in calo, returns -1 if not found
+
+  if(superClusIndx==-1){//not already added, need to add to event
+    superClusIndx=nrSuperClus();
+    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus,hits);
+  }
+  
+  new(electronArray_[nrElectrons()]) SHElectron(p4,superClus,fid,shape,isol03,isol04,superClusIndx);
+  getElectron(nrElectrons()-1)->setMotherEvent(this); //telling the electron which event owns it
+  
+}
+
 
 void SHEvent::addJet(const pat::Jet& jet)
 {

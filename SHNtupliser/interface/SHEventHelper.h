@@ -11,8 +11,11 @@
 //note: as of 16/09/08, we dont have full functionality, some functions are empty
 
 #include "SHarper/SHNtupliser/interface/SHCaloHit.hh"
+#include "SHarper/SHNtupliser/interface/EleMaker.h"
+
 
 #include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 #include <vector>
 
@@ -30,6 +33,9 @@ private:
   float eventWeight_; //the weight of the event, again only really means something to me
   bool isMC_;// if we are running on mc or not
   int nrGenPartToStore_;
+  
+  EleMaker tracklessEleMaker_;
+
 
   //storage for SHCaloHits so we dont have to keep reallocating the memory 
   mutable std::vector<SHCaloHit> ecalHitVec_;
@@ -42,6 +48,8 @@ private:
 public:
   explicit SHEventHelper(int datasetCode=0,float eventWeight=1.0);
   
+  void setup(const edm::ParameterSet& conf){tracklessEleMaker_.setup(conf);}
+
   //the two modifiers
   void setDatasetCode(int datasetCode){datasetCode_=datasetCode;}
   void setEventWeight(float weight){eventWeight_=weight;}
@@ -51,6 +59,8 @@ public:
  
   void addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const;
+  void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const;
+  void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const;
   void addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addCaloHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addEcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
@@ -63,6 +73,8 @@ public:
   void addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
+
+  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const;
 private:
   //the hashing functions for vector positions
   int ecalHitHash_(const DetId detId)const;

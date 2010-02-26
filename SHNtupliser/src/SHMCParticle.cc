@@ -16,7 +16,8 @@ SHMCParticle::SHMCParticle():
   jda1_(0),
   jda2_(0),
   nrDa_(0),
-  fourMomentum_(0.,0.,0.,0.)
+  fourMomentum_(0.0001,0.,0.,0.),
+  pos_(0.0001,0.,0)
 {
 
 }
@@ -24,7 +25,7 @@ SHMCParticle::SHMCParticle():
 SHMCParticle::SHMCParticle(int partIndx,int partStdhep,int partIdhep,
 			   int partJmo1,int partJmo2,int partNrMo,
 			   int partJda1,int partJda2,int partNrDa,
-			   TLorentzVector& p4):
+			   const TLorentzVector& p4,const TVector3& pos):
   index_(partIndx),
   stdhep_(partStdhep),
   idhep_(partIdhep),
@@ -34,7 +35,8 @@ SHMCParticle::SHMCParticle(int partIndx,int partStdhep,int partIdhep,
   jda1_(partJda1),
   jda2_(partJda2),
   nrDa_(partNrDa),
-  fourMomentum_(p4)
+  fourMomentum_(p4),
+  pos_(pos)
 {
 
 }
@@ -50,7 +52,8 @@ SHMCParticle::SHMCParticle(const SHMCParticle& rhs):
   jda1_(rhs.jda1_),
   jda2_(rhs.jda2_),
   nrDa_(rhs.nrDa_),
-  fourMomentum_(rhs.fourMomentum_)
+  fourMomentum_(rhs.fourMomentum_),
+  pos_(rhs.pos_)
 {
 
 }

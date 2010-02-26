@@ -5,12 +5,18 @@
 #include "SHarper/SHNtupliser/interface/HackedFuncs.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
+#include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
+
+#include "SHarper/SHNtupliser/interface/GeomFuncs.hh"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
+
+#include "TrackingTools/GsfTools/interface/MultiTrajectoryStateTransform.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
 
 #include "TVector3.h"
 #include "TBits.h"
@@ -37,8 +43,8 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
 
    addTrigInfo(heepEvent,shEvent);
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
-  addJets(heepEvent,shEvent);
-  addMet(heepEvent,shEvent);
+   // addJets(heepEvent,shEvent);
+   //addMet(heepEvent,shEvent);
   addMCParticles(heepEvent,shEvent);
   addIsolTrks(heepEvent,shEvent);
 }
@@ -60,18 +66,104 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
   shEvent.setWeight(eventWeight_);
   //std::cout <<"gen pt hat "<<std::endl;
   shEvent.setGenEventPtHat(heepEvent.genEventPtHat());
+  shEvent.setBX(heepEvent.bx());
+  shEvent.setLumiSec(heepEvent.lumiSec());
+  shEvent.setTime(heepEvent.time());
+  shEvent.setOrbitNumber(heepEvent.orbitNumber());
+  shEvent.setNrVertices(heepEvent.handles().vertices->size());
+  TVector3 vtxPos;
+  if(heepEvent.handles().vertices->size()>0){  
+    const reco::Vertex& vertex = heepEvent.handles().vertices->front();
+    vtxPos.SetXYZ(vertex.x(),vertex.y(),vertex.z()); 
+  }
+  shEvent.setVertex(vtxPos);
+  math::XYZPoint bsCMSSW = heepEvent.handles().beamSpot->position();
+  TVector3 bs(bsCMSSW.x(),bsCMSSW.y(),bsCMSSW.z());
+  shEvent.setBeamSpot(bs);
+  
+ 
   //std::cout <<"done "<<std::endl;
 }
 
-
+//this now promotes all sc to electrons...
+//runs through all sc + works out if matched to electron
+//if so, just adds it as normal
+//if not, makes a superclus only electron
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
-{
-  const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
-  //const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
-  for(size_t eleNr=0;eleNr<electrons.size();eleNr++){
-    shEvent.addElectron(electrons[eleNr],shEvent.getCaloHits());
-  } 
+{  
+  float minEtCut=15; //cut on sc et to be promoted to electron if not found by GsfElectron
+
+  // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
+  const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
+  const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
+  const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE();
   
+  for(size_t scNr=0;scNr<superClusEB.size();scNr++){
+    size_t eleNr = matchToEle(superClusEB[scNr],electrons);
+    if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
+    else if(superClusEB[scNr].energy()*sin(superClusEB[scNr].position().theta())>minEtCut) addElectron(heepEvent,shEvent,superClusEB[scNr]);
+  }
+  for(size_t scNr=0;scNr<superClusEE.size();scNr++){
+    size_t eleNr = matchToEle(superClusEE[scNr],electrons);
+    if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
+    else if(superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())>minEtCut) addElectron(heepEvent,shEvent,superClusEE[scNr]);
+  }
+  
+  
+}
+
+void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const
+{
+  MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
+  shEvent.addElectron(gsfEle,shEvent.getCaloHits());
+  SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
+  
+  if(shEle->seedId()!=0){
+    
+    const TVector3& seedPos = GeomFuncs::getCell(shEle->seedId()).pos();
+    GlobalPoint posGP(seedPos.X(),seedPos.Y(),seedPos.Z());  
+    
+    //  std::cout <<" pt "<<gsfEle.gsfTrack()->pt()<<std::endl;
+    TrajectoryStateOnSurface outTSOS = trajStateTransform.outerStateOnSurface(*gsfEle.gsfTrack());
+    TrajectoryStateOnSurface innTSOS = trajStateTransform.innerStateOnSurface(*gsfEle.gsfTrack());
+    TrajectoryStateOnSurface outToSeedTSOS = trajStateTransform.extrapolatedState(outTSOS,posGP);
+    TrajectoryStateOnSurface innToSeedTSOS = trajStateTransform.extrapolatedState(innTSOS,posGP);
+    
+    TVector3 dummy; 
+    dummy.SetPtEtaPhi(0.00001,-10,0);
+    if(outToSeedTSOS.isValid()){
+      TVector3 outToSeedPos(outToSeedTSOS.globalPosition().x(),outToSeedTSOS.globalPosition().y(),outToSeedTSOS.globalPosition().z()); 
+      shEle->setPosTrackOutToSeed(outToSeedPos); 
+    }else shEle->setPosTrackOutToSeed(dummy);
+    
+    if(innToSeedTSOS.isValid()){
+      TVector3 innToSeedPos(innToSeedTSOS.globalPosition().x(),innToSeedTSOS.globalPosition().y(),innToSeedTSOS.globalPosition().z());
+      shEle->setPosTrackInnToSeed(innToSeedPos);  
+    }else shEle->setPosTrackInnToSeed(dummy);
+    //  std::cout <<"set state"<<std::endl;
+  }
+  
+}
+
+void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const
+{
+  cmssw::IsolationVariables isol03 = tracklessEleMaker_.getIsol(superClus,heepEvent,0.3);
+  cmssw::IsolationVariables isol04 = tracklessEleMaker_.getIsol(superClus,heepEvent,0.4);
+  cmssw::FiducialFlags fid = tracklessEleMaker_.getFid(superClus,heepEvent);
+  cmssw::ShowerShape shape = tracklessEleMaker_.getShowerShape(superClus,heepEvent,fid.isEB);
+  TLorentzVector p4 = tracklessEleMaker_.getP4(superClus,heepEvent);
+  
+  shEvent.addElectron(p4,superClus,fid,shape,isol03,isol04,shEvent.getCaloHits());
+   
+}
+
+size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const
+{
+  for(size_t eleNr=0;eleNr<eles.size();eleNr++){
+    const reco::GsfElectron& ele = eles[eleNr];
+    if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
+  }
+  return eles.size();
 }
 
 void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -217,6 +309,7 @@ void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 
 void SHEventHelper::addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
+  if(!heepEvent.hasGenParticles()) return;
   const std::vector<reco::GenParticle>& particles = heepEvent.genParticles();
   int nrPartsToStore = nrGenPartToStore_;
   if(nrPartsToStore==-1) nrPartsToStore = particles.size();
@@ -239,6 +332,7 @@ void SHEventHelper::addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent
     int nrMo = genPart->numberOfMothers();
     int nrDa = genPart->numberOfDaughters();
     TLorentzVector p4(genPart->px(),genPart->py(),genPart->pz(),genPart->energy());
+    TVector3 pos(genPart->vx(),genPart->vy(),genPart->vz());
     
     
     //now sort out the mother and daughter links
@@ -258,7 +352,7 @@ void SHEventHelper::addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent
     if(vecIt!=candPointers.end()) jda2 = vecIt - candPointers.begin();
 
     //yay, we have everything we need
-    shEvent.addMCParticle(index,status,pid,jmo1,jmo2,nrMo,jda1,jda2,nrDa,p4);
+    shEvent.addMCParticle(index,status,pid,jmo1,jmo2,nrMo,jda1,jda2,nrDa,p4,pos);
     
   }//end loop over all mc particles
 

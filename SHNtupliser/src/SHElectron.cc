@@ -136,7 +136,7 @@ SHElectron::SHElectron(const SHElectron &rhs):
   isolHadDepth2DR04_(rhs.isolHadDepth2DR04_),
   isolPtTrksDR04_(rhs.isolPtTrksDR04_), 
   epCombNrgy_(rhs.epCombNrgy_),
-  seedId_(0),
+  seedId_(rhs.seedId_),
   isBarrel_(rhs.isBarrel_),
   isEBEEGap_(rhs.isEBEEGap_), 
   isEBEtaGap_(rhs.isEBEtaGap_),  
@@ -144,6 +144,8 @@ SHElectron::SHElectron(const SHElectron &rhs):
   isEEDeeGap_(rhs.isEEDeeGap_),  
   isEERingGap_(rhs.isEERingGap_),
   posChargeTrk_(rhs.posChargeTrk_),
+  posTrackInnToSeed_(rhs.posTrackInnToSeed_),
+  posTrackOutToSeed_(rhs.posTrackOutToSeed_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
 
@@ -151,7 +153,7 @@ SHElectron::SHElectron(const SHElectron &rhs):
 
 int SHElectron::region()const
 {
-  if(type()<100){//barrel
+  if(isBarrel()){//barrel
     if(fabs(detEta())<1.442) return 0;
     else return 10;
   }else{//endcap
@@ -172,7 +174,7 @@ const SHBasicCluster* SHElectron::seedClus()const
   else return superClus()->seedClus();
 }
 
-int SHElectron::seedId()const
+int SHElectron::seedIdFromClus()const
 {
   const SHBasicCluster* seed = seedClus();
   if(seed) return seed->seedId();

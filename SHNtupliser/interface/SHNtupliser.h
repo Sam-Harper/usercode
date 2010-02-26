@@ -56,7 +56,8 @@ private:
   int nrTot_;
   int nrPass_;
 
-
+  // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
+  //TTree* scTree_;
   //disabling copy and assignment 
   //I cant think of a reason why I would want to copy this class and its complicated to do right due to TTree
 private:

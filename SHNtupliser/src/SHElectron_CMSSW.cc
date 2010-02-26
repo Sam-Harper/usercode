@@ -20,7 +20,7 @@ rawNrgy_(ele.gsfEle().superCluster()->rawEnergy()),
 preShowerNrgy_(ele.gsfEle().superCluster()->preshowerEnergy()),
 nrgyErr_(ele.gsfEle().ecalEnergyError()),
 posCal_(ele.gsfEle().caloPosition().X(),ele.gsfEle().caloPosition().Y(),ele.gsfEle().caloPosition().Z()),
-e5x5_(ele.e5x5()),
+e5x5_(ele.scE5x5()),
 eta_(ele.eta()),
 detEta_(ele.detEta()),
 //track quantities (momentum + positions)
@@ -57,7 +57,7 @@ isolHad_(ele.isolHad()),
 isolHadDepth1_(ele.isolHadDepth1()),
 isolHadDepth2_(ele.isolHadDepth2()),
 isolPtTrks_(ele.isolPtTrks()),
-isolNrTrks_(-1),
+isolNrTrks_(-1), //no longer valid
 cutCode_(ele.cutCode()),
 e1x5Over5x5_(ele.scE1x5Over5x5()),
 e2x5Over5x5_(ele.scE2x5MaxOver5x5()),
@@ -68,7 +68,7 @@ isolHadDepth1DR04_(ele.gsfEle().dr04HcalDepth1TowerSumEt()),
 isolHadDepth2DR04_(ele.gsfEle().dr04HcalDepth2TowerSumEt()),
 isolPtTrksDR04_(ele.gsfEle().dr04TkSumPt()),
 epCombNrgy_(ele.gsfEle().energy()),
-seedId_(ele.superCluster().seed()->seed().rawId()), //dont ask
+seedId_(ele.superCluster().seed()->seed().rawId()),
 isBarrel_(ele.gsfEle().isEB()),
 isEBEEGap_(ele.gsfEle().isEBEEGap()), 
 isEBEtaGap_(ele.gsfEle().isEBEtaGap()),  
@@ -78,8 +78,9 @@ isEERingGap_(ele.gsfEle().isEERingGap()),
 posChargeTrk_(ele.gsfEle().gsfTrack()->charge()),
 mEvent_(NULL)
 {
-
  
+ 
+
 }
 
 //fills off a GsfElectron, doesnt fill nr trks isol or cutcode
@@ -141,7 +142,7 @@ isolHadDepth1DR04_(ele.dr04HcalDepth1TowerSumEt()),
 isolHadDepth2DR04_(ele.dr04HcalDepth2TowerSumEt()),
 isolPtTrksDR04_(ele.dr04TkSumPt()),
 epCombNrgy_(ele.energy()),
-seedId_(ele.superCluster()->CaloCluster::seed().rawId()),
+seedId_(ele.superCluster()->seed()->seed().rawId()),
 isBarrel_(ele.isEB()),
 isEBEEGap_(ele.isEBEEGap()), 
 isEBEtaGap_(ele.isEBEtaGap()),  
@@ -154,4 +155,79 @@ mEvent_(NULL)
  
  
 
+}
+//makes a trackless electron
+SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus,
+		       const cmssw::FiducialFlags& fid,
+		       const cmssw::ShowerShape& shape,
+		       const cmssw::IsolationVariables& isol03,
+		       const cmssw::IsolationVariables& isol04,
+		       int superClusNr):
+//classification variables
+  type_(0), //all are golden (dump this variable...)
+  //kinematic quantities
+  p4_(p4),
+  et_(p4_.Pt()),
+  nrgy_(p4_.E()),
+  rawNrgy_(superClus.rawEnergy()),
+  preShowerNrgy_(superClus.preshowerEnergy()),
+  nrgyErr_(-999), //too complicated to fill for now
+  posCal_(superClus.x(),superClus.y(),superClus.z()),
+  e5x5_(shape.e5x5),
+  eta_(p4.Eta()),
+  detEta_(superClus.eta()),
+  //track quantities (momentum + positions)
+  //momemtums
+  p3TrackVtx_(0.001,0,0.),
+  p3TrackCal_(0.001,0,0.),
+  p3TrackInn_(0.001,0,0.),
+  p3TrackOut_(0.001,0,0.),
+  //positions
+  posTrackVtx_(0.001,0,0.),
+  posTrackCal_(0.001,0,0.),
+  posTrackInn_(0.001,0,0.),
+  posTrackOut_(0.001,0,0.),
+  trkChi2_(999999),
+  nrDof_(static_cast<int>(1)),
+  posCharge_(0),
+  //id quantities
+  epIn_(999999),
+  epOut_(999999),
+  hadem_(shape.hcalDepth1OverEcal+shape.hcalDepth2OverEcal),
+  hademDepth1_(shape.hcalDepth1OverEcal), 
+  hademDepth2_(shape.hcalDepth2OverEcal),
+  dEtaIn_(0),
+  dEtaOut_(0),
+  dPhiIn_(0),
+  dPhiOut_(0),
+  sigmaEtaEta_(shape.sigmaEtaEta),
+  sigmaIEtaIEta_(shape.sigmaIetaIeta),
+  //links to tracks, superClusters
+  superClusIndx_(superClusNr),
+  isolEm_(isol03.ecalRecHitSumEt),
+  isolHad_(isol03.hcalDepth1TowerSumEt+isol03.hcalDepth2TowerSumEt),
+  isolHadDepth1_(isol03.hcalDepth1TowerSumEt),
+  isolHadDepth2_(isol03.hcalDepth2TowerSumEt),
+  isolPtTrks_(isol03.tkSumPt),
+  isolNrTrks_(-1), //not really supported anymore
+  cutCode_(-1),
+  e1x5Over5x5_(shape.e1x5/shape.e5x5),
+  e2x5Over5x5_(shape.e2x5Max/shape.e5x5),
+  isEcalDriven_(1),
+  isTrackerDriven_(0),
+  isolEmDR04_(isol04.ecalRecHitSumEt),
+  isolHadDepth1DR04_(isol04.hcalDepth1TowerSumEt),
+  isolHadDepth2DR04_(isol04.hcalDepth2TowerSumEt),
+  isolPtTrksDR04_(isol04.tkSumPt),
+  epCombNrgy_(-999),
+  seedId_(superClus.seed()->seed().rawId()),
+  isBarrel_(fid.isEB),
+  isEBEEGap_(fid.isEBEEGap), 
+  isEBEtaGap_(fid.isEBEtaGap),  
+  isEBPhiGap_(fid.isEBPhiGap), 
+  isEEDeeGap_(fid.isEEDeeGap),  
+  isEERingGap_(fid.isEERingGap),
+  posChargeTrk_(0),
+mEvent_(NULL)
+{
 }

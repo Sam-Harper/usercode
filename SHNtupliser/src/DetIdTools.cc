@@ -119,6 +119,33 @@ int DetIdTools::makeEcalBarrelId(int iEta,int iPhi)
 
 }
 
+int DetIdTools::dIEtaBarrel(int detId1,int detId2)
+{
+  int iEta1 = iEtaBarrel(detId1);
+  int iEta2 = iEtaBarrel(detId2);
+  
+  int dEta = iEta1-iEta2;
+  if(iEta1*iEta2<0) {//-ve to +ve transistion and no crystal at zero
+    if(dEta<0) dEta++;
+    else dEta--;
+  }
+  return dEta;
+}
+
+int DetIdTools::dIPhiBarrel(int detId1,int detId2)
+{
+  int iPhi1 = iPhiBarrel(detId1);
+  int iPhi2 = iPhiBarrel(detId2);
+
+  int dPhi = iPhi1-iPhi2;
+
+  if(dPhi>180) dPhi-=360;
+  else if(dPhi<-180) dPhi+=360;
+  
+  return dPhi;
+
+}
+
 int DetIdTools::makeEcalEndcapId(int ix,int iy,int iz)
 {
   int detId=(kEcalCode | kEndcapCode);
@@ -151,7 +178,14 @@ int DetIdTools::makeEcalEndcapId(int ix,int iy,int iz)
 // {
 //   return iYEndcap(detId) - nBegin_[iXEndcap(detId)-1] + nIntegral_[iXEndcap(detId) -1 ] + (positiveZEndcap(detId) ? kICrFee_ : 0);
 // }
-  
+int DetIdTools::makeHcalDetId(int iEta,int iPhi,int depth)
+{
+  int subDetCode=0;
+  if(abs(iEta)>=17 || (abs(iEta)==16 && depth==3) ) subDetCode = kEndcapCode;
+  else subDetCode=kBarrelCode;
+  return makeHcalDetId(subDetCode,iEta,iPhi,depth);
+}
+
 int DetIdTools::makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth)
 {
   int detId=0x0;
@@ -556,6 +590,24 @@ float DetIdTools::endcapEtaRingFloat(int detId)
   if(DetIdTools::isEcalEndcap(detId)){
     return endcapEtaRingFloat(DetIdTools::iXEndcap(detId),DetIdTools::iYEndcap(detId));
   }else return -1.;
+}
+
+bool DetIdTools::isNextToRingBoundary(int detId)
+{
+  if(!isValidEcalEndcapId(detId)) return false;
+     
+  int ix=iXEndcap(detId);
+  int iy=iYEndcap(detId);
+  int zSide = zEndcap(detId);
+
+  for (int i = -1; i <= 1; ++i) {
+    for (int j = -1; j <= 1; ++j) {
+      if ( ! isValidEcalEndcapId( ix + i, iy + j, zSide ) ) {
+	return true;
+      }
+    }
+  }
+  return false;
 }
 
 int DetIdTools::normEndcapIXOrIY(int iXOrIY)

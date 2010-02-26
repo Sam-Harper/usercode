@@ -110,6 +110,7 @@ private:
   static int makeEcalBarrelId(int iEta,int iPhi);
   static int makeEcalEndcapId(int ix,int iy,int iz);
   static int makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth);
+  static int makeHcalDetId(int iEta,int iPhi,int depth);
   static int makeHcalBarrelDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kBarrelCode,iEta,iPhi,depth);}
   static int makeHcalEndcapDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kEndcapCode,iEta,iPhi,depth);}
  
@@ -132,9 +133,17 @@ private:
   //ECAL barrel tools
   static int iEtaBarrel(int detId){return positiveZBarrel(detId) ? iEtaAbsBarrel(detId) : -1*iEtaAbsBarrel(detId) ;}
   static int iEtaAbsBarrel(int detId){return (detId>>9) & 0x7F ;}
+  static int iEtaAbsBarrelTower(int detId){return (iEtaAbsBarrel(detId)-1)/5+1;}
+  static int iEtaBarrelTower(int detId){return iEtaAbsBarrelTower(detId)*positiveZBarrel(detId);}
   static int iPhiBarrel(int detId){return detId&0x1FF;}
+  static int iPhiBarrelTower(int detId){int iPhi = (iPhiBarrel(detId)-1)/5+1;iPhi-=2;return iPhi<=0 ? iPhi+72 : iPhi;}
   static bool positiveZBarrel(int detId){return detId&0x10000;}
   
+  static int dIEtaBarrel(int detId1,int detId2);
+  static int dAbsIEtaBarrel(int detId1,int detId2){return abs(dIEtaBarrel(detId1,detId2));}
+  static int dIPhiBarrel(int detId1,int detId2);
+  static int dAbsIPhiBarrel(int detId1,int detId2){return abs(dIEtaBarrel(detId1,detId2));}
+
   //ECAL endcap tools
   static int iYEndcap(int detId){return detId&0x7f;}
   static int iXEndcap(int detId){return (detId>>7)&0x7F;} 
@@ -145,6 +154,9 @@ private:
   static int endcapEtaRing(int ix,int iy);
   static float endcapEtaRingFloat(int detId);
   static float endcapEtaRingFloat(int ix,int iy);
+  static bool isNextToRingBoundary(int detId);
+
+
 
   //HCAL tools (unified for HB/HE)
   static int iPhiHcal(int detId){return detId&0x7F;}
@@ -157,6 +169,8 @@ private:
   static void getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::vector<int>& ids);
   static void printHcalDetId(int detId);
 
+
+  
   
   //hashes for fast lookup
 

@@ -21,13 +21,14 @@ private:
   int jda2_;
   int nrDa_;
   TLorentzVector fourMomentum_;
+  TVector3 pos_;
  
 public:
   SHMCParticle();
   SHMCParticle(int partIndx,int partStdHep,int partIdHep,
 	       int partJmo1,int partJmo2,int partNrMo,
 	       int partJda1,int partJda2,int partNrDa,
-	       TLorentzVector& p4);
+	       const TLorentzVector& p4,const TVector3& pos);
   SHMCParticle(const SHMCParticle& rhs);
   virtual ~SHMCParticle(){}
   friend std::ostream &operator <<(std::ostream& output,const SHMCParticle &mcPart);
@@ -46,7 +47,7 @@ public:
   double mass()const{return fourMomentum_.Mag();}
  
 
-  ClassDef(SHMCParticle,1)
+  ClassDef(SHMCParticle,2)
 
 };
 

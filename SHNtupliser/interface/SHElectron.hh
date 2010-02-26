@@ -19,7 +19,7 @@
 #include "SHarper/SHNtupliser/interface/SHBasicCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHIsolSuperCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHIsolCluster.hh"
-
+#include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 
 #include "TObject.h"
 #include "TVector3.h"
@@ -28,9 +28,15 @@
 namespace heep{
   class Ele;
 }
+
 namespace reco{
   class GsfElectron;
+  class SuperCluster;
+
 }
+
+
+
 
 class SHEvent;
 
@@ -110,6 +116,8 @@ class SHElectron : public TObject {
   bool isEERingGap_; // true if particle is in EE, and inside the gaps between rings
   bool posChargeTrk_;
 
+  TVector3 posTrackInnToSeed_;
+  TVector3 posTrackOutToSeed_;
 
   //backwards link to the mother event
   //needs to be set everytime the event is read
@@ -124,6 +132,10 @@ private:
   SHElectron(const heep::Ele& ele,int superClusNr=-1);
  //fills off a GsfElectron, doesnt fill nr trks isol or cutcode
   SHElectron(const reco::GsfElectron& ele,int superClusNr=-1);
+ 
+  SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus,const cmssw::FiducialFlags& fid,
+  	     const cmssw::ShowerShape& shape,const cmssw::IsolationVariables& isol03,
+  	     const cmssw::IsolationVariables& isol04,int superClusNr);
   ~SHElectron(){}
 
   //modifiers (as these arent members of PixelMatchGsfElectrons so are hacked in for now)
@@ -133,8 +145,9 @@ private:
   //void setIsolEm(double isol){isolEm_=isol;}
   //void setIsolHad(double isol){isolHad_=isol;}
   //void setPassStdSel(bool pass){passStdSel_=pass;}
-
-  void setSeedId(int seedId){seedId_=seedId;} //bug fix func
+  void setPosTrackInnToSeed(const TVector3& pos){posTrackInnToSeed_=pos;}
+  void setPosTrackOutToSeed(const TVector3& pos){posTrackOutToSeed_=pos;}
+  
   void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   void fixTrkIsol();
   //accessors
@@ -144,13 +157,21 @@ private:
   //have any seed/super clusters and want those calls to degrade gracefully
   const SHSuperCluster* superClus()const;
   const SHBasicCluster* seedClus()const;
-  int seedId()const;
+  int seedIdFromClus()const;
 
   //classification variables
   int type()const{return type_;}
   int region()const;
   bool isBarrel()const{return fabs(detEta_)<1.5;}
   bool isEndcap()const{return !isBarrel();}
+  bool isFid()const{return fabs(detEta_)<1.442 || (fabs(detEta_)>1.56 && fabs(detEta_)<2.5);}
+
+  bool isEBEEGap()const{return isEBEEGap_;}   
+  bool isEBEtaGap()const{return isEBEtaGap_;}   
+  bool isEBPhiGap()const{return isEBPhiGap_;}   
+  bool isEEDeeGap() const{return isEEDeeGap_;}    
+  bool isEERingGap()const{return isEERingGap_;}    
+
 
   //kinematic quantities
   float nrgy()const{return p4_.E();}
@@ -181,7 +202,8 @@ private:
   const TVector3& posTrackInn()const{return posTrackInn_;}
   const TVector3& posTrackOut()const{return posTrackOut_;}
   float dzTrkVtx()const;
-
+  const TVector3& posTrackInnToSeed()const{return posTrackInnToSeed_;}
+  const TVector3& posTrackOutToSeed()const{return posTrackOutToSeed_;}
 
   //id quantities
   float epIn()const{return epIn_;}
@@ -224,11 +246,18 @@ private:
   bool isEcalDriven()const{return isEcalDriven_;}
   bool isTrackerDriven()const{return isTrackerDriven_;}
 
+  //  int seedId()const{return seedId_;}
+
+  int seedId()const{return seedIdFromClus();}
+
+
   std::pair<int,float> isolTrk(double minDeltaR,double maxDeltaR,double lipCut,double ptCut)const;
 
   int cutCode()const{return cutCode_;}
  
   int calPhiRoad()const;
+
+
 
   const SHIsolSuperCluster& getIsolSuperClus()const;
   float isolEmClus(double coneRadius)const;
@@ -245,7 +274,7 @@ private:
   const SHEvent* motherEvent()const{return mEvent_;}
 
 
-  ClassDef(SHElectron,13) 
+  ClassDef(SHElectron,15) 
 
 };
 
