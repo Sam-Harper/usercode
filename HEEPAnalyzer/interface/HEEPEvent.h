@@ -43,7 +43,12 @@ namespace heep{
     ~Event(){}
     
     int runnr()const{return edmEvent_->id().run();}
-    int eventnr()const{return edmEvent_->id().event();}
+    int eventnr()const{return edmEvent_->id().event();} 
+    int bx()const{return edmEvent_->bunchCrossing();}
+    int lumiSec()const{return edmEvent_->luminosityBlock();}
+    unsigned long long time()const{return edmEvent_->time().value();}
+    int orbitNumber()const{return edmEvent_->orbitNumber();}
+
     const heep::TrigCodes::TrigBitSet& trigBits()const{return trigBits_;}
     bool passAllTrigs(heep::TrigCodes::TrigBitSet& bitsToCheck){return (bitsToCheck&trigBits_)==bitsToCheck;}
     bool passAnyTrig(heep::TrigCodes::TrigBitSet& bitsToCheck){return (bitsToCheck&trigBits_)!=0x0;}
@@ -63,6 +68,7 @@ namespace heep{
     const HBHERecHitCollection* hbheHits()const{return &(*handles_.hbheRecHits);}
     const std::vector<reco::Track>& ctfTracks()const{return *handles_.ctfTrack;}
     const std::vector<reco::GenParticle>& genParticles()const{return *handles_.genParticle;}
+    bool hasGenParticles()const{return handles_.genParticle.isValid();}
 
     const edm::Event& event()const{return *edmEvent_;}
     heep::EvtHandles& handles(){return handles_;}
@@ -74,7 +80,7 @@ namespace heep{
     const std::vector<bool> l1Decision()const{return handles_.l1Record->decisionWord();} //as decisionWord returns by value so we do to
     const std::vector<l1extra::L1EmParticle>& l1EmNonIso()const{return *handles_.l1EmNonIso;}
     const std::vector<l1extra::L1EmParticle>& l1EmIso()const{return *handles_.l1EmIso;}
-
+  
     
 
       //our two set methods

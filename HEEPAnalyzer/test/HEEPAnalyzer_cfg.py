@@ -23,18 +23,18 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('MC_31X_V3::All')
+process.GlobalTag.globaltag = cms.string('MC_3XY_V25::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 
 # this defines the input files
 process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('dummy'))
-process.PoolSource.fileNames = [
-    '/store/relval/CMSSW_3_2_6/RelValZEE/GEN-SIM-RECO/STARTUP31X_V7-v1/0013/9AB61A32-BA9A-DE11-8298-001D09F29619.root',
-    '/store/relval/CMSSW_3_2_6/RelValZEE/GEN-SIM-RECO/STARTUP31X_V7-v1/0013/80CF3175-C59A-DE11-AB6E-0016177CA778.root',
-    '/store/relval/CMSSW_3_2_6/RelValZEE/GEN-SIM-RECO/STARTUP31X_V7-v1/0013/7047D992-FC9A-DE11-863B-0019B9F72BAA.root',
-    '/store/relval/CMSSW_3_2_6/RelValZEE/GEN-SIM-RECO/STARTUP31X_V7-v1/0013/5CC96C97-B59A-DE11-8CAA-0019B9F6C674.root',
-    '/store/relval/CMSSW_3_2_6/RelValZEE/GEN-SIM-RECO/STARTUP31X_V7-v1/0013/126AA31F-BE9A-DE11-97E9-001D09F290BF.root']
+process.PoolSource.fileNames = [  '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0004/70B2BC04-2D2C-DF11-A5EC-002618FDA28E.root',
+       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/9C5D2907-832B-DF11-9E86-0018F3D09628.root',
+       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/62813863-832B-DF11-BB58-001A928116B8.root',
+       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/582519E2-842B-DF11-BCD2-002618943954.root',
+       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/026E24AA-7D2B-DF11-BD37-0018F3D096AA.root'
+  ]
 #process.PoolSource.fileNames = ['file:/media/usbdisk1/zee_relVal_312_F0303A91-9278-DE11-AADC-001D09F25456.root']
 
 # set the number of events

@@ -6,7 +6,7 @@
 
 
 #include "TH1D.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 
@@ -25,7 +25,7 @@ HEEPAnalyzer::HEEPAnalyzer(const edm::ParameterSet& iPara):
 
 }
 
-void HEEPAnalyzer::beginJob(const edm::EventSetup& iSetup)
+void HEEPAnalyzer::beginJob()
 {
   edm::Service<TFileService> fs;
   massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 5 GeV/c^{2}",290,50,1500); 

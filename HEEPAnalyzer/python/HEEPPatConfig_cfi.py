@@ -26,8 +26,8 @@ from PhysicsTools.PatAlgos.patSequences_cff import *
 #allLayer0Electrons.isolation = cms.PSet() #disable all isolations at pre-selection level
 #patElectronIds.failSilently = cms.untracked.bool(True) #we handle our own ID using heep::EleSelector
 #patElectronIds.associations = cms.VInputTag() #we handle our own ID using heep::EleSelector
-allLayer1Electrons.addElectronID = cms.bool(False) #we handle our own ID using heep::EleSelector
-allLayer1Electrons.electronIDSources = cms.PSet() #we handle our own ID using heep::EleSelector
+patElectrons.addElectronID = cms.bool(False) #we handle our own ID using heep::EleSelector
+patElectrons.electronIDSources = cms.PSet() #we handle our own ID using heep::EleSelector
 
 #basically we try and stop PAT screwing around with our Jets
 #allLayer0Jets.removeOverlaps = cms.PSet()
@@ -38,9 +38,9 @@ allLayer1Electrons.electronIDSources = cms.PSet() #we handle our own ID using he
 
 #now define the HEEP pat sequence
 #we need to ensure that the e/gamma isolations are run as well as our modules keying them to pat values
-heepPATSequence = cms.Sequence(
-                                 
+heepPATSequence = cms.Sequence(patCandidates
+                               )  
                               
-                               allLayer1Objects)
+                               
 
 

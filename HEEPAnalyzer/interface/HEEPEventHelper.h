@@ -55,6 +55,8 @@ namespace heep {
     edm::InputTag l1RecordTag_;
     edm::InputTag l1EmNonIsoTag_;
     edm::InputTag l1EmIsoTag_;
+    edm::InputTag verticesTag_;
+    edm::InputTag caloTowersTag_;
 
     //trigger matching parameters
     std::string hltProcName_;

@@ -6,7 +6,7 @@
 
 
 #include "TH1D.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -17,7 +17,7 @@ HEEPAnalyzerHEEPPAT::HEEPAnalyzerHEEPPAT(const edm::ParameterSet& iPara):
   eleLabel_=iPara.getParameter<edm::InputTag>("eleLabel");
 }
 
-void HEEPAnalyzerHEEPPAT::beginJob(const edm::EventSetup& iSetup)
+void HEEPAnalyzerHEEPPAT::beginJob()
 {
   edm::Service<TFileService> fs;
   massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 5 GeV/c^{2}",290,50,1500); 

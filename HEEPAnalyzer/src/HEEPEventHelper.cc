@@ -14,6 +14,9 @@
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 #include "Geometry/Records/interface/CaloTopologyRecord.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
+ 
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 
 void heep::EventHelper::setup(const edm::ParameterSet& conf)
 {
@@ -39,6 +42,8 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   l1RecordTag_ = conf.getParameter<edm::InputTag>("l1RecordTag");
   l1EmNonIsoTag_ = conf.getParameter<edm::InputTag>("l1EmNonIsoTag");
   l1EmIsoTag_ = conf.getParameter<edm::InputTag>("l1EmIsoTag");
+  verticesTag_ = conf.getParameter<edm::InputTag>("verticesTag");
+  caloTowersTag_ = conf.getParameter<edm::InputTag>("caloTowersTag");
 
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -56,6 +61,7 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
 
   onlyAddEcalDriven_ = conf.getParameter<bool>("onlyAddEcalDriven");
   heepEleSource_ = conf.getParameter<int>("heepEleSource");
+  
 }
 
 void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const
@@ -92,10 +98,15 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(l1RecordTag_,handles.l1Record);
   event.getByLabel(l1EmNonIsoTag_,handles.l1EmNonIso);
   event.getByLabel(l1EmIsoTag_,handles.l1EmIso);
- 
+  event.getByLabel(verticesTag_,handles.vertices);
+  event.getByLabel(caloTowersTag_,handles.caloTowers);
+  event.getByType(handles.beamSpot);
+
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);
   //setup.get<L1GtTriggerMenuRcd>().get(handles.l1Menu);
+  setup.get<TrackerDigiGeometryRecord>().get(handles.trackGeom);
+  setup.get<IdealMagneticFieldRecord>().get(handles.bField);
 }
 
 //fills the heepEles vector using pat electrons as starting point

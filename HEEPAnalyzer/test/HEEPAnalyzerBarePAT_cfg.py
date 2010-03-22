@@ -25,7 +25,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('MC_31X_V3::All')
+process.GlobalTag.globaltag = cms.string('MC_3XY_V25::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # this defines the input files

@@ -23,6 +23,7 @@
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
@@ -30,7 +31,8 @@
 
 #include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
 #include "DataFormats/L1Trigger/interface/L1EmParticle.h"
-
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
 #include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
@@ -38,6 +40,8 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
 namespace heep {
   struct EvtHandles { 
   public:   
@@ -48,6 +52,7 @@ namespace heep {
     edm::Handle<EcalRecHitCollection> ebReducedRecHits;
     edm::Handle<EcalRecHitCollection> eeReducedRecHits;
     edm::Handle<HBHERecHitCollection> hbheRecHits;
+    edm::Handle<CaloTowerCollection> caloTowers;
     edm::Handle<edm::View<pat::Muon> > muon;
     edm::Handle<edm::View<pat::Jet> > jet;
     edm::Handle<edm::View<pat::Electron> > electron;
@@ -66,7 +71,12 @@ namespace heep {
     edm::Handle<L1GlobalTriggerReadoutRecord> l1Record;
     edm::Handle<l1extra::L1EmParticleCollection> l1EmNonIso;
     edm::Handle<l1extra::L1EmParticleCollection> l1EmIso;
+    edm::Handle<reco::VertexCollection> vertices;
+    edm::Handle<reco::BeamSpot> beamSpot;
     edm::ESHandle<L1GtTriggerMenu> l1Menu;
+
+    edm::ESHandle<MagneticField> bField;
+    edm::ESHandle<TrackerGeometry> trackGeom;
   };
 }
 
