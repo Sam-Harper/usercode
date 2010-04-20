@@ -30,7 +30,7 @@
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
-  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0)
+  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false)
 {
   evtHelper_.setup(iPara);
   shEvtHelper_.setup(iPara);
@@ -50,7 +50,7 @@ SHNtupliser::~SHNtupliser()
   if(outFile_) delete outFile_;
 }
 
-void SHNtupliser::beginJob(const edm::EventSetup& iSetup)
+void SHNtupliser::beginJob()
 {
   shEvt_= new SHEvent;
   outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
@@ -59,19 +59,30 @@ void SHNtupliser::beginJob(const edm::EventSetup& iSetup)
   // scTree_=new TTree("scTree","tree");
   // scTree_->Branch("sc",&oldSigmaIEtaIEta_,"oldSigmaIEtaIEta/F:newSigmaIEtaIEta:affectedByCaloNavBug:scNrgy:scEta:scPhi:scEt");
 
+
+ 
+ 
+} 
+
+void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
+{ 
+  std::cout <<"begin run "<<initGeom_<<std::endl;
+  if(!initGeom_){
   //write out calogeometry
-  SHGeomFiller geomFiller(iSetup);  
-  SHCaloGeom ecalGeom(SHCaloGeom::ECAL);
-  SHCaloGeom hcalGeom(SHCaloGeom::HCAL);
-  geomFiller.fillEcalGeom(ecalGeom);
-  geomFiller.fillHcalGeom(hcalGeom);
-   outFile_->WriteObject(&ecalGeom,"ecalGeom");
-   outFile_->WriteObject(&hcalGeom,"hcalGeom");
-  
-  GeomFuncs::loadCaloGeom(ecalGeom,hcalGeom);
- 
- 
+    std::cout <<"writing geom "<<std::endl;
+    SHGeomFiller geomFiller(iSetup);  
+    SHCaloGeom ecalGeom(SHCaloGeom::ECAL);
+    SHCaloGeom hcalGeom(SHCaloGeom::HCAL);
+    geomFiller.fillEcalGeom(ecalGeom);
+    geomFiller.fillHcalGeom(hcalGeom);
+    outFile_->WriteObject(&ecalGeom,"ecalGeom");
+    outFile_->WriteObject(&hcalGeom,"hcalGeom");
+    
+    GeomFuncs::loadCaloGeom(ecalGeom,hcalGeom);
+    initGeom_=true;
+  }
 }
+
 
 void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
@@ -166,7 +177,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
     
     // if(passEt){
       nrPass_++;
-      //  evtTree_->Fill();
+        evtTree_->Fill();
       //}
     // }
 }

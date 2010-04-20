@@ -2,6 +2,7 @@
 #include "SHarper/SHNtupliser/interface/SHMCParticle.hh"
 
 #include<iomanip>
+#include<iostream>
 
 ClassImp(SHMCParticle)
 

@@ -34,6 +34,11 @@ private:
   bool isMC_;// if we are running on mc or not
   int nrGenPartToStore_;
   
+  float minEtToPromoteSC_;
+  bool addMet_;
+  bool addJets_;
+  bool fillFromGsfEle_;
+
   EleMaker tracklessEleMaker_;
 
 
@@ -48,7 +53,7 @@ private:
 public:
   explicit SHEventHelper(int datasetCode=0,float eventWeight=1.0);
   
-  void setup(const edm::ParameterSet& conf){tracklessEleMaker_.setup(conf);}
+  void setup(const edm::ParameterSet& conf);
 
   //the two modifiers
   void setDatasetCode(int datasetCode){datasetCode_=datasetCode;}
@@ -75,6 +80,7 @@ public:
 
 
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const;
+  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const;
 private:
   //the hashing functions for vector positions
   int ecalHitHash_(const DetId detId)const;

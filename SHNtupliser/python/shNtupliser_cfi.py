@@ -6,6 +6,10 @@ shNtupliser = cms.EDAnalyzer("SHNtupliser", heepEventPara,
     outputFilename = cms.string("testOutput.root"),
     datasetCode = cms.int32(0),
     sampleWeight = cms.double(1.),
+    minEtToPromoteSC = cms.double(15.),
+    addMet = cms.bool(True),
+    addJets = cms.bool(True),
+    fillFromGsfEle = cms.bool(True),
      # Isolation algos configuration
     intRadiusTk = cms.double(0.04), 
     ptMinTk = cms.double(0.7), 
@@ -22,7 +26,7 @@ shNtupliser = cms.EDAnalyzer("SHNtupliser", heepEventPara,
     eMinEndcaps = cms.double(0.0),  
     vetoClustered  = cms.bool(False),  
     useNumCrystals = cms.bool(True),
-   
+                           
                              
     
 ) 

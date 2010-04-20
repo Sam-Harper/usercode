@@ -18,6 +18,8 @@ namespace cmssw{
          isEBEtaGap(false), isEBPhiGap(false),
 	isEEDeeGap(false), isEERingGap(false)
     {}
+    
+   
   } ;
   
   
@@ -30,11 +32,14 @@ namespace cmssw{
     float e5x5 ;               // energy inside 5x5 in etaxphi around the seed Xtal
     float hcalDepth1OverEcal ; // hcal over ecal seed cluster energy using first hcal depth (hcal is energy of towers within dR=015)
     float hcalDepth2OverEcal ; // hcal over ecal seed cluster energy using 2nd hcal depth (hcal is energy of towers within dR=015)
+    float eMax;
+    float e3x3;
     ShowerShape()
       : sigmaEtaEta(std::numeric_limits<float>::infinity()),
 	sigmaIetaIeta(std::numeric_limits<float>::infinity()),
 	e1x5(0.), e2x5Max(0.), e5x5(0.),
-	hcalDepth1OverEcal(0), hcalDepth2OverEcal(0)
+	hcalDepth1OverEcal(0), hcalDepth2OverEcal(0),
+	eMax(0),e3x3(0)
        {}
   } ;
   

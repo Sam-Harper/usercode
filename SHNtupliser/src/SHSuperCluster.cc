@@ -1,6 +1,6 @@
 #include "SHarper/SHNtupliser/interface/SHSuperCluster.hh"
 #include <cmath>
-
+#include <algorithm>
 ClassImp(SHSuperCluster)
 
 SHSuperCluster::SHSuperCluster():

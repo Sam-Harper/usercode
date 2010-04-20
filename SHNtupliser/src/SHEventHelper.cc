@@ -30,6 +30,14 @@ SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
   initEcalHitVec_();
   initHcalHitVec_();
 }
+void SHEventHelper::setup(const edm::ParameterSet& conf)
+{ 
+  minEtToPromoteSC_ = conf.getParameter<double>("minEtToPromoteSC");
+  addMet_ = conf.getParameter<bool>("addMet");
+  addJets_ = conf.getParameter<bool>("addJets");
+  fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
+  tracklessEleMaker_.setup(conf);
+}
 
 void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)const
 {
@@ -43,10 +51,10 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
 
    addTrigInfo(heepEvent,shEvent);
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
-   // addJets(heepEvent,shEvent);
-   //addMet(heepEvent,shEvent);
-  addMCParticles(heepEvent,shEvent);
-  addIsolTrks(heepEvent,shEvent);
+   if(addJets_) addJets(heepEvent,shEvent);
+   if(addMet_) addMet(heepEvent,shEvent);
+   addMCParticles(heepEvent,shEvent);
+   addIsolTrks(heepEvent,shEvent);
 }
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -91,8 +99,7 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
 //if not, makes a superclus only electron
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
-  float minEtCut=15; //cut on sc et to be promoted to electron if not found by GsfElectron
-
+ 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
   const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
   const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
@@ -101,12 +108,12 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   for(size_t scNr=0;scNr<superClusEB.size();scNr++){
     size_t eleNr = matchToEle(superClusEB[scNr],electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
-    else if(superClusEB[scNr].energy()*sin(superClusEB[scNr].position().theta())>minEtCut) addElectron(heepEvent,shEvent,superClusEB[scNr]);
+    else if(superClusEB[scNr].energy()*sin(superClusEB[scNr].position().theta())>minEtToPromoteSC_) addElectron(heepEvent,shEvent,superClusEB[scNr]);
   }
   for(size_t scNr=0;scNr<superClusEE.size();scNr++){
     size_t eleNr = matchToEle(superClusEE[scNr],electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
-    else if(superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())>minEtCut) addElectron(heepEvent,shEvent,superClusEE[scNr]);
+    else if(superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())>minEtToPromoteSC_) addElectron(heepEvent,shEvent,superClusEE[scNr]);
   }
   
   
@@ -161,6 +168,15 @@ size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::
 {
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr];
+    if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
+  }
+  return eles.size();
+}
+
+size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const
+{
+  for(size_t eleNr=0;eleNr<eles.size();eleNr++){
+    const reco::GsfElectron& ele = eles[eleNr].gsfEle();
     if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
   }
   return eles.size();

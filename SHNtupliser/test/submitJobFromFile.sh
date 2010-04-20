@@ -21,7 +21,7 @@ outputFile=${dataset}_ntuples_${cmsswVersion}_SHv13_tracklessEle.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 #outputPath=312/Oct09ExoEleSkim/$dataset/
-outputPath=316/v13_7TeV/$dataset/
+outputPath=336/v13_10TeV/$dataset/
 #dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet"
 #dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
 baseCfg="shNtupliserNoHEPreSel_base_cfg.py"

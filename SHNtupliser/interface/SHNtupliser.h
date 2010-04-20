@@ -56,6 +56,8 @@ private:
   int nrTot_;
   int nrPass_;
 
+  bool initGeom_;
+
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;
   //disabling copy and assignment 
@@ -69,7 +71,8 @@ public:
   virtual ~SHNtupliser();
   
 private:
-  virtual void beginJob(const edm::EventSetup& iSetup) ;
+  virtual void beginJob() ;
+  virtual void beginRun(const edm::Run& run,const edm::EventSetup& iSetup);
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
   virtual void endJob() ;
   
