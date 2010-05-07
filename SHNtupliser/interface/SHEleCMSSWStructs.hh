@@ -18,8 +18,6 @@ namespace cmssw{
          isEBEtaGap(false), isEBPhiGap(false),
 	isEEDeeGap(false), isEERingGap(false)
     {}
-    
-   
   } ;
   
   
@@ -38,8 +36,7 @@ namespace cmssw{
       : sigmaEtaEta(std::numeric_limits<float>::infinity()),
 	sigmaIetaIeta(std::numeric_limits<float>::infinity()),
 	e1x5(0.), e2x5Max(0.), e5x5(0.),
-	hcalDepth1OverEcal(0), hcalDepth2OverEcal(0),
-	eMax(0),e3x3(0)
+	hcalDepth1OverEcal(0), hcalDepth2OverEcal(0),eMax(0),e3x3(0)
        {}
   } ;
   

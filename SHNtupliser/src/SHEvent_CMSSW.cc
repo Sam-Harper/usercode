@@ -22,7 +22,10 @@ void SHEvent::addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits)
   
   new(electronArray_[nrElectrons()]) SHElectron(ele,superClusIndx);
   getElectron(nrElectrons()-1)->setMotherEvent(this); //telling the electron which event owns it
- 
+  
+  reco::TrackBase::Point cmsswBeamPoint(beamSpot_.x(),beamSpot_.y(),beamSpot_.z());
+  float d0 =  ele.gsfEle().gsfTrack()->dxy(cmsswBeamPoint);
+  getElectron(nrElectrons()-1)->setD0(d0);
 }
 
 //note: change pointers to reference variables
@@ -41,6 +44,10 @@ void SHEvent::addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer&
   
   new(electronArray_[nrElectrons()]) SHElectron(ele,superClusIndx);
   getElectron(nrElectrons()-1)->setMotherEvent(this); //telling the electron which event owns it
+  
+  reco::TrackBase::Point cmsswBeamPoint(beamSpot_.x(),beamSpot_.y(),beamSpot_.z());
+  float d0 =  ele.gsfTrack()->dxy(cmsswBeamPoint);
+  getElectron(nrElectrons()-1)->setD0(d0);
  
 }
 
@@ -67,6 +74,11 @@ void SHEvent::addElectron(const TLorentzVector&p4,const reco::SuperCluster& supe
 void SHEvent::addJet(const pat::Jet& jet)
 {
   new(jetArray_[nrJets()]) SHJet(jet);
+}
+
+void SHEvent::addMuon(const reco::Muon& mu)
+{
+  new(muArray_[nrMuons()]) SHMuon(mu,beamSpot_);
 }
 
 void SHEvent::addIsolSuperCluster(const reco::SuperCluster& superClus)

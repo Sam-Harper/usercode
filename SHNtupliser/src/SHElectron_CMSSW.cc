@@ -37,6 +37,7 @@ posTrackOut_(ele.gsfEle().gsfTrack()->outerPosition().X(),ele.gsfEle().gsfTrack(
 trkChi2_(ele.gsfEle().gsfTrack()->chi2()),
 nrDof_(static_cast<int>(ele.gsfEle().gsfTrack()->ndof())),
 posCharge_(ele.gsfEle().charge()>0),
+d0_(999),
 //id quantities
 epIn_(ele.gsfEle().eSuperClusterOverP()),
 epOut_(ele.gsfEle().eSeedClusterOverPout()),
@@ -112,6 +113,7 @@ posTrackOut_(ele.gsfTrack()->outerPosition().X(),ele.gsfTrack()->outerPosition()
 trkChi2_(ele.gsfTrack()->chi2()),
 nrDof_(static_cast<int>(ele.gsfTrack()->ndof())),
 posCharge_(ele.charge()>0),
+d0_(999),
 //id quantities
 epIn_(ele.eSuperClusterOverP()),
 epOut_(ele.eSeedClusterOverPout()),
@@ -190,16 +192,17 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   trkChi2_(999999),
   nrDof_(static_cast<int>(1)),
   posCharge_(0),
+  d0_(999),
   //id quantities
   epIn_(999999),
   epOut_(999999),
   hadem_(shape.hcalDepth1OverEcal+shape.hcalDepth2OverEcal),
   hademDepth1_(shape.hcalDepth1OverEcal), 
   hademDepth2_(shape.hcalDepth2OverEcal),
-  dEtaIn_(0),
-  dEtaOut_(0),
-  dPhiIn_(0),
-  dPhiOut_(0),
+  dEtaIn_(999),
+  dEtaOut_(999),
+  dPhiIn_(999),
+  dPhiOut_(999),
   sigmaEtaEta_(shape.sigmaEtaEta),
   sigmaIEtaIEta_(shape.sigmaIetaIeta),
   //links to tracks, superClusters

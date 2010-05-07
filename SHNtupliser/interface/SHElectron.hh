@@ -70,6 +70,7 @@ class SHElectron : public TObject {
   float trkChi2_; 
   int nrDof_;
   bool posCharge_;
+  float d0_;
 
   //id quantities
   float epIn_;
@@ -147,6 +148,7 @@ private:
   //void setPassStdSel(bool pass){passStdSel_=pass;}
   void setPosTrackInnToSeed(const TVector3& pos){posTrackInnToSeed_=pos;}
   void setPosTrackOutToSeed(const TVector3& pos){posTrackOutToSeed_=pos;}
+  void setD0(float d0){d0_=d0;}
   
   void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   void fixTrkIsol();

@@ -15,6 +15,7 @@
 #include "SHarper/SHNtupliser/interface/SHTrigInfo.hh"
 #include "SHarper/SHNtupliser/interface/SHMet.hh"
 #include "SHarper/SHNtupliser/interface/SHL1Cand.hh"
+#include "SHarper/SHNtupliser/interface/SHMuon.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 
 #include "TObject.h"
@@ -30,6 +31,7 @@ namespace reco{
   class SuperCluster;
   class CaloCluster;
   class GsfElectron;
+  class Muon;
 }
 
 
@@ -53,6 +55,7 @@ class SHEvent : public TObject {
   TClonesArray isolClusArray_;//new for v4
   TClonesArray isolTrkArray_;//new for v5
   TClonesArray trigArray_;
+  TClonesArray muArray_;
   // TClonesArray trigPaths_;
   
  
@@ -115,6 +118,7 @@ class SHEvent : public TObject {
   void addTrigInfo(const SHTrigInfo& trigInfo);
   void addL1Cand(const SHL1Cand& cand);
   void addL1Cand(const TLorentzVector& p4,int type);
+  void addMuon(const reco::Muon& mu);
 
   //usefull for copying an event
   void addCaloHits(const SHEvent& rhs);
@@ -147,6 +151,8 @@ class SHEvent : public TObject {
   const SHIsolSuperCluster* getIsolSuperClus(int clusNr)const;
   const SHJet* getJet(int jetNr)const;
   SHJet* getJet(int jetNr);
+  const SHMuon* getMuon(int muNr)const;
+  
 
   const SHIsolTrack* getIsolTrk(int trkNr)const;
   SHElectron* getElectron(int eleNr); //allows the event to modify the electron
@@ -165,6 +171,8 @@ class SHEvent : public TObject {
   int nrIsolTrks()const{return isolTrkArray_.GetLast()+1;}
   int nrTrigs()const{return trigArray_.GetLast()+1;}
   int nrL1Cands()const{return l1CandArray_.GetLast()+1;}
+  int nrMuons()const{return muArray_.GetLast()+1;}
+  
 
   int runnr()const{return runnr_;}
   int eventnr()const{return eventnr_;}
@@ -209,7 +217,7 @@ class SHEvent : public TObject {
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
 
-  ClassDef(SHEvent,13) //5 is v3, 6 is v4
+  ClassDef(SHEvent,14) //5 is v3, 6 is v4
 
 };
   

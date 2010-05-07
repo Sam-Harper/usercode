@@ -77,7 +77,7 @@ public:
   void addMet(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const;
-
+  void addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const;
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const;

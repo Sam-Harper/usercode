@@ -44,10 +44,10 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   shEvent.clear(); //reseting the event 
   //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
   addCaloHits(heepEvent,shEvent);
-  addEventPara(heepEvent,shEvent);
+  addEventPara(heepEvent,shEvent); //this must be filled second (ele + mu need beam spot info)
   addSuperClusters(heepEvent,shEvent);
   addElectrons(heepEvent,shEvent);
- 
+  addMuons(heepEvent,shEvent);
 
    addTrigInfo(heepEvent,shEvent);
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
@@ -108,12 +108,12 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   for(size_t scNr=0;scNr<superClusEB.size();scNr++){
     size_t eleNr = matchToEle(superClusEB[scNr],electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
-    else if(superClusEB[scNr].energy()*sin(superClusEB[scNr].position().theta())>minEtToPromoteSC_) addElectron(heepEvent,shEvent,superClusEB[scNr]);
+    else if(superClusEB[scNr].energy()*sin(superClusEB[scNr].position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,superClusEB[scNr]);
   }
   for(size_t scNr=0;scNr<superClusEE.size();scNr++){
     size_t eleNr = matchToEle(superClusEE[scNr],electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
-    else if(superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())>minEtToPromoteSC_) addElectron(heepEvent,shEvent,superClusEE[scNr]);
+    else if(superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,superClusEE[scNr]);
   }
   
   
@@ -162,6 +162,16 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   
   shEvent.addElectron(p4,superClus,fid,shape,isol03,isol04,shEvent.getCaloHits());
    
+}
+
+void SHEventHelper::addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  for(size_t muNr=0;muNr<heepEvent.muons().size();muNr++){
+    const reco::Muon& muon = heepEvent.muons()[muNr];
+
+    if(muon.isGlobalMuon()) shEvent.addMuon(muon);
+  }
+
 }
 
 size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const
@@ -294,7 +304,7 @@ void SHEventHelper::addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)cons
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   for(size_t jetNr=0;jetNr<heepEvent.jets().size();jetNr++){
-    shEvent.addJet(heepEvent.jets()[jetNr]);
+    if(heepEvent.jets()[jetNr].et()>15) shEvent.addJet(heepEvent.jets()[jetNr]);
   }
 }
 

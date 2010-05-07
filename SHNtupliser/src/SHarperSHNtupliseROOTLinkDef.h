@@ -14,6 +14,7 @@
 #include "SHarper/SHNtupliser/interface/SHCaloGeom.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloCellGeom.hh"
 #include "SHarper/SHNtupliser/interface/SHL1Cand.hh"
+#include "SHarper/SHNtupliser/interface/SHMuon.hh"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -40,4 +41,5 @@
 #pragma link C++ class SHCaloCellGeom+; 
 #pragma link C++ class SHCaloCellGeom::CellEdges+; 
 #pragma link C++ class SHL1Cand+; 
+#pragma link C++ class SHMuon+;
 #endif

@@ -19,6 +19,7 @@ SHEvent::SHEvent():
   isolClusArray_("SHIsolCluster",20),
   isolTrkArray_("SHIsolTrack",20),
   trigArray_("SHTrigInfo",20),
+  muArray_("SHMuon",12),
   runnr_(0),eventnr_(0),
   isMC_(0),datasetCode_(0),
   weight_(0.),
@@ -47,6 +48,7 @@ SHEvent::~SHEvent()
   isolTrkArray_.Delete();
   trigArray_.Delete();
   l1CandArray_.Delete();
+  muArray_.Delete();
 }
 
 void SHEvent::addMCParticle(int partIndx,int partStdhep,int partIdhep,
@@ -169,6 +171,12 @@ const SHMCParticle* SHEvent::getMCParticle(int partNr)const
   return part;
 }
 
+const SHMuon* SHEvent::getMuon(int muNr)const
+{
+  SHMuon* mu = (SHMuon*) muArray_[muNr];
+  return mu;
+}
+
 const SHElectron* SHEvent::getElectron(int eleNr)const
 {
   SHElectron* ele = (SHElectron*) electronArray_[eleNr];
@@ -268,6 +276,7 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   nrVertices_ = rhs.nrVertices_;
   vertex_ = rhs.vertex_;
   beamSpot_ = rhs.beamSpot_;
+  genEventPtHat_ = rhs.genEventPtHat_;
 }
 
 //I have a memory leak from some where....
@@ -281,6 +290,7 @@ void SHEvent::clear()
   isolClusArray_.Delete();
   isolTrkArray_.Delete();
   trigArray_.Delete();
+  muArray_.Delete();
   caloHits_.clear();
   runnr_=0;
   eventnr_=0;
