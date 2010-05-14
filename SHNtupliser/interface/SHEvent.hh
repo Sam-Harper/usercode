@@ -79,6 +79,7 @@ class SHEvent : public TObject {
   TVector3 vertex_;
   TVector3 beamSpot_;
 
+
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent& rhs){return *this;}//disabling assignment
 

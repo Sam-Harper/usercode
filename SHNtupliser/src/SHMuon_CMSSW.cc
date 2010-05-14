@@ -8,7 +8,7 @@
 SHMuon::SHMuon(const reco::Muon& mu,const TVector3& beamPoint):
   p4_(mu.px(),mu.py(),mu.pz(),mu.energy()),
   eta_(p4_.Eta()),
-  posCharge_(mu.charge()),
+  posCharge_(mu.charge()==1),
   type_(mu.type()),
   normChi2_(mu.globalTrack()->normalizedChi2()),
   // nrHits_(mu.globalTrack()->hitPattern().numberOfValidMuonHits()), 

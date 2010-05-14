@@ -40,7 +40,9 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
 }
 
 void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)const
-{
+{   
+  std::cout <<"making event "<<std::endl;
+  
   shEvent.clear(); //reseting the event 
   //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
   addCaloHits(heepEvent,shEvent);
@@ -49,12 +51,15 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   addElectrons(heepEvent,shEvent);
   addMuons(heepEvent,shEvent);
 
+  std::cout <<"added muons "<<std::endl;
+
    addTrigInfo(heepEvent,shEvent);
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
    if(addJets_) addJets(heepEvent,shEvent);
    if(addMet_) addMet(heepEvent,shEvent);
    addMCParticles(heepEvent,shEvent);
    addIsolTrks(heepEvent,shEvent);
+   std::cout <<"made event "<<std::endl;
 }
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -106,12 +111,17 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE();
   
   for(size_t scNr=0;scNr<superClusEB.size();scNr++){
+    std::cout <<"eb seed id "<<superClusEB[scNr].seed()->seed().rawId()<<scNr<<"/"<<superClusEE.size()<<std::endl;
+
     size_t eleNr = matchToEle(superClusEB[scNr],electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
     else if(superClusEB[scNr].energy()*sin(superClusEB[scNr].position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,superClusEB[scNr]);
   }
   for(size_t scNr=0;scNr<superClusEE.size();scNr++){
+    std::cout <<"ee seed id "<<superClusEB[scNr].seed()->seed().rawId()<<" "<<scNr<<"/"<<superClusEE.size()<<" energy "<<superClusEE[scNr].energy()<<std::endl;
     size_t eleNr = matchToEle(superClusEE[scNr],electrons);
+    std::cout <<"ele Nr "<<eleNr<<" eles size "<<electrons.size()<<std::endl;
+    std::cout <<"ele et "<<superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())<<std::endl;
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
     else if(superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,superClusEE[scNr]);
   }
@@ -154,14 +164,19 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const
 {
+  std::cout <<"adding electron "<<std::endl;
   cmssw::IsolationVariables isol03 = tracklessEleMaker_.getIsol(superClus,heepEvent,0.3);
+ std::cout <<"done 03 "<<std::endl;
   cmssw::IsolationVariables isol04 = tracklessEleMaker_.getIsol(superClus,heepEvent,0.4);
+  std::cout <<"done 04 "<<std::endl;
   cmssw::FiducialFlags fid = tracklessEleMaker_.getFid(superClus,heepEvent);
+   std::cout <<"done fid "<<std::endl;
   cmssw::ShowerShape shape = tracklessEleMaker_.getShowerShape(superClus,heepEvent,fid.isEB);
+  std::cout <<"done showershape "<<std::endl;
   TLorentzVector p4 = tracklessEleMaker_.getP4(superClus,heepEvent);
-  
+  std::cout <<"done p4 "<<std::endl;
   shEvent.addElectron(p4,superClus,fid,shape,isol03,isol04,shEvent.getCaloHits());
-   
+  std::cout <<"done"<<std::endl;
 }
 
 void SHEventHelper::addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const
