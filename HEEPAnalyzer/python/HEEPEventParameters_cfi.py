@@ -23,6 +23,7 @@ heepEventPara  = cms.PSet (
     ctfTrackTag = cms.InputTag("generalTracks"),
     genParticleTag = cms.InputTag("genParticles"),
     trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT"),
+    trigResultsTag = cms.InputTag("TriggerResults","","HLT"),
     genEventInfoTag = cms.InputTag("generator"),
     l1RecordTag = cms.InputTag("gtDigis"),
     l1EmNonIsoTag = cms.InputTag("hltL1extraParticles","NonIsolated"),

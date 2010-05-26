@@ -51,6 +51,7 @@ namespace heep {
     edm::InputTag ctfTrackTag_;
     edm::InputTag genParticleTag_;
     edm::InputTag trigEventTag_;  
+    edm::InputTag trigResultsTag_;
     edm::InputTag genEventInfoTag_;
     edm::InputTag l1RecordTag_;
     edm::InputTag l1EmNonIsoTag_;

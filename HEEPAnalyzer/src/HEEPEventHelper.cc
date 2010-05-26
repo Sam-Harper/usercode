@@ -38,6 +38,7 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   ctfTrackTag_ = conf.getParameter<edm::InputTag>("ctfTrackTag");
   genParticleTag_ = conf.getParameter<edm::InputTag>("genParticleTag");
   trigEventTag_ = conf.getParameter<edm::InputTag>("trigEventTag");
+  trigResultsTag_ =conf.getParameter<edm::InputTag>("trigResultsTag");
   genEventInfoTag_ = conf.getParameter<edm::InputTag>("genEventInfoTag");
   l1RecordTag_ = conf.getParameter<edm::InputTag>("l1RecordTag");
   l1EmNonIsoTag_ = conf.getParameter<edm::InputTag>("l1EmNonIsoTag");
@@ -94,6 +95,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(ctfTrackTag_,handles.ctfTrack);
   event.getByLabel(genParticleTag_,handles.genParticle);
   event.getByLabel(trigEventTag_,handles.trigEvent);
+  event.getByLabel(trigResultsTag_,handles.trigResults);
   event.getByLabel(genEventInfoTag_,handles.genEventInfo);
   event.getByLabel(l1RecordTag_,handles.l1Record);
   event.getByLabel(l1EmNonIsoTag_,handles.l1EmNonIso);

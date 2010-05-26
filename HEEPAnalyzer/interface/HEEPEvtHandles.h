@@ -38,10 +38,13 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetup.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
+
+
+
 namespace heep {
   struct EvtHandles { 
   public:   
@@ -67,6 +70,7 @@ namespace heep {
     edm::Handle<reco::GenParticleCollection> genParticle;
     edm::Handle<trigger::TriggerEvent> trigEvent;
     edm::Handle<trigger::TriggerObjectCollection> trigObjColl;
+    edm::Handle<edm::TriggerResults> trigResults;
     edm::Handle<GenEventInfoProduct> genEventInfo;
     edm::Handle<L1GlobalTriggerReadoutRecord> l1Record;
     edm::Handle<l1extra::L1EmParticleCollection> l1EmNonIso;
