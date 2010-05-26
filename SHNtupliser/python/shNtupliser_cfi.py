@@ -9,7 +9,11 @@ shNtupliser = cms.EDAnalyzer("SHNtupliser", heepEventPara,
     minEtToPromoteSC = cms.double(15.),
     addMet = cms.bool(True),
     addJets = cms.bool(True),
+    addMuons = cms.bool(True),
+    addTrigs = cms.bool(True),
     fillFromGsfEle = cms.bool(True),
+    minEtToPassEvent = cms.double(-1.),
+    outputGeom = cms.bool(True),                  
      # Isolation algos configuration
     intRadiusTk = cms.double(0.04), 
     ptMinTk = cms.double(0.7), 
@@ -26,6 +30,11 @@ shNtupliser = cms.EDAnalyzer("SHNtupliser", heepEventPara,
     eMinEndcaps = cms.double(0.0),  
     vetoClustered  = cms.bool(False),  
     useNumCrystals = cms.bool(True),
+    # debug para
+    hltDebugFiltersToSave = cms.vstring(),
+    useHLTDebug = cms.bool(False)
+     
+                             
                            
                              
     

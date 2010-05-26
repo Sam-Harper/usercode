@@ -58,6 +58,9 @@ private:
 
   bool initGeom_;
 
+ bool outputGeom_; //write out geom to file
+  float minEtToPassEvent_;
+
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;
   //disabling copy and assignment 

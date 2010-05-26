@@ -19,6 +19,8 @@
 
 #include <vector>
 
+#include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
+#include "DataFormats/HLTReco/interface/TriggerEventWithRefs.h"
 
 namespace heep{
   class Event;
@@ -37,7 +39,14 @@ private:
   float minEtToPromoteSC_;
   bool addMet_;
   bool addJets_;
+  bool addTrigs_;
+  bool addMuons_;
   bool fillFromGsfEle_;
+
+  //temp variables for hlt debug hack
+  std::string hltTag_;
+  bool useHLTDebug_;
+  std::vector<std::string> hltDebugFiltersToSave_;
 
   EleMaker tracklessEleMaker_;
 
@@ -71,6 +80,7 @@ public:
   void addEcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addHcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const;
   void addJets(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolClus(const heep::Event& heepEvent,SHEvent& shEvent)const{}

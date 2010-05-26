@@ -21,6 +21,17 @@
 #include "TVector3.h"
 #include "TBits.h"
 
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
+#include "DataFormats/EgammaCandidates/interface/Electron.h"
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateFwd.h"
+#include "DataFormats/EgammaCandidates/interface/ElectronFwd.h"
+#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
+#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
+
+#include "DataFormats/METReco/interface/PFMET.h"
+
+#include "FWCore/Common/interface/TriggerNames.h"
+
 SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
   datasetCode_(datasetCode),
   eventWeight_(eventWeight),
@@ -35,7 +46,15 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   minEtToPromoteSC_ = conf.getParameter<double>("minEtToPromoteSC");
   addMet_ = conf.getParameter<bool>("addMet");
   addJets_ = conf.getParameter<bool>("addJets");
+  addMuons_ = conf.getParameter<bool>("addMuons");
+  addTrigs_ = conf.getParameter<bool>("addTrigs");
   fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
+ 
+  hltDebugFiltersToSave_ = conf.getParameter<std::vector<std::string> >("hltDebugFiltersToSave");
+  useHLTDebug_ = conf.getParameter<bool>("useHLTDebug");  
+  hltTag_ = conf.getParameter<std::string>("hltProcName");
+  
+
   tracklessEleMaker_.setup(conf);
 }
 
@@ -49,11 +68,17 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   addEventPara(heepEvent,shEvent); //this must be filled second (ele + mu need beam spot info)
   addSuperClusters(heepEvent,shEvent);
   addElectrons(heepEvent,shEvent);
-  addMuons(heepEvent,shEvent);
 
+  if(addMuons_) addMuons(heepEvent,shEvent); 
  
-
-   addTrigInfo(heepEvent,shEvent);
+    
+  if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
+  else if(addTrigs_){
+    edm::Handle<trigger::TriggerEventWithRefs> trigEventWithRefs;
+    edm::InputTag trigTag("hltTriggerSummaryRAW","",hltTag_);
+    heepEvent.event().getByLabel(trigTag,trigEventWithRefs);
+    addTrigDebugInfo(heepEvent,shEvent,*trigEventWithRefs,hltDebugFiltersToSave_,hltTag_);
+  }
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
    if(addJets_) addJets(heepEvent,shEvent);
    if(addMet_) addMet(heepEvent,shEvent);
@@ -290,6 +315,81 @@ void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)co
 
 }
 
+void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const
+{
+  const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
+  const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);
+  
+  
+  for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
+    SHTrigInfo trigInfo;
+    trigInfo.setTrigId(1);
+    if(pathNr<trigNames.size()){
+       trigInfo.setTrigName(trigNames.triggerName(pathNr));
+    }else trigInfo.setTrigName("NullName");
+    trigInfo.setPass(trigResults.accept(pathNr)); 
+    shEvent.addTrigInfo(trigInfo);
+  }
+  
+ 
+  for(size_t filterNr=0;filterNr<filterNames.size();filterNr++){ 
+    SHTrigInfo trigInfo;
+    trigInfo.setTrigId(2);
+    trigInfo.setTrigName(filterNames[filterNr]);
+    
+    std::vector<reco::RecoEcalCandidateRef> ecalTrigObjs;
+    std::vector<reco::ElectronRef> eleTrigObjs;
+    std::vector<l1extra::L1EmParticleRef> l1IsoTrigObjs; 
+    std::vector<l1extra::L1EmParticleRef> l1NonIsoTrigObjs;
+    int filterNrInEvt = trigEvt.filterIndex(edm::InputTag(filterNames[filterNr],"",hltTag).encode());
+    if(filterNrInEvt<trigEvt.size()){
+      trigEvt.getObjects(filterNrInEvt,trigger::TriggerCluster,ecalTrigObjs);
+      trigEvt.getObjects(filterNrInEvt,trigger::TriggerElectron,eleTrigObjs);
+      trigEvt.getObjects(filterNrInEvt,trigger::TriggerL1IsoEG,l1IsoTrigObjs) ;
+      trigEvt.getObjects(filterNrInEvt,trigger::TriggerL1NoIsoEG,l1NonIsoTrigObjs);
+      //  std::cout <<"filter "<<filterNames[filterNr]<<" nr pass "<<ecalTrigObjs.size()<<" "<<l1IsoTrigObjs.size()<<" "<<l1NonIsoTrigObjs.size()<<std::endl;
+      for(size_t candNr=0;candNr<ecalTrigObjs.size();candNr++){
+	TLorentzVector p4;
+	reco::RecoEcalCandidateRef& obj = ecalTrigObjs[candNr];
+	
+	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
+	trigInfo.addObj(p4);
+
+      }
+      for(size_t candNr=0;candNr<eleTrigObjs.size();candNr++){
+	TLorentzVector p4;
+	reco::ElectronRef& obj = eleTrigObjs[candNr];
+	
+	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
+	trigInfo.addObj(p4);
+
+      }
+      for(size_t candNr=0;candNr<l1IsoTrigObjs.size();candNr++){
+	TLorentzVector p4;
+	l1extra::L1EmParticleRef& obj = l1IsoTrigObjs[candNr];
+	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
+	trigInfo.addObj(p4);
+
+      }
+      for(size_t candNr=0;candNr<l1NonIsoTrigObjs.size();candNr++){
+	TLorentzVector p4;
+	l1extra::L1EmParticleRef& obj = l1NonIsoTrigObjs[candNr];
+	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
+	trigInfo.addObj(p4);
+
+      }
+
+    }//end filter present check
+    //   std::cout <<"trig info "<<trigInfo.nrPass()<<std::endl;
+
+    if(trigInfo.nrPass()>0) trigInfo.setPass(true);
+
+    shEvent.addTrigInfo(trigInfo);
+  }//end filter loop
+ 
+}
+
+
 void SHEventHelper::addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
  
@@ -339,10 +439,23 @@ void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   //why yes I might be throwing away the patty goodness, whoops
   const pat::MET& met = heepEvent.mets()[0];
-  SHMet shMet;
-  shMet.setMet(met.mEtCorr()[0].mex,met.mEtCorr()[0].mey);
-  shMet.setSumEmEt(met.emEtInEB(),met.emEtInEE(),met.emEtInHF());
-  shMet.setSumHadEt(met.hadEtInHB(),met.hadEtInHE(),met.hadEtInHO(),met.hadEtInHF());
+  edm::Handle<edm::View<reco::PFMET> > pfMETHandle;
+  heepEvent.event().getByLabel("pfMet",pfMETHandle);
+
+  const reco::PFMET& pfMET = pfMETHandle->front();
+
+  //SHMet shMet;
+  //shMet.setMet(met.mEtCorr()[0].mex,met.mEtCorr()[0].mey);
+  //shMet.setSumEmEt(met.emEtInEB(),met.emEtInEE(),met.emEtInHF());
+  // shMet.setSumHadEt(met.hadEtInHB(),met.hadEtInHE(),met.hadEtInHO(),met.hadEtInHF());
+
+ SHMet shMet;
+ shMet.setMet(pfMET.et()*cos(pfMET.phi()),pfMET.et()*sin(pfMET.phi()));
+ shMet.setSumEmEt(0,0,0);
+ shMet.setSumHadEt(0,0,0,0);
+
+ // std::cout <<"pf met "<<pfMET.et()<<" sh met "<<shMet.mEt()<<" pf phi "<<pfMET.phi()<<" sh phi "<<shMet.phi()<<std::endl;
+
   shEvent.setMet(shMet);
 }  
 

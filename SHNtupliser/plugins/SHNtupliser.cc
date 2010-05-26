@@ -39,6 +39,8 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   
   double eventWeight = iPara.getParameter<double>("sampleWeight");
   int datasetCode = iPara.getParameter<int>("datasetCode");  
+  outputGeom_ = iPara.getParameter<bool>("outputGeom");
+  minEtToPassEvent_ = iPara.getParameter<double>("minEtToPassEvent");
   shEvtHelper_.setDatasetCode(datasetCode);
   shEvtHelper_.setEventWeight(eventWeight);
 
@@ -75,9 +77,10 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
     SHCaloGeom hcalGeom(SHCaloGeom::HCAL);
     geomFiller.fillEcalGeom(ecalGeom);
     geomFiller.fillHcalGeom(hcalGeom);
-    outFile_->WriteObject(&ecalGeom,"ecalGeom");
-    outFile_->WriteObject(&hcalGeom,"hcalGeom");
-    
+    if(outputGeom_){
+      outFile_->WriteObject(&ecalGeom,"ecalGeom");
+      outFile_->WriteObject(&hcalGeom,"hcalGeom");
+    }
     GeomFuncs::loadCaloGeom(ecalGeom,hcalGeom);
     initGeom_=true;
   }
@@ -158,7 +161,13 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
     shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
   
-    
+      bool passEt=false;
+    for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
+       if(shEvt_->getElectron(eleNr)->et()>minEtToPassEvent_){
+ 	passEt=true;
+ 	break;
+       }
+     }
    
     
 //     //drop all calo hits
@@ -175,11 +184,11 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
     //filterHcalHits(shEvt_,0.6,shEvt_->getCaloHits(),outputHits);
     //shEvt_->addCaloHits(outputHits);
     
-    // if(passEt){
+    if(passEt){
       nrPass_++;
         evtTree_->Fill();
       //}
-    // }
+    }
 }
 
 
