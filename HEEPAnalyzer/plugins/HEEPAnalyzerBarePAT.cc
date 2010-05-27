@@ -32,7 +32,7 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
   iEvent.getByLabel(eleLabel_,eleHandle);
   const edm::View<pat::Electron>& eles = *(eleHandle.product());
 
-  //do what ever you want
+  //do what ever you wa
   //count the number that pass / fail cuts
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     if(cuts_.passCuts(eles[eleNr])) nrPass_++;
@@ -66,4 +66,4 @@ void HEEPAnalyzerBarePAT::endJob()
 }
 
 //define this as a plug-in
-DEFINE_ANOTHER_FWK_MODULE(HEEPAnalyzerBarePAT);
+DEFINE_FWK_MODULE(HEEPAnalyzerBarePAT);

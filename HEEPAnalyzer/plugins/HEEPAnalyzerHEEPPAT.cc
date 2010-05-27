@@ -65,4 +65,4 @@ void HEEPAnalyzerHEEPPAT::endJob()
 }
 
 //define this as a plug-in
-DEFINE_ANOTHER_FWK_MODULE(HEEPAnalyzerHEEPPAT);
+DEFINE_FWK_MODULE(HEEPAnalyzerHEEPPAT);

@@ -39,4 +39,4 @@ void HEEPIdValueMapProducer::produce(edm::Event& iEvent,const edm::EventSetup& i
 
 
 //define this as a plug-in
-DEFINE_ANOTHER_FWK_MODULE(HEEPIdValueMapProducer);
+DEFINE_FWK_MODULE(HEEPIdValueMapProducer);

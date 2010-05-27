@@ -37,4 +37,4 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
 
 
 //define this as a plug-in
-DEFINE_ANOTHER_FWK_MODULE(HEEPAttStatusToPAT);
+DEFINE_FWK_MODULE(HEEPAttStatusToPAT);
