@@ -2,7 +2,7 @@
 
 #include "RecoEgamma/EgammaIsolationAlgos/interface/EgammaTowerIsolation.h"
 #include "RecoEgamma/EgammaIsolationAlgos/interface/EgammaRecHitIsolation.h"
-#include "RecoEgamma/EgammaIsolationAlgos/interface/TrackIsolation.h"
+#include "RecoEgamma/EgammaIsolationAlgos/interface/PhotonTkIsolation.h"
 #include "RecoCaloTools/MetaCollections/interface/CaloRecHitMetaCollections.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
@@ -15,6 +15,7 @@ void EleMaker::setup(const edm::ParameterSet& iConfig)
   ptMinTk_=iConfig.getParameter<double>("ptMinTk");
   maxVtxDistTk_=iConfig.getParameter<double>("maxVtxDistTk");
   maxDrbTk_=iConfig.getParameter<double>("maxDrbTk");
+  etaSliceTk_=iConfig.getParameter<double>("etaSliceTk");
   intRadiusHcal_=iConfig.getParameter<double>("intRadiusHcal");
   etMinHcal_=iConfig.getParameter<double>("etMinHcal");
   intRadiusEcalBarrel_=iConfig.getParameter<double>("intRadiusEcalBarrel");
@@ -75,11 +76,11 @@ cmssw::IsolationVariables EleMaker::getIsol(const reco::SuperCluster& superClus,
   ecalEndcapIsol.setUseNumCrystals(useNumCrystals_);
   ecalEndcapIsol.setVetoClustered(vetoClustered_);
  
-  TrackIsolation trackIsol(radius,intRadiusTk_,ptMinTk_,maxVtxDistTk_,maxDrbTk_,heepEvent.handles().ctfTrack.product(),heepEvent.handles().beamSpot->position());
+  PhotonTkIsolation trackIsol(radius,intRadiusTk_,etaSliceTk_,ptMinTk_,maxVtxDistTk_,maxDrbTk_,heepEvent.handles().ctfTrack.product(),heepEvent.handles().beamSpot->position());
   
   math::XYZPoint vtx;
   if(heepEvent.handles().vertices->size()!=0) vtx=heepEvent.handles().vertices->front().position();
-  isol.tkSumPt = trackIsol.getIso(superClus,vtx).second;
+  isol.tkSumPt = trackIsol.getIso(superClus.position(),vtx).second;
   isol.hcalDepth1TowerSumEt = had1Iso.getTowerEtSum(&superClus);
   isol.hcalDepth2TowerSumEt = had2Iso.getTowerEtSum(&superClus);
   isol.ecalRecHitSumEt = ecalBarrelIsol.getEtSum(&superClus)+ecalEndcapIsol.getEtSum(&superClus);

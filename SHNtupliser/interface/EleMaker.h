@@ -21,6 +21,7 @@ private:
   double ptMinTk_;  
   double maxVtxDistTk_; 
   double maxDrbTk_; 
+  double etaSliceTk_;
   double intRadiusHcal_;
   double etMinHcal_; 
   double intRadiusEcalBarrel_; 

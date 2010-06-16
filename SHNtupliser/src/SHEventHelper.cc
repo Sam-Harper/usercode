@@ -312,11 +312,6 @@ void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)co
     }
     if(!trigKeys.empty()) shEvent.addTrigInfo(trigInfo); //only adding triggers which actually have objects passing
   } 
-
-}
-
-void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const
-{
   const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
   const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);
   
@@ -330,6 +325,25 @@ void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEve
     trigInfo.setPass(trigResults.accept(pathNr)); 
     shEvent.addTrigInfo(trigInfo);
   }
+
+
+}
+
+void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const
+{
+  //const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
+  // const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);
+  
+  
+//   for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
+//     SHTrigInfo trigInfo;
+//     trigInfo.setTrigId(1);
+//     if(pathNr<trigNames.size()){
+//        trigInfo.setTrigName(trigNames.triggerName(pathNr));
+//     }else trigInfo.setTrigName("NullName");
+//     trigInfo.setPass(trigResults.accept(pathNr)); 
+//     shEvent.addTrigInfo(trigInfo);
+//   }
   
  
   for(size_t filterNr=0;filterNr<filterNames.size();filterNr++){ 
@@ -439,24 +453,29 @@ void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   //why yes I might be throwing away the patty goodness, whoops
   const pat::MET& met = heepEvent.mets()[0];
+ 
+
+ 
+
+  SHMet shMet;
+  shMet.setMet(met.mEtCorr()[0].mex,met.mEtCorr()[0].mey);
+  shMet.setSumEmEt(met.emEtInEB(),met.emEtInEE(),met.emEtInHF());
+  shMet.setSumHadEt(met.hadEtInHB(),met.hadEtInHE(),met.hadEtInHO(),met.hadEtInHF());
+  shEvent.setMet(shMet);
+
   edm::Handle<edm::View<reco::PFMET> > pfMETHandle;
   heepEvent.event().getByLabel("pfMet",pfMETHandle);
-
   const reco::PFMET& pfMET = pfMETHandle->front();
 
-  //SHMet shMet;
-  //shMet.setMet(met.mEtCorr()[0].mex,met.mEtCorr()[0].mey);
-  //shMet.setSumEmEt(met.emEtInEB(),met.emEtInEE(),met.emEtInHF());
-  // shMet.setSumHadEt(met.hadEtInHB(),met.hadEtInHE(),met.hadEtInHO(),met.hadEtInHF());
 
- SHMet shMet;
- shMet.setMet(pfMET.et()*cos(pfMET.phi()),pfMET.et()*sin(pfMET.phi()));
- shMet.setSumEmEt(0,0,0);
- shMet.setSumHadEt(0,0,0,0);
-
+  SHMet shPFMet;
+  shPFMet.setMet(pfMET.et()*cos(pfMET.phi()),pfMET.et()*sin(pfMET.phi()));
+  shPFMet.setSumEmEt(0,0,0);
+  shPFMet.setSumHadEt(0,0,0,0);
+  
  // std::cout <<"pf met "<<pfMET.et()<<" sh met "<<shMet.mEt()<<" pf phi "<<pfMET.phi()<<" sh phi "<<shMet.phi()<<std::endl;
-
-  shEvent.setMet(shMet);
+ 
+  shEvent.setPFMet(shPFMet);
 }  
 
 void SHEventHelper::addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const

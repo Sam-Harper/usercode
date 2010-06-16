@@ -55,7 +55,8 @@ SHNtupliser::~SHNtupliser()
 void SHNtupliser::beginJob()
 {
   shEvt_= new SHEvent;
-  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
+  std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
+ outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   evtTree_= new TTree("evtTree","Event Tree");
   evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,2);
   // scTree_=new TTree("scTree","tree");
@@ -71,13 +72,14 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
   std::cout <<"begin run "<<initGeom_<<std::endl;
   if(!initGeom_){
   //write out calogeometry
-    std::cout <<"writing geom "<<std::endl;
+   
     SHGeomFiller geomFiller(iSetup);  
     SHCaloGeom ecalGeom(SHCaloGeom::ECAL);
     SHCaloGeom hcalGeom(SHCaloGeom::HCAL);
     geomFiller.fillEcalGeom(ecalGeom);
     geomFiller.fillHcalGeom(hcalGeom);
     if(outputGeom_){
+      std::cout <<"writing geom "<<std::endl;
       outFile_->WriteObject(&ecalGeom,"ecalGeom");
       outFile_->WriteObject(&hcalGeom,"hcalGeom");
     }
@@ -89,7 +91,7 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
 
 void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
- //  std::cout <<"here"<<std::endl;
+  //  std::cout <<"here"<<std::endl;
 //   int nrProd = heep::listAllProducts<l1extra::L1EmParticle>(iEvent,"SHNtupliser");
 //   std::cout <<"nr products "<<nrProd<<std::endl;
 //   edm::Handle<l1extra::L1EmParticleCollection> test1,test2;
@@ -168,6 +170,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
  	break;
        }
      }
+    if(minEtToPassEvent_<=0) passEt=true;
    
     
 //     //drop all calo hits

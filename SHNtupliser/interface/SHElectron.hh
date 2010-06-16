@@ -276,7 +276,7 @@ private:
   const SHEvent* motherEvent()const{return mEvent_;}
 
 
-  ClassDef(SHElectron,15) 
+  ClassDef(SHElectron,16) 
 
 };
 

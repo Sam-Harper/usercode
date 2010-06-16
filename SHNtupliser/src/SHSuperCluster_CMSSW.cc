@@ -7,7 +7,7 @@
 
 //note the seed cluster must be the first entry of the shape map
 SHSuperCluster::SHSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits):
-  nrgy_(superClus.rawEnergy()),
+  nrgy_(superClus.energy()),
   preShowerNrgy_(superClus.preshowerEnergy()),
   pos_(superClus.position().X(),superClus.position().Y(),superClus.position().Z()), 
   eta_(pos_.Eta()),

@@ -79,6 +79,8 @@ class SHEvent : public TObject {
   TVector3 vertex_;
   TVector3 beamSpot_;
 
+  SHMet pfMet_;
+
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent& rhs){return *this;}//disabling assignment
@@ -132,6 +134,7 @@ class SHEvent : public TObject {
   void setDatasetCode(int datasetCode){datasetCode_=datasetCode;}
   void setWeight(double weight){weight_=weight;}
   void setMet(const SHMet& met){metData_=met;}
+  void setPFMet(const SHMet& met){pfMet_=met;}
   void setGenEventPtHat(double ptHat){genEventPtHat_=ptHat;}
   void setL1Bits(const TBits& bits){l1Bits_=bits;}
   void setBX(int bx){bx_=bx;}
@@ -180,7 +183,11 @@ class SHEvent : public TObject {
   int datasetCode()const{return datasetCode_;}
   float weight()const{return weight_;}
   const SHMet& metData()const{return metData_;}
-  SHMet& metData(){return metData_;}
+  SHMet& metData(){return metData_;} 
+  const SHMet& met()const{return metData_;}
+  SHMet& met(){return metData_;} 
+  const SHMet& pfMet()const{return pfMet_;}
+  SHMet& pfMet(){return pfMet_;}
   bool isMC()const{return isMC_;}
   const SHCaloHitContainer& getCaloHits()const{return caloHits_;}
   SHCaloHitContainer& getCaloHits(){return caloHits_;}
@@ -218,7 +225,7 @@ class SHEvent : public TObject {
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
 
-  ClassDef(SHEvent,14) //5 is v3, 6 is v4
+  ClassDef(SHEvent,16) //5 is v3, 6 is v4
 
 };
   

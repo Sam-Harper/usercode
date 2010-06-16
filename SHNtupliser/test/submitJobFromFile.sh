@@ -17,15 +17,17 @@ dataset=`echo $datasetPath | awk -F "/" '{print $2}'`
 nrEvents=`echo $line | awk -F "&" '{print $2}'`
 weight=`echo $line | awk -F "&" '{print $4*$5}'`
 cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}'`
-outputFile=${dataset}_ntuples_${cmsswVersion}_SHv14.root
+outputFile=${dataset}_ntuples_${cmsswVersion}_SHv15.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
-#outputPath=312/Oct09ExoEleSkim/$dataset/
-outputPath=manny/v14_7TeV/$dataset/
+
+outputPath=361p2/v1/$dataset/
+#the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
+
 #dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet"
 #dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
 #baseCfg="shNtupliserNoHEPreSel_base_cfg.py"
-baseCfg="shNtupliser_base_cfg.py"
+baseCfg="shNtupliser_mc.py"
 #baseCfg="runSHNtupliser_base.cfg"
 
 #nrJobs=`echo $nrEvents/$nrEventsPerJob + 1 | bc`

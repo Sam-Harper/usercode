@@ -403,7 +403,7 @@ void SHEvent::printTrigs()const
 {
   // std::cout <<"nr triggers fired "<<nrTrigs()<<std::endl;
   for(int i=0;i<nrTrigs();i++){
-    if(getTrigInfo(i)->passTrig()) std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" global pass "<<getTrigInfo(i)->passTrig()<<" nr pass "<<getTrigInfo(i)->nrPass()<<std::endl;
+    if(getTrigInfo(i)->passTrig()||true) std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" trig code "<<getTrigInfo(i)->trigId()<<" global pass "<<getTrigInfo(i)->passTrig()<<" nr pass "<<getTrigInfo(i)->nrPass()<<std::endl;
   }
 }
 
