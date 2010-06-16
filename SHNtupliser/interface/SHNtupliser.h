@@ -59,7 +59,10 @@ private:
   bool initGeom_;
 
  bool outputGeom_; //write out geom to file
-  float minEtToPassEvent_;
+ float minSCEtToPass_;
+ int minNrSCToPass_;
+ float minJetEtToPass_;
+ int minNrJetToPass_;
 
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;

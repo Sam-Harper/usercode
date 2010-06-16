@@ -40,7 +40,13 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   double eventWeight = iPara.getParameter<double>("sampleWeight");
   int datasetCode = iPara.getParameter<int>("datasetCode");  
   outputGeom_ = iPara.getParameter<bool>("outputGeom");
-  minEtToPassEvent_ = iPara.getParameter<double>("minEtToPassEvent");
+   
+  minSCEtToPass_ = iPara.getParameter<double>("minSCEtToPass");
+  minNrSCToPass_ = iPara.getParameter<int>("minNrSCToPass");
+  
+  minJetEtToPass_ = iPara.getParameter<double>("minJetEtToPass");
+  minNrJetToPass_ = iPara.getParameter<double>("minNrJetTopass");
+  
   shEvtHelper_.setDatasetCode(datasetCode);
   shEvtHelper_.setEventWeight(eventWeight);
 
@@ -91,88 +97,39 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
 
 void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
-  //  std::cout <<"here"<<std::endl;
-//   int nrProd = heep::listAllProducts<l1extra::L1EmParticle>(iEvent,"SHNtupliser");
-//   std::cout <<"nr products "<<nrProd<<std::endl;
-//   edm::Handle<l1extra::L1EmParticleCollection> test1,test2;
-//   edm::InputTag tag1("hltL1extraParticles","Isolated");
-//   iEvent.getByLabel(tag1,test1);
-//   const std::vector<l1extra::L1EmParticle>& parts1 = *test1;
-//   for(size_t i=0;i<parts1.size();i++){
-//     std::cout <<"isol i "<<i<<" et "<<parts1[i].et()<<" eta "<<parts1[i].eta()<<std::endl;
-//   }
-//   edm::InputTag tag2("hltL1extraParticles","NonIsolated");
-//   iEvent.getByLabel(tag2,test2);
-//   const std::vector<l1extra::L1EmParticle>& parts2 = *test2;
-//   for(size_t i=0;i<parts2.size();i++){
-//     std::cout <<"non isol i "<<i<<" et "<<parts2[i].et()<<" eta "<<parts2[i].eta()<<" "<<*(parts2[i].gctEmCand())<<std::endl;
-//   }
-//   //make the heep event (see easy isnt it)
   
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
  
-
-  
-
-//   const std::vector<reco::SuperCluster>& superClusEB = heepEvt_.superClustersEB(); 
-//   const std::vector<reco::SuperCluster>& superClusEE = heepEvt_.superClustersEE();
- 
-//   for(size_t scNr=0;scNr<superClusEB.size();scNr++){
-//     const reco::SuperCluster& sc = superClusEB[scNr];
-//     DetId seedId =EcalClusterTools::getMaximum(*sc.seed(),heepEvt_.ebHitsFull()).first;
-//     oldSigmaIEtaIEta_ = EcalClusterTools::localCovariances(*sc.seed(),heepEvt_.ebHitsFull(),heepEvt_.handles().caloTopology.product())[0];
-//     newSigmaIEtaIEta_ = EcalClusterTools::localCovariances(seedId,heepEvt_.ebHitsFull())[0];
-//     affectedByCaloNavBug_=0;
-//     scNrgy_=sc.energy();
-//     scEta_=sc.eta();
-//     scPhi_=sc.phi();
-//     scEt_=sc.energy()*sin(sc.position().theta());
-//     scTree_->Fill();
-   
-//   }
- 
-//   for(size_t scNr=0;scNr<superClusEE.size();scNr++){
-//     const reco::SuperCluster& sc = superClusEE[scNr];
-//     DetId seedId =EcalClusterTools::getMaximum(*sc.seed(),heepEvt_.eeHitsFull()).first;
-//     oldSigmaIEtaIEta_ = EcalClusterTools::localCovariances(*sc.seed(),heepEvt_.eeHitsFull(),heepEvt_.handles().caloTopology.product())[0];
-//     newSigmaIEtaIEta_= EcalClusterTools::localCovariances(seedId,heepEvt_.eeHitsFull())[0];
-//     affectedByCaloNavBug_=0;
-//     for(int ix=-2;ix<=2;ix++){
-//       for(int iy=-2;iy<=2;iy++){
-// 	EEDetId eeSeedId(seedId);
-// 	if(eeSeedId.offsetBy(ix,iy)==DetId(0)) affectedByCaloNavBug_=1;
-//       }
-//     }
-//     scNrgy_=sc.energy();
-//     scEta_=sc.eta();
-//     scPhi_=sc.phi();
-//     scEt_=sc.energy()*sin(sc.position().theta());
-//     scTree_->Fill();
-   
-    
-//   }
-
-
   //even easier to convert from heep to shEvt
 
   nrTot_++;
-  // const std::vector<reco::GsfElectron>& eles = heepEvt_.gsfEles();
-  // if(eles.size()>=1){
  
-
     shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
   
-      bool passEt=false;
-    for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
-       if(shEvt_->getElectron(eleNr)->et()>minEtToPassEvent_){
- 	passEt=true;
- 	break;
-       }
-     }
-    if(minEtToPassEvent_<=0) passEt=true;
-   
+    bool passSC=false;
+
+    int nrSCPassing=0;
+    for(int scNr=0;scNr<shEvt_->nrSuperClus();scNr++){
+      if(shEvt_->getSuperClus(scNr)->et()>minSCEtToPass_){
+ 	nrSCPassing++;
+      }
+    }
+    if(nrSCPassing>=minNrSCToPass_) passSC=true;
     
+    
+    bool passJet=false;
+    int nrJetPassing=0;
+    for(int jetNr=0;jetNr<shEvt_->nrJets();jetNr++){
+      if(shEvt_->getJet(jetNr)->et()>minJetEtToPass_){
+	nrJetPassing++;
+      }
+    }
+    if(nrJetPassing>=minNrJetToPass_) passJet=true;
+    
+    
+
+
 //     //drop all calo hits
 //     shEvt_->getCaloHits().clear();
 //     bool passEt=false;
@@ -187,10 +144,9 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
     //filterHcalHits(shEvt_,0.6,shEvt_->getCaloHits(),outputHits);
     //shEvt_->addCaloHits(outputHits);
     
-    if(passEt){
+    if(passSC || passJet){
       nrPass_++;
-        evtTree_->Fill();
-      //}
+      evtTree_->Fill();
     }
 }
 

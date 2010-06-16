@@ -59,7 +59,8 @@ process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = True
 process.shNtupliser.minEtToPromoteSC = 7;
 process.shNtupliser.fillFromGsfEle = True
-process.shNtupliser.minEtToPassEvent = cms.double(-1)
+process.shNtupliser.minSCEtToPass = cms.double(-1)
+
 process.shNtupliser.outputGeom = cms.bool(False)
 process.shNtupliser.useHLTDebug = cms.bool(False)
 process.shNtupliser.hltProcName = "HLT"
