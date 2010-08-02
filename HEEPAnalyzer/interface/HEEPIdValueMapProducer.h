@@ -7,7 +7,7 @@
 // Original Author:  S. Harper 
 //         Created: Tues Sep 2 2008
 
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"

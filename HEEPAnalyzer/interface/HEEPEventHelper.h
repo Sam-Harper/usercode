@@ -4,7 +4,7 @@
 //class: heep::EventHelper
 //Description: a class which constructs heep::Event via the call makeHeepEvent 
 
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
