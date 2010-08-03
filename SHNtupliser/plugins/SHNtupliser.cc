@@ -45,7 +45,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   minNrSCToPass_ = iPara.getParameter<int>("minNrSCToPass");
   
   minJetEtToPass_ = iPara.getParameter<double>("minJetEtToPass");
-  minNrJetToPass_ = iPara.getParameter<double>("minNrJetTopass");
+  minNrJetToPass_ = iPara.getParameter<int>("minNrJetToPass");
   
   shEvtHelper_.setDatasetCode(datasetCode);
   shEvtHelper_.setEventWeight(eventWeight);
@@ -152,7 +152,33 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
 
 
 
+//detPhi,detEta = SC eta/phi (HLT uses SC eta/phi except for the EleID trigger which uses Ele eta/phi)
+//maxDeltaR = size of cone to match in (only works for HLT, not L1...)
+//filterName = name of filter, note unless you have HLT debug, only last filter is stored
+//hltTag = the process name of the HLT, usually HLT but may be different if the HLT was re-run
+//note this is whether an object passes the filter, NOT if the filter was passed (the two are different in the case of multi object filters)
+bool passFilter(const edm::Event& iEvent,float detEta,float detPhi,std::string filterName,const std::string hltTag,const double maxDeltaR=0.1)
+{    
+  
+  edm::Handle<trigger::TriggerEvent> trigEvt;
+  iEvent.getByLabel("hltTriggerSummaryAOD",hltTag,trigEvt);
+  
 
+  size_t filterNrInEvt = trigEvt->filterIndex(edm::InputTag(filterName,"",hltTag).encode());
+  if(filterNrInEvt<trigEvt->sizeFilters()){ //filter found in event
+
+    const trigger::Keys& trigKeys = trigEvt->filterKeys(filterNrInEvt);  //trigger::Keys is actually a vector<uint16_t> holding the position of trigger objects in the trigger collection passing the filter
+    const trigger::TriggerObjectCollection & trigObjColl(trigEvt->getObjects());
+    for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){ //we now have access to all trigger objects passing filter
+      float trigObjEta = trigObjColl[*keyIt].eta();
+      float trigObjPhi = trigObjColl[*keyIt].phi();
+      if (reco::deltaR(detEta,detPhi,trigObjEta,trigObjPhi) < maxDeltaR){
+	return true;
+      }//end dR<maxDeltaR trig obj match test
+    }//end loop over all objects passing filter
+  }//check filter is present in event
+  return false;
+}
 
 
 void SHNtupliser::endJob()

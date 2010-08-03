@@ -120,6 +120,11 @@ class SHElectron : public TObject {
   TVector3 posTrackInnToSeed_;
   TVector3 posTrackOutToSeed_;
 
+  //conversion rejection
+  int nrMissingHits_;
+  float dCotTheta_; //lets be naughty and put conver result here
+  float dist_;
+
   //backwards link to the mother event
   //needs to be set everytime the event is read
   const SHEvent* mEvent_;//! transient, not stored in root
@@ -153,7 +158,7 @@ private:
   void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   void fixTrkIsol();
   //accessors
-  
+  void setIsConversion(float isCon){dCotTheta_=isCon;}
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
   //have any seed/super clusters and want those calls to degrade gracefully
@@ -276,7 +281,7 @@ private:
   const SHEvent* motherEvent()const{return mEvent_;}
 
 
-  ClassDef(SHElectron,16) 
+  ClassDef(SHElectron,17) 
 
 };
 

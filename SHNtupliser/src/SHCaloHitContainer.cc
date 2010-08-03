@@ -71,6 +71,7 @@ void SHCaloHitContainer::addHit(const SHCaloHit& hit)
 
 float SHCaloHitContainer::getHitNrgy(int detId)const
 {
+  if(detId==0) return 0;
   if(DetIdTools::isEcalBarrel(detId)) return getHitNrgyEcalBarrel(detId);
   else if(DetIdTools::isEcalEndcap(detId)) return getHitNrgyEcalEndcap(detId);
   else if(DetIdTools::isHcal(detId)) return getHitNrgyHcal(detId);
@@ -79,6 +80,7 @@ float SHCaloHitContainer::getHitNrgy(int detId)const
 
 float SHCaloHitContainer::getHitNrgyEcalBarrel(int detId)const
 {
+  if(detId==0) return 0;
   if(DetIdTools::isEcalBarrel(detId)){
     //if(hitIndxTable_.empty()) std::cout <<"oh shit"<<std::endl;
     if(hitIndxTable_.empty()) createHitIndxTable_(); //if we havnt already filled our nice vector for fast lookup, fill it
@@ -92,6 +94,8 @@ return getEcalBarrelHit(indx).nrgy();
 
 float SHCaloHitContainer::getHitNrgyEcalEndcap(int detId)const
 {
+  // std::cout <<" detId "<<detId<<std::endl;
+  if(detId==0) return 0;
    if(DetIdTools::isEcalEndcap(detId)){
      if(hitIndxTable_.empty()) createHitIndxTable_(); //if we havnt already filled our nice vector for fast lookup, fill it
      int indx = hitIndxTable_[DetIdTools::getHashEcal(detId)];

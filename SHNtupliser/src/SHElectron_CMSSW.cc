@@ -77,6 +77,9 @@ isEBPhiGap_(ele.gsfEle().isEBPhiGap()),
 isEEDeeGap_(ele.gsfEle().isEEDeeGap()),  
 isEERingGap_(ele.gsfEle().isEERingGap()),
 posChargeTrk_(ele.gsfEle().gsfTrack()->charge()),
+nrMissingHits_(ele.gsfEle().gsfTrack()->trackerExpectedHitsInner().numberOfHits()),
+dCotTheta_(-1),
+dist_(-1),
 mEvent_(NULL)
 {
  
@@ -152,6 +155,9 @@ isEBPhiGap_(ele.isEBPhiGap()),
 isEEDeeGap_(ele.isEEDeeGap()),  
 isEERingGap_(ele.isEERingGap()),
 posChargeTrk_(ele.gsfTrack()->charge()),
+nrMissingHits_(ele.gsfTrack()->trackerExpectedHitsInner().numberOfHits()),
+dCotTheta_(-1),
+dist_(-1),
 mEvent_(NULL)
 {
  
@@ -231,6 +237,9 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   isEEDeeGap_(fid.isEEDeeGap),  
   isEERingGap_(fid.isEERingGap),
   posChargeTrk_(0),
+  nrMissingHits_(-1),
+  dCotTheta_(-1),
+  dist_(-1),
 mEvent_(NULL)
 {
 }

@@ -21,12 +21,10 @@ outputFile=${dataset}_ntuples_${cmsswVersion}_SHv15.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=361p2/v1/$dataset/
+outputPath=361p2/v15_v4/$dataset/
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-#dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet"
-#dbsUrl="dbs_url=https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
-#baseCfg="shNtupliserNoHEPreSel_base_cfg.py"
+
 baseCfg="shNtupliser_mc.py"
 #baseCfg="runSHNtupliser_base.cfg"
 

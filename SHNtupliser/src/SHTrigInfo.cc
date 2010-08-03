@@ -7,7 +7,7 @@ ClassImp(SHTrigInfo)
 
 bool SHTrigInfo::passTrig(double eta,double phi)const
 {
-  if(!pass_) return false; //can never pass if trigger didnt accept
+  // if(!pass_) return false; //can never pass if trigger didnt accept
 
   double minDeltaR2=0.1*0.1;
   //  std::cout <<"here "<<std::endl;
@@ -20,11 +20,25 @@ bool SHTrigInfo::passTrig(double eta,double phi)const
   return false;
 }
 
+TLorentzVector SHTrigInfo::getTrigObj(double eta,double phi)const
+{
+   double minDeltaR2=0.1*0.1;
+  //  std::cout <<"here "<<std::endl;
+  for(int objNr=0;objNr<nrPass();objNr++){
+    //   std::cout <<"objNr "<<objNr<<" / "<<nrPass()<<std::endl;
+    double deltaR2 = MathFuncs::calDeltaR2(eta,phi,getObjP4(objNr));
+    if(deltaR2<minDeltaR2) return getObjP4(objNr); //found a trigger object well matched in dR, input object passed
+  }
+  //didnt find an object well matched in dR, input object failed
+  return TLorentzVector(-999,-999,-999,-999);
+
+}
+
 //l1 triggers have discrete eta/phi, need to special matching
 //stolen from HLTEgammaL1MatchFilterRegional
 bool SHTrigInfo::passL1Trig(double eta,double phi)const
 {
-  if(!pass_) return false; //can never pass if trigger didnt accept
+  // if(!pass_) return false; //can never pass if trigger didnt accept
   
   const double barrelEnd=1.4791;
   // const double endcapEnd=2.65;

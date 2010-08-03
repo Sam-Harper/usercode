@@ -22,7 +22,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
+process.GlobalTag.globaltag = cms.string('GR10_P_V6::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -115,8 +115,8 @@ process.shNtupliser.hltDebugFiltersToSave = cms.vstring(
 
 process.source = cms.Source("PoolSource",
                       #      fileNames = cms.untracked.vstring("dcap://heplnx209.pp.rl.ac.uk:22125"+sys.argv[2]),
-                          fileNames = cms.untracked.vstring(sys.argv[2]),
-                         #   fileNames = cms.untracked.vstring("file:"+sys.argv[2]),
+                         # fileNames = cms.untracked.vstring(sys.argv[2]),
+                            fileNames = cms.untracked.vstring("file:"+sys.argv[2]),
                             )
 
 
@@ -132,7 +132,7 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
 #no configuration is necessary for us at the moment
 process.load("PhysicsTools.PatAlgos.patSequences_cff");
 
-runningOn35XSample=True
+runningOn35XSample=False
 #the below comment is really really important, my scripts reset this
 #CRAB35XSAMPLEOVERWRITE
 

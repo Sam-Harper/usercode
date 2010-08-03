@@ -32,6 +32,10 @@
 
 #include "FWCore/Common/interface/TriggerNames.h"
 
+#include "DataFormats/Scalers/interface/DcsStatus.h"
+
+
+#include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
   datasetCode_(datasetCode),
   eventWeight_(eventWeight),
@@ -187,6 +191,20 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     //  std::cout <<"set state"<<std::endl;
   }
   
+  double bField=0;
+  if(heepEvent.runnr()>100000){ //hack to id data
+    edm::Handle<DcsStatusCollection> dcsHandle;
+    heepEvent.event().getByLabel("scalersRawToDigi",dcsHandle);
+    float currentToBFieldScaleFactor = 2.09237036221512717e-04;
+    float current = (*dcsHandle)[0].magnetCurrent();
+    bField = current*currentToBFieldScaleFactor;
+  }else{
+    bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
+  }
+      
+  ConversionFinder conFind;
+  float isConv = conFind.isElFromConversion(gsfEle,heepEvent.handles().ctfTrack,bField,0.02,0.02);
+  shEle->setIsConversion(isConv);
 }
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const

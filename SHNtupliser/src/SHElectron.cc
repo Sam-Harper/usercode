@@ -73,6 +73,9 @@ SHElectron::SHElectron():
   isEEDeeGap_(false),  
   isEERingGap_(false),
   posChargeTrk_(false),
+  nrMissingHits_(-1),
+  dCotTheta_(-1),
+  dist_(-1),
   mEvent_(NULL)
 {
 
@@ -148,6 +151,9 @@ SHElectron::SHElectron(const SHElectron &rhs):
   posChargeTrk_(rhs.posChargeTrk_),
   posTrackInnToSeed_(rhs.posTrackInnToSeed_),
   posTrackOutToSeed_(rhs.posTrackOutToSeed_),
+  nrMissingHits_(rhs.nrMissingHits_),
+  dCotTheta_(rhs.dCotTheta_),
+  dist_(rhs.dist_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
 

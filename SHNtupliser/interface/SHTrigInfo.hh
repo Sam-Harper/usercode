@@ -18,7 +18,7 @@ private:
   std::string trigName_;
   std::string lastFilterName_;
   bool pass_;
-  
+
 
 public:
   SHTrigInfo(int trigId=-1,const std::string& trigName="",const std::string& lastFilterName="",bool pass=false):trigObjs_(),trigId_(trigId),trigName_(trigName),lastFilterName_(lastFilterName),pass_(pass){}
@@ -31,7 +31,7 @@ public:
   void addObj(const TLorentzVector& p4){trigObjs_.push_back(p4);} 
   void setPass(bool pass){pass_=pass;}
   void clear(){trigObjs_.clear();}
-  
+
   //accessors
   int nrPass()const{return trigObjs_.size();}
   const TLorentzVector & getObjP4(int indx)const{return trigObjs_[indx];}
@@ -46,6 +46,7 @@ public:
   //does a deltaR matching on the objects p4 to see if there is a trigger object which matches it
   bool passTrig(const TLorentzVector& p4)const{return passTrig(p4.Eta(),p4.Phi());}
   bool passTrig(double eta,double phi)const;
+  TLorentzVector getTrigObj(double eta,double phi)const;
   bool passL1Trig(const TLorentzVector& p4)const{return passL1Trig(p4.Eta(),p4.Phi());}
   bool passL1Trig(double eta,double phi)const;
  

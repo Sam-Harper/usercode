@@ -49,8 +49,8 @@ cmssw::ShowerShape EleMaker::getShowerShape(const reco::SuperCluster& superClus,
   showerShape.e1x5 = EcalClusterTools::e1x5(seedCluster,recHits,topology)  ;
   showerShape.e2x5Max = EcalClusterTools::e2x5Max(seedCluster,recHits,topology)  ;
   showerShape.e5x5 = EcalClusterTools::e5x5(seedCluster,recHits,topology) ;
-  showerShape.hcalDepth1OverEcal =had1.getTowerEtSum(&superClus)/superClus.energy();
-  showerShape.hcalDepth2OverEcal =had2.getTowerEtSum(&superClus)/superClus.energy();
+  showerShape.hcalDepth1OverEcal =had1.getTowerESum(&superClus)/superClus.energy();
+  showerShape.hcalDepth2OverEcal =had2.getTowerESum(&superClus)/superClus.energy();
   showerShape.eMax = EcalClusterTools::eMax(seedCluster,recHits);
   showerShape.e3x3 = EcalClusterTools::e3x3(seedCluster,recHits,topology);
   return showerShape;

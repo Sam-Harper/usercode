@@ -20,6 +20,8 @@ returnData=0
 #nrEvents=10
 #nrJobs=2
 
+hltName=`echo $datasetPath | awk -F "S09" '{if(NF>1) print "REDIGI";else print "HLT"}'` 
+
 echo $workingDir
 
 echo $baseCfg
@@ -37,6 +39,8 @@ sed 's|DBS_URL|'$dbsUrl'|' > crab_autoGen.cfg
 
 sed 's|OUTPUTFILE|'$outputFile'|' $baseCfg | \
 sed 's|SAMPLEWEIGHT|'$sampleWeight'|' | \
+sed 's|isCrabJob=False|isCrabJob=True|' | \
+sed 's|#CRABHLTNAMEOVERWRITE|hltName=\"'$hltName'\"|' | \
 sed 's|DATASETCODE|'$datasetCode'|' > shNtupliser_autoGen_cfg.py
 
 

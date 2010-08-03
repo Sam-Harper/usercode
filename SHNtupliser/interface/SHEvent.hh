@@ -204,8 +204,10 @@ class SHEvent : public TObject {
   int getTrigCode()const;
   int getTrigCode(const TLorentzVector& p4)const{return getTrigCode(p4.Eta(),p4.Phi());}
   int getTrigCode(double eta,double phi)const; 
-  bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());}
-  bool passTrig(const std::string& trigName,double eta,double phi)const;
+  bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());}  
+  bool passL1Trig(const std::string& trigName,double eta,double phi)const;
+  bool passTrig(const std::string& trigName,double eta,double phi)const; 
+  TLorentzVector getTrigObj(const std::string& trigName,double eta,double phi)const; 
   bool passTrig(const std::string& trigName)const;
   // bool passTrig(const std::string& trigName);
   void printTrigs()const;
