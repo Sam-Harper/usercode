@@ -12,6 +12,9 @@ namespace TempFuncs {
  
   template<class T,class Y,class CompType> struct PairComp : public std::binary_function<std::pair<T,Y>,std::pair<T,Y>,bool> {
     bool operator()(const std::pair<T,Y>& lhs,const std::pair<T,Y>& rhs,const CompType& compObj = CompType()){return compObj(lhs.first,rhs.first);}
+    bool operator()(const std::pair<T,Y>& lhs,const T& rhs,const CompType& compObj = CompType()){return compObj(lhs.first,rhs);}
+    bool operator()(const T& lhs,const  std::pair<T,Y>& rhs,const CompType& compObj = CompType()){return compObj(lhs,rhs.first);}
+  
   };
 }
 

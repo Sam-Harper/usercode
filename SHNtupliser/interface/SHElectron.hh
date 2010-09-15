@@ -264,7 +264,8 @@ private:
  
   int calPhiRoad()const;
 
-
+  int nrMissingHits()const{return nrMissingHits_;}
+  float isConversion()const{return dCotTheta_;}
 
   const SHIsolSuperCluster& getIsolSuperClus()const;
   float isolEmClus(double coneRadius)const;

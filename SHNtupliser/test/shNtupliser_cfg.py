@@ -22,14 +22,16 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('GR10_P_V6::All')
+
+process.GlobalTag.globaltag = cms.string('GR10_P_V8::All')
+
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -61,10 +63,37 @@ process.shNtupliser.minEtToPromoteSC = 7;
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minSCEtToPass = cms.double(-1)
 
+hltProcName = "HLTOldCond"
+process.shNtupliser.compTwoMenus = cms.bool(True)
+process.shNtupliser.secondHLTTag = cms.string("HLTNewCond")
 process.shNtupliser.outputGeom = cms.bool(False)
-process.shNtupliser.useHLTDebug = cms.bool(False)
-process.shNtupliser.hltProcName = "HLT"
-process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.shNtupliser.useHLTDebug = cms.bool(True)
+process.shNtupliser.hltProcName = hltProcName
+process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltProcName)
+process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltProcName)
+
+process.shNtupliser.hltIsoEleProducer = cms.InputTag("hltPixelMatchElectronsL1Iso","",hltProcName)
+process.shNtupliser.hltNonIsoEleProducer = cms.InputTag("hltPixelMatchElectronsL1NonIso","",hltProcName)
+process.shNtupliser.hltIsoEcalCandProducer = cms.InputTag("hltL1IsoRecoEcalCandidate","",hltProcName)
+process.shNtupliser.hltNonIsoEcalCandProducer = cms.InputTag("hltL1NonIsoRecoEcalCandidate","",hltProcName)
+    
+process.shNtupliser.ecalCandValuesToSave = cms.vstring("clusShape:hltL1IsoHLTClusterShape:hltL1NonIsoHLTClusterShape",
+                                                       "hadNrgy:hltL1IsolatedPhotonHcalForHE:hltL1NonIsolatedPhotonHcalForHE",
+                                                       "isolHad:hltL1IsolatedPhotonHcalIsol:hltL1NonIsolatedPhotonHcalIsol",
+                                                       "isolPtTrks:hltL1IsoPhotonHollowTrackIsol:hltL1NonIsoPhotonHollowTrackIsol",
+                                                       "isolPtTrksPt10DR03:hltL1IsoPhotonHollowTrackIsolPt10DR03:hltL1NonIsoPhotonHollowTrackIsolPt10DR03",
+                                                       "isolPtTrksPt10DR06:hltL1IsoPhotonHollowTrackIsolPt10DR06:hltL1NonIsoPhotonHollowTrackIsolPt10DR06",                                                                                                             
+                                                       "isolEm:hltL1IsolatedPhotonEcalIsol:hltL1NonIsolatedPhotonEcalIsol",
+                                                       "isolEmWW:hltL1IsolatedPhotonEcalIsolJur:hltL1NonIsolatedPhotonEcalIsolJur")
+
+process.shNtupliser.eleValuesToSave = cms.vstring("dPhiIn:hltElectronL1IsoDetaDphi@Dphi:hltElectronL1NonIsoDetaDphi@Dphi",
+                                                  "dEtaIn:hltElectronL1IsoDetaDphi@Deta:hltElectronL1NonIsoDetaDphi@Deta",
+                                                  "isolPtTrksEle:hltL1IsoElectronTrackIsol:hltL1NonIsoElectronTrackIsol",
+#                                                  "isolPtTrksEleDR6:hltL1IsoElectronTrackIsolDR6:hltL1NonIsoElectronTrackIsolDR6",
+                                                  "isolPtTrksElePt07:hltL1IsoElectronTrackIsolPt07:hltL1NonIsoElectronTrackIsolPt07")
+#                                                  "isolPtTrksElePt07DEta03:hltL1IsoElectronTrackIsolPt07DEta03:hltL1NonIsoElectronTrackIsolPt07DEta03",
+#                                                  "isolPtTrksElePt10DEta03:hltL1IsoElectronTrackIsolPt10DEta03:hltL1NonIsoElectronTrackIsolPt10DEta03")
+
 #process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","","HLT")
 
 isCrabJob=False
@@ -128,6 +157,7 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                                       )
 
 
+process.load("JetMETCorrections.Configuration.JetCorrectionCondDB_cff")
 
 #no configuration is necessary for us at the moment
 process.load("PhysicsTools.PatAlgos.patSequences_cff");
@@ -160,7 +190,7 @@ removeMCMatching(process,['All'])
 #process.patJetCorrFactors.corrSample = cms.string("Summer09_7TeV_ReReco332")
 process.patJetCorrFactors.corrSample = cms.string("Spring10")
 # define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
-process.p = cms.Path(process.primaryVertexFilter*
+process.p = cms.Path(#process.primaryVertexFilter*
     #process.siPixelRecHits*
                      #process.siStripMatchedRecHits*
                      #process.firstStep*
@@ -176,6 +206,9 @@ process.p = cms.Path(process.primaryVertexFilter*
                      process.patDefaultSequence*
                      process.shNtupliser)
 
+##process.source.eventsToProcess = cms.untracked.VEventRange (
+##    "142191:18468796",
+##    )
 ##process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
 ##	'132440:85-132440:138',
 ##	'132440:141-132440:401',

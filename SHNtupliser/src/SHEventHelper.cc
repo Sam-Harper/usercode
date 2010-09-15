@@ -58,6 +58,10 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   useHLTDebug_ = conf.getParameter<bool>("useHLTDebug");  
   hltTag_ = conf.getParameter<std::string>("hltProcName");
   
+  nrGenPartToStore_ = conf.getParameter<int>("nrGenPartToStore");
+
+  std::cout <<"warning, disabling use of HLT debug"<<std::endl;
+  useHLTDebug_=false;
 
   tracklessEleMaker_.setup(conf);
 }
@@ -191,6 +195,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     //  std::cout <<"set state"<<std::endl;
   }
   
+
   double bField=0;
   if(heepEvent.runnr()>100000){ //hack to id data
     edm::Handle<DcsStatusCollection> dcsHandle;
@@ -202,9 +207,10 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
   }
       
-  ConversionFinder conFind;
-  float isConv = conFind.isElFromConversion(gsfEle,heepEvent.handles().ctfTrack,bField,0.02,0.02);
-  shEle->setIsConversion(isConv);
+  //ConversionFinder conFind;
+  //  float isConv = conFind.isElFromConversion(gsfEle,heepEvent.handles().ctfTrack,bField,0.02,0.02);
+  // shEle->setIsConversion(isConv);
+
 }
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const
@@ -314,6 +320,19 @@ void SHEventHelper::addHcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   const trigger::TriggerEvent& trigEvt = heepEvent.triggerEvent();
+  
+  const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
+  const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
+  
+  addTrigInfo(trigEvt,trigResults,trigNames,shEvent);
+
+}
+
+void SHEventHelper::addTrigInfo(const trigger::TriggerEvent& trigEvt,
+				const edm::TriggerResults& trigResults,
+				const edm::TriggerNames& trigNames,SHEvent& shEvent)const
+{
+ 
   //  const trigger::TriggerObjectCollection& trigObjs = heepEvent.trigObjColl();
   for(size_t filterNr=0;filterNr<trigEvt.sizeFilters();filterNr++){
     SHTrigInfo trigInfo;
@@ -330,9 +349,6 @@ void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)co
     }
     if(!trigKeys.empty()) shEvent.addTrigInfo(trigInfo); //only adding triggers which actually have objects passing
   } 
-  const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
-  const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);
-  
   
   for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
     SHTrigInfo trigInfo;
@@ -346,6 +362,7 @@ void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)co
 
 
 }
+
 
 void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const
 {

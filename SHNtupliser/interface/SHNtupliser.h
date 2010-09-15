@@ -39,6 +39,8 @@ class SHEvent;
 class TTree;
 class TFile;
 
+class TrigDebugObjHelper;
+class SHTrigObjContainer;
 
 class SHNtupliser : public edm::EDAnalyzer {
 
@@ -58,11 +60,20 @@ private:
 
   bool initGeom_;
 
- bool outputGeom_; //write out geom to file
- float minSCEtToPass_;
- int minNrSCToPass_;
- float minJetEtToPass_;
- int minNrJetToPass_;
+  bool outputGeom_; //write out geom to file
+  float minSCEtToPass_;
+  int minNrSCToPass_;
+  float minJetEtToPass_;
+  int minNrJetToPass_;
+  
+  bool useHLTDebug_;
+  bool compTwoMenus_;
+  std::string hltTag_;
+  std::string secondHLTTag_;
+  TrigDebugObjHelper* trigDebugHelper_;
+  SHTrigObjContainer* shTrigObjs_;
+  SHTrigObjContainer* shTrigObjs2ndTrig_;
+  SHEvent* shEvt2ndTrig_;
 
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;

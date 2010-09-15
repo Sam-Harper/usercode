@@ -4,21 +4,24 @@
 #include "TObject.h"
 
 #include <iostream>
-
+#include "stdint.h"
 
 class SHCaloHit : public TObject {
 
  private:
   float nrgy_;
   int detId_;
+  float time_;
+  uint32_t flag_;
 
  public:
-  SHCaloHit():nrgy_(0.),detId_(0){}
+  SHCaloHit():nrgy_(0.),detId_(0),time_(0),flag_(0){}
+  SHCaloHit(int id,float nrgy,float time,uint32_t flag);
   SHCaloHit(int id,float nrgy);
-  SHCaloHit(const SHCaloHit & rhs);
+  // SHCaloHit(const SHCaloHit & rhs);
   ~SHCaloHit(){}
   
-  SHCaloHit& operator=(const SHCaloHit& rhs);
+  //  SHCaloHit& operator=(const SHCaloHit& rhs);
 
  
 
@@ -26,11 +29,13 @@ class SHCaloHit : public TObject {
   int detId()const{return detId_;}
 
   void setNrgy(float nrgy){nrgy_=nrgy;}
-  void setDetId(int detId){detId_=detId;}
+  void setDetId(int detId){detId_=detId;} 
+  void setTime(float time){time_=time;}
+  void setFlag(uint32_t flag){flag_=flag;}
 
   bool operator==(const SHCaloHit& rhs)const{return detId_==rhs.detId_;}
   
-  ClassDef(SHCaloHit,1)
+  ClassDef(SHCaloHit,2)
 
 };
 

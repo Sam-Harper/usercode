@@ -36,8 +36,20 @@ shNtupliser = cms.EDAnalyzer("SHNtupliser", heepEventPara,
     useNumCrystals = cms.bool(True),
     # debug para
     hltDebugFiltersToSave = cms.vstring(),
-    useHLTDebug = cms.bool(False)
+    useHLTDebug = cms.bool(False),
+    hltIsoEleProducer = cms.InputTag("hltPixelMatchElectronsL1Iso"),
+    hltNonIsoEleProducer = cms.InputTag("hltPixelMatchElectronsL1NonIso"),
+    hltIsoEcalCandProducer = cms.InputTag("hltL1IsoRecoEcalCandidate"),
+    hltNonIsoEcalCandProducer = cms.InputTag("hltL1NonIsoRecoEcalCandidate"),
+    
+    ecalProductsToSave = cms.vstring("clusShape:hltL1IsoHLTClusterShape:hltL1NonIsoHLTClusterShape",
+                                     "hcalIsol:hltL1IsolatedElectronHcalIsol:hltL1NonIsolatedElectronHcalIsol"),
+    eleProductsToSave = cms.vstring("dPhiIn:hltElectronL1IsoDetaDphi@Dphi:hltElectronL1NonIsoDetaDphi@Dphi",
+                                    "dEtaIn:hltElectronL1IsoDetaDphi@Deta:hltElectronL1NonIsoDetaDphi@Deta"),                      
      
+                             nrGenPartToStore = cms.int32(30),
+                             compTwoMenus = cms.bool(False),
+                             secondHLTTag = cms.string(""),
                              
                            
                              

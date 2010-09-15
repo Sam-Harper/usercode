@@ -4,7 +4,11 @@
 #include "SHarper/SHNtupliser/interface/SHCaloGeom.hh"
 #include "SHarper/SHNtupliser/interface/GeomFuncs.hh"
 #include "SHarper/SHNtupliser/interface/SHGeomFiller.h"
+#include "SHarper/SHNtupliser/interface/TrigDebugObjHelper.h"
+#include "SHarper/SHNtupliser/interface/SHTrigObjContainer.hh"
+
 #include "SHarper/HEEPAnalyzer/interface/HEEPDebug.h"
+
 
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 
@@ -30,7 +34,7 @@
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
-  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false)
+  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL)
 {
   evtHelper_.setup(iPara);
   shEvtHelper_.setup(iPara);
@@ -49,13 +53,22 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   
   shEvtHelper_.setDatasetCode(datasetCode);
   shEvtHelper_.setEventWeight(eventWeight);
-
+ 
+  useHLTDebug_ = iPara.getParameter<bool>("useHLTDebug");
+  compTwoMenus_ = iPara.getParameter<bool>("compTwoMenus");
+  hltTag_ = iPara.getParameter<std::string>("hltProcName");
+  secondHLTTag_ = iPara.getParameter<std::string>("secondHLTTag");
+  if(useHLTDebug_){
+    trigDebugHelper_ = new TrigDebugObjHelper(iPara);
+  }
 }
 
 SHNtupliser::~SHNtupliser()
 {
   if(shEvt_) delete shEvt_;
   if(outFile_) delete outFile_;
+  if(trigDebugHelper_) delete trigDebugHelper_;
+  if(shTrigObjs_) delete shTrigObjs_;
 }
 
 void SHNtupliser::beginJob()
@@ -65,6 +78,19 @@ void SHNtupliser::beginJob()
  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   evtTree_= new TTree("evtTree","Event Tree");
   evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,2);
+  if(useHLTDebug_) {
+    shTrigObjs_ = new SHTrigObjContainer;
+    evtTree_->Branch("HLTDebugObjs","SHTrigObjContainer",&shTrigObjs_,32000,2); 
+    
+    if(compTwoMenus_){
+      shTrigObjs2ndTrig_ = new SHTrigObjContainer;
+      shEvt2ndTrig_ = new SHEvent;
+      evtTree_->Branch("HLTDebugObjs2","SHTrigObjContainer",&shTrigObjs2ndTrig_,32000,2);
+      evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,2);
+    }
+
+  }
+
   // scTree_=new TTree("scTree","tree");
   // scTree_->Branch("sc",&oldSigmaIEtaIEta_,"oldSigmaIEtaIEta/F:newSigmaIEtaIEta:affectedByCaloNavBug:scNrgy:scEta:scPhi:scEt");
 
@@ -102,11 +128,26 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
  
   //even easier to convert from heep to shEvt
 
+
+
   nrTot_++;
  
     shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
-  
+    if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
+    if(useHLTDebug_ && compTwoMenus_){ //ugly hack alert...
+      trigDebugHelper_->setHLTTag(secondHLTTag_);
+      trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs2ndTrig_);
+      trigDebugHelper_->setHLTTag(hltTag_);
+      shEvtHelper_.addEventPara(heepEvt_,*shEvt2ndTrig_);
+      edm::Handle<trigger::TriggerEvent> trigEvt2nd;
+      edm::Handle<edm::TriggerResults> trigResults2nd;
+      iEvent.getByLabel(edm::InputTag("hltTriggerSummaryAOD","",secondHLTTag_),trigEvt2nd);
+      iEvent.getByLabel(edm::InputTag("TriggerResults","",secondHLTTag_),trigResults2nd);
+      const edm::TriggerNames& trigNames2nd = iEvent.triggerNames(*trigResults2nd);
+      shEvtHelper_.addTrigInfo(*trigEvt2nd,*trigResults2nd,trigNames2nd,*shEvt2ndTrig_);
+    }
+
     bool passSC=false;
 
     int nrSCPassing=0;
@@ -232,7 +273,6 @@ void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& 
 
 }
   
-
 
 
 //define this as a plug-in

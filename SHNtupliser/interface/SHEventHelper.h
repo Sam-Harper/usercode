@@ -80,6 +80,9 @@ public:
   void addEcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addHcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addTrigInfo(const trigger::TriggerEvent& trigEvt,
+		   const edm::TriggerResults& trigResults,
+		   const edm::TriggerNames& trigNames,SHEvent& shEvent)const;
   void addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const;
   void addJets(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const;

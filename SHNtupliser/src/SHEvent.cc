@@ -387,6 +387,17 @@ bool SHEvent::passTrig(const std::string& trigName,double eta,double phi)const
   return false;
 }
 
+
+
+const SHTrigInfo* SHEvent::getTrig(const std::string& trigName)const
+{
+  for(int trigNr=0;trigNr<nrTrigs();trigNr++){
+    const SHTrigInfo* trig= getTrigInfo(trigNr);
+    if(trig->trigId()==-1 && trigName==trig->name()) return trig;
+  }
+  return NULL;
+}
+
 TLorentzVector  SHEvent::getTrigObj(const std::string& trigName,double eta,double phi)const
 {
   for(int trigNr=0;trigNr<nrTrigs();trigNr++){
@@ -410,6 +421,7 @@ bool SHEvent::passL1Trig(const std::string& trigName,double eta,double phi)const
   }
   return false;
 }
+
 
 
 bool SHEvent::passTrig(const std::string& trigName)const
