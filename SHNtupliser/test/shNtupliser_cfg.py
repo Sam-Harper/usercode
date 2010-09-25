@@ -63,9 +63,9 @@ process.shNtupliser.minEtToPromoteSC = 7;
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minSCEtToPass = cms.double(-1)
 
-hltProcName = "HLTOldCond"
+hltProcName = "HLTReRun"
 process.shNtupliser.compTwoMenus = cms.bool(True)
-process.shNtupliser.secondHLTTag = cms.string("HLTNewCond")
+process.shNtupliser.secondHLTTag = cms.string("")
 process.shNtupliser.outputGeom = cms.bool(False)
 process.shNtupliser.useHLTDebug = cms.bool(True)
 process.shNtupliser.hltProcName = hltProcName
