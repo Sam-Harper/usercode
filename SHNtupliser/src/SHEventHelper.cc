@@ -207,9 +207,11 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
   }
       
-  //ConversionFinder conFind;
-  //  float isConv = conFind.isElFromConversion(gsfEle,heepEvent.handles().ctfTrack,bField,0.02,0.02);
-  // shEle->setIsConversion(isConv);
+  ConversionFinder conFind;
+  ConversionInfo convInfo = conFind.getConversionInfo(gsfEle,heepEvent.handles().ctfTrack,bField);
+  // shEle->setIsConversion(isConv); 
+  shEle->setConvInfo(convInfo.dist(),convInfo.dcot());
+  
 
 }
 

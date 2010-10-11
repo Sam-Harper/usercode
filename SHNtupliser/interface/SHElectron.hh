@@ -159,6 +159,7 @@ private:
   void fixTrkIsol();
   //accessors
   void setIsConversion(float isCon){dCotTheta_=isCon;}
+  void setConvInfo(float dist,float dcot){dCotTheta_=dcot;dist_=dist;}
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
   //have any seed/super clusters and want those calls to degrade gracefully

@@ -17,11 +17,11 @@ dataset=`echo $datasetPath | awk -F "/" '{print $2}'`
 nrEvents=`echo $line | awk -F "&" '{print $2}'`
 weight=`echo $line | awk -F "&" '{print $4*$5}'`
 cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}'`
-outputFile=${dataset}_ntuples_${cmsswVersion}_SHv15.root
+outputFile=${dataset}_ntuples_${cmsswVersion}_SHv17.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=361p2/v15_v4/$dataset/
+outputPath=383_Spring10/v17/$dataset/
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
 
