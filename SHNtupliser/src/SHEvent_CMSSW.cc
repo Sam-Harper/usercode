@@ -4,6 +4,7 @@
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
 
 
 //note: change pointers to reference variables
@@ -50,6 +51,27 @@ void SHEvent::addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer&
   getElectron(nrElectrons()-1)->setD0(d0);
  
 }
+
+//note: change pointers to reference variables
+void SHEvent::addElectron(const reco::Photon& pho,const SHCaloHitContainer& hits)
+{
+  const reco::SuperCluster& superClus = *pho.superCluster();
+
+  //now we need to figure out if the supercluster has already been added to event
+  //this is due to an unexpected behaviour of CMSSW, if have multiple tracks pointing to each supercluster, we get multiple electrons assoicated with each SC
+  int superClusIndx = getSuperClusIndx(superClus.rawEnergy(),superClus.position().Eta(),superClus.position().Phi()); //matches on raw energy, eta and phi in calo, returns -1 if not found
+
+  if(superClusIndx==-1){//not already added, need to add to event
+    superClusIndx=nrSuperClus();
+    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus,hits);
+  }
+  
+  new(electronArray_[nrElectrons()]) SHElectron(pho,superClusIndx);
+  getElectron(nrElectrons()-1)->setMotherEvent(this); //telling the electron which event owns it
+  
+ 
+}
+
 
 void SHEvent::addElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus, //for trackless electrons
 			  const cmssw::FiducialFlags& fid,

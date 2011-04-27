@@ -29,6 +29,7 @@
 
 namespace reco{
   class SuperCluster;
+  class Photon;
   class CaloCluster;
   class GsfElectron;
   class Muon;
@@ -94,7 +95,8 @@ class SHEvent : public TObject {
   //dominoVec : all the dominos starting at -phi to +phi with seed in middle
 
   void addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits); 
-  void addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer& hits);
+  void addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer& hits); 
+  void addElectron(const reco::Photon& ele,const SHCaloHitContainer& hits);
   void addElectron(const SHElectron& ele,const SHSuperCluster& superClus);
   void addElectron(const SHElectron& ele);
   void addElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus, //for trackless electrons
@@ -160,7 +162,8 @@ class SHEvent : public TObject {
 
   const SHIsolTrack* getIsolTrk(int trkNr)const;
   SHElectron* getElectron(int eleNr); //allows the event to modify the electron
-  const SHTrigInfo* getTrigInfo(int trigNr)const;
+  const SHTrigInfo* getTrigInfo(int trigNr)const; 
+
   const SHL1Cand* getL1Cand(int candNr)const;
 
   int getSuperClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
@@ -198,19 +201,17 @@ class SHEvent : public TObject {
   int orbNr()const{return orbNr_;}
   unsigned long long time()const{return time_;}
   const TVector3& vertex()const{return vertex_;}
-  float nrVertices()const{return nrVertices_;}
+  int nrVertices()const{return nrVertices_;}
   //first function gets the triggers passed for the event
   //second to functions get the triggers passed for a particlar object
   int getTrigCode()const;
-  int getTrigCode(const TLorentzVector& p4)const{return getTrigCode(p4.Eta(),p4.Phi());}
-  int getTrigCode(double eta,double phi)const; 
-
+  // int getTrigCode(const TLorentzVector& p4)const{return getTrigCode(p4.Eta(),p4.Phi(),p4.Eta(),p4.Phi());}
+  int getTrigCode(double detEta,double detPhi,double eta,double phi)const; 
   bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());} 
   const SHTrigInfo* getTrig(const std::string& trigName)const;
   bool passL1Trig(const std::string& trigName,double eta,double phi)const;
   bool passTrig(const std::string& trigName,double eta,double phi)const; 
   TLorentzVector getTrigObj(const std::string& trigName,double eta,double phi)const; 
-
   bool passTrig(const std::string& trigName)const;
   // bool passTrig(const std::string& trigName);
   void printTrigs()const;

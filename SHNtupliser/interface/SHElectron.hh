@@ -32,6 +32,7 @@ namespace heep{
 namespace reco{
   class GsfElectron;
   class SuperCluster;
+  class Photon;
 
 }
 
@@ -138,7 +139,7 @@ private:
   SHElectron(const heep::Ele& ele,int superClusNr=-1);
  //fills off a GsfElectron, doesnt fill nr trks isol or cutcode
   SHElectron(const reco::GsfElectron& ele,int superClusNr=-1);
- 
+  SHElectron(const reco::Photon& pho,int superClusNr=-1);
   SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus,const cmssw::FiducialFlags& fid,
   	     const cmssw::ShowerShape& shape,const cmssw::IsolationVariables& isol03,
   	     const cmssw::IsolationVariables& isol04,int superClusNr);
@@ -170,10 +171,11 @@ private:
   //classification variables
   int type()const{return type_;}
   int region()const;
-  bool isBarrel()const{return fabs(detEta_)<1.5;}
-  bool isEndcap()const{return !isBarrel();}
+  bool isBarrel()const{return isEB();}//fabs(detEta_)<1.5;}
+  //bool isEndcap()const{return !isBarrel();}
   bool isFid()const{return fabs(detEta_)<1.442 || (fabs(detEta_)>1.56 && fabs(detEta_)<2.5);}
 
+  bool isEB()const{return isBarrel_;}
   bool isEBEEGap()const{return isEBEEGap_;}   
   bool isEBEtaGap()const{return isEBEtaGap_;}   
   bool isEBPhiGap()const{return isEBPhiGap_;}   

@@ -21,7 +21,7 @@ outputFile=${dataset}_ntuples_${cmsswVersion}_SHv17.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=383_Spring10/v17/$dataset/
+outputPath=383/v17/$dataset/
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
 

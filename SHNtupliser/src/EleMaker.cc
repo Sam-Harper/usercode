@@ -80,10 +80,10 @@ cmssw::IsolationVariables EleMaker::getIsol(const reco::SuperCluster& superClus,
   
   math::XYZPoint vtx;
   if(heepEvent.handles().vertices->size()!=0) vtx=heepEvent.handles().vertices->front().position();
-  isol.tkSumPt = trackIsol.getIso(superClus.position(),vtx).second;
+  //  isol.tkSumPt = trackIsol.getIso(superClus.position(),vtx).second;
   isol.hcalDepth1TowerSumEt = had1Iso.getTowerEtSum(&superClus);
   isol.hcalDepth2TowerSumEt = had2Iso.getTowerEtSum(&superClus);
-  isol.ecalRecHitSumEt = ecalBarrelIsol.getEtSum(&superClus)+ecalEndcapIsol.getEtSum(&superClus);
+  // isol.ecalRecHitSumEt = ecalBarrelIsol.getEtSum(&superClus)+ecalEndcapIsol.getEtSum(&superClus);
 
 
   return isol;

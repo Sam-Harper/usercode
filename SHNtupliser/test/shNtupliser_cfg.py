@@ -23,7 +23,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
-process.GlobalTag.globaltag = cms.string('GR10_P_V9::All')
+process.GlobalTag.globaltag = cms.string('GR_P_V14::All')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
@@ -37,29 +37,16 @@ process.maxEvents = cms.untracked.PSet(
 process.load("Configuration.StandardSequences.Services_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 
-#to allow me to re-run the tracking to redo electron seeds without H/E
-process.load("RecoLocalTracker.SiPixelRecHits.SiPixelRecHits_cfi")
-process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitConverter_cfi")
-process.load("RecoLocalTracker.SiStripRecHitConverter.SiStripRecHitMatcher_cfi")
-process.load("RecoLocalTracker.SiStripRecHitConverter.StripCPEfromTrackAngle_cfi")
-process.load("RecoLocalTracker.SiStripZeroSuppression.SiStripZeroSuppression_cfi")
-process.load("RecoLocalTracker.SiStripClusterizer.SiStripClusterizer_cfi")
-process.load("RecoLocalTracker.SiPixelClusterizer.SiPixelClusterizer_cfi")
-process.load("RecoLocalTracker.SiPixelRecHits.PixelCPEESProducers_cff")
-process.load("RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff")
-process.load("RecoTracker.Configuration.RecoTracker_cff")
-process.load("RecoTracker.IterativeTracking.FirstStep_cff")
-process.load("SHarper.SHNtupliser.eleModulesNoHE_cfi")
 
 import sys
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
-process.shNtupliser.datasetCode = 1
+process.shNtupliser.datasetCode = 0
 process.shNtupliser.sampleWeight = 1
 process.shNtupliser.gsfEleTag = "gsfElectrons"
-process.shNtupliser.addMet = True
-process.shNtupliser.addJets = True
-process.shNtupliser.addMuons = True
-process.shNtupliser.minEtToPromoteSC = 9;
+process.shNtupliser.addMet = False
+process.shNtupliser.addJets = False
+process.shNtupliser.addMuons = False
+process.shNtupliser.minEtToPromoteSC = 99999999;
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minSCEtToPass = cms.double(-1)
 
@@ -96,6 +83,21 @@ process.shNtupliser.eleValuesToSave = cms.vstring("dPhiIn:hltElectronL1IsoDetaDp
 
 #process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","","HLT")
 
+
+# Additional output definition
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+
+phoSkim=False
+#PHOSKIMOVERWRITE
+if phoSkim:
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33*","HLT_Photon*")
+else:
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele20_SW_L1R","HLT_Ele17_SW_TightEleId_L1R","HLT_Ele17_SW_TighterEleId_L1R_v1","HLT_Ele_SW_TighterEleId_L1R_v2","HLT_Ele_SW_TighterEleId_L1R_v3");
+  
+process.skimHLTFilter.throw = False
+
+
 isCrabJob=False
 
 #if 1, its a crab job...
@@ -108,39 +110,11 @@ if isCrabJob:
 else:
     print "using user specified filename"
     process.shNtupliser.outputFilename= sys.argv[3]
-    process.shNtupliser.datasetCode = 1
+    process.shNtupliser.datasetCode = 0
     process.shNtupliser.sampleWeight = 1
 
 
-process.shNtupliser.hltDebugFiltersToSave = cms.vstring(
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdL1MatchFilterRegional", #0x1
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdEtFilter", #0x2
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdR9ShapeFilter", #0x4
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdClusterShapeFilter", #0x8
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdHcalIsolFilter", #0x10
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdPixelMatchFilter", #0x20
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdOneOEMinusOneOPFilter", #0x40
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdDetaFilter", #0x80
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EleIdDphiFilter", #0x100
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10L1MatchFilterRegional", #0x200
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10EtFilter", #0x400
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10R9ShapeFilter", #0x800
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10HcalIsolFilter", #x1000
-"hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter", #0x2000
-"hltL1NonIsoHLTNonIsoSinglePhotonEt15L1MatchFilterRegional",
-"hltL1NonIsoHLTNonIsoSinglePhotonEt15EtFilter",
-"hltL1NonIsoSinglePhotonEt15HTITrackIsolFilter",
-"hltL1NonIsoSinglePhotonEt15LEIEcalIsolFilter",
-"hltL1NonIsoHLTNonIsoSingleElectronEt10L1MatchFilterRegional", #0x1
-"hltL1NonIsoHLTNonIsoSingleElectronEt10EtFilter", #0x2
-"hltL1NonIsoHLTNonIsoSingleElectronEt10HcalIsolFilter", #0x10
-"hltL1NonIsoHLTNonIsoSingleElectronEt10PixelMatchFilter", #0x20
-"hltL1sL1SingleEG5",
-"hltL1sL1SingleEG8",
-"hltEcalActivitySuperClusterWrapper", #0x400000
-"hltEgammaSelectEcalSuperClustersActivityFilter" #0x800000
-
-)
+process.shNtupliser.hltDebugFiltersToSave = cms.vstring()
 
 filePrefex="file:"
 if(sys.argv[2].find("/pnfs/")==0):
@@ -159,12 +133,10 @@ process.myPref = cms.ESPrefer("PoolDBESSource","GlobalTag")
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                                       vertexCollection = cms.InputTag('offlinePrimaryVertices'),
                                                       minimumNDOF = cms.uint32(4) ,
- 						      maxAbsZ = cms.double(15),	
+ 						      maxAbsZ = cms.double(24),	
  						      maxd0 = cms.double(2)	
                                                       )
 
-
-process.load("JetMETCorrections.Configuration.JetCorrectionCondDB_cff")
 
 #no configuration is necessary for us at the moment
 process.load("PhysicsTools.PatAlgos.patSequences_cff");
@@ -193,24 +165,14 @@ if runningOn35XSample:
 
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
-removeMCMatching(process,['All'])
+#removeMCMatching(process,['All'])
 #process.patJetCorrFactors.corrSample = cms.string("Summer09_7TeV_ReReco332")
 process.patJetCorrFactors.corrSample = cms.string("Spring10")
 # define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
-process.p = cms.Path(process.primaryVertexFilter*
-    #process.siPixelRecHits*
-                     #process.siStripMatchedRecHits*
-                     #process.firstStep*
-                     #process.newCombinedSeeds*
-                     #process.ecalDrivenElectronSeedsNoHE*
-                    # process.generalTracks*
-                    # process.trackerDrivenElectronSeeds*
-                     #process.electronMergedSeedsNoHE* 
-                  #   process.electronCkfTrackCandidatesNoHE*
-                  #  process.electronGsfTracksNoHE*
-                   #  process.gsfElectronCoresNoHE*
-                   #  process.gsfElectronsNoHE*
-                     process.patDefaultSequence*
+process.p = cms.Path(#process.primaryVertexFilter*
+  
+                #     process.skimHLTFilter*
+                    # process.patDefaultSequence*
                      process.shNtupliser)
 
 

@@ -2,10 +2,9 @@
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
-
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
-
 
 
 
@@ -25,15 +24,15 @@ eta_(ele.eta()),
 detEta_(ele.detEta()),
 //track quantities (momentum + positions)
 //momemtums
-p3TrackVtx_(ele.gsfEle().trackMomentumAtVtx().X(),ele.gsfEle().trackMomentumAtVtx().Y(),ele.gsfEle().trackMomentumAtVtx().Z()),
-p3TrackCal_(ele.gsfEle().trackMomentumAtCalo().X(),ele.gsfEle().trackMomentumAtCalo().Y(),ele.gsfEle().trackMomentumAtCalo().Z()),
-p3TrackInn_(ele.gsfEle().gsfTrack()->innerMomentum().X(),ele.gsfEle().gsfTrack()->innerMomentum().Y(),ele.gsfEle().gsfTrack()->innerMomentum().Z()),
-p3TrackOut_(ele.gsfEle().gsfTrack()->outerMomentum().X(),ele.gsfEle().gsfTrack()->outerMomentum().Y(),ele.gsfEle().gsfTrack()->outerMomentum().Z()),
+//p3TrackVtx_(ele.gsfEle().trackMomentumAtVtx().X(),ele.gsfEle().trackMomentumAtVtx().Y(),ele.gsfEle().trackMomentumAtVtx().Z()),
+//p3TrackCal_(ele.gsfEle().trackMomentumAtCalo().X(),ele.gsfEle().trackMomentumAtCalo().Y(),ele.gsfEle().trackMomentumAtCalo().Z()),
+//p3TrackInn_(ele.gsfEle().gsfTrack()->innerMomentum().X(),ele.gsfEle().gsfTrack()->innerMomentum().Y(),ele.gsfEle().gsfTrack()->innerMomentum().Z()),
+//p3TrackOut_(ele.gsfEle().gsfTrack()->outerMomentum().X(),ele.gsfEle().gsfTrack()->outerMomentum().Y(),ele.gsfEle().gsfTrack()->outerMomentum().Z()),
 //positions
-posTrackVtx_(ele.gsfEle().TrackPositionAtVtx().X(),ele.gsfEle().TrackPositionAtVtx().Y(),ele.gsfEle().TrackPositionAtVtx().Z()),
-posTrackCal_(ele.gsfEle().TrackPositionAtCalo().X(),ele.gsfEle().TrackPositionAtCalo().Y(),ele.gsfEle().TrackPositionAtCalo().Z()),
-posTrackInn_(ele.gsfEle().gsfTrack()->innerPosition().X(),ele.gsfEle().gsfTrack()->innerPosition().Y(),ele.gsfEle().gsfTrack()->innerPosition().Z()),
-posTrackOut_(ele.gsfEle().gsfTrack()->outerPosition().X(),ele.gsfEle().gsfTrack()->outerPosition().Y(),ele.gsfEle().gsfTrack()->outerPosition().Z()),
+//posTrackVtx_(ele.gsfEle().TrackPositionAtVtx().X(),ele.gsfEle().TrackPositionAtVtx().Y(),ele.gsfEle().TrackPositionAtVtx().Z()),
+//posTrackCal_(ele.gsfEle().TrackPositionAtCalo().X(),ele.gsfEle().TrackPositionAtCalo().Y(),ele.gsfEle().TrackPositionAtCalo().Z()),
+//posTrackInn_(ele.gsfEle().gsfTrack()->innerPosition().X(),ele.gsfEle().gsfTrack()->innerPosition().Y(),ele.gsfEle().gsfTrack()->innerPosition().Z()),
+//posTrackOut_(ele.gsfEle().gsfTrack()->outerPosition().X(),ele.gsfEle().gsfTrack()->outerPosition().Y(),ele.gsfEle().gsfTrack()->outerPosition().Z()),
 trkChi2_(ele.gsfEle().gsfTrack()->chi2()),
 nrDof_(static_cast<int>(ele.gsfEle().gsfTrack()->ndof())),
 posCharge_(ele.gsfEle().charge()>0),
@@ -77,7 +76,8 @@ isEBPhiGap_(ele.gsfEle().isEBPhiGap()),
 isEEDeeGap_(ele.gsfEle().isEEDeeGap()),  
 isEERingGap_(ele.gsfEle().isEERingGap()),
 posChargeTrk_(ele.gsfEle().gsfTrack()->charge()),
-nrMissingHits_(ele.gsfEle().gsfTrack()->trackerExpectedHitsInner().numberOfHits()),
+//nrMissingHits_(ele.gsfEle().gsfTrack()->trackerExpectedHitsInner().numberOfHits()),
+nrMissingHits_(-1),
 dCotTheta_(-1),
 dist_(-1),
 mEvent_(NULL)
@@ -86,7 +86,6 @@ mEvent_(NULL)
  
 
 }
-
 //fills off a GsfElectron, doesnt fill nr trks isol or cutcode
 SHElectron::SHElectron(const reco::GsfElectron& ele,int superClusNr):
   //classification variables
@@ -104,15 +103,15 @@ eta_(ele.eta()),
 detEta_(ele.superCluster()->eta()),
 //track quantities (momentum + positions)
 //momemtums
-p3TrackVtx_(ele.trackMomentumAtVtx().X(),ele.trackMomentumAtVtx().Y(),ele.trackMomentumAtVtx().Z()),
-p3TrackCal_(ele.trackMomentumAtCalo().X(),ele.trackMomentumAtCalo().Y(),ele.trackMomentumAtCalo().Z()),
-p3TrackInn_(ele.gsfTrack()->innerMomentum().X(),ele.gsfTrack()->innerMomentum().Y(),ele.gsfTrack()->innerMomentum().Z()),
-p3TrackOut_(ele.gsfTrack()->outerMomentum().X(),ele.gsfTrack()->outerMomentum().Y(),ele.gsfTrack()->outerMomentum().Z()),
+//p3TrackVtx_(ele.trackMomentumAtVtx().X(),ele.trackMomentumAtVtx().Y(),ele.trackMomentumAtVtx().Z()),
+//p3TrackCal_(ele.trackMomentumAtCalo().X(),ele.trackMomentumAtCalo().Y(),ele.trackMomentumAtCalo().Z()),
+//p3TrackInn_(ele.gsfTrack()->innerMomentum().X(),ele.gsfTrack()->innerMomentum().Y(),ele.gsfTrack()->innerMomentum().Z()),
+//p3TrackOut_(ele.gsfTrack()->outerMomentum().X(),ele.gsfTrack()->outerMomentum().Y(),ele.gsfTrack()->outerMomentum().Z()),
 //positions
-posTrackVtx_(ele.TrackPositionAtVtx().X(),ele.TrackPositionAtVtx().Y(),ele.TrackPositionAtVtx().Z()),
-posTrackCal_(ele.TrackPositionAtCalo().X(),ele.TrackPositionAtCalo().Y(),ele.TrackPositionAtCalo().Z()),
-posTrackInn_(ele.gsfTrack()->innerPosition().X(),ele.gsfTrack()->innerPosition().Y(),ele.gsfTrack()->innerPosition().Z()),
-posTrackOut_(ele.gsfTrack()->outerPosition().X(),ele.gsfTrack()->outerPosition().Y(),ele.gsfTrack()->outerPosition().Z()),
+//posTrackVtx_(ele.TrackPositionAtVtx().X(),ele.TrackPositionAtVtx().Y(),ele.TrackPositionAtVtx().Z()),
+//posTrackCal_(ele.TrackPositionAtCalo().X(),ele.TrackPositionAtCalo().Y(),ele.TrackPositionAtCalo().Z()),
+//posTrackInn_(ele.gsfTrack()->innerPosition().X(),ele.gsfTrack()->innerPosition().Y(),ele.gsfTrack()->innerPosition().Z()),
+//posTrackOut_(ele.gsfTrack()->outerPosition().X(),ele.gsfTrack()->outerPosition().Y(),ele.gsfTrack()->outerPosition().Z()),
 trkChi2_(ele.gsfTrack()->chi2()),
 nrDof_(static_cast<int>(ele.gsfTrack()->ndof())),
 posCharge_(ele.charge()>0),
@@ -132,7 +131,7 @@ sigmaIEtaIEta_(ele.sigmaIetaIeta()),
 //links to tracks, superClusters
 superClusIndx_(superClusNr),
 isolEm_(ele.dr03EcalRecHitSumEt()),
-isolHad_(ele.dr03HcalDepth1TowerSumEt()),
+isolHad_(ele.dr03HcalTowerSumEt()),
 isolHadDepth1_(ele.dr03HcalDepth1TowerSumEt()),
 isolHadDepth2_(ele.dr03HcalDepth2TowerSumEt()),
 isolPtTrks_(ele.dr03TkSumPt()),
@@ -155,7 +154,8 @@ isEBPhiGap_(ele.isEBPhiGap()),
 isEEDeeGap_(ele.isEEDeeGap()),  
 isEERingGap_(ele.isEERingGap()),
 posChargeTrk_(ele.gsfTrack()->charge()),
-nrMissingHits_(ele.gsfTrack()->trackerExpectedHitsInner().numberOfHits()),
+//nrMissingHits_(ele.gsfTrack()->trackerExpectedHitsInner().numberOfHits()),
+nrMissingHits_(-1),
 dCotTheta_(-1),
 dist_(-1),
 mEvent_(NULL)
@@ -164,6 +164,86 @@ mEvent_(NULL)
  
 
 }
+//fills off a GsfElectron, doesnt fill nr trks isol or cutcode
+SHElectron::SHElectron(const reco::Photon& pho,int superClusNr):
+  //classification variables
+type_(-1),
+//kinematic quantities
+p4_(pho.px(),pho.py(),pho.pz(),pho.energy()),
+et_(p4_.Pt()),
+nrgy_(pho.energy()),
+rawNrgy_(pho.superCluster()->rawEnergy()),
+preShowerNrgy_(pho.superCluster()->preshowerEnergy()),
+nrgyErr_(-1),
+posCal_(pho.caloPosition().X(),pho.caloPosition().Y(),pho.caloPosition().Z()),
+e5x5_(pho.e5x5()),
+eta_(pho.eta()),
+detEta_(pho.superCluster()->eta()),
+//track quantities (momentum + positions)
+//momemtums
+//p3TrackVtx_(pho.trackMomentumAtVtx().X(),pho.trackMomentumAtVtx().Y(),pho.trackMomentumAtVtx().Z()),
+//p3TrackCal_(pho.trackMomentumAtCalo().X(),pho.trackMomentumAtCalo().Y(),pho.trackMomentumAtCalo().Z()),
+//p3TrackInn_(pho.gsfTrack()->innerMomentum().X(),pho.gsfTrack()->innerMomentum().Y(),pho.gsfTrack()->innerMomentum().Z()),
+//p3TrackOut_(pho.gsfTrack()->outerMomentum().X(),pho.gsfTrack()->outerMomentum().Y(),pho.gsfTrack()->outerMomentum().Z()),
+//positions
+//posTrackVtx_(pho.TrackPositionAtVtx().X(),pho.TrackPositionAtVtx().Y(),pho.TrackPositionAtVtx().Z()),
+//posTrackCal_(pho.TrackPositionAtCalo().X(),pho.TrackPositionAtCalo().Y(),pho.TrackPositionAtCalo().Z()),
+//posTrackInn_(pho.gsfTrack()->innerPosition().X(),pho.gsfTrack()->innerPosition().Y(),pho.gsfTrack()->innerPosition().Z()),
+//posTrackOut_(pho.gsfTrack()->outerPosition().X(),pho.gsfTrack()->outerPosition().Y(),pho.gsfTrack()->outerPosition().Z()),
+trkChi2_(-1),
+nrDof_(-1),
+posCharge_(0),
+d0_(999),
+//id quantities
+epIn_(-1),
+epOut_(-1),
+hadem_(pho.hadronicOverEm()),
+hademDepth1_(pho.hadronicDepth1OverEm()), 
+hademDepth2_(pho.hadronicDepth2OverEm()),
+dEtaIn_(999.),
+dEtaOut_(999.),
+dPhiIn_(999.),
+dPhiOut_(999.),
+sigmaEtaEta_(pho.sigmaEtaEta()),
+sigmaIEtaIEta_(pho.sigmaIetaIeta()),
+//links to tracks, superClusters
+superClusIndx_(superClusNr),
+isolEm_(pho.ecalRecHitSumEtConeDR03()),
+isolHad_(pho.hcalTowerSumEtConeDR03()),
+isolHadDepth1_(pho.hcalDepth1TowerSumEtConeDR03()),
+isolHadDepth2_(pho.hcalDepth2TowerSumEtConeDR03()),
+isolPtTrks_(pho.trkSumPtHollowConeDR03()),
+isolNrTrks_(-1), //not really supported anymore
+cutCode_(-1),
+e1x5Over5x5_(pho.e1x5()/pho.e5x5()),
+e2x5Over5x5_(pho.e2x5()/pho.e5x5()),
+isEcalDriven_(1),
+isTrackerDriven_(0),
+isolEmDR04_(pho.ecalRecHitSumEtConeDR04()),
+isolHadDepth1DR04_(pho.hcalDepth1TowerSumEtConeDR04()),
+isolHadDepth2DR04_(pho.hcalDepth2TowerSumEtConeDR04()),
+isolPtTrksDR04_(pho.trkSumPtHollowConeDR04()),
+epCombNrgy_(pho.energy()),
+seedId_(pho.superCluster()->seed()->seed().rawId()),
+isBarrel_(pho.isEB()),
+isEBEEGap_(pho.isEBEEGap()), 
+isEBEtaGap_(pho.isEBEtaGap()),  
+isEBPhiGap_(pho.isEBPhiGap()), 
+isEEDeeGap_(pho.isEEDeeGap()),  
+isEERingGap_(pho.isEERingGap()),
+posChargeTrk_(0),
+//nrMissingHits_(pho.gsfTrack()->trackerExpectedHitsInner().numberOfHits()),
+nrMissingHits_(-1),
+dCotTheta_(-1),
+dist_(-1),
+mEvent_(NULL)
+{
+ 
+ 
+
+}
+
+
 //makes a trackless electron
 SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus,
 		       const cmssw::FiducialFlags& fid,
@@ -243,3 +323,5 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
 mEvent_(NULL)
 {
 }
+
+

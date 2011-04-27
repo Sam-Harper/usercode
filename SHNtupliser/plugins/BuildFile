@@ -1,4 +1,4 @@
 <export></export>
-<library name=SHarperSHNtupliser_plugins file=SHNtupliser.cc>
+<library name=SHarperSHNtupliser_plugins file=SHNtupliser.cc,VertexFilter.cc>
   <use name=SHarper/SHNtupliser>
 </library>

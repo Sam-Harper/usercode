@@ -31,7 +31,7 @@
 #include "DataFormats/METReco/interface/PFMET.h"
 
 #include "FWCore/Common/interface/TriggerNames.h"
-
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
 
 
@@ -77,7 +77,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   addSuperClusters(heepEvent,shEvent);
   addElectrons(heepEvent,shEvent);
 
-  if(addMuons_) addMuons(heepEvent,shEvent); 
+  // if(addMuons_) addMuons(heepEvent,shEvent); 
  
     
   if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
@@ -88,10 +88,10 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
     addTrigDebugInfo(heepEvent,shEvent,*trigEventWithRefs,hltDebugFiltersToSave_,hltTag_);
   }
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
-   if(addJets_) addJets(heepEvent,shEvent);
-   if(addMet_) addMet(heepEvent,shEvent);
-   addMCParticles(heepEvent,shEvent);
-   addIsolTrks(heepEvent,shEvent);
+  //  if(addJets_) addJets(heepEvent,shEvent);
+  //  if(addMet_) addMet(heepEvent,shEvent);
+  addMCParticles(heepEvent,shEvent);
+   // addIsolTrks(heepEvent,shEvent);
    
 }
 
@@ -116,16 +116,20 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
   shEvent.setLumiSec(heepEvent.lumiSec());
   shEvent.setTime(heepEvent.time());
   shEvent.setOrbitNumber(heepEvent.orbitNumber());
-  shEvent.setNrVertices(heepEvent.handles().vertices->size());
-  TVector3 vtxPos;
-  if(heepEvent.handles().vertices->size()>0){  
-    const reco::Vertex& vertex = heepEvent.handles().vertices->front();
-    vtxPos.SetXYZ(vertex.x(),vertex.y(),vertex.z()); 
-  }
-  shEvent.setVertex(vtxPos);
-  math::XYZPoint bsCMSSW = heepEvent.handles().beamSpot->position();
-  TVector3 bs(bsCMSSW.x(),bsCMSSW.y(),bsCMSSW.z());
-  shEvent.setBeamSpot(bs);
+  shEvent.setNrVertices(-1);
+   TVector3 vtxPos;
+   if(heepEvent.handles().vertices.isValid() && heepEvent.handles().vertices->size()>0){  
+     const reco::Vertex& vertex = heepEvent.handles().vertices->front();
+     vtxPos.SetXYZ(vertex.x(),vertex.y(),vertex.z()); 
+     shEvent.setNrVertices(heepEvent.handles().vertices->size());
+   }
+   shEvent.setVertex(vtxPos);
+   TVector3 bs;
+   if(heepEvent.handles().beamSpot.isValid()){
+     math::XYZPoint bsCMSSW = heepEvent.handles().beamSpot->position();
+     bs.SetXYZ(bsCMSSW.x(),bsCMSSW.y(),bsCMSSW.z());
+   }
+   shEvent.setBeamSpot(bs);
   
  
   //std::cout <<"done "<<std::endl;
@@ -137,7 +141,8 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
 //if not, makes a superclus only electron
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
- 
+  if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
+
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
   const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
   const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
@@ -282,8 +287,8 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
 {
   for(size_t i=0;i<ecalHitVec_.size();i++) ecalHitVec_[i].setNrgy(-999.);
   
-  const EcalRecHitCollection* ebHits = heepEvent.ebHitsFull();
-  const EcalRecHitCollection* eeHits = heepEvent.eeHitsFull();
+  const EcalRecHitCollection* ebHits =heepEvent.handles().ebRecHits.isValid() ? heepEvent.ebHitsFull() : NULL;
+  const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : NULL;
   
   if(ebHits!=NULL){
     for(EcalRecHitCollection::const_iterator hitIt = ebHits->begin();
@@ -307,7 +312,7 @@ void SHEventHelper::addHcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
 {
   for(size_t i=0;i<hcalHitVec_.size();i++) hcalHitVec_[i].setNrgy(-999.);
   
-  const HBHERecHitCollection* hcalHits = heepEvent.hbheHits();
+  const HBHERecHitCollection* hcalHits = heepEvent.handles().hbheRecHits.isValid() ? heepEvent.hbheHits() : NULL;
   
   if(hcalHits!=NULL){
     for(HBHERecHitCollection::const_iterator hitIt = hcalHits->begin();
@@ -346,6 +351,7 @@ void SHEventHelper::addTrigInfo(const trigger::TriggerEvent& trigEvt,
       const trigger::TriggerObject& obj = trigObjColl[*keyIt];
       TLorentzVector p4;
       //note I call this function as its probably the fastest way to get info out of  TriggerObject in 22X (look at how it calculates et, its impressive, it might be possible to do it slower but I doubt it)
+      // if(trigEvt.filterTag(filterNr).process()=="HLT" && trigEvt.filterTag(filterNr).label()=="hltSingleMu15L3Filtered15") std::cout <<"filter: "<<trigEvt.filterTag(filterNr).label()<<" prod "<<trigEvt.filterTag(filterNr).process()<<" obj.pt "<<obj.pt()<<std::endl;
       p4.SetPtEtaPhiM(obj.pt(),obj.eta(),obj.phi(),obj.mass());
       trigInfo.addObj(p4);
     }

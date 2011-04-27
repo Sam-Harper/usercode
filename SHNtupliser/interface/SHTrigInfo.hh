@@ -49,7 +49,8 @@ public:
   TLorentzVector getTrigObj(double eta,double phi)const;
   bool passL1Trig(const TLorentzVector& p4)const{return passL1Trig(p4.Eta(),p4.Phi());}
   bool passL1Trig(double eta,double phi)const;
- 
+  //TLorentzVector getL1TrigObj(double eta,double phi)const{}
+  
   
   ClassDef(SHTrigInfo,3)
 };

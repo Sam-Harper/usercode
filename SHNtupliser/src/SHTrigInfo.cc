@@ -9,7 +9,7 @@ bool SHTrigInfo::passTrig(double eta,double phi)const
 {
   // if(!pass_) return false; //can never pass if trigger didnt accept
 
-  double minDeltaR2=0.1*0.1;
+  double minDeltaR2=0.5*0.5;
   //  std::cout <<"here "<<std::endl;
   for(int objNr=0;objNr<nrPass();objNr++){
     //   std::cout <<"objNr "<<objNr<<" / "<<nrPass()<<std::endl;
@@ -22,7 +22,7 @@ bool SHTrigInfo::passTrig(double eta,double phi)const
 
 TLorentzVector SHTrigInfo::getTrigObj(double eta,double phi)const
 {
-   double minDeltaR2=0.1*0.1;
+   double minDeltaR2=0.5*0.5;
   //  std::cout <<"here "<<std::endl;
   for(int objNr=0;objNr<nrPass();objNr++){
     //   std::cout <<"objNr "<<objNr<<" / "<<nrPass()<<std::endl;

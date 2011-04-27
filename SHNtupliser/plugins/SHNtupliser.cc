@@ -78,15 +78,18 @@ void SHNtupliser::beginJob()
  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   evtTree_= new TTree("evtTree","Event Tree");
   evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,2);
+  
+  if(compTwoMenus_){
+    shEvt2ndTrig_ = new SHEvent;
+    evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,2);
+  }
   if(useHLTDebug_) {
     shTrigObjs_ = new SHTrigObjContainer;
     evtTree_->Branch("HLTDebugObjs","SHTrigObjContainer",&shTrigObjs_,32000,2); 
     
     if(compTwoMenus_){
       shTrigObjs2ndTrig_ = new SHTrigObjContainer;
-      shEvt2ndTrig_ = new SHEvent;
       evtTree_->Branch("HLTDebugObjs2","SHTrigObjContainer",&shTrigObjs2ndTrig_,32000,2);
-      evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,2);
     }
 
   }
@@ -118,6 +121,7 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
     GeomFuncs::loadCaloGeom(ecalGeom,hcalGeom);
     initGeom_=true;
   }
+  std::cout <<"end begin run "<<std::endl;
 }
 
 
@@ -131,14 +135,17 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
 
 
   nrTot_++;
- 
+  //  std::cout <<"analysing "<<std::endl;
     shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
-
+    // std::cout <<"made even "<<std::endl;
     if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
-    if(useHLTDebug_ && compTwoMenus_){ //ugly hack alert...
-      trigDebugHelper_->setHLTTag(secondHLTTag_);
-      trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs2ndTrig_);
-      trigDebugHelper_->setHLTTag(hltTag_);
+    if(compTwoMenus_){ //ugly hack alert...
+      shEvt2ndTrig_->clear();
+      if(useHLTDebug_){
+	trigDebugHelper_->setHLTTag(secondHLTTag_);
+	trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs2ndTrig_);
+	trigDebugHelper_->setHLTTag(hltTag_);
+      }
       shEvtHelper_.addEventPara(heepEvt_,*shEvt2ndTrig_);
       edm::Handle<trigger::TriggerEvent> trigEvt2nd;
       edm::Handle<edm::TriggerResults> trigResults2nd;
@@ -172,7 +179,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
 
 
 //     //drop all calo hits
-//     shEvt_->getCaloHits().clear();
+     shEvt_->getCaloHits().clear();
 //     bool passEt=false;
 //     for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
 //       if(shEvt_->getElectron(eleNr)->et()>15){

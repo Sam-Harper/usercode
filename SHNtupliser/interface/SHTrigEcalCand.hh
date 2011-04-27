@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 class SHTrigEcalCand : public TObject {
 
@@ -35,8 +36,17 @@ public:
   float preShowerNrgy()const{return preShowerNrgy_;}
   const TVector3& clusPos()const{return clusPos_;}
   bool isIso()const{return isIso_;}
-
+  float eta()const{return p4_.Eta();}
+  float nrgy()const{return p4_.E();}
+  float phi()const{return p4_.Phi();}
+  float et()const{return p4_.Et();}
+  
   float var(const std::string& varName)const;
+
+
+  friend std::ostream &operator <<(std::ostream& output,const SHTrigEcalCand &cand);
+  std::ostream &print(std::ostream& output)const;
+  void print(){std::cout <<*this<<std::endl;}
 
   ClassDef(SHTrigEcalCand,1)
 

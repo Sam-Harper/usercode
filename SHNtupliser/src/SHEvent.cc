@@ -268,15 +268,16 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   datasetCode_=rhs.datasetCode_;
   weight_=rhs.weight_;
   metData_=rhs.metData_;
+  genEventPtHat_ = rhs.genEventPtHat_; 
   l1Bits_ =rhs.l1Bits_;
-  bx_ =rhs.bx_;
   lumiSec_ =rhs.lumiSec_;
-  time_ = rhs.time_;
+  bx_ =rhs.bx_;
   orbNr_ = rhs.orbNr_;
+  time_ = rhs.time_;
   nrVertices_ = rhs.nrVertices_;
   vertex_ = rhs.vertex_;
   beamSpot_ = rhs.beamSpot_;
-  genEventPtHat_ = rhs.genEventPtHat_;
+  pfMet_ = rhs.pfMet_;
 }
 
 //I have a memory leak from some where....
@@ -350,26 +351,138 @@ void SHEvent::printTruth(int nrLines)const
 int SHEvent::getTrigCode()const
 {
   int trigCode = 0x0;
-  const std::string ele15("hltL1NonIsoHLTNonIsoSingleElectronEt15PixelMatchFilter");
-  const std::string pho15("hltL1NonIsoHLTNonIsoSinglePhotonEt15HcalIsolFilter"); 
-  const std::string ele15Id("hltL1NonIsoHLTNonIsoSingleElectronEt15EleIdDphiFilter"); 
-  if(passTrig(ele15)) trigCode |=0x1;
-  if(passTrig(ele15Id)) trigCode |=0x2;
-  if(passTrig(pho15)) trigCode |=0x4;
+  std::vector<std::string> trigs;
+  // trigs.push_back("HLT_Ele15_SW_L1R");
+  //trigs.push_back("HLT_Photon20_L1R");
+  trigs.push_back("HLT_DoublePhoton33_v2");
+  trigs.push_back("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1");
+  trigs.push_back("HLT_Ele45_CaloIdVT_TrkIdT_v2");
+  trigs.push_back("HLT_Ele90_NoSpikeFilter_v2");
+  
+  // trigs.push_back("HLT_DoublePhoton15_L1R"); //0x1
+//   trigs.push_back("HLT_DoublePhoton20_L1R");//0x2
+//   trigs.push_back("HLT_DoublePhoton17_L1R");//0x4
+//   trigs.push_back("HLT_DoublePhoton22_L1R");//0x8
+//   trigs.push_back("HLT_Photon20_Cleaned_L1R");//0x10
+//   trigs.push_back("HLT_Photon30_Cleaned_L1R");//0x20
+//   trigs.push_back("HLT_Photon50_Cleaned_L1R_v1");//0x40
+//   trigs.push_back("HLT_Photon70_Cleaned_L1R_v1");//0x80
+//   trigs.push_back("HLT_Photon50_NoHE_Cleaned_L1R");//0x100
+//   trigs.push_back("HLT_Photon70_NoHE_Cleaned_L1R_v1");//0x200
+//   trigs.push_back("HLT_Photon100_NoHE_Cleaned_L1R_v1");//0x400
+//   trigs.push_back("HLT_Photon110_NoHE_Cleaned_L1R_v1");//0x800
+//   trigs.push_back("HLT_Photon17_SC17HE_L1R_v1");//0x1000;
+//   trigs.push_back("HLT_Photon22_SC22HE_L1R_v1");//0x2000;
+//   trigs.push_back("HLT_DoubleEle15_SW_L1R_v1");//0x4000
+
+//trigs.push_back("HLT_Ele12_SW_TightEleIdIsol_L1R");  //0x1
+  // trigs.push_back("HLT_Ele12_SW_TightEleId_L1R"); //0x2
+  //trigs.push_back("HLT_Ele17_SW_CaloEleId_L1R"); //0x4
+  //trigs.push_back("HLT_Ele17_SW_EleId_L1R"); //0x8
+  //trigs.push_back("HLT_Photon20_Cleaned_L1R");  //0x10
+  // trigs.push_back("HLT_L1SingleEG8"); //0x20
+  // trigs.push_back("HLT_Activity_Ecal_SC7"); //0x40 
+  //trigs.push_back("HLT_Ele10_SW_L1R"); //0x80
+  //trigs.push_back("HLT_Photon17_SC17HE_L1R"); 
+  //trigs.push_back("HLT_Ele17_SW_TightCaloId_SC8HE_L1R");
+  // trigs.push_back("HLT_Photon15_L1R");
+  // trigs.push_back("HLT_Photon15_Cleaned_L1R");
+  
+  for(size_t trigNr=0;trigNr<trigs.size();trigNr++){
+    int trigBit = 0x1;
+    trigBit = trigBit << trigNr;
+    
+    if(passTrig(trigs[trigNr])) trigCode |=trigBit;
+  } 
+
   
   return trigCode;
 }
 
 
-int SHEvent::getTrigCode(double eta,double phi)const
+int SHEvent::getTrigCode(double detEta,double detPhi,double eta,double phi)const
 {
   int trigCode = 0x0;
-  const std::string ele15("hltL1NonIsoHLTNonIsoSingleElectronEt15PixelMatchFilter");
-  const std::string pho15("hltL1NonIsoHLTNonIsoSinglePhotonEt15HcalIsolFilter"); 
-  const std::string ele15Id("hltL1NonIsoHLTNonIsoSingleElectronEt15EleIdDphiFilter"); 
-  if(passTrig(ele15,eta,phi)) trigCode |=0x1;
-  if(passTrig(ele15Id,eta,phi)) trigCode |=0x2;
-  if(passTrig(pho15,eta,phi)) trigCode |=0x4;
+  std::vector<std::string> trigs;
+ 
+  trigs.push_back("hltDoublePhoton33EgammaLHEDoubleFilter");
+  trigs.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter");
+  trigs.push_back("hltEle45CaloIdVTTrkIdTDphiFilter");
+  trigs.push_back("hltEle90NoSpikeFilterPixelMatchFilter");
+
+ 
+
+  //trigs.clear();
+
+
+
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt10PixelMatchFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17PixelMatchFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17IsolTrackIsolFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TighterEleIdIsolTrackIsolFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEPixelMatchFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEDoublePixelMatchFilter");
+
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22PixelMatchFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterCaloIdIsolTrackIsolFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterEleIdDphiFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt32TighterEleIdDphiFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoDoubleElectronEt17PixelMatchFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt10HEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt17IsolSC17HEDoubleHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt17IsolSC17HETrackIsolFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20HEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20CleanedHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20IsolCleanedTrackIsolFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEDoubleHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt30CleanedHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40CaloIdCleanedHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40IsolCleanedTrackIsolFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50CleanedHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50HEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt70CleanedHEFilter");
+// trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt110NoHECleanedHEFilter");
+
+  // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt10PixelMatchFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt12TighterEleIdDphiFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17PixelMatchFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17IsolTrackIsolFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TighterEleIdIsolTrackIsolFilter"); 
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEPixelMatchFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEDoublePixelMatchFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22PixelMatchFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterCaloIdIsolTrackIsolFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterEleIdDphiFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt32TighterEleIdDphiFilter");
+
+//   trigs.push_back("hltL1NonIsoHLTNonIsoDoubleElectronEt17PixelMatchFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt10HEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt17IsolSC17HEDoubleHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20HEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20CleanedHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20IsolCleanedTrackIsolFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEDoubleHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt30CleanedHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40CaloIdCleanedHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40IsolCleanedTrackIsolFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50CleanedHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50HEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt70CleanedHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt110NoHECleanedHEFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoDoublePhotonEt17SingleIsolTrackIsolFilter");
+//   trigs.push_back("hltL1NonIsoHLTNonIsoDoublePhotonEt22HEFilter");
+  
+  for(size_t trigNr=0;trigNr<trigs.size();trigNr++){
+    int trigBit = 0x1;
+    trigBit = trigBit << trigNr;
+    
+    if(trigs[trigNr].find("EleId")!=std::string::npos && trigs[trigNr].find("CaloEleId")==std::string::npos){ //this indicates it is an electron trigger, uses vertex corrected p4
+
+      if(passTrig(trigs[trigNr],eta,phi)) trigCode |=trigBit;
+    }else if(passTrig(trigs[trigNr],detEta,detPhi)) trigCode |=trigBit;
+  } 
 
   return trigCode;
 }
@@ -386,7 +499,6 @@ bool SHEvent::passTrig(const std::string& trigName,double eta,double phi)const
   }
   return false;
 }
-
 
 
 const SHTrigInfo* SHEvent::getTrig(const std::string& trigName)const
@@ -421,7 +533,6 @@ bool SHEvent::passL1Trig(const std::string& trigName,double eta,double phi)const
   }
   return false;
 }
-
 
 
 bool SHEvent::passTrig(const std::string& trigName)const
