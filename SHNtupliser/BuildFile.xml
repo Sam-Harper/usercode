@@ -1,0 +1,24 @@
+<use   name="PhysicsTools/UtilAlgos"/>
+<use   name="PhysicsTools/CandUtils"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="RecoEcal/EgammaCoreTools"/>
+<use   name="root"/>
+<use   name="rootcore"/>
+<use   name="FWCore/Framework"/>
+<use   name="DataFormats/Common"/>
+<use   name="DataFormats/EcalRecHit"/>
+<use   name="DataFormats/EgammaCandidates"/>
+<use   name="DataFormats/PatCandidates"/>
+<use   name="Geometry/CaloGeometry"/>
+<use   name="Geometry/CaloTopology"/>
+<use   name="SHarper/HEEPAnalyzer"/>
+<use   name="PhysicsTools/IsolationAlgos"/>
+<use   name="PhysicsTools/PatAlgos"/>
+<use   name="RecoEgamma/EgammaIsolationAlgos"/>
+<use   name="RecoEgamma/EgammaTools"/>
+<use   name="DataFormats/RecoCandidate"/>
+<use   name="DataFormats/L1GlobalTrigger"/>
+<use   name="CondFormats/L1TObjects"/>
+<export>
+  <lib   name="1"/>
+</export>
