@@ -1,0 +1,8 @@
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="root"/>
+<use   name="rootcore"/>
+<use   name="FWCore/Framework"/>
+<use   name="DataFormats/Common"/>
+<export>
+  <lib   name="1"/>
+</export>
