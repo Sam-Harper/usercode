@@ -16,6 +16,8 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "DataFormats/Common/interface/View.h"
@@ -66,6 +68,7 @@ namespace heep {
     edm::Handle<reco::SuperClusterCollection> superClusEB;
     edm::Handle<reco::SuperClusterCollection> superClusEE;  
     edm::Handle<reco::GsfElectronCollection> gsfEle; 
+    edm::Handle<reco::PhotonCollection> recoPho;
     edm::Handle<reco::TrackCollection> ctfTrack;
     edm::Handle<reco::GenParticleCollection> genParticle;
     edm::Handle<trigger::TriggerEvent> trigEvent;
