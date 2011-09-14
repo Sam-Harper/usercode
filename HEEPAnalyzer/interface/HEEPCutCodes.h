@@ -36,8 +36,12 @@ namespace heep {
       ISOLEMHADDEPTH1 =0x0200,
       ISOLHADDEPTH2   =0x0400,
       ISOLPTTRKS      =0x0800,
+
+      ISOLPTTRKSREL03 =0x1000,  //WP80
+      ISOLEMREL03     =0x2000,  //WP80
+      ISOLHADREL03    =0x4000, //WP80
      
-      ECALDRIVEN      =0x2000,
+      ECALDRIVEN     =0x20000,
       
       //flag that if its set, shows the code is invalid
       INVALID       =0x40000000

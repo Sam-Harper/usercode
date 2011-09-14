@@ -21,6 +21,9 @@ heep::ComCodes heep::CutCodes::makeCodeMap_()
   codes.setCode("isolHadDepth2",ISOLHADDEPTH2);
   codes.setCode("isolPtTrks",ISOLPTTRKS);
   codes.setCode("ecalDriven",ECALDRIVEN);
+  codes.setCode("isolPtTrksRel03",ISOLPTTRKSREL03); //WP80
+  codes.setCode("isolEmRel03",ISOLEMREL03);         //WP80
+  codes.setCode("isolHadRel03",ISOLHADREL03);        //WP80
   codes.setCode("invalid",INVALID);
   codes.sort();
   return codes;

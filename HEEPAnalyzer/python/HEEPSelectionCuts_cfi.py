@@ -22,7 +22,9 @@ heepBarrelCuts = cms.PSet (
     isolPtTrksConstTerm=cms.double(7.5),
     isolPtTrksGradTerm=cms.double(0.0),
     isolPtTrksGradStart=cms.double(0.),
-
+     maxIsolPtTrksRel03=cms.double(0.09),  #WP80
+    maxIsolEmRel03=cms.double(0.07),      #WP80
+    maxIsolHadRel03=cms.double(0.1),      #WP80
 )
 
 heepEndcapCuts = cms.PSet (
@@ -45,5 +47,8 @@ heepEndcapCuts = cms.PSet (
     isolPtTrksConstTerm=cms.double(15),
     isolPtTrksGradTerm=cms.double(0.0),
     isolPtTrksGradStart=cms.double(0.),
+    maxIsolPtTrksRel03=cms.double(0.09),  #WP80
+    maxIsolEmRel03=cms.double(0.07),      #WP80
+    maxIsolHadRel03=cms.double(0.1),      #WP80
 
 )

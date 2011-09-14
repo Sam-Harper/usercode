@@ -38,7 +38,9 @@ int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,
   if(ele.e2x5MaxOver5x5()< cuts.minE2x5Over5x5 && ele.e1x5Over5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
   if(ele.isolHadDepth2()> (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(ele.et()<cuts.isolHadDepth2GradStart ? 0. : (ele.et()-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
   if(ele.isolPtTrks() > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(ele.et()<cuts.isolPtTrksGradStart ? 0. : (ele.et()-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
- 
+  if(ele.isolPtTrksRel03() > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
+  if(ele.isolEmRel03() > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
+  if(ele.isolHadRel03() > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03; 
 
   return (cutCode & cuts.cutMask & cutMask) ;
 }
@@ -72,7 +74,9 @@ int heep::EleSelector::getCutCode(const reco::GsfElectron& ele,const EleCutValue
   if(ele.e2x5Max()/ele.e5x5()< cuts.minE2x5Over5x5 && ele.e1x5()/ele.e5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
   if(ele.dr03HcalDepth2TowerSumEt()> (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(et<cuts.isolHadDepth2GradStart ? 0. : (et-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
   if(ele.dr03TkSumPt() > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(et<cuts.isolPtTrksGradStart ? 0. : (et-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
-  
+  if((ele.dr03TkSumPt()/ele.trackMomentumAtVtx().rho()) > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
+  if((ele.dr03EcalRecHitSumEt()/ele.trackMomentumAtVtx().rho() ) > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
+  if((ele.dr03HcalTowerSumEt()/ele.trackMomentumAtVtx().rho() ) > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03; 
 
   return (cutCode & cuts.cutMask & cutMask) ;
 }

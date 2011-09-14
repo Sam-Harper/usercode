@@ -28,7 +28,11 @@ heep::EleCutValues::EleCutValues():
   //track pt isolation
   isolPtTrksConstTerm(0),
   isolPtTrksGradTerm(0),
-  isolPtTrksGradStart(0)
+  isolPtTrksGradStart(0),
+  //WP80
+  maxIsolPtTrksRel03(0),
+  maxIsolEmRel03(0),    
+  maxIsolHadRel03(0)
 {
 
 }
@@ -63,7 +67,12 @@ heep::EleCutValues& heep::EleCutValues::operator=(const edm::ParameterSet& iConf
   isolPtTrksConstTerm = iConfig.getParameter<double>("isolPtTrksConstTerm");
   isolPtTrksGradTerm = iConfig.getParameter<double>("isolPtTrksGradTerm");
   isolPtTrksGradStart = iConfig.getParameter<double>("isolPtTrksGradStart");
-  
- 
+   
+  maxIsolEmRel03     = iConfig.getParameter<double>("maxIsolEmRel03");//WP80
+  maxIsolHadRel03    = iConfig.getParameter<double>("maxIsolHadRel03");//WP80
+  maxIsolPtTrksRel03 = iConfig.getParameter<double>("maxIsolPtTrksRel03");//WP80
+
+
+
   return *this;
 }

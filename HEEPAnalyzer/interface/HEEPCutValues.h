@@ -34,7 +34,9 @@ namespace heep {
     double isolPtTrksConstTerm;
     double isolPtTrksGradTerm;
     double isolPtTrksGradStart;
-  
+    double maxIsolPtTrksRel03; // WP80
+    double maxIsolEmRel03;     // WP80
+    double maxIsolHadRel03;    // WP80
     
     EleCutValues();
     explicit EleCutValues(const edm::ParameterSet& iConfig);
