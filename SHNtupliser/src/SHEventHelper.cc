@@ -77,7 +77,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   addSuperClusters(heepEvent,shEvent);
   addElectrons(heepEvent,shEvent);
 
-  // if(addMuons_) addMuons(heepEvent,shEvent); 
+  if(addMuons_) addMuons(heepEvent,shEvent); 
  
     
   if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
@@ -88,10 +88,10 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
     addTrigDebugInfo(heepEvent,shEvent,*trigEventWithRefs,hltDebugFiltersToSave_,hltTag_);
   }
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
-  //  if(addJets_) addJets(heepEvent,shEvent);
-  //  if(addMet_) addMet(heepEvent,shEvent);
+  if(addJets_) addJets(heepEvent,shEvent);
+  if(addMet_) addMet(heepEvent,shEvent);
   addMCParticles(heepEvent,shEvent);
-   // addIsolTrks(heepEvent,shEvent);
+  addIsolTrks(heepEvent,shEvent);
    
 }
 
@@ -135,37 +135,23 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
   //std::cout <<"done "<<std::endl;
 }
 
-//this now promotes all sc to electrons...
-//runs through all sc + works out if matched to electron
-//if so, just adds it as normal
-//if not, makes a superclus only electron
+//this now handles the sc promotion via photons
+//photons have just a H/E<0.5 cut which is fine for our needs
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
   if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
   const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
-  const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
-  const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE();
-  
-  for(size_t scNr=0;scNr<superClusEB.size();scNr++){
-
-    size_t eleNr = matchToEle(superClusEB[scNr],electrons);
+  const std::vector<reco::Photon>& photons = heepEvent.recoPhos();
+  //std::cout <<"nr photons "<<photons.size()<<std::endl;
+  for(size_t phoNr=0;phoNr<photons.size();phoNr++){
+    const reco::SuperCluster& sc = *photons[phoNr].superCluster();
+    size_t eleNr = matchToEle(sc,electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
-    else if(superClusEB[scNr].energy()*sin(superClusEB[scNr].position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,superClusEB[scNr]);
+    
+    else if(sc.energy()*sin(sc.position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,photons[phoNr]);
   }
-  for(size_t scNr=0;scNr<superClusEE.size();scNr++){
-
-    size_t eleNr = matchToEle(superClusEE[scNr],electrons);
-
-    if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
-    else if(superClusEE[scNr].energy()*sin(superClusEE[scNr].position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000){
-      //    std::cout <<"shouldnt be here "<<std::endl;
-      addElectron(heepEvent,shEvent,superClusEE[scNr]);
-    }
-    //  std::cout <<"ending loop "<<std::endl;
-  }
-  
   
 }
 
@@ -175,7 +161,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
   
-  if(shEle->seedId()!=0){
+  if(shEle->seedId()!=0 && false){
     
     const TVector3& seedPos = GeomFuncs::getCell(shEle->seedId()).pos();
     GlobalPoint posGP(seedPos.X(),seedPos.Y(),seedPos.Z());  
@@ -200,25 +186,49 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     //  std::cout <<"set state"<<std::endl;
   }
   
+  //std::cout <<"ele "<<gsfEle.et()<<" eta "<<gsfEle.eta()<<" miss hits "<<gsfEle.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()<<" covDist "<<gsfEle.convDist()<<" dcot "<<gsfEle.convDcot()<<" radius "<<gsfEle.convRadius()<<std::endl;
 
-  double bField=0;
-  if(heepEvent.runnr()>100000){ //hack to id data
-    edm::Handle<DcsStatusCollection> dcsHandle;
-    heepEvent.event().getByLabel("scalersRawToDigi",dcsHandle);
-    float currentToBFieldScaleFactor = 2.09237036221512717e-04;
-    float current = (*dcsHandle)[0].magnetCurrent();
-    bField = current*currentToBFieldScaleFactor;
-  }else{
-    bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
-  }
+ //  double bField=0;
+//   if(heepEvent.runnr()>100000){ //hack to id data
+//     edm::Handle<DcsStatusCollection> dcsHandle;
+//     heepEvent.event().getByLabel("scalersRawToDigi",dcsHandle);
+//     float currentToBFieldScaleFactor = 2.09237036221512717e-04;
+//     float current = (*dcsHandle)[0].magnetCurrent();
+//     bField = current*currentToBFieldScaleFactor;
+//   }else{
+//     bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
+//   }
       
-  ConversionFinder conFind;
-  ConversionInfo convInfo = conFind.getConversionInfo(gsfEle,heepEvent.handles().ctfTrack,bField);
-  // shEle->setIsConversion(isConv); 
-  shEle->setConvInfo(convInfo.dist(),convInfo.dcot());
+//   ConversionFinder conFind;
+//   ConversionInfo convInfo = conFind.getConversionInfo(gsfEle,heepEvent.handles().ctfTrack,bField);
+//   shEle->setConvInfo(convInfo.dist(),convInfo.dcot());
   
 
 }
+
+void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const
+{
+  //std::cout <<"adding photon"<<std::endl;
+  shEvent.addElectron(photon,shEvent.getCaloHits());
+  // SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
+  
+//   double bField=0;
+//   if(heepEvent.runnr()>100000){ //hack to id data
+//     edm::Handle<DcsStatusCollection> dcsHandle;
+//     heepEvent.event().getByLabel("scalersRawToDigi",dcsHandle);
+//     float currentToBFieldScaleFactor = 2.09237036221512717e-04;
+//     float current = (*dcsHandle)[0].magnetCurrent();
+//     bField = current*currentToBFieldScaleFactor;
+//   }else{
+//     bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
+//   }
+      
+//   ConversionFinder conFind;
+//   ConversionInfo convInfo = conFind.getConversionInfo(photon,heepEvent.handles().ctfTrack,bField);
+//   shEle->setConvInfo(convInfo.dist(),convInfo.dcot());
+
+}
+
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const
 {
@@ -287,9 +297,13 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
 {
   for(size_t i=0;i<ecalHitVec_.size();i++) ecalHitVec_[i].setNrgy(-999.);
   
-  const EcalRecHitCollection* ebHits =heepEvent.handles().ebRecHits.isValid() ? heepEvent.ebHitsFull() : NULL;
-  const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : NULL;
+  const EcalRecHitCollection* ebHits =heepEvent.handles().ebRecHits.isValid() ? heepEvent.ebHitsFull() : 
+    heepEvent.handles().ebReducedRecHits.isValid() ? &(*heepEvent.handles().ebReducedRecHits) : NULL;
+  const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : 
+    heepEvent.handles().eeReducedRecHits.isValid() ? &(*heepEvent.handles().eeReducedRecHits) : NULL;
   
+
+
   if(ebHits!=NULL){
     for(EcalRecHitCollection::const_iterator hitIt = ebHits->begin();
 	hitIt!=ebHits->end();++hitIt){

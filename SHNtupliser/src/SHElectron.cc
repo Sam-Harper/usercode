@@ -76,6 +76,7 @@ SHElectron::SHElectron():
   nrMissingHits_(-1),
   dCotTheta_(-1),
   dist_(-1),
+  radius_(-999),
   mEvent_(NULL)
 {
 
@@ -154,6 +155,7 @@ SHElectron::SHElectron(const SHElectron &rhs):
   nrMissingHits_(rhs.nrMissingHits_),
   dCotTheta_(rhs.dCotTheta_),
   dist_(rhs.dist_),
+  radius_(rhs.radius_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
 

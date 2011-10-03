@@ -63,27 +63,27 @@ cmssw::IsolationVariables EleMaker::getIsol(const reco::SuperCluster& superClus,
 {
   cmssw::IsolationVariables isol;
   
-  EgammaTowerIsolation had1Iso(radius,intRadiusHcal_,etMinHcal_,1,heepEvent.handles().caloTowers.product());
-  EgammaTowerIsolation had2Iso(radius,intRadiusHcal_,etMinHcal_,2,heepEvent.handles().caloTowers.product());
-  EcalRecHitMetaCollection ecalBarrelHits(*heepEvent.ebHitsFull());
-  EcalRecHitMetaCollection ecalEndcapHits(*heepEvent.eeHitsFull());
-  EgammaRecHitIsolation ecalBarrelIsol(radius,intRadiusEcalBarrel_,jurassicWidth_,etMinBarrel_,eMinBarrel_,
-				       heepEvent.handles().caloGeom.product(),&ecalBarrelHits,DetId::Ecal);
-  EgammaRecHitIsolation ecalEndcapIsol(radius,intRadiusEcalEndcaps_,jurassicWidth_,etMinEndcaps_,eMinEndcaps_,
-				       heepEvent.handles().caloGeom.product(),&ecalEndcapHits,DetId::Ecal);
-  ecalBarrelIsol.setUseNumCrystals(useNumCrystals_);
-  ecalBarrelIsol.setVetoClustered(vetoClustered_);
-  ecalEndcapIsol.setUseNumCrystals(useNumCrystals_);
-  ecalEndcapIsol.setVetoClustered(vetoClustered_);
+//   EgammaTowerIsolation had1Iso(radius,intRadiusHcal_,etMinHcal_,1,heepEvent.handles().caloTowers.product());
+//   EgammaTowerIsolation had2Iso(radius,intRadiusHcal_,etMinHcal_,2,heepEvent.handles().caloTowers.product());
+//   EcalRecHitMetaCollection ecalBarrelHits(*heepEvent.ebHitsFull());
+//   EcalRecHitMetaCollection ecalEndcapHits(*heepEvent.eeHitsFull());
+//   EgammaRecHitIsolation ecalBarrelIsol(radius,intRadiusEcalBarrel_,jurassicWidth_,etMinBarrel_,eMinBarrel_,
+// 				       heepEvent.handles().caloGeom.product(),&ecalBarrelHits,DetId::Ecal);
+//   EgammaRecHitIsolation ecalEndcapIsol(radius,intRadiusEcalEndcaps_,jurassicWidth_,etMinEndcaps_,eMinEndcaps_,
+// 				       heepEvent.handles().caloGeom.product(),&ecalEndcapHits,DetId::Ecal);
+//   ecalBarrelIsol.setUseNumCrystals(useNumCrystals_);
+//   ecalBarrelIsol.setVetoClustered(vetoClustered_);
+//   ecalEndcapIsol.setUseNumCrystals(useNumCrystals_);
+//   ecalEndcapIsol.setVetoClustered(vetoClustered_);
  
-  PhotonTkIsolation trackIsol(radius,intRadiusTk_,etaSliceTk_,ptMinTk_,maxVtxDistTk_,maxDrbTk_,heepEvent.handles().ctfTrack.product(),heepEvent.handles().beamSpot->position());
+//   PhotonTkIsolation trackIsol(radius,intRadiusTk_,etaSliceTk_,ptMinTk_,maxVtxDistTk_,maxDrbTk_,heepEvent.handles().ctfTrack.product(),heepEvent.handles().beamSpot->position());
   
-  math::XYZPoint vtx;
-  if(heepEvent.handles().vertices->size()!=0) vtx=heepEvent.handles().vertices->front().position();
-  //  isol.tkSumPt = trackIsol.getIso(superClus.position(),vtx).second;
-  isol.hcalDepth1TowerSumEt = had1Iso.getTowerEtSum(&superClus);
-  isol.hcalDepth2TowerSumEt = had2Iso.getTowerEtSum(&superClus);
-  // isol.ecalRecHitSumEt = ecalBarrelIsol.getEtSum(&superClus)+ecalEndcapIsol.getEtSum(&superClus);
+//   math::XYZPoint vtx;
+//   if(heepEvent.handles().vertices->size()!=0) vtx=heepEvent.handles().vertices->front().position();
+//   //  isol.tkSumPt = trackIsol.getIso(superClus.position(),vtx).second;
+//   isol.hcalDepth1TowerSumEt = had1Iso.getTowerEtSum(&superClus);
+//   isol.hcalDepth2TowerSumEt = had2Iso.getTowerEtSum(&superClus);
+//   // isol.ecalRecHitSumEt = ecalBarrelIsol.getEtSum(&superClus)+ecalEndcapIsol.getEtSum(&superClus);
 
 
   return isol;

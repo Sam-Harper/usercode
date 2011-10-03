@@ -125,7 +125,7 @@ class SHElectron : public TObject {
   int nrMissingHits_;
   float dCotTheta_; //lets be naughty and put conver result here
   float dist_;
-
+  float radius_;
   //backwards link to the mother event
   //needs to be set everytime the event is read
   const SHEvent* mEvent_;//! transient, not stored in root
@@ -285,7 +285,7 @@ private:
   const SHEvent* motherEvent()const{return mEvent_;}
 
 
-  ClassDef(SHElectron,17) 
+  ClassDef(SHElectron,18) 
 
 };
 

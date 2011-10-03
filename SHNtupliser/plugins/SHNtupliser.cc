@@ -179,7 +179,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
 
 
 //     //drop all calo hits
-     shEvt_->getCaloHits().clear();
+    //   shEvt_->getCaloHits().clear();
 //     bool passEt=false;
 //     for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
 //       if(shEvt_->getElectron(eleNr)->et()>15){
