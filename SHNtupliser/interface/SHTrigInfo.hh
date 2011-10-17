@@ -21,15 +21,15 @@ private:
   int preScale_;
 
 public:
-  SHTrigInfo(int trigId=-1,const std::string& trigName="",const std::string& lastFilterName="",bool pass=false,int preScale=1):trigObjs_(),trigId_(trigId),trigName_(trigName),lastFilterName_(lastFilterName),pass_(pass),preScale_(preScale){}
+  SHTrigInfo(int iTrigId=-1,const std::string& iTrigName="",const std::string& iLastFilterName="",bool iPass=false,int iPreScale=1):trigObjs_(),trigId_(iTrigId),trigName_(iTrigName),lastFilterName_(iLastFilterName),pass_(iPass),preScale_(iPreScale){}
   ~SHTrigInfo(){}
   
   //modifiers
-  void setTrigId(int trigId){trigId_=trigId;}
-  void setTrigName(const std::string& trigName){trigName_=trigName;}
-  void setLastFilterName(const std::string& name){lastFilterName_=name;}
-  void addObj(const TLorentzVector& p4){trigObjs_.push_back(p4);} 
-  void setPass(bool pass){pass_=pass;}
+  void setTrigId(int iTrigId){trigId_=iTrigId;}
+  void setTrigName(const std::string& iTrigName){trigName_=iTrigName;}
+  void setLastFilterName(const std::string& iName){lastFilterName_=iName;}
+  void addObj(const TLorentzVector& iP4){trigObjs_.push_back(iP4);} 
+  void setPass(bool iPass){pass_=iPass;}
   void clear(){trigObjs_.clear();}
 
   //accessors

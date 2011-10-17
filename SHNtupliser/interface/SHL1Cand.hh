@@ -10,7 +10,7 @@ private:
   int type_;
 public:
   SHL1Cand(){}
-  SHL1Cand(const TLorentzVector& p4,int type):p4_(p4),type_(type){}
+  SHL1Cand(const TLorentzVector& iP4,int iType):p4_(iP4),type_(iType){}
   ~SHL1Cand(){}
 
   const TLorentzVector& p4()const{return p4_;}

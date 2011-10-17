@@ -84,7 +84,7 @@ class SHEvent : public TObject {
 
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
-  SHEvent& operator=(const SHEvent& rhs){return *this;}//disabling assignment
+  SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
 
  public:
   SHEvent();
@@ -130,22 +130,22 @@ class SHEvent : public TObject {
   void addCaloHits(const SHCaloHitContainer& hits){caloHits_ = hits;}
   void addIsolInfo(const SHEvent& rhs);
   
-  void setRunnr(int runnr){runnr_=runnr;}
-  void setEventnr(int eventnr){eventnr_=eventnr;}
-  void setIsMC(bool isMC){isMC_=isMC;}
-  void setDatasetCode(int datasetCode){datasetCode_=datasetCode;}
-  void setWeight(double weight){weight_=weight;}
-  void setMet(const SHMet& met){metData_=met;}
-  void setPFMet(const SHMet& met){pfMet_=met;}
-  void setGenEventPtHat(double ptHat){genEventPtHat_=ptHat;}
+  void setRunnr(int iRunnr){runnr_=iRunnr;}
+  void setEventnr(int iEventnr){eventnr_=iEventnr;}
+  void setIsMC(bool iIsMC){isMC_=iIsMC;}
+  void setDatasetCode(int iDatasetCode){datasetCode_=iDatasetCode;}
+  void setWeight(double iWeight){weight_=iWeight;}
+  void setMet(const SHMet& iMet){metData_=iMet;}
+  void setPFMet(const SHMet& iMet){pfMet_=iMet;}
+  void setGenEventPtHat(double iPtHat){genEventPtHat_=iPtHat;}
   void setL1Bits(const TBits& bits){l1Bits_=bits;}
-  void setBX(int bx){bx_=bx;}
-  void setOrbitNumber(int orb){orbNr_=orb;}
-  void setTime(unsigned long long time){time_ = time;}
-  void setLumiSec(int lumiSec){lumiSec_=lumiSec;}
+  void setBX(int iBx){bx_=iBx;}
+  void setOrbitNumber(int iOrb){orbNr_=iOrb;}
+  void setTime(unsigned long long iTime){time_ = iTime;}
+  void setLumiSec(int iLumiSec){lumiSec_=iLumiSec;}
   void setVertex(const TVector3& vert){vertex_=vert;}
-  void setNrVertices(int nrVertices){nrVertices_=nrVertices;}
-  void setBeamSpot(const TVector3& bs){beamSpot_=bs;}
+  void setNrVertices(int iNrVertices){nrVertices_=iNrVertices;}
+  void setBeamSpot(const TVector3& iBS){beamSpot_=iBS;}
   void copyEventPara(const SHEvent& rhs);
   void clear();
 

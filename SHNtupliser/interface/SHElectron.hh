@@ -131,7 +131,7 @@ class SHElectron : public TObject {
   const SHEvent* mEvent_;//! transient, not stored in root
 
 private:
-  SHElectron& operator=(const SHElectron& rhs){return *this;}
+  SHElectron& operator=(const SHElectron& ){return *this;} 
 
  public:
   SHElectron();
@@ -160,7 +160,7 @@ private:
   void fixTrkIsol();
   //accessors
   void setIsConversion(float isCon){dCotTheta_=isCon;}
-  void setConvInfo(float dist,float dcot){dCotTheta_=dcot;dist_=dist;}
+  void setConvInfo(float iDist,float iDcot){dCotTheta_=iDcot;dist_=iDist;}
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
   //have any seed/super clusters and want those calls to degrade gracefully
