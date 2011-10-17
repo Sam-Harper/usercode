@@ -268,7 +268,10 @@ private:
   int calPhiRoad()const;
 
   int nrMissingHits()const{return nrMissingHits_;}
-  float isConversion()const{return dCotTheta_;}
+  float dCotTheta()const{return dCotTheta_;}
+  float dist()const{return dist_;}
+  float radius()const{return radius_;}
+ float isConversion()const{return dCotTheta_;}
 
   const SHIsolSuperCluster& getIsolSuperClus()const;
   float isolEmClus(double coneRadius)const;

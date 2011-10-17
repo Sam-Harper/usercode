@@ -28,8 +28,8 @@ class SHCaloHit : public TObject {
   float nrgy()const{return nrgy_;}
   int detId()const{return detId_;}
 
-  void setNrgy(float nrgy){nrgy_=nrgy;}
-  void setDetId(int detId){detId_=detId;} 
+  void setNrgy(float iNrgy){nrgy_=iNrgy;}
+  void setDetId(int iDetId){detId_=iDetId;} 
   void setTime(float time){time_=time;}
   void setFlag(uint32_t flag){flag_=flag;}
 

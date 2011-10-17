@@ -34,6 +34,7 @@ class SHSuperCluster : public TObject {
   //note that in shape map, the seed should be the first entry
   //note: change pointers to reference variables
   SHSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits);
+  SHSuperCluster(const std::vector<SHBasicCluster>& basicClusters);
   ~SHSuperCluster();//need to check if need to delete TClonesArray objects
 
 

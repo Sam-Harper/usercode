@@ -27,3 +27,15 @@ SHBasicCluster::SHBasicCluster(const SHBasicCluster& rhs):
 
 }
 
+SHBasicCluster::SHBasicCluster(float nrgy,int seedId,int e2ndId,float eta,float phi,const std::vector<int>& hits):
+  totNrgy_(nrgy),
+  nrCrys_(hits.size()),
+  eMaxId_(seedId),
+  e2ndId_(e2ndId),
+  eta_(eta),
+  phi_(phi),
+  hitDetIds_(hits)
+{
+
+
+}

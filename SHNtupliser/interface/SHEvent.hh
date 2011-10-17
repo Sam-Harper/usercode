@@ -204,9 +204,9 @@ class SHEvent : public TObject {
   int nrVertices()const{return nrVertices_;}
   //first function gets the triggers passed for the event
   //second to functions get the triggers passed for a particlar object
-  int getTrigCode()const;
+  // int getTrigCode()const;
   // int getTrigCode(const TLorentzVector& p4)const{return getTrigCode(p4.Eta(),p4.Phi(),p4.Eta(),p4.Phi());}
-  int getTrigCode(double detEta,double detPhi,double eta,double phi)const; 
+  // int getTrigCode(double detEta,double detPhi,double eta,double phi)const; 
   bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());} 
   const SHTrigInfo* getTrig(const std::string& trigName)const;
   bool passL1Trig(const std::string& trigName,double eta,double phi)const;

@@ -25,6 +25,29 @@ SHSuperCluster::SHSuperCluster(const SHSuperCluster& rhs):
   
 }
 
+SHSuperCluster::SHSuperCluster(const std::vector<SHBasicCluster>& basicClusters):
+  nrgy_(0.),preShowerNrgy_(0.),
+  pos_(0.,0.,0.),eta_(0.),
+  nrCrys_(0),
+  clusterArray_("SHBasicCluster",4)
+{
+  //float etaSum=0;
+  // float phiSum=0;
+  //std::cout <<"start sc "<<std::endl;
+  for(size_t clusNr=0;clusNr<basicClusters.size();clusNr++){
+    new(clusterArray_[nrClus()]) SHBasicCluster(basicClusters[clusNr]);
+    nrgy_+= basicClusters[clusNr].nrgy();
+    TVector3 nrgyWeightedPos = basicClusters[clusNr].pos();
+    //  std::cout <<"eta "<<nrgyWeightedPos.Eta()<<" phi "<<nrgyWeightedPos.Eta()<<" nrgy "<<basicClusters[clusNr].nrgy()<<std::endl;
+    nrgyWeightedPos*=basicClusters[clusNr].nrgy();
+    pos_+=nrgyWeightedPos;
+    nrCrys_+=basicClusters[clusNr].nrCrys();
+  }
+  pos_*=1./nrgy_;
+  eta_=pos_.Eta();
+  // pos_.SetPtEtaPhi(1,etaSum,phiSum);
+  
+}
 
 //because roots memory ownership doc is woefully lacking, I'm deleting here to make sure
 SHSuperCluster::~SHSuperCluster()

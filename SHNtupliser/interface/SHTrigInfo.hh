@@ -18,10 +18,10 @@ private:
   std::string trigName_;
   std::string lastFilterName_;
   bool pass_;
-
+  int preScale_;
 
 public:
-  SHTrigInfo(int trigId=-1,const std::string& trigName="",const std::string& lastFilterName="",bool pass=false):trigObjs_(),trigId_(trigId),trigName_(trigName),lastFilterName_(lastFilterName),pass_(pass){}
+  SHTrigInfo(int trigId=-1,const std::string& trigName="",const std::string& lastFilterName="",bool pass=false,int preScale=1):trigObjs_(),trigId_(trigId),trigName_(trigName),lastFilterName_(lastFilterName),pass_(pass),preScale_(preScale){}
   ~SHTrigInfo(){}
   
   //modifiers
@@ -52,7 +52,7 @@ public:
   //TLorentzVector getL1TrigObj(double eta,double phi)const{}
   
   
-  ClassDef(SHTrigInfo,3)
+  ClassDef(SHTrigInfo,4)
 };
 
 #endif
