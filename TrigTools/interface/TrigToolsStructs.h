@@ -11,6 +11,34 @@ namespace edm {
 
 namespace trigtools{
 
+//   typedef std::bitset<500> TrigBits; //my one typedef as I want to be able to change the number of bits easily
+
+//   class TrigBitsDef{
+//   public:
+//     std::vector<std::string> bitNames_;
+    
+    
+
+//   };
+
+  class HLTPathInfo{
+  public:
+    class FilterInfo {
+    private:
+      std::string filterName_;
+      std::vector<TLorentzVector> objP4s_;
+    };
+
+  private:
+    std::string pathName_;
+    bool pass_;
+    bool wasRun_;
+    int preScale_;
+
+    std::vector<FilterInfo> filters_;
+  };
+
+
   struct P4Struct {
     float et,nrgy,pt,eta,phi;
     P4Struct(){}
@@ -37,13 +65,14 @@ namespace trigtools{
     P4Struct p4Fourth;
     P4Struct p4Fifth;
     P4Struct p4Sixth;
-
+    P4Struct p4Seventh;
+    P4Struct p4Eighth;
     P4Struct p4FirstEB;
     P4Struct p4SecondEB;
     P4Struct p4FirstEE;
     P4Struct p4SecondEE;
     
-    static std::string contents(){return "nrPass/F:sumE:sumEt:sumHT:sumMHT:et1:nrgy1:pt1:eta1:phi1:et2:nrgy2:pt2:eta2:phi2:et3:nrgy3:pt3:eta3:phi3:et4:nrgy4:pt4:eta4:phi4:et5:nrgy5:pt5:eta5:phi5:et6:nrgy6:pt6:eta6:phi6:et1EB:nrgy1EB:pt1EB:eta1EB:phi1EB:et2EB:nrgy2EB:pt2EB:eta2EB:phi2EB:et1EE:nrgy1EE:pt1EE:eta1EE:phi1EE:et2EE:nrgy2EE:pt2EE:eta2EE:phi2EE";}
+    static std::string contents(){return "nrPass/F:sumE:sumEt:sumHT:sumMHT:et1:nrgy1:pt1:eta1:phi1:et2:nrgy2:pt2:eta2:phi2:et3:nrgy3:pt3:eta3:phi3:et4:nrgy4:pt4:eta4:phi4:et5:nrgy5:pt5:eta5:phi5:et6:nrgy6:pt6:eta6:phi6:et7:nrgy7:pt7:eta7:phi7:et8:nrgy8:pt8:eta8:phi8:et1EB:nrgy1EB:pt1EB:eta1EB:phi1EB:et2EB:nrgy2EB:pt2EB:eta2EB:phi2EB:et1EE:nrgy1EE:pt1EE:eta1EE:phi1EE:et2EE:nrgy2EE:pt2EE:eta2EE:phi2EE";}
     
     void fill(const std::vector<TLorentzVector>& trigP4s);
   };

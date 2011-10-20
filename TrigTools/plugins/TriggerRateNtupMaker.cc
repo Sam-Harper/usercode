@@ -1,10 +1,16 @@
 #include "SHarper/TrigTools/interface/TriggerRateNtupMaker.h"
 
+#include "SHarper/TrigTools/interface/TrigToolsFuncs.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
+
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
+#include "DataFormats/METReco/interface/PFMET.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -13,7 +19,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
-
+#include <functional>
 
 
 
@@ -54,6 +60,7 @@ void TriggerRateNtupMaker::beginJob()
   }
   trigTree_->Branch("nrVerts",&nrVerts_,"nrVerts/I");
   trigTree_->Branch("zVtx",&zVtx_,"zVtx/F");
+  trigTree_->Branch("pfMET",&pfMET_,"pfMET/F");
   trigTree_->Branch("evt",&evtInfo_,trigtools::EvtInfoStruct::contents().c_str());
 }
   
@@ -67,31 +74,29 @@ void TriggerRateNtupMaker::analyze(const edm::Event& iEvent, const edm::EventSet
   edm::Handle<trigger::TriggerEvent> trigEvent; 
   iEvent.getByLabel(trigEventTag_,trigEvent);
   
+
+  edm::Handle<reco::VertexCollection> vertices;
+  iEvent.getByLabel("offlinePrimaryVerticesWithBS",vertices);
+  if(vertices.isValid()){
+    nrVerts_ = std::count_if(vertices->begin(),vertices->end(),std::not1(std::mem_fun_ref(&reco::Vertex::isFake)));
+
+  }
+
+  edm::Handle<edm::View<reco::PFMET> > pfMET;
+  iEvent.getByLabel("pfMet",pfMET);
+  if(pfMET.isValid()){
+    pfMET_=pfMET->front().et();
+  }
+ 
   
   std::vector<TLorentzVector> trigP4s;
   for(size_t trigNr=0;trigNr<paths_.size();trigNr++){
-    makeVecOfTrigP4s(trigP4s,*trigEvent,edm::InputTag(paths_[trigNr].second,"",trigEventTag_.process()));
+    trigtools::getP4sOfObsPassingFilter(trigP4s,*trigEvent,paths_[trigNr].second,trigEventTag_.process());
     paths_[trigNr].first.fill(trigP4s);
   }
   trigTree_->Fill();
 }
 
-
-void TriggerRateNtupMaker::makeVecOfTrigP4s(std::vector<TLorentzVector>& trigP4s,const trigger::TriggerEvent& trigEvent,const edm::InputTag& filterName)
-{
-  trigP4s.clear();
-  trigger::size_type filterIndex = trigEvent.filterIndex(filterName); 
-  if(filterIndex<trigEvent.sizeFilters()){ 
-    const trigger::Keys& trigKeys = trigEvent.filterKeys(filterIndex); 
-    const trigger::TriggerObjectCollection & trigObjColl(trigEvent.getObjects());
-    for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){ 
-      const trigger::TriggerObject& obj = trigObjColl[*keyIt];
-      TLorentzVector p4;
-      p4.SetPtEtaPhiM(obj.pt(),obj.eta(),obj.phi(),obj.mass());
-      trigP4s.push_back(p4);
-    }
-  }
-}
  
 void TriggerRateNtupMaker::endJob()
 {

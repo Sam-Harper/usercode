@@ -39,6 +39,7 @@ private:
   std::vector<std::pair<trigtools::PathData,std::string> > paths_;
   int nrVerts_;
   float zVtx_;
+  float pfMET_;
   trigtools::EvtInfoStruct evtInfo_; 
 
   
@@ -59,7 +60,7 @@ private:
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
   virtual void endJob() ;
   
-  static void makeVecOfTrigP4s(std::vector<TLorentzVector>& trigP4s,const trigger::TriggerEvent& trigEvent,const edm::InputTag& filterName);
+ 
 
 };
 

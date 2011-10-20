@@ -47,6 +47,8 @@ void trigtools::PathData::fill(const std::vector<TLorentzVector>& trigP4s)
   p4Fourth = etAll.size()>=4 ? etAll[etAll.size()-4] : -1;
   p4Fifth = etAll.size()>=5 ? etAll[etAll.size()-5] : -1;
   p4Sixth = etAll.size()>=6 ? etAll[etAll.size()-6] : -1;
+  p4Seventh = etAll.size()>=7 ? etAll[etAll.size()-7] : -1;
+  p4Eighth = etAll.size()>=8 ? etAll[etAll.size()-8] : -1;
   p4FirstEB = etEB.size()>=1 ? etEB[etEB.size()-1] : -1;
   p4SecondEB = etEB.size()>=2 ? etEB[etEB.size()-2] : -1;
   p4FirstEE = etEE.size()>=1 ? etEE[etEE.size()-1] : -1;
