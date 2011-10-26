@@ -22,7 +22,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('MC_31X_V3::All')
+process.GlobalTag.globaltag = cms.string('START42_V15B::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # this defines the input files
@@ -51,7 +51,7 @@ process.HEEPId.endcapCuts.minEt = 5. #reset min et cut to 5 GeV
 
 #configure the pat to load the id in
 process.load("PhysicsTools.PatAlgos.patSequences_cff");
-process.allLayer1Electrons.userData.userInts.src = cms.VInputTag('HEEPId')
+process.patElectrons.userData.userInts.src = cms.VInputTag('HEEPId')
 
 
 process.p = cms.Path(process.HEEPId* #makes the HEEPID value map

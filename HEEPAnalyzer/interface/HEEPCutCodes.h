@@ -41,7 +41,11 @@ namespace heep {
       ISOLEMREL03     =0x2000,  //WP80
       ISOLHADREL03    =0x4000, //WP80
      
+      NRMISSHITS      =0x8000,
+      
       ECALDRIVEN     =0x20000,
+
+      
       
       //flag that if its set, shows the code is invalid
       INVALID       =0x40000000

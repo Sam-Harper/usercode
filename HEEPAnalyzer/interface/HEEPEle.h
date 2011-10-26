@@ -164,6 +164,8 @@ namespace heep {
     float isolEmRel03()const{return et()!=0 ? gsfEle_->dr03EcalRecHitSumEt()/et():0.;} //WP80
     float isolHadRel03()const{return et()!=0 ? gsfEle_->dr03HcalTowerSumEt()/et():0.;} //WP80
 
+    int nrMissHits()const{return gsfEle_->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();}
+
     //selection cuts
     int cutCode()const{return cutCode_;}
     bool passCuts(int cutMask=~0x0)const{return (cutCode() & cutMask)==0x0;} //defaults to all cuts, note: bit wise operators (&,|,^) are of lower presendence than == and != operators hence the ( ) are very necessary 

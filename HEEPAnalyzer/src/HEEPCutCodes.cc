@@ -24,6 +24,7 @@ heep::ComCodes heep::CutCodes::makeCodeMap_()
   codes.setCode("isolPtTrksRel03",ISOLPTTRKSREL03); //WP80
   codes.setCode("isolEmRel03",ISOLEMREL03);         //WP80
   codes.setCode("isolHadRel03",ISOLHADREL03);        //WP80
+  codes.setCode("nrMissHits",NRMISSHITS);
   codes.setCode("invalid",INVALID);
   codes.sort();
   return codes;

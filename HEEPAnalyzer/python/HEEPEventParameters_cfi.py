@@ -3,9 +3,6 @@ import FWCore.ParameterSet.Config as cms
 from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
 
 heepEventPara  = cms.PSet (
-    #intentionally using allLayer1 objects rather than selectedLayer1
-    #because quite frankly I dont trust the selection
-    #note that layer1 already has cleaning and selection cuts applied to it
     electronTag = cms.untracked.InputTag("patElectrons"),
     tauTag = cms.untracked.InputTag("patTaus"),
     muonTag = cms.untracked.InputTag("patMuons"),

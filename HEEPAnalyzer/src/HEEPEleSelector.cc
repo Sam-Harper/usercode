@@ -41,7 +41,7 @@ int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,
   if(ele.isolPtTrksRel03() > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
   if(ele.isolEmRel03() > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
   if(ele.isolHadRel03() > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03; 
-
+  if(ele.nrMissHits() > cuts.maxNrMissHits ) cutCode |=CutCodes::NRMISSHITS; 
   return (cutCode & cuts.cutMask & cutMask) ;
 }
 
@@ -76,7 +76,8 @@ int heep::EleSelector::getCutCode(const reco::GsfElectron& ele,const EleCutValue
   if(ele.dr03TkSumPt() > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(et<cuts.isolPtTrksGradStart ? 0. : (et-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
   if((ele.dr03TkSumPt()/ele.trackMomentumAtVtx().rho()) > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
   if((ele.dr03EcalRecHitSumEt()/ele.trackMomentumAtVtx().rho() ) > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
-  if((ele.dr03HcalTowerSumEt()/ele.trackMomentumAtVtx().rho() ) > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03; 
+  if((ele.dr03HcalTowerSumEt()/ele.trackMomentumAtVtx().rho() ) > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03;   
+  if(ele.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() > cuts.maxNrMissHits ) cutCode |=CutCodes::NRMISSHITS; 
 
   return (cutCode & cuts.cutMask & cutMask) ;
 }
