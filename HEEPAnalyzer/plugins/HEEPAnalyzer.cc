@@ -38,8 +38,10 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
   //make the heep event (see easy isnt it)
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
 
-  //std::cout <<"event pt hat "<<heepEvt_.genEventPtHat()<<std::endl;
- 
+  // std::cout <<"event pt hat "<<heepEvt_.genEventPtHat()<<std::endl;
+
+  // std::cout <<"eh"<<std::endl;
+
   //do what ever you want
   //lets get the heep electrons and count the number that pass / fail cuts
   const std::vector<heep::Ele>& eles = heepEvt_.heepEles();
@@ -54,8 +56,10 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
     for(size_t ele2Nr=ele1Nr+1;ele2Nr<eles.size();ele2Nr++){
       const heep::Ele& ele1 = eles[ele1Nr];
       const heep::Ele& ele2 = eles[ele2Nr];  
-      ///  std::cout <<"ele "<<ele1Nr<<" cutcode "<<std::hex<<ele1.cutCode()<<std::dec<<" ele "<<ele2Nr<<" cut code "<<std::hex<<ele2.cutCode()<<std::dec<<" ee "<<ele1.isEE()<<" 2nd ele "<<ele2.isEE()<<std::endl;
+	//	std::cout <<"ele "<<ele1Nr<<" cutcode "<<std::hex<<ele1.cutCode()<<std::dec<<" ele "<<ele2Nr<<" cut code "<<std::hex<<ele2.cutCode()<<std::dec<<" ee "<<ele1.isEE()<<" 2nd ele "<<ele2.isEE()<<std::endl;
+      
       if(ele1.cutCode()==0x0 && ele2.cutCode()==0x0 && !(ele1.isEE() && ele2.isEE())){ //EB-EB, EE-EE
+	//	std::cout <<"runnr "<<heepEvt_.runnr()<<" eventnr "<<heepEvt_.eventnr()<<std::endl;
 	float mass = (ele1.p4()+ele2.p4()).mag();
 	massHist_->Fill(mass);
       }

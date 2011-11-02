@@ -23,19 +23,28 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('START42_V15B::All')
+process.GlobalTag.globaltag = cms.string("GR_R_42_V18::All" )
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 
 # this defines the input files
-process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('dummy'))
-process.PoolSource.fileNames = [  '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0004/70B2BC04-2D2C-DF11-A5EC-002618FDA28E.root',
-       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/9C5D2907-832B-DF11-9E86-0018F3D09628.root',
-       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/62813863-832B-DF11-BB58-001A928116B8.root',
-       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/582519E2-842B-DF11-BCD2-002618943954.root',
-       '/store/relval/CMSSW_3_5_4/RelValZEE/GEN-SIM-RECO/MC_3XY_V24-v1/0003/026E24AA-7D2B-DF11-BD37-0018F3D096AA.root'
-  ]
-#process.PoolSource.fileNames = ['file:/media/usbdisk1/zee_relVal_312_F0303A91-9278-DE11-AADC-001D09F25456.root']
+import sys
+filePrefex="file:"
+if(sys.argv[2].find("/pnfs/")==0):
+    filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
+
+if(sys.argv[2].find("/store/")==0):
+    filePrefex=""
+
+process.source = cms.Source("PoolSource",
+                            fileNames = cms.untracked.vstring(),
+)
+for i in range(2,len(sys.argv)-1):
+    print filePrefex+sys.argv[i]
+    process.source.fileNames.extend([filePrefex+sys.argv[i],])
+
+
+
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
@@ -48,9 +57,21 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff");
 process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string('heepEventOutput.root')
+                                   fileName = cms.string(sys.argv[len(sys.argv)-1])
 )
 
+process.load("Configuration.EventContent.EventContent_cff")
+process.out = cms.OutputModule("PoolOutputModule",
+    process.FEVTEventContent,
+    dataset = cms.untracked.PSet(dataTier = cms.untracked.string('RECO')),
+     fileName = cms.untracked.string("eh.root"),
+)
+
+from PhysicsTools.PatAlgos.tools.coreTools import *
+removeMCMatching(process, ['All'])
+#runOnData(process)
+removeSpecificPATObjects(process, ['Jets'])
+process.patDefaultSequence.remove(process.patJets)
 
 process.p = cms.Path(process.patDefaultSequence* #runs PAT 
                      process.heepAnalyzer) #runs heep analyzer
