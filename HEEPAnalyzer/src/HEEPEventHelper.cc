@@ -127,8 +127,10 @@ void heep::EventHelper::fillHEEPElesFromPat(const heep::EvtHandles& handles,std:
     }
   }
   //the electrons are now filled, lets add trigger info
-  heep::trigtools::setHLTFiltersObjPasses(heepEles,hltFiltersToCheck_,handles.trigEvent,hltProcName_,
-  					  maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
+  if(handles.trigEvent.isValid() && handles.trigResults.isValid()){
+    heep::trigtools::setHLTFiltersObjPasses(heepEles,hltFiltersToCheck_,handles.trigEvent,hltProcName_,
+					    maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
+  }
 }
 
 //fills the heepEles vector using GsfElectrons as starting point
@@ -142,8 +144,10 @@ void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,
     }
   }
   //the electrons are now filled, lets add trigger info
-  heep::trigtools::setHLTFiltersObjPasses(heepEles,hltFiltersToCheck_,handles.trigEvent,hltProcName_,
-  					  maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
+  if(handles.trigEvent.isValid() && handles.trigResults.isValid()){
+    heep::trigtools::setHLTFiltersObjPasses(heepEles,hltFiltersToCheck_,handles.trigEvent,hltProcName_,
+					    maxDRTrigMatch_,maxPtRelDiffTrigMatch_);
+  }
 }
 
 //this converts the pat::Electron / reco::GsfElectron into a heep::Electron
