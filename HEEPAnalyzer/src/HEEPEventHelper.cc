@@ -41,6 +41,7 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   trigEventTag_ = conf.getParameter<edm::InputTag>("trigEventTag");
   trigResultsTag_ =conf.getParameter<edm::InputTag>("trigResultsTag");
   genEventInfoTag_ = conf.getParameter<edm::InputTag>("genEventInfoTag");
+  pileUpMCInfoTag_ = conf.getParameter<edm::InputTag>("pileUpMCInfoTag");
   l1RecordTag_ = conf.getParameter<edm::InputTag>("l1RecordTag");
   l1EmNonIsoTag_ = conf.getParameter<edm::InputTag>("l1EmNonIsoTag");
   l1EmIsoTag_ = conf.getParameter<edm::InputTag>("l1EmIsoTag");
@@ -72,6 +73,7 @@ void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::Even
   if(heepEleSource_==0) fillHEEPElesFromGsfEles(heepEvent.handles(),heepEvent.heepEles());
   else if(heepEleSource_==1) fillHEEPElesFromPat(heepEvent.handles(),heepEvent.heepEles());
   heepEvent.setEvent(edmEvent); 
+  heepEvent.setEventSetup(setup);
   heep::TrigCodes::TrigBitSet bits = heep::trigtools::getHLTFiltersPassed(hltFiltersToCheckWithNrCands_,heepEvent.handles().trigEvent,hltProcName_);
   heepEvent.setTrigBits(bits);
 }
@@ -98,7 +100,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(genParticleTag_,handles.genParticle);
   event.getByLabel(trigEventTag_,handles.trigEvent);
   event.getByLabel(trigResultsTag_,handles.trigResults);
-  event.getByLabel(genEventInfoTag_,handles.genEventInfo);
+  event.getByLabel(genEventInfoTag_,handles.genEventInfo);  
+  event.getByLabel(pileUpMCInfoTag_,handles.pileUpMCInfo);
   event.getByLabel(l1RecordTag_,handles.l1Record);
   event.getByLabel(l1EmNonIsoTag_,handles.l1EmNonIso);
   event.getByLabel(l1EmIsoTag_,handles.l1EmIso);

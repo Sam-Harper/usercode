@@ -23,16 +23,19 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Common/interface/View.h"
 #include "FWCore/Framework/interface/Event.h"
-
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include <vector>
 
 namespace heep{
 
   class Event {
   private:
-    //our three data members which we do not own if they are pointers
+    //our five data members which we do not own if they are pointers
     const edm::Event* edmEvent_;
+    const edm::EventSetup* edmEventSetup_;
     heep::EvtHandles handles_;  
+    HLTConfigProvider hltConfig_;
     //I cant make a View (comments say its dangerous) so we will have to have a vector instead
     //although a View is a basically a wrapper around a vector
     std::vector<heep::Ele> heepEles_;
@@ -72,6 +75,9 @@ namespace heep{
     bool hasGenParticles()const{return handles_.genParticle.isValid();}
 
     const edm::Event& event()const{return *edmEvent_;}
+    const edm::EventSetup& eventSetup()const{return *edmEventSetup_;}
+    int hltPreScale(const std::string& hltPath)const{return hltConfig_.inited() ? hltConfig_.prescaleValue(event(),eventSetup(),hltPath) : -1;}
+    int preScaleColumn()const{return hltConfig_.inited() ? hltConfig_.prescaleSet(event(),eventSetup()) : -1;}
     heep::EvtHandles& handles(){return handles_;}
     const heep::EvtHandles& handles()const{return handles_;}
     std::vector<heep::Ele>& heepEles(){return heepEles_;}
@@ -84,9 +90,11 @@ namespace heep{
   
     
 
-      //our two set methods
+      //our three set methods
     void setEvent(const edm::Event& event){edmEvent_ = &event;}
+    void setEventSetup(const edm::EventSetup& setup){edmEventSetup_=&setup;}
     void setTrigBits(heep::TrigCodes::TrigBitSet& bits){trigBits_=bits;}
+    bool initHLTConfig(const edm::Run& run,const edm::EventSetup& setup,const std::string& hltProcess){ bool changed=false;hltConfig_.init(run,setup,hltProcess,changed);return changed;}
     
   };
 

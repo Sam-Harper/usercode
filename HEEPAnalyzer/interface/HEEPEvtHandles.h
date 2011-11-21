@@ -42,6 +42,7 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 
@@ -75,6 +76,7 @@ namespace heep {
     edm::Handle<trigger::TriggerObjectCollection> trigObjColl;
     edm::Handle<edm::TriggerResults> trigResults;
     edm::Handle<GenEventInfoProduct> genEventInfo;
+    edm::Handle<std::vector<PileupSummaryInfo> > pileUpMCInfo;
     edm::Handle<L1GlobalTriggerReadoutRecord> l1Record;
     edm::Handle<l1extra::L1EmParticleCollection> l1EmNonIso;
     edm::Handle<l1extra::L1EmParticleCollection> l1EmIso;
