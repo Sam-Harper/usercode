@@ -1,5 +1,5 @@
 <export>
 </export>
-<library   name="SHarperTrigTools_plugins" file="TriggerRateNtupMaker.cc,SimTrigFilter.cc,TrigObjP4AnaExample.cc">
+<library   name="SHarperTrigTools_plugins" file="TriggerRateNtupMaker.cc,SimTrigFilter.cc,TrigObjP4AnaExample.cc,HEEPHLTWP80TrigEffAnalyser.cc">
   <use   name="SHarper/TrigTools"/>
 </library>

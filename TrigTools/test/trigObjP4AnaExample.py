@@ -49,7 +49,7 @@ process.maxEvents = cms.untracked.PSet(
 process.load("SHarper.TrigTools.trigObjP4AnaExample_cfi")
 process.trigObjP4AnaExample.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT")
 process.trigObjP4AnaExample.filterName = cms.string("hltPhoton135HEFilter")
-process.trigObjP4AnaExample.pathName = cms.string("HLT_DoubleEle33_CaloIdT_v2")                                                 
+process.trigObjP4AnaExample.pathName = cms.string("HLT_Ele27_CaloIdVT_TrkIdT_CentralJet30_CentralJet25_v1")                                                 
 
 process.p = cms.Path(process.skimHLTFilter*                  
                      process.trigObjP4AnaExample)

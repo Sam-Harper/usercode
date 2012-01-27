@@ -23,6 +23,7 @@ void TrigObjP4AnaExample::beginRun(const edm::Run& run,const edm::EventSetup& se
 {
   bool changed=false;
   hltConfig_.init(run,setup,trigEventTag_.process(),changed);
+  std::cout <<"table name "<<hltConfig_.tableName()<<std::endl;
   if(changed) {
     if(hltConfig_.triggerIndex(pathName_)<hltConfig_.size()){ //checks trigger exists
       filtersOfPath_ =hltConfig_.saveTagsModules(pathName_); //hlt config has changed, load the filters used by the path into our vector
