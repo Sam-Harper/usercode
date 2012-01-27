@@ -78,6 +78,7 @@ heepBarrelCutsV31 = cms.PSet (
      maxIsolPtTrksRel03=cms.double(0.09),  #WP80
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
+    maxNrMissHits=cms.int32(0),
 )
 
 heepEndcapCutsV31 = cms.PSet (
@@ -103,6 +104,13 @@ heepEndcapCutsV31 = cms.PSet (
     maxIsolPtTrksRel03=cms.double(0.09),  #WP80
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
+    maxNrMissHits=cms.int32(0),
 
 )
+
+heepBarrelCutsV31WithMissHitsCut =heepEndcapCutsV31.clone()
+heepBarrelCutsV31WithMissHitsCut.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks:nrMissHits")
+ 
+heepEndcapCutsV31WithMissHitsCut = heepEndcapCutsV31.clone()
+heepEndcapCutsV31WithMissHitsCut.cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolHadDepth2:isolPtTrks:nrMissHits")
 
