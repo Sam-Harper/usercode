@@ -34,12 +34,13 @@ private:
     class LumiSecData {
 
     private:
+      static const float kLumiSecLength;
       int runnr_;
       int lumiSec_;
       float instLumiDelivered_;
       float instLumiRecorded_;
       int nrEntries_; //uncorrected for prescale
-      int nrWeights_; //corrected for prescale
+      float nrWeights_; //corrected for prescale
 
     public:
       LumiSecData():runnr_(0),lumiSec_(0),instLumiDelivered_(0.),
@@ -47,10 +48,14 @@ private:
       LumiSecData(int iRunnr,int iLumiSec,float iInstLumiDelivered,float iInstLumiRecorded):
 	runnr_(iRunnr),lumiSec_(iLumiSec),instLumiDelivered_(iInstLumiDelivered),
 	instLumiRecorded_(iInstLumiRecorded),nrEntries_(0),nrWeights_(0){}
+	//	std::cout <<"runnr "<<runnr_<<" lumi "<<lumiSec_<<" instLumi deliv "<<instLumiDelivered_<<" record "<<instLumiRecorded_<<std::endl;}
       
-      float crossSec()const{return instLumiRecorded_!=0. ? nrWeights_/instLumiRecorded_ : 0;}
-      float crossSecErr()const{return instLumiRecorded_!=0. ? sqrt(nrEntries_)*nrWeights_/instLumiRecorded_ : 0;}
+      float crossSec()const{return instLumiRecorded_!=0. ? nrWeights_/instLumiRecorded_/kLumiSecLength : 0;}
+      float crossSecErr()const{return instLumiRecorded_!=0. ? sqrt(nrEntries_)*nrWeights_/instLumiRecorded_/kLumiSecLength : 0;}
       float instLumiDelivered()const{return instLumiDelivered_;}
+      float instLumiRecorded()const{return instLumiRecorded_;}
+      int nrEntries()const{return nrEntries_;}
+      float nrWeights()const{return nrWeights_;}
       
       void addEvent(int weight){nrWeights_+=weight;nrEntries_++;}
    

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 
+const float TrigCrossSecMaker::TrigCrossSecData::LumiSecData::kLumiSecLength(23.3);
 
 TrigCrossSecMaker::TrigCrossSecMaker(const edm::ParameterSet& iPara)
 {
@@ -49,7 +50,7 @@ void TrigCrossSecMaker::analyze(const edm::Event& iEvent, const edm::EventSetup&
   
   size_t pathIndex = trigNames.triggerIndex(pathName_);
   int preScale = !selectingPathName_.empty() ? hltConfig_.prescaleValue(iEvent,iSetup,selectingPathName_) : 1;
-
+  //std::cout <<"prescale "<<preScale<<std::endl;
   if(pathIndex<trigResults.size() && trigResults.accept(pathIndex)){
     trigCrossSecData_.fill(runnr,lumiSec,preScale);
     
@@ -59,20 +60,24 @@ void TrigCrossSecMaker::analyze(const edm::Event& iEvent, const edm::EventSetup&
 void TrigCrossSecMaker::endJob()
 {
   TFile* file = new TFile(outputFilename_.c_str(),"RECREATE");
-  
-  float instLumi;
-  float crossSec;
-  float crossSecErr;
+   
+  float instLumiRec;
+  float instLumiDel;
+  float nrWeights;
+  int nrEntries;
   TTree* tree = new TTree("trigCrossSecTree","tree");
-  tree->Branch("instLumi",&instLumi,"instLumi/F");
-  tree->Branch("crossSec",&crossSec,"crossSec/F");
-  tree->Branch("crossSecErr",&crossSecErr,"crossSecErr/F");
+  tree->Branch("instLumiRec",&instLumiRec,"instLumiRec/F");
+  tree->Branch("instLumiDel",&instLumiDel,"instLumiDel/F");
+  tree->Branch("nrWeights",&nrWeights,"nrWeights/F");
+  tree->Branch("nrEntries",&nrEntries,"nrEntries/I");
+ 
   
   
   for(size_t lumiNr=0;lumiNr<trigCrossSecData_.nrLumiSecs();lumiNr++){
-    instLumi = trigCrossSecData_.lumiSec(lumiNr).instLumiDelivered();
-    crossSec = trigCrossSecData_.lumiSec(lumiNr).crossSec();
-    crossSecErr = trigCrossSecData_.lumiSec(lumiNr).crossSecErr();
+    instLumiRec = trigCrossSecData_.lumiSec(lumiNr).instLumiRecorded();
+    instLumiDel = trigCrossSecData_.lumiSec(lumiNr).instLumiDelivered();
+    nrWeights = trigCrossSecData_.lumiSec(lumiNr).nrWeights();
+    nrEntries = trigCrossSecData_.lumiSec(lumiNr).nrEntries();
     tree->Fill();
   }
   file->WriteObject(&pathName_,"pathName");
@@ -112,6 +117,7 @@ void TrigCrossSecMaker::TrigCrossSecData::addLumiSecData(const std::string& file
       }
     }
   }
+  std::sort(lumiSecData_.begin(),lumiSecData_.end());
 
 }
 void TrigCrossSecMaker::TrigCrossSecData::fill(int runnr,int lumiSec,int nrEvents)
@@ -125,6 +131,7 @@ void TrigCrossSecMaker::TrigCrossSecData::fill(int runnr,int lumiSec,int nrEvent
   else {
     std::cout <<"in "<<__FUNCTION__<<"() (in "<<__FILE__<<", line "<<__LINE__<<") : WARNING run "<<runnr<<" lumisec "<<lumiSec<<" found "<<lumiSecIt.second-lumiSecIt.first<<" times"<<std::endl;
   }
+  
 
 }
 
