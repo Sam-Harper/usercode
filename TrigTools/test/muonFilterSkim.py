@@ -34,8 +34,8 @@ process.maxEvents = cms.untracked.PSet(
 #process.GlobalTag.globaltag = 'GR_P_V22A::All'
 
 ### Additional output definition
-##import HLTrigger.HLTfilters.hltHighLevel_cfi
-##process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 
 
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_BeamGas_HF_Beam1_v2")
@@ -50,8 +50,10 @@ process.MuFilter = cms.EDFilter("MuonFilter",
                                 muonTag= cms.InputTag("muons"),
                                 ptCut1=cms.double(40),
                                 ptCut2=cms.double(-1),
-                                nrPassCut1=cms.int32(1),
-                                nrPassCut2=cms.int32(-1),
+                                nrToPassCut1=cms.int32(1),
+                                nrToPassCut2=cms.int32(-1),
+                                reverseCuts=cms.bool(False),
+                                outputFilename=cms.string("")
                                 )
 
 
@@ -79,22 +81,26 @@ for i in range(2,len(sys.argv)-1):
 
 
 #process.myPref = cms.ESPrefer("PoolDBESSource","GlobalTag")
-process.skimP = cms.Path(process.MuFilter)    
-process.load('Configuration/EventContent/EventContent_cff')
-process.output = cms.OutputModule("PoolOutputModule",
-    splitLevel = cms.untracked.int32(0),
-   outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
-#outputCommands = process.RECOEventContent.outputCommands,
- #   outputCommands = cms.untracked.vstring("drop *"),
-  fileName = cms.untracked.string("dummy.root"),
-  SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('skimP')),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('HLTDEBUG'),
-  #      filterName = cms.untracked.string('JETMETFilter'),
-        
-                                     
-    )
-)
+process.skimP = cms.Path(process.skimHLTFilter*process.MuFilter)
+outputReco=False
+if outputReco:
+    process.load('Configuration/EventContent/EventContent_cff')
+    process.output = cms.OutputModule("PoolOutputModule",
+                                      splitLevel = cms.untracked.int32(0),
+                                      outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
+                                      #outputCommands = process.RECOEventContent.outputCommands,
+                                      #   outputCommands = cms.untracked.vstring("drop *"),
+                                      fileName = cms.untracked.string("dummy.root"),
+                                      SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('skimP')),
+                                      dataset = cms.untracked.PSet(
+                                          dataTier = cms.untracked.string('HLTDEBUG'),
+                                          #      filterName = cms.untracked.string('JETMETFilter'),
+                                          
+                                          
+                                          )
+                                      )
+    process.HLTOutput_sam = cms.EndPath(process.output)
+
 
 #print process.RECOEventContent.outputCommands
 
@@ -103,14 +109,19 @@ isCrabJob=False
 #if 1, its a crab job...
 if isCrabJob:
     print "using crab specified filename"
-    process.output.fileName= "OUTPUTFILE"
-    
+    if outputReco:
+        process.output.fileName= "OUTPUTFILE"
+    else:
+        process.MuFilter.outputFilename="OUTPUTFILE"
 else:
     print "using user specified filename"
-    process.output.fileName= sys.argv[len(sys.argv)-1]
+    if outputReco:
+        process.output.fileName= sys.argv[len(sys.argv)-1]
+    else:
+        process.MuFilter.outputFilename= sys.argv[len(sys.argv)-1]
 
 
-process.HLTOutput_sam = cms.EndPath(process.output)
+
 
 ##import PhysicsTools.PythonAnalysis.LumiList as LumiList
 ##import FWCore.ParameterSet.Types as CfgTypes
