@@ -18,7 +18,10 @@ TrigObjP4AnaExample::TrigObjP4AnaExample(const edm::ParameterSet& iPara)
   pathName_ = iPara.getParameter<std::string>("pathName");
 }
 
-
+//what we are going to do here is also show an example of how to get the filters of the path automagically 
+//without having to specify it manually like we do for filterName_
+//this will only work in later MC and runs (around the second half of 2011, cant remember if Fall11 works)
+//it is usually better to specify the filters manually for now :)
 void TrigObjP4AnaExample::beginRun(const edm::Run& run,const edm::EventSetup& setup)
 {
   bool changed=false;
