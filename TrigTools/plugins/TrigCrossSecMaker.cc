@@ -47,6 +47,7 @@ void TrigCrossSecMaker::analyze(const edm::Event& iEvent, const edm::EventSetup&
   int runnr=iEvent.id().run();
   int lumiSec = iEvent.luminosityBlock();
   
+  if(lumiSec>=314 && lumiSec<=341) return; //temp skip for bad lumi
   
   size_t pathIndex = trigNames.triggerIndex(pathName_);
   int preScale = !selectingPathName_.empty() ? hltConfig_.prescaleValue(iEvent,iSetup,selectingPathName_) : 1;
@@ -70,7 +71,8 @@ void TrigCrossSecMaker::endJob()
   tree->Branch("instLumiDel",&instLumiDel,"instLumiDel/F");
   tree->Branch("nrWeights",&nrWeights,"nrWeights/F");
   tree->Branch("nrEntries",&nrEntries,"nrEntries/I");
- 
+
+
   
   
   for(size_t lumiNr=0;lumiNr<trigCrossSecData_.nrLumiSecs();lumiNr++){
