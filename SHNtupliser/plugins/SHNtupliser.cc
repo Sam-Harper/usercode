@@ -31,10 +31,12 @@
 #include "TFile.h"
 #include "TTree.h"
 
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
+
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
-  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL)
+  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true)
 {
   evtHelper_.setup(iPara);
   shEvtHelper_.setup(iPara);
@@ -69,6 +71,7 @@ SHNtupliser::~SHNtupliser()
   if(outFile_) delete outFile_;
   if(trigDebugHelper_) delete trigDebugHelper_;
   if(shTrigObjs_) delete shTrigObjs_;
+  if(puSummary_) delete puSummary_;
 }
 
 void SHNtupliser::beginJob()
@@ -79,6 +82,10 @@ void SHNtupliser::beginJob()
   evtTree_= new TTree("evtTree","Event Tree");
   evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,2);
   
+  if(writePUInfo_) {
+    puSummary_ = new SHPileUpSummary;
+    evtTree_->Branch("PUInfoBranch","SHPileUpSummary",&puSummary_,32000,2);
+  }
   if(compTwoMenus_){
     shEvt2ndTrig_ = new SHEvent;
     evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,2);
@@ -122,6 +129,8 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
     initGeom_=true;
   }
   std::cout <<"end begin run "<<std::endl;
+  
+  heepEvt_.initHLTConfig(run,iSetup,hltTag_);
 }
 
 
@@ -136,6 +145,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
 
   nrTot_++;
   //  std::cout <<"analysing "<<std::endl;
+ 
     shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
     // std::cout <<"made even "<<std::endl;
     if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
@@ -154,6 +164,22 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
       const edm::TriggerNames& trigNames2nd = iEvent.triggerNames(*trigResults2nd);
       shEvtHelper_.addTrigInfo(*trigEvt2nd,*trigResults2nd,trigNames2nd,*shEvt2ndTrig_);
     }
+
+    if(writePUInfo_){ //naughty but its almost 1am...
+      puSummary_->clear();
+      edm::InputTag PileupSrc_("addPileupInfo");
+      edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+      iEvent.getByLabel(PileupSrc_, PupInfo);
+      if(PupInfo.isValid()){
+	std::vector<PileupSummaryInfo>::const_iterator PVI;
+	// (then, for example, you can do)
+	for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+	  puSummary_->addPUInfo( PVI->getBunchCrossing(),PVI->getPU_NumInteractions(),PVI->getTrueNumInteractions());
+	  //std::cout << " Pileup Information: bunchXing, nvtx: " << PVI->getBunchCrossing() << " " << PVI->getPU_NumInteractions() << std::endl;	
+	}
+      }
+    }
+      
 
     bool passSC=false;
 
@@ -176,26 +202,28 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
     if(nrJetPassing>=minNrJetToPass_) passJet=true;
     
     
+     int nrEle=0;
+     for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
+       const SHElectron* ele = shEvt_->getElectron(eleNr);
+       if(ele->isEcalDriven() && ele->et()>25 && ele->trkPt()>0.2) nrEle++;
+     }
+     bool passEle=nrEle>=1;
 
-
-//     //drop all calo hits
-    //   shEvt_->getCaloHits().clear();
-//     bool passEt=false;
-//     for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
-//       if(shEvt_->getElectron(eleNr)->et()>15){
-// 	passEt=true;
-// 	break;
-//       }
-//     }
    
     // SHCaloHitContainer outputHits;
     //filterHcalHits(shEvt_,0.6,shEvt_->getCaloHits(),outputHits);
     //shEvt_->addCaloHits(outputHits);
     
-    if(passSC || passJet){
+    if(shEvt_->datasetCode()>130){ //for all non Z MC
+      shEvt_->getCaloHits().clear();
+      shEvt_->clearTrigs();
+    }  
+    //  bool passEle=true;
+    if(passEle || !(shEvt_->datasetCode()>=120 && shEvt_->datasetCode()<700)){ //only for phoJet, qcdJet, actually sod it everything but Z
       nrPass_++;
       evtTree_->Fill();
     }
+
 }
 
 
@@ -262,7 +290,7 @@ void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& 
   double maxDR2 = maxDR*maxDR;
   for(size_t hitNr=0;hitNr<inputHits.nrHcalHitsStored();hitNr++){
     int detId = inputHits.getHcalHitByIndx(hitNr).detId();
-    double cellEta,cellPhi;
+    double cellEta=0,cellPhi=0;
     GeomFuncs::getCellEtaPhi(detId,cellEta,cellPhi);
     
     bool accept =false;

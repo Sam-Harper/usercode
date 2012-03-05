@@ -16,6 +16,7 @@
 #include "SHarper/SHNtupliser/interface/SHMet.hh"
 #include "SHarper/SHNtupliser/interface/SHL1Cand.hh"
 #include "SHarper/SHNtupliser/interface/SHMuon.hh"
+//#include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 
 #include "TObject.h"
@@ -82,6 +83,9 @@ class SHEvent : public TObject {
 
   SHMet pfMet_;
 
+  int preScaleCol_; //new for V17
+ 
+  //SHPileUpSummary puSummary_; //new for V18
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -130,6 +134,9 @@ class SHEvent : public TObject {
   void addCaloHits(const SHCaloHitContainer& hits){caloHits_ = hits;}
   void addIsolInfo(const SHEvent& rhs);
   
+
+  // void addPUInfo(int iBx,int iNrInteractions,int iNrTrueInteractions){puSummary_.addPUInfo(iBx,iNrInteractions,iNrTrueInteractions);}
+
   void setRunnr(int iRunnr){runnr_=iRunnr;}
   void setEventnr(int iEventnr){eventnr_=iEventnr;}
   void setIsMC(bool iIsMC){isMC_=iIsMC;}
@@ -138,6 +145,7 @@ class SHEvent : public TObject {
   void setMet(const SHMet& iMet){metData_=iMet;}
   void setPFMet(const SHMet& iMet){pfMet_=iMet;}
   void setGenEventPtHat(double iPtHat){genEventPtHat_=iPtHat;}
+
   void setL1Bits(const TBits& bits){l1Bits_=bits;}
   void setBX(int iBx){bx_=iBx;}
   void setOrbitNumber(int iOrb){orbNr_=iOrb;}
@@ -146,8 +154,11 @@ class SHEvent : public TObject {
   void setVertex(const TVector3& vert){vertex_=vert;}
   void setNrVertices(int iNrVertices){nrVertices_=iNrVertices;}
   void setBeamSpot(const TVector3& iBS){beamSpot_=iBS;}
+  void setPreScaleCol(int iPreScaleCol){preScaleCol_=iPreScaleCol;}
+  
   void copyEventPara(const SHEvent& rhs);
   void clear();
+  void clearTrigs(){trigArray_.Delete();}
 
 
   const SHSuperCluster* getSuperClus(int clusNr)const;
@@ -202,6 +213,7 @@ class SHEvent : public TObject {
   unsigned long long time()const{return time_;}
   const TVector3& vertex()const{return vertex_;}
   int nrVertices()const{return nrVertices_;}
+  int preScaleCol()const{return preScaleCol_;}
   //first function gets the triggers passed for the event
   //second to functions get the triggers passed for a particlar object
   // int getTrigCode()const;
@@ -231,7 +243,7 @@ class SHEvent : public TObject {
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
 
-  ClassDef(SHEvent,16) //5 is v3, 6 is v4
+  ClassDef(SHEvent,19) //5 is v3, 6 is v4
 
 };
   

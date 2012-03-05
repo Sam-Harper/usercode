@@ -20,7 +20,16 @@ SHJet::SHJet():
   trkCountHighPureBTag_(-10.),
   jetBProbBTag_(-1.),
   jetProbBTag_(-1.),
-  partonFlavour_(0)
+  partonFlavour_(0),
+  neutralHadFrac_(0), //new for v3, pf id
+  neutralEmFrac_(0),
+  nrConstituents_(0),
+  chargedHadFrac_(0),
+  chargedMultiplicty_(0),
+  muonMultiplicity_(0),
+  chargedEmFrac_(0),
+  unCorrNrgy_(0),
+  jetType_(0)
 {
 
 }
@@ -43,7 +52,16 @@ SHJet::SHJet(const SHJet& rhs):
   trkCountHighPureBTag_(rhs.trkCountHighPureBTag_),
   jetBProbBTag_(rhs.jetBProbBTag_),
   jetProbBTag_(rhs.jetBProbBTag_),
-  partonFlavour_(rhs.partonFlavour_)
+  partonFlavour_(rhs.partonFlavour_),
+  neutralHadFrac_(rhs.neutralHadFrac_), //new for v3, pf id
+  neutralEmFrac_(rhs.neutralEmFrac_),
+  nrConstituents_(rhs.nrConstituents_),
+  chargedHadFrac_(rhs.chargedHadFrac_),
+  chargedMultiplicty_(rhs.chargedMultiplicty_),
+  muonMultiplicity_(rhs.muonMultiplicity_),
+  chargedEmFrac_(rhs.chargedEmFrac_),
+  unCorrNrgy_(rhs.unCorrNrgy_),
+  jetType_(rhs.jetType_)
 {
 
 }
@@ -69,6 +87,15 @@ SHJet& SHJet::operator=(const SHJet &rhs)
     jetBProbBTag_ = rhs.jetBProbBTag_;
     jetProbBTag_ = rhs.jetBProbBTag_;
     partonFlavour_ = rhs.partonFlavour_;
+    neutralHadFrac_ = rhs.neutralHadFrac_; //new for v3, pf id
+    neutralEmFrac_ = rhs.neutralEmFrac_;
+    nrConstituents_ = rhs.nrConstituents_;
+    chargedHadFrac_ = rhs.chargedHadFrac_;
+    chargedMultiplicty_ = rhs.chargedMultiplicty_;
+    muonMultiplicity_ = rhs.muonMultiplicity_;
+    chargedEmFrac_ = rhs.chargedEmFrac_;
+    unCorrNrgy_ = rhs.unCorrNrgy_;
+    jetType_ = rhs.jetType_;
   } 
   return *this;
 }

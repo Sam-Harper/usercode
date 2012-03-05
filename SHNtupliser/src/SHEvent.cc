@@ -32,7 +32,9 @@ SHEvent::SHEvent():
   time_(0),
   nrVertices_(-1),
   vertex_(-999,-999,-999),
-  beamSpot_(-999,-999,-999)
+  beamSpot_(-999,-999,-999),
+  preScaleCol_(-1)
+  // puSummary_()
 {
  
 }
@@ -278,6 +280,8 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   vertex_ = rhs.vertex_;
   beamSpot_ = rhs.beamSpot_;
   pfMet_ = rhs.pfMet_;
+  preScaleCol_ =rhs.preScaleCol_; 
+  // puSummary_ =rhs.puSummary_;
 }
 
 //I have a memory leak from some where....
@@ -308,6 +312,8 @@ void SHEvent::clear()
   nrVertices_=-1;
   vertex_.SetXYZ(-999,-999,-999); 
   beamSpot_.SetXYZ(-999,-999,-999);
+  preScaleCol_=-1;
+  // puSummary_.clear();
 }
 
 
@@ -505,7 +511,7 @@ const SHTrigInfo* SHEvent::getTrig(const std::string& trigName)const
 {
   for(int trigNr=0;trigNr<nrTrigs();trigNr++){
     const SHTrigInfo* trig= getTrigInfo(trigNr);
-    if(trig->trigId()==-1 && trigName==trig->name()) return trig;
+    if(trig->name().find(trigName)!=std::string::npos) return trig; //close enough
   }
   return NULL;
 }
@@ -551,7 +557,7 @@ void SHEvent::printTrigs()const
 {
   // std::cout <<"nr triggers fired "<<nrTrigs()<<std::endl;
   for(int i=0;i<nrTrigs();i++){
-    if(getTrigInfo(i)->passTrig()||true) std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" trig code "<<getTrigInfo(i)->trigId()<<" global pass "<<getTrigInfo(i)->passTrig()<<" nr pass "<<getTrigInfo(i)->nrPass()<<std::endl;
+    if(getTrigInfo(i)->passTrig()||true) std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" trig code "<<getTrigInfo(i)->trigId()<<" global pass "<<getTrigInfo(i)->passTrig()<<" nr pass "<<getTrigInfo(i)->nrPass()<<" prescale "<<getTrigInfo(i)->preScale()<<std::endl;
   }
 }
 

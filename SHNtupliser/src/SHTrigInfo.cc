@@ -30,8 +30,9 @@ TLorentzVector SHTrigInfo::getTrigObj(double eta,double phi)const
     if(deltaR2<minDeltaR2) return getObjP4(objNr); //found a trigger object well matched in dR, input object passed
   }
   //didnt find an object well matched in dR, input object failed
-  return TLorentzVector(-999,-999,-999,-999);
-
+  TLorentzVector returnP4;
+  returnP4.SetPtEtaPhiM(0.1,-999,0,0);
+  return returnP4;
 }
 
 //l1 triggers have discrete eta/phi, need to special matching

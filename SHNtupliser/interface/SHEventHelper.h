@@ -64,6 +64,8 @@ public:
   
   void setup(const edm::ParameterSet& conf);
 
+  void setupRun(const edm::Run& run,const edm::EventSetup& setup);
+
   //the two modifiers
   void setDatasetCode(int datasetCode){datasetCode_=datasetCode;}
   void setEventWeight(float weight){eventWeight_=weight;}
@@ -83,7 +85,7 @@ public:
   void addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addTrigInfo(const trigger::TriggerEvent& trigEvt,
 		   const edm::TriggerResults& trigResults,
-		   const edm::TriggerNames& trigNames,SHEvent& shEvent)const;
+		   const edm::TriggerNames& trigNames,SHEvent& shEvent,const heep::Event* heepEvent=NULL)const; //horrible hack fix this
   void addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const;
   void addJets(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const;

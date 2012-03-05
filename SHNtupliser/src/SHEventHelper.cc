@@ -66,6 +66,8 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   tracklessEleMaker_.setup(conf);
 }
 
+
+
 void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)const
 
 {   
@@ -117,6 +119,7 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
   shEvent.setTime(heepEvent.time());
   shEvent.setOrbitNumber(heepEvent.orbitNumber());
   shEvent.setNrVertices(-1);
+  shEvent.setPreScaleCol(heepEvent.preScaleColumn());
    TVector3 vtxPos;
    if(heepEvent.handles().vertices.isValid() && heepEvent.handles().vertices->size()>0){  
      const reco::Vertex& vertex = heepEvent.handles().vertices->front();
@@ -307,14 +310,19 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
   if(ebHits!=NULL){
     for(EcalRecHitCollection::const_iterator hitIt = ebHits->begin();
 	hitIt!=ebHits->end();++hitIt){
-      ecalHitVec_[ecalHitHash_(hitIt->detid())].setNrgy(hitIt->energy());
+      SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
+      shHit.setNrgy(hitIt->energy());
+      shHit.setTime(hitIt->time());
+      
     }
   }//end of null check on ebHits
 
   if(eeHits!=NULL){
     for(EcalRecHitCollection::const_iterator hitIt = eeHits->begin();
 	hitIt!=eeHits->end();++hitIt){
-      ecalHitVec_[ecalHitHash_(hitIt->detid())].setNrgy(hitIt->energy());
+      SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
+      shHit.setNrgy(hitIt->energy());
+      shHit.setTime(hitIt->time());
     }
   }//end of null check on eeHits
 
@@ -344,14 +352,13 @@ void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)co
   
   const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
   const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
-  
-  addTrigInfo(trigEvt,trigResults,trigNames,shEvent);
+  addTrigInfo(trigEvt,trigResults,trigNames,shEvent,&heepEvent);
 
 }
 
 void SHEventHelper::addTrigInfo(const trigger::TriggerEvent& trigEvt,
 				const edm::TriggerResults& trigResults,
-				const edm::TriggerNames& trigNames,SHEvent& shEvent)const
+				const edm::TriggerNames& trigNames,SHEvent& shEvent,const heep::Event* heepEvent)const //heepEvent may be null...
 {
  
   //  const trigger::TriggerObjectCollection& trigObjs = heepEvent.trigObjColl();
@@ -376,9 +383,16 @@ void SHEventHelper::addTrigInfo(const trigger::TriggerEvent& trigEvt,
     SHTrigInfo trigInfo;
     trigInfo.setTrigId(1);
     if(pathNr<trigNames.size()){
-       trigInfo.setTrigName(trigNames.triggerName(pathNr));
-    }else trigInfo.setTrigName("NullName");
-    trigInfo.setPass(trigResults.accept(pathNr)); 
+      const std::string& pathName = trigNames.triggerName(pathNr);
+      trigInfo.setTrigName(pathName);
+      trigInfo.setPreScale(heepEvent ? heepEvent->hltPreScale(pathName) : -1);
+      trigInfo.setPass(trigResults.accept(pathNr));
+    }else{
+      trigInfo.setTrigName("NullName");
+      trigInfo.setPass(false);
+      trigInfo.setPreScale(-1);
+    } 
+   
     shEvent.addTrigInfo(trigInfo);
   }
 

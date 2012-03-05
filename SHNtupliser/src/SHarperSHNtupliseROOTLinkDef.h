@@ -17,6 +17,8 @@
 #include "SHarper/SHNtupliser/interface/SHMuon.hh"
 #include "SHarper/SHNtupliser/interface/SHTrigEcalCand.hh"
 #include "SHarper/SHNtupliser/interface/SHTrigObjContainer.hh"
+#include "SHarper/SHNtupliser/interface/SHPileUpInfo.hh"
+#include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -46,4 +48,7 @@
 #pragma link C++ class SHMuon+;
 #pragma link C++ class SHTrigEcalCand+;
 #pragma link C++ class SHTrigObjContainer+;
+#pragma link C++ class SHPileUpSummary+;
+#pragma link C++ class SHPileUpInfo+;
+
 #endif

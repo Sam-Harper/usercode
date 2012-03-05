@@ -34,7 +34,17 @@ private:
   float trkCountHighPureBTag_;
   float jetBProbBTag_;
   float jetProbBTag_;
-  int partonFlavour_;
+  int partonFlavour_; 
+  float neutralHadFrac_; //new for v4, pf id
+  float neutralEmFrac_;
+  float nrConstituents_;
+  float chargedHadFrac_;
+  int chargedMultiplicty_;
+  int muonMultiplicity_;
+  float chargedEmFrac_;
+  float unCorrNrgy_;//is what is used to produce frac quanities
+  int jetType_; //=1 CaloJet, =2 PFJet, forbidden to use outside isCaloJet and isPFJet
+
 public:
   SHJet();
   SHJet(const pat::Jet & caloJet); //CMSSW hook
@@ -74,7 +84,7 @@ public:
   float jetProbBTag()const{return jetProbBTag_;}
   int partonFlavour()const{return partonFlavour_;}
   
-  ClassDef(SHJet,2)
+  ClassDef(SHJet,5)
 
 };
 

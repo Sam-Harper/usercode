@@ -32,19 +32,19 @@ SHCaloHitContainer& SHCaloHitContainer::operator=(const SHCaloHitContainer& rhs)
   return *this;
 }
 
-void SHCaloHitContainer::addHit(int detId,float nrgy)
+void SHCaloHitContainer::addHit(int detId,float nrgy,float time,uint32_t flag)
 {
   if(DetIdTools::isEcal(detId)){
     if(DetIdTools::isBarrel(detId)){
-      new(ecalBarrelHitArray_[nrEcalBarrelHitsStored()]) SHCaloHit(detId,nrgy);
+      new(ecalBarrelHitArray_[nrEcalBarrelHitsStored()]) SHCaloHit(detId,nrgy,time,flag);
     }
     else if(DetIdTools::isEndcap(detId)){
-      new(ecalEndcapHitArray_[nrEcalEndcapHitsStored()]) SHCaloHit(detId,nrgy);
+      new(ecalEndcapHitArray_[nrEcalEndcapHitsStored()]) SHCaloHit(detId,nrgy,time,flag);
     }
     else std::cout <<"SHCaloHitContainer::addHit Ecal Hit "<<std::hex<<detId<<std::dec<<" not in barrel or endcap"<<std::endl;
   }
   else if(DetIdTools::isHcal(detId)){
-    new (hcalHitArray_[nrHcalHitsStored()]) SHCaloHit(detId,nrgy);
+    new (hcalHitArray_[nrHcalHitsStored()]) SHCaloHit(detId,nrgy,time,flag);
   }else{ 
     std::cout <<"SHCaloHitContainer::addHit "<<std::hex<<detId<<std::dec<<" not recognisefd"<<std::endl;
   }
@@ -64,7 +64,7 @@ const SHCaloHit& SHCaloHitContainer::getEcalEndcapHit(unsigned indx)const
 
 void SHCaloHitContainer::addHit(const SHCaloHit& hit)
 {
-  addHit(hit.detId(),hit.nrgy());
+  addHit(hit.detId(),hit.nrgy(),hit.time(),hit.flag());
 }
 
 

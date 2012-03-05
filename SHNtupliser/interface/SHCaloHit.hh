@@ -27,11 +27,14 @@ class SHCaloHit : public TObject {
 
   float nrgy()const{return nrgy_;}
   int detId()const{return detId_;}
-
+  float time()const{return time_;}
+  uint32_t flag()const{return flag_;}
+  
   void setNrgy(float iNrgy){nrgy_=iNrgy;}
   void setDetId(int iDetId){detId_=iDetId;} 
-  void setTime(float time){time_=time;}
-  void setFlag(uint32_t flag){flag_=flag;}
+  void setTime(float iTime){time_=iTime;}
+  void setFlag(uint32_t iFlag){flag_=iFlag;}
+
 
   bool operator==(const SHCaloHit& rhs)const{return detId_==rhs.detId_;}
   

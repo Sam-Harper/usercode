@@ -27,6 +27,8 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPEventHelper.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 
+#include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
+
 #include <string>
 
 namespace edm {
@@ -74,6 +76,9 @@ private:
   SHTrigObjContainer* shTrigObjs_;
   SHTrigObjContainer* shTrigObjs2ndTrig_;
   SHEvent* shEvt2ndTrig_;
+
+  SHPileUpSummary* puSummary_;
+  bool writePUInfo_;
 
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;
