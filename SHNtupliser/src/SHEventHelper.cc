@@ -52,6 +52,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   addJets_ = conf.getParameter<bool>("addJets");
   addMuons_ = conf.getParameter<bool>("addMuons");
   addTrigs_ = conf.getParameter<bool>("addTrigs");
+  addCaloTowers_ = conf.getParameter<bool>("addCaloTowers");
   fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
  
   hltDebugFiltersToSave_ = conf.getParameter<std::vector<std::string> >("hltDebugFiltersToSave");
@@ -75,6 +76,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   shEvent.clear(); //reseting the event 
   //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
   addCaloHits(heepEvent,shEvent);
+  if(addCaloTowers_) addCaloTowers(heepEvent,shEvent);
   addEventPara(heepEvent,shEvent); //this must be filled second (ele + mu need beam spot info)
   addSuperClusters(heepEvent,shEvent);
   addElectrons(heepEvent,shEvent);
@@ -344,6 +346,23 @@ void SHEventHelper::addHcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
   }//end of null check on hcal hits
 
   shEvent.addHcalHits(hcalHitVec_);
+}
+
+void SHEventHelper::addCaloTowers(const heep::Event& heepEvent, SHEvent& shEvent)const
+{
+
+  const CaloTowerCollection* caloTowers = heepEvent.handles().caloTowers.isValid() ? &(*heepEvent.handles().caloTowers) : NULL;
+  if(caloTowers!=NULL){
+    for(CaloTowerCollection::const_iterator towerIt=caloTowers->begin();
+	towerIt!=caloTowers->end();++towerIt){
+      SHCaloTower caloTower(towerIt->id(),towerIt->emEnergy(),
+			    towerIt->hadEnergy()-towerIt->hadEnergyHeOuterLayer(),
+			    towerIt->hadEnergyHeOuterLayer(),
+			    towerIt->eta(),towerIt->phi());
+      shEvent.addCaloTower(caloTower);
+    }
+  }
+
 }
 
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const

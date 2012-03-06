@@ -16,6 +16,7 @@
 #include "SHarper/SHNtupliser/interface/SHMet.hh"
 #include "SHarper/SHNtupliser/interface/SHL1Cand.hh"
 #include "SHarper/SHNtupliser/interface/SHMuon.hh"
+#include "SHarper/SHNtupliser/interface/SHCaloTowerContainer.hh"
 //#include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 
@@ -87,6 +88,13 @@ class SHEvent : public TObject {
  
   //SHPileUpSummary puSummary_; //new for V18
 
+  SHCaloTowerContainer caloTowers_; //! so this is a new experimental design, I store this on another branch and give it this memory location
+  
+  //naughty naughty, a temporary PU fix
+  mutable int nrPUInteractions_; //!
+  mutable int nrPUInteractionsNeg_; //!
+  mutable int nrPUInteractionsPos_; //!
+
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
 
@@ -123,20 +131,27 @@ class SHEvent : public TObject {
 		     const TLorentzVector& p4,const TVector3& pos);
   void addEcalHits(const std::vector<SHCaloHit> & hitVec);
   void addHcalHits(const std::vector<SHCaloHit> & hitVec);  
+  void addCaloTower(const SHCaloTower& caloTower){caloTowers_.addTower(caloTower);}
   void addMCParticle(const SHMCParticle& mcPart);
   void addTrigInfo(const SHTrigInfo& trigInfo);
   void addL1Cand(const SHL1Cand& cand);
   void addL1Cand(const TLorentzVector& p4,int type);
   void addMuon(const reco::Muon& mu);
-
+  void addMuon(const SHMuon& mu);
   //usefull for copying an event
   void addCaloHits(const SHEvent& rhs);
   void addCaloHits(const SHCaloHitContainer& hits){caloHits_ = hits;}
+  void addCaloTowers(const SHEvent& rhs);
+  void addCaloTowers(const SHCaloTowerContainer& towers){caloTowers_ = towers;}
   void addIsolInfo(const SHEvent& rhs);
   
-
   // void addPUInfo(int iBx,int iNrInteractions,int iNrTrueInteractions){puSummary_.addPUInfo(iBx,iNrInteractions,iNrTrueInteractions);}
 
+  int nrPUInteractions()const{return nrPUInteractions_;}
+  int nrPUInteractionsNeg()const{return nrPUInteractionsNeg_;}
+  int nrPUInteractionsPos()const{return nrPUInteractionsPos_;}
+  void setNrPUInteractions(int iNrPU){nrPUInteractions_=iNrPU;}
+  void setNrPUInteractions(int iNrPUNeg,int iNrPU,int iNrPUPos){nrPUInteractions_=iNrPU;nrPUInteractionsNeg_=iNrPUNeg;nrPUInteractionsPos_=iNrPUPos;}
   void setRunnr(int iRunnr){runnr_=iRunnr;}
   void setEventnr(int iEventnr){eventnr_=iEventnr;}
   void setIsMC(bool iIsMC){isMC_=iIsMC;}
@@ -145,7 +160,6 @@ class SHEvent : public TObject {
   void setMet(const SHMet& iMet){metData_=iMet;}
   void setPFMet(const SHMet& iMet){pfMet_=iMet;}
   void setGenEventPtHat(double iPtHat){genEventPtHat_=iPtHat;}
-
   void setL1Bits(const TBits& bits){l1Bits_=bits;}
   void setBX(int iBx){bx_=iBx;}
   void setOrbitNumber(int iOrb){orbNr_=iOrb;}
@@ -156,6 +170,7 @@ class SHEvent : public TObject {
   void setBeamSpot(const TVector3& iBS){beamSpot_=iBS;}
   void setPreScaleCol(int iPreScaleCol){preScaleCol_=iPreScaleCol;}
   
+ 
   void copyEventPara(const SHEvent& rhs);
   void clear();
   void clearTrigs(){trigArray_.Delete();}
@@ -205,6 +220,8 @@ class SHEvent : public TObject {
   bool isMC()const{return isMC_;}
   const SHCaloHitContainer& getCaloHits()const{return caloHits_;}
   SHCaloHitContainer& getCaloHits(){return caloHits_;}
+  const SHCaloTowerContainer& getCaloTowers()const{return caloTowers_;}
+  SHCaloTowerContainer& getCaloTowers(){return caloTowers_;}
   double genEventPtHat()const{return genEventPtHat_;}
   const TBits& l1Bits()const{return l1Bits_;}
   int bx()const{return bx_;}
@@ -227,7 +244,7 @@ class SHEvent : public TObject {
   bool passTrig(const std::string& trigName)const;
   // bool passTrig(const std::string& trigName);
   void printTrigs()const;
-
+  void printTrigsPassed()const;
   //some objects have a temporary transisent data cache which root doesnt
   //override when it fills them
   //so it needs to be manually cleared (very annoying)

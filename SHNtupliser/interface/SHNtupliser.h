@@ -38,6 +38,7 @@ namespace edm {
 }
 
 class SHEvent;
+class SHCaloTowerContainer;
 class TTree;
 class TFile;
 
@@ -53,6 +54,7 @@ private:
   SHEventHelper shEvtHelper_;
 
   SHEvent* shEvt_; //pointer because thats what root likes, we own it
+  SHCaloTowerContainer* shCaloTowers_; //pointer to caloTowers of shEvt (blame root)
   TTree* evtTree_; //the outFile owns it
   TFile* outFile_; //we own it
 
@@ -67,6 +69,8 @@ private:
   int minNrSCToPass_;
   float minJetEtToPass_;
   int minNrJetToPass_;
+  
+  bool addCaloTowers_;
   
   bool useHLTDebug_;
   bool compTwoMenus_;

@@ -37,6 +37,7 @@ private:
   int nrGenPartToStore_;
   
   float minEtToPromoteSC_;
+  bool addCaloTowers_;
   bool addMet_;
   bool addJets_;
   bool addTrigs_;
@@ -80,6 +81,7 @@ public:
   void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const;
   void addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addCaloHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addCaloTowers(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addEcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addHcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;

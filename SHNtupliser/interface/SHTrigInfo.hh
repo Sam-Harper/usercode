@@ -31,7 +31,6 @@ public:
   void addObj(const TLorentzVector& iP4){trigObjs_.push_back(iP4);} 
   void setPass(bool iPass){pass_=iPass;}
   void setPreScale(int iPreScale){preScale_=iPreScale;}
-
   void clear(){trigObjs_.clear();}
 
   //accessors

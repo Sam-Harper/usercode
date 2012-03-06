@@ -60,6 +60,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   compTwoMenus_ = iPara.getParameter<bool>("compTwoMenus");
   hltTag_ = iPara.getParameter<std::string>("hltProcName");
   secondHLTTag_ = iPara.getParameter<std::string>("secondHLTTag");
+  addCaloTowers_ = iPara.getParameter<bool>("addCaloTowers");
   if(useHLTDebug_){
     trigDebugHelper_ = new TrigDebugObjHelper(iPara);
   }
@@ -77,14 +78,18 @@ SHNtupliser::~SHNtupliser()
 void SHNtupliser::beginJob()
 {
   shEvt_= new SHEvent;
+  shCaloTowers_ = &shEvt_->getCaloTowers();
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
- outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
+  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   evtTree_= new TTree("evtTree","Event Tree");
   evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,2);
   
   if(writePUInfo_) {
     puSummary_ = new SHPileUpSummary;
     evtTree_->Branch("PUInfoBranch","SHPileUpSummary",&puSummary_,32000,2);
+  }
+  if(addCaloTowers_) {
+    evtTree_->Branch("CaloTowersBranch","SHCaloTowerContainer",&shCaloTowers_,32000,2);
   }
   if(compTwoMenus_){
     shEvt2ndTrig_ = new SHEvent;

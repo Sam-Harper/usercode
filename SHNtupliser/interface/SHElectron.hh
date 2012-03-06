@@ -182,7 +182,7 @@ private:
   bool isEEDeeGap() const{return isEEDeeGap_;}    
   bool isEERingGap()const{return isEERingGap_;}    
 
-
+  bool hasTrack()const{return dEtaIn_<900;}
   //kinematic quantities
   float nrgy()const{return p4_.E();}
   float et()const;

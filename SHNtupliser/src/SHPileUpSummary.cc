@@ -29,3 +29,13 @@ void SHPileUpSummary::addPUInfo(int iBx,int iNrInt,int iNrTrueInt)
   new(puInfos_[nrPUInfos()]) SHPileUpInfo(iBx,iNrInt,iNrTrueInt);
 }
 
+int SHPileUpSummary::nrInteractionsByBx(int bx)const
+{
+  for(unsigned bxNr=0;bxNr<nrPUInfos();bxNr++){
+    const SHPileUpInfo* puInfo = getPUInfo(bxNr);
+    if(puInfo->bx()==bx) return puInfo->nrInteractions();
+  }
+  return -1;
+}
+					    
+  

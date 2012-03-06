@@ -33,12 +33,75 @@ SHEvent::SHEvent():
   nrVertices_(-1),
   vertex_(-999,-999,-999),
   beamSpot_(-999,-999,-999),
-  preScaleCol_(-1)
+  preScaleCol_(-1), 
+  caloTowers_(),
+  nrPUInteractions_(-1),
+  nrPUInteractionsNeg_(-1),
+  nrPUInteractionsPos_(-1)
   // puSummary_()
 {
  
 }
+void SHEvent::copyEventPara(const SHEvent& rhs)
+{
+  runnr_=rhs.runnr_;
+  eventnr_=rhs.eventnr_;
+  isMC_=rhs.isMC_;
+  datasetCode_=rhs.datasetCode_;
+  weight_=rhs.weight_;
+  metData_=rhs.metData_;
+  genEventPtHat_ = rhs.genEventPtHat_; 
+  l1Bits_ =rhs.l1Bits_;
+  lumiSec_ =rhs.lumiSec_;
+  bx_ =rhs.bx_;
+  orbNr_ = rhs.orbNr_;
+  time_ = rhs.time_;
+  nrVertices_ = rhs.nrVertices_;
+  vertex_ = rhs.vertex_;
+  beamSpot_ = rhs.beamSpot_;
+  pfMet_ = rhs.pfMet_;
+  preScaleCol_ =rhs.preScaleCol_;  
+  nrPUInteractions_ = rhs.nrPUInteractions_;
+  nrPUInteractionsPos_ = rhs.nrPUInteractionsPos_;
+  nrPUInteractionsNeg_ = rhs.nrPUInteractionsNeg_;
+  // puSummary_ =rhs.puSummary_;
+}
 
+//I have a memory leak from some where....
+void SHEvent::clear()
+{
+  superClusArray_.Delete();
+  electronArray_.Delete();
+  mcPartArray_.Delete();
+  jetArray_.Delete();
+  isolSuperClusArray_.Delete();
+  isolClusArray_.Delete();
+  isolTrkArray_.Delete();
+  trigArray_.Delete();
+  muArray_.Delete();
+  caloHits_.clear();
+  runnr_=0;
+  eventnr_=0;
+  isMC_=0;
+  datasetCode_=0;
+  weight_=0.;  
+  lumiSec_=0;
+  bx_=0;
+  orbNr_=0;
+  time_=0;
+  metData_.clear(); 
+  l1CandArray_.Delete();
+  l1Bits_.ResetAllBits();
+  nrVertices_=-1;
+  vertex_.SetXYZ(-999,-999,-999); 
+  beamSpot_.SetXYZ(-999,-999,-999);
+  preScaleCol_=-1;
+  caloTowers_.clear();
+  nrPUInteractions_=-1; 
+  nrPUInteractionsNeg_=-1; 
+  nrPUInteractionsPos_=-1;
+  // puSummary_.clear();
+}
 SHEvent::~SHEvent()
 {
   superClusArray_.Delete();
@@ -74,7 +137,10 @@ void SHEvent::addJet(const SHJet& jet)
 {
   new(jetArray_[nrJets()]) SHJet(jet);
 }
-
+void SHEvent::addMuon(const SHMuon& mu)
+{
+  new(muArray_[nrMuons()]) SHMuon(mu);
+}
 void SHEvent::addElectron(const SHElectron& ele,const SHSuperCluster& superClus)
 {
   int superClusIndx = getSuperClusIndx(superClus.rawNrgy(),superClus.eta(),superClus.phi());
@@ -105,6 +171,10 @@ void SHEvent::addIsolInfo(const SHEvent& rhs)
 void SHEvent::addCaloHits(const SHEvent& rhs)
 {
   caloHits_ = rhs.caloHits_;
+}
+void SHEvent::addCaloTowers(const SHEvent& rhs)
+{
+  caloTowers_ = rhs.caloTowers_;
 }
 
 void SHEvent::addIsolTrk(const SHIsolTrack& trk)
@@ -262,59 +332,6 @@ int SHEvent::getIsolClusIndx(float rawNrgy,float eta,float phi)const
 }
 
 
-void SHEvent::copyEventPara(const SHEvent& rhs)
-{
-  runnr_=rhs.runnr_;
-  eventnr_=rhs.eventnr_;
-  isMC_=rhs.isMC_;
-  datasetCode_=rhs.datasetCode_;
-  weight_=rhs.weight_;
-  metData_=rhs.metData_;
-  genEventPtHat_ = rhs.genEventPtHat_; 
-  l1Bits_ =rhs.l1Bits_;
-  lumiSec_ =rhs.lumiSec_;
-  bx_ =rhs.bx_;
-  orbNr_ = rhs.orbNr_;
-  time_ = rhs.time_;
-  nrVertices_ = rhs.nrVertices_;
-  vertex_ = rhs.vertex_;
-  beamSpot_ = rhs.beamSpot_;
-  pfMet_ = rhs.pfMet_;
-  preScaleCol_ =rhs.preScaleCol_; 
-  // puSummary_ =rhs.puSummary_;
-}
-
-//I have a memory leak from some where....
-void SHEvent::clear()
-{
-  superClusArray_.Delete();
-  electronArray_.Delete();
-  mcPartArray_.Delete();
-  jetArray_.Delete();
-  isolSuperClusArray_.Delete();
-  isolClusArray_.Delete();
-  isolTrkArray_.Delete();
-  trigArray_.Delete();
-  muArray_.Delete();
-  caloHits_.clear();
-  runnr_=0;
-  eventnr_=0;
-  isMC_=0;
-  datasetCode_=0;
-  weight_=0.;  
-  lumiSec_=0;
-  bx_=0;
-  orbNr_=0;
-  time_=0;
-  metData_.clear(); 
-  l1CandArray_.Delete();
-  l1Bits_.ResetAllBits();
-  nrVertices_=-1;
-  vertex_.SetXYZ(-999,-999,-999); 
-  beamSpot_.SetXYZ(-999,-999,-999);
-  preScaleCol_=-1;
-  // puSummary_.clear();
-}
 
 
 void SHEvent::dropTrackerOnlyEles()
@@ -335,6 +352,7 @@ void SHEvent::dropTrackerOnlyEles()
 
 void SHEvent::flushTempData()const
 {
+  nrPUInteractions_=-1;
   caloHits_.flushIndxTable();
 }
 
@@ -525,7 +543,9 @@ TLorentzVector  SHEvent::getTrigObj(const std::string& trigName,double eta,doubl
       return trig->getTrigObj(eta,phi);
     }
   }
-  return TLorentzVector(-999,-999,-999,-999);
+  TLorentzVector returnVal;
+  returnVal.SetPtEtaPhiM(0.001,0,0,0);
+  return returnVal;
 }
 
 bool SHEvent::passL1Trig(const std::string& trigName,double eta,double phi)const
@@ -560,7 +580,13 @@ void SHEvent::printTrigs()const
     if(getTrigInfo(i)->passTrig()||true) std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" trig code "<<getTrigInfo(i)->trigId()<<" global pass "<<getTrigInfo(i)->passTrig()<<" nr pass "<<getTrigInfo(i)->nrPass()<<" prescale "<<getTrigInfo(i)->preScale()<<std::endl;
   }
 }
-
+void SHEvent::printTrigsPassed()const
+{
+  // std::cout <<"nr triggers fired "<<nrTrigs()<<std::endl;
+  for(int i=0;i<nrTrigs();i++){
+    if(getTrigInfo(i)->passTrig()) std::cout <<" trig "<<i<<" name: "<<getTrigInfo(i)->name()<<" trig code "<<getTrigInfo(i)->trigId()<<" global pass "<<getTrigInfo(i)->passTrig()<<" nr pass "<<getTrigInfo(i)->nrPass()<<" prescale "<<getTrigInfo(i)->preScale()<<std::endl;
+  }
+}
 
 void SHEvent::removeDupEles(std::vector<int>& dupEleNrs)
 {

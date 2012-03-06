@@ -15,6 +15,9 @@ public:
     bx_(iBx),nrInteractions_(iNrInt),
     nrTrueInteractions_(iNrTrueInt) {}
   
+  int bx()const{return bx_;}
+  int nrInteractions()const{return nrInteractions_;}
+
   ClassDef(SHPileUpInfo,1)
      
 };
