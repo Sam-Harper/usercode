@@ -78,7 +78,7 @@ SHNtupliser::~SHNtupliser()
 void SHNtupliser::beginJob()
 {
   shEvt_= new SHEvent;
-  shCaloTowers_ = &shEvt_->getCaloTowers();
+  shCaloTowers_ = &(shEvt_->getCaloTowers());
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
   outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   evtTree_= new TTree("evtTree","Event Tree");
