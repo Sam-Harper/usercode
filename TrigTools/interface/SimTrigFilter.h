@@ -4,9 +4,10 @@
 
 //this is a simple class which simulates another trigger based on the already calculated trigger object P4s and filters on that
 
-#include "HLTrigger/HLTcore/interface/HLTFilter.h"
+#include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include <vector>
 #include <string>
 
@@ -20,7 +21,7 @@ namespace edm{
   class ParameterSet;
 }
 
-class SimTrigFilter : public HLTFilter {
+class SimTrigFilter : public edm::EDFilter {
 private:
   class TrigCut {
     std::string filterName_;

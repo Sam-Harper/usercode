@@ -47,7 +47,7 @@ void TrigCrossSecMaker::analyze(const edm::Event& iEvent, const edm::EventSetup&
   int runnr=iEvent.id().run();
   int lumiSec = iEvent.luminosityBlock();
   
-  if(lumiSec>=314 && lumiSec<=341) return; //temp skip for bad lumi
+  //if(lumiSec>=314 && lumiSec<=341) return; //temp skip for bad lumi
   
   size_t pathIndex = trigNames.triggerIndex(pathName_);
   int preScale = !selectingPathName_.empty() ? hltConfig_.prescaleValue(iEvent,iSetup,selectingPathName_) : 1;

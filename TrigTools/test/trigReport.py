@@ -9,11 +9,11 @@ process = cms.Process( "USER2" )
 isMC=False
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkSummary = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(500),
+    reportEvery = cms.untracked.int32(1),
     limit = cms.untracked.int32(10000000)
 )
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(500),
+    reportEvery = cms.untracked.int32(1),
     limit = cms.untracked.int32(10000000)
 )
 process.MessageLogger.categories.append('TriggerSummaryProducerAOD')
@@ -47,7 +47,8 @@ if(sys.argv[2].find("/castor/")==0):
 process.source = cms.Source("PoolSource",
                         #  fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                             fileNames = cms.untracked.vstring(),
-)
+                            eventsToProcess = cms.untracked.VEventRange("180250:97388063-180250:97388063")
+                            )
 for i in range(2,len(sys.argv)-1):
     process.source.fileNames.extend([filePrefex+sys.argv[i],])
 

@@ -39,7 +39,8 @@ for i in range(2,len(sys.argv)-1):
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Mu15_Photon20_CaloIdL_v14")
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Mu17_Ele8_CaloIdL_v13")
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Mu17_Ele8_CaloIdL_v13")
+process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 
 # set the number of events
@@ -51,12 +52,22 @@ process.load("SHarper.TrigTools.trigRateNtupMaker_cfi")
 process.trigRateNtupMaker.outputFilename= sys.argv[len(sys.argv)-1]
 process.trigRateNtupMaker.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT")
 #these are the filters which the P4s are going to be saved for
+##process.trigRateNtupMaker.filterNames = cms.vstring(
+##    "hltEle30CaloIdTTrkIdTPFDiPF25NoPUCleaned",
+##    "hltEle27CaloIdTTrkIdTPFDiPF25Cleaned",
+##    "hltEle27WP80CentralDiPFJet25CleanedNoPU",
+##    "hltEle27WP80CentralDiPFJet25Cleaned",
+##    "hltMu15Photon20CaloIdLHEFilter",
+##    "hltL1Mu7EG5L3MuFiltered17",
+##    "hltL1NonIsoHLTNonIsoMu17Ele8PixelMatchFilter"
+##                                                )
 process.trigRateNtupMaker.filterNames = cms.vstring(
-    "hltL1MuOpenEG12L3Filtered15",
-    "hltMu15Photon20CaloIdLHEFilter",
-    "hltL1Mu7EG5L3MuFiltered17",
-    "hltL1NonIsoHLTNonIsoMu17Ele8PixelMatchFilter"
-                                                )
+    "hltPhoton135HEFilter",
+    "hltEG200EtFilter",
+    "hltEle80CaloIdVTTrkIdTDphiFilter",
+    "hltEG70HEFilter",
+    "hltDoubleEG70HEDoubleFilter"
+    )
 
 
 process.p = cms.Path(process.skimHLTFilter*                  
