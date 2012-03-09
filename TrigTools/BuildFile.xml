@@ -5,7 +5,12 @@
 <use   name="DataFormats/Common"/>
 <use   name="DataFormats/METReco"/>
 <use   name="HLTrigger/HLTcore"/>
+<use   name="TrackingTools/GsfTools"/>
+<use   name="MagneticField/Records"/>
+<use   name="MagneticField/Engine"/>
+<use   name="Geometry/TrackerGeometryBuilder"/>
 <use   name="DataFormats/VertexReco"/>
+<use   name="DataFormats/EgammaReco"/>
 <export>
   <lib   name="1"/>
 </export>
