@@ -355,11 +355,13 @@ void SHEventHelper::addCaloTowers(const heep::Event& heepEvent, SHEvent& shEvent
   if(caloTowers!=NULL){
     for(CaloTowerCollection::const_iterator towerIt=caloTowers->begin();
 	towerIt!=caloTowers->end();++towerIt){
-      SHCaloTower caloTower(towerIt->id(),towerIt->emEnergy(),
-			    towerIt->hadEnergy()-towerIt->hadEnergyHeOuterLayer(),
-			    towerIt->hadEnergyHeOuterLayer(),
-			    towerIt->eta(),towerIt->phi());
-      shEvent.addCaloTower(caloTower);
+      if(towerIt->id().ietaAbs()<=29){
+	SHCaloTower caloTower(towerIt->id(),towerIt->emEnergy(),
+			      towerIt->hadEnergy()-towerIt->hadEnergyHeOuterLayer(),
+			      towerIt->hadEnergyHeOuterLayer(),
+			      towerIt->eta(),towerIt->phi());
+	shEvent.addCaloTower(caloTower);
+      }
     }
   }
 
