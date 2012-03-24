@@ -29,6 +29,7 @@ heepEventPara  = cms.PSet (
     l1EmIsoTag =   cms.InputTag("hltL1extraParticles","Isolated"), 
     verticesTag = cms.InputTag("offlinePrimaryVerticesWithBS"),
     caloTowersTag = cms.InputTag("towerMaker"),
+    eleRhoCorrTag = cms.InputTag("kt6PFJets","rho"),
     hltProcName = cms.string("HLT"), #HLT process name, always HLT unless it was rerun...
     maxDRTrigMatch = cms.double(0.2), #max DR for a reco object trigger object match
     maxPtRelDiffTrigMatch = cms.double(1.), #max relative difference in pt between reco object and trig obj

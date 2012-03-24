@@ -33,7 +33,7 @@ template<typename PROD> int heep::listAllProducts(const edm::Event& iEvent,const
   
   for(size_t i=0;i<products.size();i++){
     //  edm::LogInfo(moduleName) <<"for product "<<i+1<<"/"<<products.size()<<" "<<products[i].provenance()->moduleLabel()<<" "<<products[i].provenance()->moduleName()<<std::endl;   
-    std::cout <<"for product "<<i+1<<"/"<<products.size()<<" "<<products[i].provenance()->moduleLabel()<<" "<<products[i].provenance()->moduleName()<<std::endl;
+    std::cout <<"for product "<<i+1<<"/"<<products.size()<<" "<<products[i].provenance()->moduleLabel()<<" "<<products[i].provenance()->productInstanceName()<<" "<<products[i].provenance()->processName()<<" "<<products[i].provenance()->moduleName()<<std::endl;
     
   }
   return products.size();

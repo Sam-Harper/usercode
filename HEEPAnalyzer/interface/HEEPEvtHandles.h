@@ -82,7 +82,9 @@ namespace heep {
     edm::Handle<l1extra::L1EmParticleCollection> l1EmIso;
     edm::Handle<reco::VertexCollection> vertices;
     edm::Handle<reco::BeamSpot> beamSpot;
+    edm::Handle<double> eleRhoCorr;
     edm::ESHandle<L1GtTriggerMenu> l1Menu;
+    
 
     edm::ESHandle<MagneticField> bField;
     edm::ESHandle<TrackerGeometry> trackGeom;

@@ -47,6 +47,8 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   l1EmIsoTag_ = conf.getParameter<edm::InputTag>("l1EmIsoTag");
   verticesTag_ = conf.getParameter<edm::InputTag>("verticesTag");
   caloTowersTag_ = conf.getParameter<edm::InputTag>("caloTowersTag");
+  eleRhoCorrTag_ = conf.getParameter<edm::InputTag>("eleRhoCorrTag");
+  
 
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -107,6 +109,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(l1EmIsoTag_,handles.l1EmIso);
   event.getByLabel(verticesTag_,handles.vertices);
   event.getByLabel(caloTowersTag_,handles.caloTowers);
+  event.getByLabel(eleRhoCorrTag_,handles.eleRhoCorr);
   event.getByType(handles.beamSpot);
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);

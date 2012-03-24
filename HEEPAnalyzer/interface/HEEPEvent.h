@@ -78,6 +78,8 @@ namespace heep{
     const edm::EventSetup& eventSetup()const{return *edmEventSetup_;}
     int hltPreScale(const std::string& hltPath)const{return hltConfig_.inited() ? hltConfig_.prescaleValue(event(),eventSetup(),hltPath) : -1;}
     int preScaleColumn()const{return hltConfig_.inited() ? hltConfig_.prescaleSet(event(),eventSetup()) : -1;}
+    double eleRhoCorr()const{return *handles_.eleRhoCorr;}
+
     heep::EvtHandles& handles(){return handles_;}
     const heep::EvtHandles& handles()const{return handles_;}
     std::vector<heep::Ele>& heepEles(){return heepEles_;}
@@ -87,7 +89,7 @@ namespace heep{
     const std::vector<bool> l1Decision()const{return handles_.l1Record->decisionWord();} //as decisionWord returns by value so we do to
     const std::vector<l1extra::L1EmParticle>& l1EmNonIso()const{return *handles_.l1EmNonIso;}
     const std::vector<l1extra::L1EmParticle>& l1EmIso()const{return *handles_.l1EmIso;}
-  
+    
     
 
       //our three set methods
