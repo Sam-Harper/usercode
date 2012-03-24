@@ -1,3 +1,6 @@
+#shamelessly stolen from PatAnalyzerSkeleton_cfg.py
+
+isMC=False
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -21,8 +24,9 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 # Load geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
-process.GlobalTag.globaltag = cms.string('START42_V15B::All')
+
+process.GlobalTag.globaltag = cms.string('GR_R_42_V21::All')
+
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -33,54 +37,70 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
-#process.load("Configuration.StandardSequences.Reconstruction_cff")
+process.load("Configuration.StandardSequences.Reconstruction_cff")
 
 
 import sys
-
-hltName="REDIGI311X"
-#do not remove this comment...
-#CRABHLTNAMEOVERWRITE
-hltName="HLT"
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
-process.shNtupliser.datasetCode = 1
+process.shNtupliser.datasetCode = 0
 process.shNtupliser.sampleWeight = 1
 process.shNtupliser.gsfEleTag = "gsfElectrons"
-process.shNtupliser.addMet = False
+process.shNtupliser.addMet = True
 process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = True
-process.shNtupliser.addCaloTowers = True
-process.shNtupliser.minEtToPromoteSC = 20
+
+process.shNtupliser.minEtToPromoteSC = 20;
 process.shNtupliser.fillFromGsfEle = True
-process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
-process.shNtupliser.outputGeom = cms.bool(False)
-process.shNtupliser.useHLTDebug = cms.bool(False)
-process.shNtupliser.hltProcName = hltName
-process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
-process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
-process.shNtupliser.compTwoMenus = cms.bool(False)
-process.shNtupliser.secondHLTTag = cms.string("")
+process.shNtupliser.minSCEtToPass = cms.double(-1)
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectronsPFlow")
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTausPFlow")
 process.shNtupliser.muonTag = cms.untracked.InputTag("patMuonsPFlow")
-process.shNtupliser.jetTag = cms.untracked.InputTag("patJetsPFlow")
+process.shNtupliser.jetTag = cms.untracked.InputTag("selectedPatJetsPFlow")
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotonsPFlow")
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETsPFlow")
 
-isCrabJob=False #script seds this if its a crab job
+hltProcName = "HLT"
+
+process.shNtupliser.hltProcName = hltProcName
+process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltProcName)
+process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltProcName)
+
+# Additional output definition
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+
+phoSkim=True
+#PHOSKIMOVERWRITE
+if phoSkim:
+    #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33*","HLT_Photon*","HLT_DoubleEle33*")
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33_v*","HLT_DoublePhoton50_v*","HLT_DoublePhoton60_v*","HLT_DoublePhoton70_v*","HLT_DoublePhoton80_v*", #all the double photons
+                                                 "HLT_Photon26_Photon18_v*","HLT_Photon36_Photon22_v*", #prescale double photon
+                                                 "HLT_Photon*CaloIdVL_v*","HLT_Photon125_v*","HLT_Photon135_v*","HLT_Photon*NoHE*", #single photon
+                                                 "HLT_DoubleEle33_CaloId*","HLT_DoubleEle45_CaloIdL_v*")
+else:
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*")
+
+
+process.skimHLTFilter.throw = False
+
+
+isCrabJob=False
 
 #if 1, its a crab job...
 if isCrabJob:
     print "using crab specified filename"
     process.shNtupliser.outputFilename= "OUTPUTFILE"
     process.shNtupliser.datasetCode = DATASETCODE
-    process.shNtupliser.sampleWeight = SAMPLEWEIGHT
+    #process.shNtupliser.sampleWeight = SAMPLEWEIGHT
+    process.shNtupliser.sampleWeight = 1
 else:
     print "using user specified filename"
     process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
-    process.shNtupliser.datasetCode = -1
+    process.shNtupliser.datasetCode = 0
     process.shNtupliser.sampleWeight = 1
 
+
+process.shNtupliser.hltDebugFiltersToSave = cms.vstring()
 
 filePrefex="file:"
 if(sys.argv[2].find("/pnfs/")==0):
@@ -98,15 +118,36 @@ for i in range(2,len(sys.argv)-1):
     print filePrefex+sys.argv[i]
     process.source.fileNames.extend([filePrefex+sys.argv[i],])
 
+
 process.load("Configuration.EventContent.EventContent_cff")
+
 process.out = cms.OutputModule("PoolOutputModule",
     process.FEVTEventContent,
     dataset = cms.untracked.PSet(dataTier = cms.untracked.string('RECO')),
      fileName = cms.untracked.string("ihateyoupatdevelopersIreallydo.root"),
 )
-#process.out.outputCommands = cms.untracked.vstring('drop *','keep *_MEtoEDMConverter_*_RelValTest')
-#
-#outPath = cms.EndPath(out)
+process.out.outputCommands = cms.untracked.vstring('drop *','keep *_MEtoEDMConverter_*_RelValTest')
+
+
+#process.myPref = cms.ESPrefer("PoolDBESSource","GlobalTag")
+
+process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
+                                                      vertexCollection = cms.InputTag('offlinePrimaryVertices'),
+                                                      minimumNDOF = cms.uint32(4) ,
+ 						      maxAbsZ = cms.double(24),	
+ 						      maxd0 = cms.double(2)	
+                                                      )
+
+
+
+
+
+
+runningOn35XSample=False
+#the below comment is really really important, my scripts reset this
+#CRAB35XSAMPLEOVERWRITE
+
+
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
 
@@ -124,7 +165,7 @@ process.goodOfflinePrimaryVertices = cms.EDFilter(
 # not possible to run PF2PAT+PAT and standart PAT at the same time
 from PhysicsTools.PatAlgos.tools.pfTools import *
 postfix = "PFlow"
-usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
+usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=isMC, postfix=postfix)
 process.pfPileUpPFlow.Enable = True
 process.pfPileUpPFlow.checkClosestZVertex = cms.bool(False)
 process.pfPileUpPFlow.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
@@ -153,17 +194,23 @@ process.patseq = cms.Sequence(
     getattr(process,"patPF2PATSequence"+postfix)
     )
 
-#process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
-
-process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute')
+if isMC==False:
+    process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
+else:
+    process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute')
 
 process.load('RecoJets.JetProducers.kt4PFJets_cfi')
 process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-process.p = cms.Path(#process.primaryVertexFilter*
-    #process.patDefaultSequence*
-    process.patseq*process.kt6PFJets*
-    #     process.patDefaultSequence*
-    process.shNtupliser)
+#RunOnData()#,['All'])
+#process.patJetCorrFactors.corrSample = cms.string("Summer09_7TeV_ReReco332")
+#process.patJetCorrFactors.corrSample = cms.string("Spring10")
+# define path 'p': PAT Layer 0, PAT Layer 1, and the analyzer
+process.p = cms.Path(process.primaryVertexFilter*
+  
+                     process.skimHLTFilter*
+                     process.patseq*process.kt6PFJets*
+                  #   process.patDefaultSequence*
+                     process.shNtupliser)
 
