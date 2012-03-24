@@ -86,6 +86,8 @@ class SHEvent : public TObject {
 
   int preScaleCol_; //new for V17
  
+  float eleRhoCorr_; //new for V20
+  
   //SHPileUpSummary puSummary_; //new for V18
 
   SHCaloTowerContainer caloTowers_; //! so this is a new experimental design, I store this on another branch and give it this memory location
@@ -169,7 +171,7 @@ class SHEvent : public TObject {
   void setNrVertices(int iNrVertices){nrVertices_=iNrVertices;}
   void setBeamSpot(const TVector3& iBS){beamSpot_=iBS;}
   void setPreScaleCol(int iPreScaleCol){preScaleCol_=iPreScaleCol;}
-  
+  void setEleRhoCorr(float iRho){eleRhoCorr_=iRho;}
  
   void copyEventPara(const SHEvent& rhs);
   void clear();
@@ -231,6 +233,7 @@ class SHEvent : public TObject {
   const TVector3& vertex()const{return vertex_;}
   int nrVertices()const{return nrVertices_;}
   int preScaleCol()const{return preScaleCol_;}
+  float eleRhoCorr()const{return eleRhoCorr_;}
   //first function gets the triggers passed for the event
   //second to functions get the triggers passed for a particlar object
   // int getTrigCode()const;
@@ -260,7 +263,7 @@ class SHEvent : public TObject {
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
 
-  ClassDef(SHEvent,19) //5 is v3, 6 is v4
+  ClassDef(SHEvent,20) //5 is v3, 6 is v4
 
 };
   

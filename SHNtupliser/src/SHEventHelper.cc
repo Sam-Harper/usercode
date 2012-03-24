@@ -136,6 +136,16 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
    }
    shEvent.setBeamSpot(bs);
   
+   if(heepEvent.handles().eleRhoCorr.isValid()) shEvent.setEleRhoCorr(heepEvent.eleRhoCorr());
+   else shEvent.setEleRhoCorr(-999);
+     // std::cout <<" rho "<<heepEvent.eleRhoCorr()<<std::endl;
+     // edm::Handle<double> pfHand;
+     // edm::InputTag pfTag("kt6PFJetsPFlow","rho");
+     // heepEvent.event().getByLabel(pfTag,pfHand);
+     //  std::cout <<" pf rho "<<*pfHand<<std::endl;
+     //std::cout <<" i "<<i<<"/"<<heepEvent.eleRhoCorr().size()<<" rho "<<heepEvent.eleRhoCorr()[i]<<std::endl;
+       
+   // }
  
   //std::cout <<"done "<<std::endl;
 }
@@ -544,30 +554,35 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
 void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   //why yes I might be throwing away the patty goodness, whoops
-  const pat::MET& met = heepEvent.mets()[0];
- 
-
- 
-
-  SHMet shMet;
-  shMet.setMet(met.mEtCorr()[0].mex,met.mEtCorr()[0].mey);
-  shMet.setSumEmEt(met.emEtInEB(),met.emEtInEE(),met.emEtInHF());
-  shMet.setSumHadEt(met.hadEtInHB(),met.hadEtInHE(),met.hadEtInHO(),met.hadEtInHF());
-  shEvent.setMet(shMet);
-
-  edm::Handle<edm::View<reco::PFMET> > pfMETHandle;
-  heepEvent.event().getByLabel("pfMet",pfMETHandle);
-  const reco::PFMET& pfMET = pfMETHandle->front();
-
-
-  SHMet shPFMet;
-  shPFMet.setMet(pfMET.et()*cos(pfMET.phi()),pfMET.et()*sin(pfMET.phi()));
-  shPFMet.setSumEmEt(0,0,0);
-  shPFMet.setSumHadEt(0,0,0,0);
   
+  SHMet shMet;
+  SHMet shPFMet;
+  if(heepEvent.handles().met.isValid() && !heepEvent.mets().empty()){
+    const pat::MET& met = heepEvent.mets()[0];
+    if(met.isPFMET()){
+      shPFMet.setMet(met.et()*cos(met.phi()),met.et()*sin(met.phi()));
+      shPFMet.setSumEmEt(0,0,0);
+      shPFMet.setSumHadEt(0,0,0,0);
+    }else{
+      shMet.setMet(met.mEtCorr()[0].mex,met.mEtCorr()[0].mey);
+      shMet.setSumEmEt(met.emEtInEB(),met.emEtInEE(),met.emEtInHF());
+      shMet.setSumHadEt(met.hadEtInHB(),met.hadEtInHE(),met.hadEtInHO(),met.hadEtInHF());
+    }
+  }
+  shEvent.setMet(shMet); 
+  shEvent.setPFMet(shPFMet);
+ 
+//   edm::Handle<edm::View<reco::PFMET> > pfMETHandle;
+//   heepEvent.event().getByLabel("pfMet",pfMETHandle);
+//   if(pfMETHandle.isValid()){
+//     const reco::PFMET& pfMET = pfMETHandle->front();
+//     shPFMet.setMet(pfMET.et()*cos(pfMET.phi()),pfMET.et()*sin(pfMET.phi()));
+//     shPFMet.setSumEmEt(0,0,0);
+//     shPFMet.setSumHadEt(0,0,0,0);
+//   }
  // std::cout <<"pf met "<<pfMET.et()<<" sh met "<<shMet.mEt()<<" pf phi "<<pfMET.phi()<<" sh phi "<<shMet.phi()<<std::endl;
  
-  shEvent.setPFMet(shPFMet);
+
 }  
 
 void SHEventHelper::addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const

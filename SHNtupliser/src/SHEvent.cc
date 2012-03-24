@@ -34,6 +34,7 @@ SHEvent::SHEvent():
   vertex_(-999,-999,-999),
   beamSpot_(-999,-999,-999),
   preScaleCol_(-1), 
+  eleRhoCorr_(-999.),
   caloTowers_(),
   nrPUInteractions_(-1),
   nrPUInteractionsNeg_(-1),
@@ -64,6 +65,7 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   nrPUInteractions_ = rhs.nrPUInteractions_;
   nrPUInteractionsPos_ = rhs.nrPUInteractionsPos_;
   nrPUInteractionsNeg_ = rhs.nrPUInteractionsNeg_;
+  eleRhoCorr_ = rhs.eleRhoCorr_;
   // puSummary_ =rhs.puSummary_;
 }
 
@@ -96,6 +98,7 @@ void SHEvent::clear()
   vertex_.SetXYZ(-999,-999,-999); 
   beamSpot_.SetXYZ(-999,-999,-999);
   preScaleCol_=-1;
+  eleRhoCorr_ = -999.;
   caloTowers_.clear();
   nrPUInteractions_=-1; 
   nrPUInteractionsNeg_=-1; 
