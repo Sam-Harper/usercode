@@ -48,6 +48,7 @@
 #pragma link C++ class SHCaloCellGeom::CellEdges+; 
 #pragma link C++ class SHL1Cand+; 
 #pragma link C++ class SHMuon+;
+#pragma link C++ class SHMuon::MuIsolData+;
 #pragma link C++ class SHTrigEcalCand+;
 #pragma link C++ class SHTrigObjContainer+;
 #pragma link C++ class SHPileUpSummary+;
