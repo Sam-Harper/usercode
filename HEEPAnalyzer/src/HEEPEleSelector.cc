@@ -11,6 +11,7 @@ void heep::EleSelector::setup(const edm::ParameterSet& iConfig)
 {
   barrelCutValues_ = iConfig.getParameter<edm::ParameterSet>("barrelCuts");
   endcapCutValues_ = iConfig.getParameter<edm::ParameterSet>("endcapCuts");
+  isolEffectAreas_ = iConfig.getParameter<edm::ParameterSet>("eleIsolEffectiveAreas");
 }
 
 
@@ -46,16 +47,16 @@ int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,
 }
 
 
-int heep::EleSelector::getCutCode(const reco::GsfElectron& ele,int cutMask)const
+int heep::EleSelector::getCutCode(float rho,const reco::GsfElectron& ele,int cutMask)const
 {
   const EleCutValues* cuts = ele.isEB() ? getBarrelCuts() : getEndcapCuts();
-  if(cuts!=NULL) return getCutCode(ele,*cuts,cutMask);
+  if(cuts!=NULL) return getCutCode(rho,ele,isolEffectAreas_,*cuts,cutMask);
   else return CutCodes::INVALID;
 }
 
-//if it fails a cut, set the bit
+//if it fails a cut, set the bit    
 //use the enums for speed
-int heep::EleSelector::getCutCode(const reco::GsfElectron& ele,const EleCutValues& cuts,int cutMask)
+int heep::EleSelector::getCutCode(float rho,const reco::GsfElectron& ele,const heep::EffectiveAreas& effectAreas,const EleCutValues& cuts,int cutMask)
 { 
   int cutCode = 0x0;
   //now we need to calculate the et of the gsf electron using supercluster energy
@@ -70,13 +71,13 @@ int heep::EleSelector::getCutCode(const reco::GsfElectron& ele,const EleCutValue
   if(fabs(ele.deltaPhiSuperClusterTrackAtVtx()) > cuts.maxDPhiIn ) cutCode |=CutCodes::DPHIIN;
   if(ele.hadronicOverEm()> cuts.maxHadem) cutCode |= CutCodes::HADEM;
   if(ele.scSigmaIEtaIEta()>cuts.maxSigmaIEtaIEta) cutCode |= CutCodes::SIGMAIETAIETA;
-  if(ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt()>( cuts.isolEmHadDepth1ConstTerm + cuts.isolEmHadDepth1GradTerm*(et<cuts.isolEmHadDepth1GradStart ? 0. : (et-cuts.isolEmHadDepth1GradStart)))) cutCode |=CutCodes::ISOLEMHADDEPTH1; 
+  if(ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt() - rho*(effectAreas.hcal(ele.superCluster()->eta())+effectAreas.hcal(ele.superCluster()->eta())) >( cuts.isolEmHadDepth1ConstTerm + cuts.isolEmHadDepth1GradTerm*(et<cuts.isolEmHadDepth1GradStart ? 0. : (et-cuts.isolEmHadDepth1GradStart)))) cutCode |=CutCodes::ISOLEMHADDEPTH1; 
   if(ele.e2x5Max()/ele.e5x5()< cuts.minE2x5Over5x5 && ele.e1x5()/ele.e5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
-  if(ele.dr03HcalDepth2TowerSumEt()> (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(et<cuts.isolHadDepth2GradStart ? 0. : (et-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
-  if(ele.dr03TkSumPt() > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(et<cuts.isolPtTrksGradStart ? 0. : (et-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
-  if((ele.dr03TkSumPt()/ele.trackMomentumAtVtx().rho()) > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
-  if((ele.dr03EcalRecHitSumEt()/ele.trackMomentumAtVtx().rho() ) > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
-  if((ele.dr03HcalTowerSumEt()/ele.trackMomentumAtVtx().rho() ) > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03;   
+  if(ele.dr03HcalDepth2TowerSumEt() - rho*effectAreas.hcal(ele.superCluster()->eta()) > (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(et<cuts.isolHadDepth2GradStart ? 0. : (et-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
+  if(ele.dr03TkSumPt() - rho*effectAreas.tracker(ele.superCluster()->eta()) > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(et<cuts.isolPtTrksGradStart ? 0. : (et-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
+  if((ele.dr03TkSumPt()- rho*effectAreas.tracker(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho() > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
+  if((ele.dr03EcalRecHitSumEt()- rho*effectAreas.ecal(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho() > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
+  if((ele.dr03HcalTowerSumEt()- rho*effectAreas.hcal(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho()  > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03;   
   if(ele.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() > cuts.maxNrMissHits ) cutCode |=CutCodes::NRMISSHITS; 
 
   return (cutCode & cuts.cutMask & cutMask) ;

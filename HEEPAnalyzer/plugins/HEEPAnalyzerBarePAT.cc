@@ -15,6 +15,7 @@ HEEPAnalyzerBarePAT::HEEPAnalyzerBarePAT(const edm::ParameterSet& iPara):
   cuts_(iPara),nrPass_(0),nrFail_(0)
 {
   eleLabel_=iPara.getParameter<edm::InputTag>("eleLabel");
+  eleRhoCorrLabel_=iPara.getParameter<edm::InputTag>("eleRhoCorrLabel");
 }
 
 void HEEPAnalyzerBarePAT::beginJob()
@@ -32,10 +33,14 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
   iEvent.getByLabel(eleLabel_,eleHandle);
   const edm::View<pat::Electron>& eles = *(eleHandle.product());
 
+  edm::Handle<double> rhoHandle;
+  iEvent.getByLabel(eleRhoCorrLabel_,rhoHandle);
+  double rho = rhoHandle.isValid() ? *rhoHandle : 0;
+
   //do what ever you wa
   //count the number that pass / fail cuts
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
-    if(cuts_.passCuts(eles[eleNr])) nrPass_++;
+    if(cuts_.passCuts(rho,eles[eleNr])) nrPass_++;
     else nrFail_++;
   }
   
@@ -44,8 +49,8 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
     for(size_t ele2Nr=ele1Nr+1;ele2Nr<eles.size();ele2Nr++){
       const pat::Electron& ele1 = eles[ele1Nr];
       const pat::Electron& ele2 = eles[ele2Nr];
-      int ele1CutCode = cuts_.getCutCode(ele1);
-      int ele2CutCode = cuts_.getCutCode(ele2);
+      int ele1CutCode = cuts_.getCutCode(rho,ele1);
+      int ele2CutCode = cuts_.getCutCode(rho,ele2);
      
       if(ele1CutCode==0x0 && ele2CutCode==0x0 && !(ele1.isEE() && ele2.isEE())){ //EB-EB, EE-EE
 	math::XYZTLorentzVector ele1P4 = ele1.p4()*ele1.caloEnergy()/ele1.energy();

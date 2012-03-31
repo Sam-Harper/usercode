@@ -31,7 +31,7 @@ void heep::TrigCodes::TrigBitSetMap::setCode(const std::string& descript,TrigBit
   for(size_t i=0;i<codeDefs_.size() && !found;i++){
     if(codeDefs_[i].first.compare(descript)==0) found=true;
   }
-  if(!found) codeDefs_.push_back(std::make_pair<std::string,TrigBitSet>(descript,code));
+  if(!found) codeDefs_.push_back(std::pair<std::string,TrigBitSet>(descript,code));
 }
 
 

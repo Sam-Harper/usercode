@@ -33,9 +33,18 @@ heepEventPara  = cms.PSet (
     hltProcName = cms.string("HLT"), #HLT process name, always HLT unless it was rerun...
     maxDRTrigMatch = cms.double(0.2), #max DR for a reco object trigger object match
     maxPtRelDiffTrigMatch = cms.double(1.), #max relative difference in pt between reco object and trig obj
-    hltFiltersToCheck = cms.vstring('hltL1NonIsoHLTNonIsoSingleElectronEt20PixelMatchFilter',),#only these filters are checked
+    hltFiltersToCheck = cms.vstring(),#only these filters are checked
     barrelCuts = cms.PSet(heepBarrelCuts),
     endcapCuts = cms.PSet(heepEndcapCuts),
+    applyRhoCorrToEleIsol = cms.bool(False), 
+    eleIsolEffectiveAreas = cms.PSet (
+        trackerBarrel = cms.double(0.),
+        trackerEndcap = cms.double(0.),
+        ecalBarrel = cms.double(0.101),
+        ecalEndcap = cms.double(0.046),
+        hcalBarrel = cms.double(0.021),
+        hcalEndcap = cms.double(0.040)
+        ),
     onlyAddEcalDriven = cms.bool(True), #only promote ecal driven (ie not tracker driven PF electrons) to heep electrons
     heepEleSource = cms.int32(0) #0 = GsfElectrons, 1 = pat::Electrons to make the heep electrons from 
     

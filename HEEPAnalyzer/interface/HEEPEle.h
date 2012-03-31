@@ -36,6 +36,7 @@
  
 #include "SHarper/HEEPAnalyzer/interface/HEEPCutCodes.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPTrigCodes.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPEffectiveAreas.h"
 
 #include <limits>
 
@@ -60,6 +61,10 @@ namespace heep {
     //we redefine the p4 of the electron to always take the calorimeter energy and not to combine or use the tracker momentum
     //note we still use the track eta/phi for the directions;
     math::XYZTLorentzVector p4_;
+
+    float rhoForIsolCorr_; // the value of rho for the electron isolation correction, defaults to zero
+    bool applyRhoIsolCorr_; //whether we apply the rho correction or not. Note if set true, all isolations from this wrapper are corrected
+    EffectiveAreas isolEffectAreas_; //the effective areas used for the rho correction
     
   public:
     
@@ -67,18 +72,29 @@ namespace heep {
     Ele(const reco::GsfElectron& ele):
       gsfEle_(&ele),patEle_(dynamic_cast<const pat::Electron*>(&ele)),
       cutCode_(heep::CutCodes::INVALID),
-      p4_(ele.p4()*ele.caloEnergy()/ele.energy()){}
+      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
+      rhoForIsolCorr_(0),
+      applyRhoIsolCorr_(false),
+      isolEffectAreas_()
+    {}
   
 
     Ele(const pat::Electron& ele):
       gsfEle_(&ele),patEle_(&ele),
       cutCode_(heep::CutCodes::INVALID),
-      p4_(ele.p4()*ele.caloEnergy()/ele.energy()){}
+      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
+      rhoForIsolCorr_(0),
+      applyRhoIsolCorr_(false),
+      isolEffectAreas_(){}
     ~Ele(){}
     
     //modifiers  
     void setCutCode(int code){cutCode_=code;}
     void setTrigBits(TrigCodes::TrigBitSet bits){trigBits_=bits;}
+    void setApplyRhoIsolCorr(bool applyCorr){applyRhoIsolCorr_=applyCorr;}
+    void setRhoForIsolCorr(float rho){rhoForIsolCorr_=rho;}
+    void setIsolEffectiveAreas(const heep::EffectiveAreas& areas){isolEffectAreas_=areas;}
+    
 
     const reco::GsfElectron& gsfEle()const{return *gsfEle_;}
     const pat::Electron& patEle()const; //this function will throw an exception if its not a pat electron (check with isPatEle())
@@ -109,7 +125,7 @@ namespace heep {
     bool isTrackerDriven()const{return gsfEle_->trackerDrivenSeed();}
     bool isEB()const{return gsfEle_->isEB();}
     bool isEE()const{return gsfEle_->isEE();}
-   
+
     //track methods
     int charge()const{return gsfEle_->charge();} //this the estimated charge of the electron, it is not always the charge of the track 
     int trkCharge()const{return gsfEle_->gsfTrack()->charge();}
@@ -153,16 +169,23 @@ namespace heep {
     float scE2x5MaxOver5x5()const{return scE5x5()!=0 ? scE2x5Max()/scE5x5() : 0.;}
     
     //isolation, we use cone of 0.3
-    float isolEm()const{return gsfEle_->dr03EcalRecHitSumEt();} 
-    float isolHad()const{return gsfEle_->dr03HcalTowerSumEt();}
-    float isolHadDepth1()const{return gsfEle_->dr03HcalDepth1TowerSumEt();}
-    float isolHadDepth2()const{return gsfEle_->dr03HcalDepth2TowerSumEt();}
-    float isolPtTrks()const{return gsfEle_->dr03TkSumPt();}  
+    //first our rho correction funcs
+    float rhoForIsolCorr()const{return rhoForIsolCorr_;}
+    bool applyRhoIsolCorr()const{return applyRhoIsolCorr_;}
+    const EffectiveAreas& isolEffectAreas()const{return isolEffectAreas_;}
+    
+    //next our isolation functions, if applyRhoIsolCorr()==true, these are all auto corrected
+    float isolEm()const{return gsfEle_->dr03EcalRecHitSumEt()-ecalIsolCorr_();} 
+    float isolHad()const{return gsfEle_->dr03HcalTowerSumEt()-hcalIsolCorr_();}
+    float isolHadDepth1()const{return gsfEle_->dr03HcalDepth1TowerSumEt()-hcalIsolCorr_();}
+    float isolHadDepth2()const{return gsfEle_->dr03HcalDepth2TowerSumEt()-hcalIsolCorr_();}
+    float isolPtTrks()const{return gsfEle_->dr03TkSumPt()-trkIsolCorr_();}  
     float isolEmHadDepth1()const{return isolEm()+isolHadDepth1();}
     
-    float isolPtTrksRel03() const{return et()!=0 ? gsfEle_->dr03TkSumPt()/et() : 0.;}     //WP80
-    float isolEmRel03()const{return et()!=0 ? gsfEle_->dr03EcalRecHitSumEt()/et():0.;} //WP80
-    float isolHadRel03()const{return et()!=0 ? gsfEle_->dr03HcalTowerSumEt()/et():0.;} //WP80
+    float isolPtTrksRel03() const{return et()!=0 ? isolPtTrks()/et() : 0.;}     //WP80
+    float isolEmRel03()const{return et()!=0 ? isolEm()/et():0.;} //WP80
+    float isolHadRel03()const{return et()!=0 ? isolHad()/et():0.;} //WP80
+
 
     int nrMissHits()const{return gsfEle_->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();}
 
@@ -173,6 +196,14 @@ namespace heep {
     std::string listCutsFailed()const{return heep::CutCodes::getCodeName(cutCode_);}
     //trigger info
     heep::TrigCodes::TrigBitSet trigBits()const{return trigBits_;}
+
+  private:
+    //functions return 0 if applyRhoIsolCorr = false
+    //this may be confusing so I've made them private so nobody accidently uses them
+    //thinking they do something slightly different
+    float trkIsolCorr_()const{return applyRhoIsolCorr() ? rhoForIsolCorr()*isolEffectAreas().tracker(detEta()) : 0;}
+    float ecalIsolCorr_()const{return applyRhoIsolCorr() ? rhoForIsolCorr()*isolEffectAreas().ecal(detEta()) : 0;}
+    float hcalIsolCorr_()const{return applyRhoIsolCorr() ? rhoForIsolCorr()*isolEffectAreas().hcal(detEta()) : 0;}
 
   };
 }

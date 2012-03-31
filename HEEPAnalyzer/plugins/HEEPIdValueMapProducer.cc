@@ -6,8 +6,11 @@ HEEPIdValueMapProducer::HEEPIdValueMapProducer(const edm::ParameterSet& iPara):
   cuts_(iPara)
 {
   eleLabel_=iPara.getParameter<edm::InputTag>("eleLabel");
-
-  produces < edm::ValueMap<int> >();
+  applyRhoCorrToEleIsol_ = iPara.getParameter<bool>("applyRhoCorrToEleIsol");
+  eleRhoCorrLabel_=iPara.getParameter<edm::InputTag>("eleRhoCorrLabel");
+  writeIdAsInt_=iPara.getParameter<bool>("writeIdAsInt");
+  if(writeIdAsInt_) produces < edm::ValueMap<int> >();
+  else produces < edm::ValueMap<float> >(); //we had requests to write out as a float to be consistant with e/gamma 
 }
 
 
@@ -19,21 +22,33 @@ void HEEPIdValueMapProducer::produce(edm::Event& iEvent,const edm::EventSetup& i
   iEvent.getByLabel(eleLabel_,eleHandle);
   const reco::GsfElectronCollection& eles = *(eleHandle.product());
 
-  //prepare output collection
-  std::auto_ptr<edm::ValueMap<int> > out(new edm::ValueMap<int>());
+  
+  edm::Handle<double> rhoHandle;
+  iEvent.getByLabel(eleRhoCorrLabel_,rhoHandle);
+  double rho = rhoHandle.isValid() ? *rhoHandle : 0;
+
+
 
   //get the cut results for each electron
   std::vector<int> cutResults;
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
-    cutResults.push_back(cuts_.getCutCode(eles[eleNr]));
+    if(applyRhoCorrToEleIsol_) cutResults.push_back(cuts_.getCutCode(rho,eles[eleNr]));
+    else  cutResults.push_back(cuts_.getCutCode(eles[eleNr]));
   }
   
-  edm::ValueMap<int>::Filler filler(*out);
-  filler.insert(eleHandle,cutResults.begin(),cutResults.end());
-  filler.fill();
-
-  //store the output
-  iEvent.put(out);
+  if(writeIdAsInt_){
+    std::auto_ptr<edm::ValueMap<int> > out(new edm::ValueMap<int>());
+    edm::ValueMap<int>::Filler filler(*out);
+    filler.insert(eleHandle,cutResults.begin(),cutResults.end());
+    filler.fill();
+    iEvent.put(out);
+  }else{
+    std::auto_ptr<edm::ValueMap<float> > out(new edm::ValueMap<float>());
+    edm::ValueMap<float>::Filler filler(*out);
+    filler.insert(eleHandle,cutResults.begin(),cutResults.end());
+    filler.fill();
+    iEvent.put(out);
+  }
 }
 
 

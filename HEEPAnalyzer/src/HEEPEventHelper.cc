@@ -66,7 +66,9 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
 
   onlyAddEcalDriven_ = conf.getParameter<bool>("onlyAddEcalDriven");
   heepEleSource_ = conf.getParameter<int>("heepEleSource");
-  
+
+  applyRhoCorrToEleIsol_ = conf.getParameter<bool>("applyRhoCorrToEleIsol");
+  eleIsolEffectiveAreas_ = conf.getParameter<edm::ParameterSet>("eleIsolEffectiveAreas");
 }
 
 void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const
@@ -157,8 +159,12 @@ void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,
 void heep::EventHelper::addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
 {
   heepEles.push_back(heep::Ele(gsfEle));
-  //now we would like to set the cut results
-  heep::Ele& ele =  heepEles.back();
+  heep::Ele& ele =  heepEles.back();  
+  //now we need to set isolation rho corrections
+  ele.setApplyRhoIsolCorr(applyRhoCorrToEleIsol_);
+  ele.setIsolEffectiveAreas(eleIsolEffectiveAreas_);
+  if(handles.eleRhoCorr.isValid()) ele.setRhoForIsolCorr(*handles.eleRhoCorr);
+  //now we would like to set the cut results, this has to come after setting isolation parameters
   ele.setCutCode(cuts_.getCutCode(ele)); 
 }
 

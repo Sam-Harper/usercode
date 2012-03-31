@@ -17,7 +17,9 @@ class HEEPAttStatusToPAT : public edm::EDProducer {
 
 private:
   heep::EleSelector cuts_; //allows us to apply the heep selection
-  edm::InputTag eleLabel_;
+  edm::InputTag eleLabel_; 
+  edm::InputTag eleRhoCorrLabel_;
+  bool applyRhoCorrToEleIsol_;
 
 public:
   explicit HEEPAttStatusToPAT(const edm::ParameterSet& iPara);

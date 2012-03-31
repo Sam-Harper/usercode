@@ -6,7 +6,8 @@ HEEPAttStatusToPAT::HEEPAttStatusToPAT(const edm::ParameterSet& iPara):
   cuts_(iPara)
 {
   eleLabel_=iPara.getParameter<edm::InputTag>("eleLabel");
-
+  applyRhoCorrToEleIsol_ = iPara.getParameter<bool>("applyRhoCorrToEleIsol");
+  eleRhoCorrLabel_=iPara.getParameter<edm::InputTag>("eleRhoCorrLabel");
   produces < pat::ElectronCollection >();
 }
 
@@ -18,6 +19,12 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   iEvent.getByLabel(eleLabel_,eleHandle);
   const edm::View<pat::Electron>& eles = *(eleHandle.product());
 
+  
+  edm::Handle<double> rhoHandle;
+  iEvent.getByLabel(eleRhoCorrLabel_,rhoHandle);
+  double rho = rhoHandle.isValid() ? *rhoHandle : 0;
+  
+
   //prepare output collection
   std::auto_ptr<pat::ElectronCollection> outEle(new pat::ElectronCollection());
 
@@ -25,7 +32,8 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     pat::Electron * newEle = eles[eleNr].clone();
     newEle->setP4(newEle->p4()/newEle->energy()*newEle->ecalEnergy());
-    newEle->addUserInt("HEEPId",cuts_.getCutCode(eles[eleNr]));
+    if(applyRhoCorrToEleIsol_) newEle->addUserInt("HEEPId",cuts_.getCutCode(rho,eles[eleNr]));
+    else newEle->addUserInt("HEEPId",cuts_.getCutCode(eles[eleNr]));
     outEle->push_back(*(newEle));
     delete newEle;
   }

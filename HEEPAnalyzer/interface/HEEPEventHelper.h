@@ -8,6 +8,7 @@
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPEffectiveAreas.h"
 
 #include <vector>
 
@@ -74,6 +75,10 @@ namespace heep {
     //if true we only promote ecal driven electrons to heep electron status
     bool onlyAddEcalDriven_;
     int heepEleSource_; // 0=fill from GsfElectrons, 1 fill from pat::Electrons
+
+    //isolation correction parameters
+    bool applyRhoCorrToEleIsol_;
+    heep::EffectiveAreas eleIsolEffectiveAreas_;
 
   public:
     EventHelper(){}

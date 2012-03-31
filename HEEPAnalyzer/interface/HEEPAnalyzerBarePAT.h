@@ -37,6 +37,7 @@ class HEEPAnalyzerBarePAT : public edm::EDAnalyzer {
 private:
   heep::EleSelector cuts_; //allows us to apply the heep selection
   edm::InputTag eleLabel_;
+  edm::InputTag eleRhoCorrLabel_;
 
   //the next three variables are simply for the example analysis
   int nrPass_;
