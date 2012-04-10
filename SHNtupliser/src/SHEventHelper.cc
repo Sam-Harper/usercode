@@ -261,12 +261,13 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 
 void SHEventHelper::addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  for(size_t muNr=0;muNr<heepEvent.muons().size();muNr++){
-    const reco::Muon& muon = heepEvent.muons()[muNr];
-
-    if(muon.isGlobalMuon()) shEvent.addMuon(muon);
+  if(heepEvent.handles().muon.isValid()){
+    for(size_t muNr=0;muNr<heepEvent.muons().size();muNr++){
+      const reco::Muon& muon = heepEvent.muons()[muNr];
+      
+      if(muon.isGlobalMuon()) shEvent.addMuon(muon);
+    }
   }
-
 }
 
 size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const
@@ -289,14 +290,18 @@ size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::
 
 void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const
 {
-  const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
-  for(size_t superClusNr=0;superClusNr<superClusEB.size();superClusNr++){
-    shEvent.addSuperCluster(superClusEB[superClusNr],shEvent.getCaloHits());
+  if(heepEvent.handles().superClusEB.isValid()){
+    const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
+    for(size_t superClusNr=0;superClusNr<superClusEB.size();superClusNr++){
+      shEvent.addSuperCluster(superClusEB[superClusNr],shEvent.getCaloHits());
+    }
   }
+  if(heepEvent.handles().superClusEB.isValid()){
   //now endcap
-  const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE(); 
-  for(size_t superClusNr=0;superClusNr<superClusEE.size();superClusNr++){
-    shEvent.addSuperCluster(superClusEE[superClusNr],shEvent.getCaloHits());
+    const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE(); 
+    for(size_t superClusNr=0;superClusNr<superClusEE.size();superClusNr++){
+      shEvent.addSuperCluster(superClusEE[superClusNr],shEvent.getCaloHits());
+    }
   }
 }
 
@@ -538,8 +543,10 @@ void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEve
 
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  for(size_t jetNr=0;jetNr<heepEvent.jets().size();jetNr++){
-    if(heepEvent.jets()[jetNr].et()>15) shEvent.addJet(heepEvent.jets()[jetNr]);
+  if(heepEvent.handles().jet.isValid()){
+    for(size_t jetNr=0;jetNr<heepEvent.jets().size();jetNr++){
+      if(heepEvent.jets()[jetNr].et()>15) shEvent.addJet(heepEvent.jets()[jetNr]);
+    }
   }
 }
 
@@ -547,15 +554,18 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
 {
   TVector3 trkP3,trkVtxPos;
   const float minPtCut=1.0;
-  const std::vector<reco::Track>& tracks = heepEvent.ctfTracks();
- 
-  for(size_t trkNr=0;trkNr<tracks.size();trkNr++){
-    const reco::Track& trk = tracks[trkNr];
-    trkP3.SetXYZ(trk.px(),trk.py(),trk.pz());
-    trkVtxPos.SetXYZ(trk.vx(),trk.vy(),trk.vz());
-    if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0);
-  }
-} 
+
+  if(heepEvent.handles().ctfTrack.isValid()){
+    const std::vector<reco::Track>& tracks = heepEvent.ctfTracks();
+    
+    for(size_t trkNr=0;trkNr<tracks.size();trkNr++){
+      const reco::Track& trk = tracks[trkNr];
+      trkP3.SetXYZ(trk.px(),trk.py(),trk.pz());
+      trkVtxPos.SetXYZ(trk.vx(),trk.vy(),trk.vz());
+      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0);
+    }
+  } 
+}
 
 void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
