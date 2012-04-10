@@ -50,7 +50,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.load("SHarper.TrigTools.trigRateNtupMaker_cfi")
 process.trigRateNtupMaker.outputFilename= sys.argv[len(sys.argv)-1]
-process.trigRateNtupMaker.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT")
+process.trigRateNtupMaker.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT3")
 #these are the filters which the P4s are going to be saved for
 ##process.trigRateNtupMaker.filterNames = cms.vstring(
 ##    "hltEle30CaloIdTTrkIdTPFDiPF25NoPUCleaned",
@@ -66,7 +66,10 @@ process.trigRateNtupMaker.filterNames = cms.vstring(
     "hltEG200EtFilter",
     "hltEle80CaloIdVTTrkIdTDphiFilter",
     "hltEG70HEFilter",
-    "hltDoubleEG70HEDoubleFilter"
+    "hltDoubleEG70HEDoubleFilter",
+    "hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40",
+    "hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q",
+    "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f24QL3crIsoFiltered10"
     )
 
 
