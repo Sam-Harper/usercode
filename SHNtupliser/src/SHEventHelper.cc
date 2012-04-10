@@ -390,12 +390,13 @@ void SHEventHelper::addCaloTowers(const heep::Event& heepEvent, SHEvent& shEvent
 
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  const trigger::TriggerEvent& trigEvt = heepEvent.triggerEvent();
-  
-  const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
-  const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
-  addTrigInfo(trigEvt,trigResults,trigNames,shEvent,&heepEvent);
-
+  if(heepEvent.handles().trigEvent.isValid()){
+    const trigger::TriggerEvent& trigEvt = heepEvent.triggerEvent();
+    
+    const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
+    const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
+    addTrigInfo(trigEvt,trigResults,trigNames,shEvent,&heepEvent);
+  }
 }
 
 void SHEventHelper::addTrigInfo(const trigger::TriggerEvent& trigEvt,
