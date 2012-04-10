@@ -17,8 +17,8 @@
 
 #include "SHarper/SHNtupliser/interface/SHSuperCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHBasicCluster.hh"
-#include "SHarper/SHNtupliser/interface/SHIsolSuperCluster.hh"
-#include "SHarper/SHNtupliser/interface/SHIsolCluster.hh"
+//#include "SHarper/SHNtupliser/interface/SHIsolSuperCluster.hh"
+//#include "SHarper/SHNtupliser/interface/SHIsolCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 
 #include "TObject.h"
@@ -126,6 +126,19 @@ class SHElectron : public TObject {
   float dCotTheta_; //lets be naughty and put conver result here
   float dist_;
   float radius_;
+
+  //pflow isolation
+  float isolChargedHadron_;
+  float isolNeutralHadron_;
+  float isolPhoton_;
+
+  //new H/E defination
+  float hademDepth1BC_;
+  float hademDepth2BC_;
+  float isolHadDepth1BC_;
+  float isolHadDepth2BC_;
+
+
   //backwards link to the mother event
   //needs to be set everytime the event is read
   const SHEvent* mEvent_;//! transient, not stored in root
@@ -273,9 +286,13 @@ private:
   float radius()const{return radius_;}
  float isConversion()const{return dCotTheta_;}
 
-  const SHIsolSuperCluster& getIsolSuperClus()const;
-  float isolEmClus(double coneRadius)const;
-  float isolEmEtClus(double coneRadius)const;
+  float isolChargedHadron()const{return isolChargedHadron_;}
+  float isolNeutralHadron()const{return isolNeutralHadron_;}
+  float isolPhoton()const{return isolPhoton_;}
+
+  // const SHIsolSuperCluster& getIsolSuperClus()const;
+  // float isolEmClus(double coneRadius)const;
+  // float isolEmEtClus(double coneRadius)const;
 
   void getHitsByDetId(std::vector<int>& hitDetIds)const;
 
@@ -288,7 +305,7 @@ private:
   const SHEvent* motherEvent()const{return mEvent_;}
 
 
-  ClassDef(SHElectron,18) 
+  ClassDef(SHElectron,19) 
 
 };
 

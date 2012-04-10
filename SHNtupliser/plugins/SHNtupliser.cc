@@ -34,6 +34,8 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
 
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
+void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
+void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits);
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true)
@@ -61,6 +63,8 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   hltTag_ = iPara.getParameter<std::string>("hltProcName");
   secondHLTTag_ = iPara.getParameter<std::string>("secondHLTTag");
   addCaloTowers_ = iPara.getParameter<bool>("addCaloTowers");
+  addCaloHits_ = iPara.getParameter<bool>("addCaloHits");
+  addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
   if(useHLTDebug_){
     trigDebugHelper_ = new TrigDebugObjHelper(iPara);
   }
@@ -79,29 +83,41 @@ void SHNtupliser::beginJob()
 {
   shEvt_= new SHEvent;
   shCaloTowers_ = &(shEvt_->getCaloTowers());
+  shCaloHits_= &(shEvt_->getCaloHits());
+  shIsolTrks_= &(shEvt_->getIsolTrks());
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
   outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   evtTree_= new TTree("evtTree","Event Tree");
-  evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,2);
+
+  int splitLevel=2;
+  evtTree_->SetCacheSize(1024*1024*10);
+					       
+  evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,splitLevel);
   
   if(writePUInfo_) {
     puSummary_ = new SHPileUpSummary;
-    evtTree_->Branch("PUInfoBranch","SHPileUpSummary",&puSummary_,32000,2);
+    evtTree_->Branch("PUInfoBranch","SHPileUpSummary",&puSummary_,32000,splitLevel);
   }
   if(addCaloTowers_) {
-    evtTree_->Branch("CaloTowersBranch","SHCaloTowerContainer",&shCaloTowers_,32000,2);
+    evtTree_->Branch("CaloTowersBranch","SHCaloTowerContainer",&shCaloTowers_,32000,splitLevel);
+  }
+  if(addCaloHits_){
+    evtTree_->Branch("CaloHitsBranch","SHCaloHitContainer",&shCaloHits_,32000,splitLevel);
+  }
+  if(addIsolTrks_){
+    evtTree_->Branch("IsolTrksBranch","TClonesArray",&shIsolTrks_,32000,splitLevel);
   }
   if(compTwoMenus_){
     shEvt2ndTrig_ = new SHEvent;
-    evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,2);
+    evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,splitLevel);
   }
   if(useHLTDebug_) {
     shTrigObjs_ = new SHTrigObjContainer;
-    evtTree_->Branch("HLTDebugObjs","SHTrigObjContainer",&shTrigObjs_,32000,2); 
+    evtTree_->Branch("HLTDebugObjs","SHTrigObjContainer",&shTrigObjs_,32000,splitLevel); 
     
     if(compTwoMenus_){
       shTrigObjs2ndTrig_ = new SHTrigObjContainer;
-      evtTree_->Branch("HLTDebugObjs2","SHTrigObjContainer",&shTrigObjs2ndTrig_,32000,2);
+      evtTree_->Branch("HLTDebugObjs2","SHTrigObjContainer",&shTrigObjs2ndTrig_,32000,splitLevel);
     }
 
   }
@@ -215,10 +231,17 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
      bool passEle=nrEle>=1;
 
    
-    // SHCaloHitContainer outputHits;
-    //filterHcalHits(shEvt_,0.6,shEvt_->getCaloHits(),outputHits);
-    //shEvt_->addCaloHits(outputHits);
+    SHCaloHitContainer outputHits;
+    filterHcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);  
+    filterEcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);
+    shEvt_->addCaloHits(outputHits);
     
+    SHCaloTowerContainer outputTowers;
+    filterCaloTowers(shEvt_,0.5,shEvt_->getCaloTowers(),outputTowers);  
+    shEvt_->addCaloTowers(outputTowers);
+    
+    
+
     if(shEvt_->datasetCode()>130){ //for all non Z MC
       shEvt_->getCaloHits().clear();
       shEvt_->clearTrigs();
@@ -291,7 +314,7 @@ void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& 
     eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
   }
   
-  outputHits.clear();
+  // outputHits.clear();
   double maxDR2 = maxDR*maxDR;
   for(size_t hitNr=0;hitNr<inputHits.nrHcalHitsStored();hitNr++){
     int detId = inputHits.getHcalHitByIndx(hitNr).detId();
@@ -312,7 +335,69 @@ void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& 
 
 
 }
+
+void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits)
+{
+
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+  }
   
+  //outputHits.clear();
+  double maxDR2 = maxDR*maxDR;
+  for(size_t hitNr=0;hitNr<inputHits.nrEcalHitsStored();hitNr++){
+    int detId = inputHits.getEcalHitByIndx(hitNr).detId();
+    double cellEta=0,cellPhi=0;
+    GeomFuncs::getCellEtaPhi(detId,cellEta,cellPhi);
+    
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       cellEta,cellPhi)<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+    if(accept) outputHits.addHit(inputHits.getEcalHitByIndx(hitNr));
+    
+  }//end hit loop
+
+
+}
+  
+void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits)
+{
+
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+  }
+  
+  outputHits.clear();
+  double maxDR2 = maxDR*maxDR;
+  for(size_t hitNr=0;hitNr<inputHits.nrCaloTowersStored();hitNr++){
+    float towerEta = inputHits.getCaloTowerByIndx(hitNr).eta();
+    float towerPhi = inputHits.getCaloTowerByIndx(hitNr).phi(); 
+  
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       towerEta,towerPhi)<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+    if(accept) outputHits.addTower(inputHits.getCaloTowerByIndx(hitNr));
+    
+  }//end hit loop
+
+
+}
+
+
 
 
 //define this as a plug-in

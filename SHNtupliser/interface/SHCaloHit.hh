@@ -13,11 +13,12 @@ class SHCaloHit : public TObject {
   int detId_;
   float time_;
   uint32_t flag_;
+  uint32_t flagBits_; 
 
  public:
-  SHCaloHit():nrgy_(0.),detId_(0),time_(0),flag_(0){}
-  SHCaloHit(int id,float nrgy,float time,uint32_t flag);
-  SHCaloHit(int id,float nrgy);
+  SHCaloHit():nrgy_(0.),detId_(0),time_(0),flag_(0),flagBits_(0){}
+  SHCaloHit(int iId,float iNrgy,float iTime,uint32_t iFlag,uint32_t iFlagBits);
+  SHCaloHit(int iId,float iNrgy);
   // SHCaloHit(const SHCaloHit & rhs);
   ~SHCaloHit(){}
   
@@ -29,16 +30,18 @@ class SHCaloHit : public TObject {
   int detId()const{return detId_;}
   float time()const{return time_;}
   uint32_t flag()const{return flag_;}
+  uint32_t flagBits()const{return flagBits_;}
   
 
   void setNrgy(float iNrgy){nrgy_=iNrgy;}
   void setDetId(int iDetId){detId_=iDetId;} 
   void setTime(float iTime){time_=iTime;}
   void setFlag(uint32_t iFlag){flag_=iFlag;}
-
+  void setFlagBits(uint32_t iFlagBits){flagBits_=iFlagBits;}
+  
   bool operator==(const SHCaloHit& rhs)const{return detId_==rhs.detId_;}
   
-  ClassDef(SHCaloHit,2)
+  ClassDef(SHCaloHit,3)
 
 };
 

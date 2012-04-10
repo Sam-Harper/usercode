@@ -90,6 +90,13 @@ nrMissingHits_(ele.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()),
 dCotTheta_(ele.convDcot()),
 dist_(ele.convDist()),
 radius_(ele.convRadius()),
+isolChargedHadron_(ele.pfIsolationVariables().chargedHadronIso),
+isolNeutralHadron_(ele.pfIsolationVariables().neutralHadronIso),
+isolPhoton_(ele.pfIsolationVariables().photonIso),
+hademDepth1BC_(ele.hcalDepth1OverEcalBc()),
+hademDepth2BC_(ele.hcalDepth2OverEcalBc()),
+isolHadDepth1BC_(ele.dr03HcalDepth1TowerSumEtBc()),
+isolHadDepth2BC_(ele.dr03HcalDepth2TowerSumEtBc()),
 mEvent_(NULL)
 {
  
@@ -169,6 +176,13 @@ nrMissingHits_(-1),
 dCotTheta_(-1),
 dist_(-1),
 radius_(-999),
+isolChargedHadron_(pho.chargedHadronIso()),
+isolNeutralHadron_(pho.neutralHadronIso()),
+isolPhoton_(pho.photonIso()),
+hademDepth1BC_(pho.hadTowDepth1OverEm()),
+hademDepth2BC_(pho.hadTowDepth2OverEm()),
+isolHadDepth1BC_(-999.),
+isolHadDepth2BC_(-999.),
 mEvent_(NULL)
 {
  
@@ -254,6 +268,13 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   dCotTheta_(-1),
   dist_(-1),
   radius_(-999),
+  isolChargedHadron_(-999.),
+  isolNeutralHadron_(-999.),
+  isolPhoton_(-999.),
+  hademDepth1BC_(-999.),
+  hademDepth2BC_(-999.),
+  isolHadDepth1BC_(-999.),
+  isolHadDepth2BC_(-999.),
 mEvent_(NULL)
 {
 }

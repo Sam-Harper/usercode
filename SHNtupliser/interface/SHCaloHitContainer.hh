@@ -46,7 +46,7 @@ class SHCaloHitContainer : public TObject {
 
   //void addEcalHit(int detId,float nrgy);
   //  void addHcalHit(int detId,float nrgy);
-  void addHit(int detId,float nrgy,float time=-999,uint32_t flag=0);
+  void addHit(int detId,float nrgy,float time=-999,uint32_t flag=0,uint32_t flagBits=0);
   void addHit(const SHCaloHit& hit);
   
 

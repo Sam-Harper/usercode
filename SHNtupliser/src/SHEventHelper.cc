@@ -53,6 +53,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   addMuons_ = conf.getParameter<bool>("addMuons");
   addTrigs_ = conf.getParameter<bool>("addTrigs");
   addCaloTowers_ = conf.getParameter<bool>("addCaloTowers");
+  addIsolTrks_ = conf.getParameter<bool>("addIsolTrks");
   fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
  
   hltDebugFiltersToSave_ = conf.getParameter<std::vector<std::string> >("hltDebugFiltersToSave");
@@ -95,7 +96,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   if(addJets_) addJets(heepEvent,shEvent);
   if(addMet_) addMet(heepEvent,shEvent);
   addMCParticles(heepEvent,shEvent);
-  addIsolTrks(heepEvent,shEvent);
+  if(addIsolTrks_) addIsolTrks(heepEvent,shEvent);
    
 }
 
@@ -325,6 +326,8 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
       SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
       shHit.setNrgy(hitIt->energy());
       shHit.setTime(hitIt->time());
+      shHit.setFlag(hitIt->flags());
+      shHit.setFlagBits(getEcalFlagBits_(*hitIt));
       
     }
   }//end of null check on ebHits
@@ -334,7 +337,10 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
 	hitIt!=eeHits->end();++hitIt){
       SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
       shHit.setNrgy(hitIt->energy());
-      shHit.setTime(hitIt->time());
+      shHit.setTime(hitIt->time());  
+      shHit.setFlag(hitIt->flags()); 
+      shHit.setFlagBits(getEcalFlagBits_(*hitIt));
+      
     }
   }//end of null check on eeHits
 
@@ -506,28 +512,28 @@ void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEve
 }
 
 
-void SHEventHelper::addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const
-{
+// void SHEventHelper::addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const
+// {
  
-  const std::vector<bool>& l1Word = heepEvent.l1Decision(); 
-  TBits myL1Bits(l1Word.size()); 
-  for(size_t bitNr=0;bitNr<l1Word.size();bitNr++){
-    if(l1Word[bitNr]) myL1Bits.SetBitNumber(bitNr);
-  }
-  shEvent.setL1Bits(myL1Bits);
-  for(size_t candNr=0;candNr<heepEvent.l1EmNonIso().size();candNr++){
-    const l1extra::L1EmParticle& cand = heepEvent.l1EmNonIso()[candNr];
-    TLorentzVector p4;
-    p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
-    shEvent.addL1Cand(p4,cand.type());
-  }
-  for(size_t candNr=0;candNr<heepEvent.l1EmIso().size();candNr++){
-    const l1extra::L1EmParticle& cand = heepEvent.l1EmIso()[candNr];
-    TLorentzVector p4;
-    p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
-    shEvent.addL1Cand(p4,cand.type());
-  }
-}
+//   const std::vector<bool>& l1Word = heepEvent.l1Decision(); 
+//   TBits myL1Bits(l1Word.size()); 
+//   for(size_t bitNr=0;bitNr<l1Word.size();bitNr++){
+//     if(l1Word[bitNr]) myL1Bits.SetBitNumber(bitNr);
+//   }
+//   shEvent.setL1Bits(myL1Bits);
+//   for(size_t candNr=0;candNr<heepEvent.l1EmNonIso().size();candNr++){
+//     const l1extra::L1EmParticle& cand = heepEvent.l1EmNonIso()[candNr];
+//     TLorentzVector p4;
+//     p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
+//     shEvent.addL1Cand(p4,cand.type());
+//   }
+//   for(size_t candNr=0;candNr<heepEvent.l1EmIso().size();candNr++){
+//     const l1extra::L1EmParticle& cand = heepEvent.l1EmIso()[candNr];
+//     TLorentzVector p4;
+//     p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
+//     shEvent.addL1Cand(p4,cand.type());
+//   }
+// }
   
 
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
@@ -748,4 +754,15 @@ void SHEventHelper::initHcalHitVec_()const
   for(size_t i=0;i<hcalHitVec_.size();i++){
     if(hcalHitVec_[i].detId()==0) std::cout <<"hcal index "<<i<< " is "<<hcalHitVec_[i].detId()<<std::endl;
   }
+}
+
+//because they dont have an accessor :(
+uint32_t SHEventHelper::getEcalFlagBits_(const EcalRecHit& hit)
+{
+  uint32_t bits=0x0;
+  for(int bitNr=0;bitNr<32;bitNr++){
+    bits |= hit.checkFlag(bitNr)<<bitNr;
+  }
+  return bits;
+
 }

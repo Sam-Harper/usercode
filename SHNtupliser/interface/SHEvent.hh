@@ -9,8 +9,8 @@
 #include "SHarper/SHNtupliser/interface/SHMCParticle.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloHitContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHJet.hh"
-#include "SHarper/SHNtupliser/interface/SHIsolCluster.hh"
-#include "SHarper/SHNtupliser/interface/SHIsolSuperCluster.hh"
+//#include "SHarper/SHNtupliser/interface/SHIsolCluster.hh"
+//#include "SHarper/SHNtupliser/interface/SHIsolSuperCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHIsolTrack.hh"
 #include "SHarper/SHNtupliser/interface/SHTrigInfo.hh"
 #include "SHarper/SHNtupliser/interface/SHMet.hh"
@@ -52,14 +52,13 @@ class SHEvent : public TObject {
   TClonesArray superClusArray_;
   TClonesArray electronArray_;
   TClonesArray mcPartArray_;
-  TClonesArray jetArray_; //new for v4
-  SHCaloHitContainer caloHits_; //new for v4
-  TClonesArray isolSuperClusArray_;//new for v4
-  TClonesArray isolClusArray_;//new for v4
-  TClonesArray isolTrkArray_;//new for v5
+  TClonesArray jetArray_; 
+  SHCaloHitContainer caloHits_; //! now transisent, stored in seperate branch for 5X
+  // TClonesArray isolSuperClusArray_; //not been used for a long time, redundant for 5X
+  //TClonesArray isolClusArray_; //not been used for a long time, redundant for 5X
+  TClonesArray isolTrkArray_; //! now transisent, stored in seperate branch for 5X
   TClonesArray trigArray_;
   TClonesArray muArray_;
-  // TClonesArray trigPaths_;
   
  
   int runnr_;
@@ -70,12 +69,12 @@ class SHEvent : public TObject {
   SHMet metData_; //new for v9
   double genEventPtHat_; 
 
-  TBits l1Bits_;
-  TClonesArray l1CandArray_; //new for v11
+  TBits l1Bits_; //not being filled but a use can be seen
+  // TClonesArray l1CandArray_; //now lives in trigger container, redundant for 5X
   
   int lumiSec_;
   int bx_;
- int orbNr_;
+  int orbNr_;
   unsigned long long time_;
 
   int nrVertices_;
@@ -122,8 +121,8 @@ class SHEvent : public TObject {
   void addJet(const pat::Jet& jet);
   void addJet(const SHJet& jet);
   void addSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits);
-  void addIsolCluster(const reco::CaloCluster& clus);
-  void addIsolSuperCluster(const reco::SuperCluster& superClus);
+  /// void addIsolCluster(const reco::CaloCluster& clus);
+  // void addIsolSuperCluster(const reco::SuperCluster& superClus);
   void addIsolTrk(const SHIsolTrack& trk);
   void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge);
  
@@ -136,8 +135,8 @@ class SHEvent : public TObject {
   void addCaloTower(const SHCaloTower& caloTower){caloTowers_.addTower(caloTower);}
   void addMCParticle(const SHMCParticle& mcPart);
   void addTrigInfo(const SHTrigInfo& trigInfo);
-  void addL1Cand(const SHL1Cand& cand);
-  void addL1Cand(const TLorentzVector& p4,int type);
+  // void addL1Cand(const SHL1Cand& cand);
+  //void addL1Cand(const TLorentzVector& p4,int type);
   void addMuon(const reco::Muon& mu);
   void addMuon(const SHMuon& mu);
   //usefull for copying an event
@@ -181,8 +180,8 @@ class SHEvent : public TObject {
   const SHSuperCluster* getSuperClus(int clusNr)const;
   const SHMCParticle* getMCParticle(int partNr)const;
   const SHElectron* getElectron(int eleNr)const;
-  const SHIsolCluster* getIsolClus(int clusNr)const;
-  const SHIsolSuperCluster* getIsolSuperClus(int clusNr)const;
+  ///const SHIsolCluster* getIsolClus(int clusNr)const;
+  //const SHIsolSuperCluster* getIsolSuperClus(int clusNr)const;
   const SHJet* getJet(int jetNr)const;
   SHJet* getJet(int jetNr);
   const SHMuon* getMuon(int muNr)const;
@@ -192,20 +191,20 @@ class SHEvent : public TObject {
   SHElectron* getElectron(int eleNr); //allows the event to modify the electron
   const SHTrigInfo* getTrigInfo(int trigNr)const; 
 
-  const SHL1Cand* getL1Cand(int candNr)const;
+  //const SHL1Cand* getL1Cand(int candNr)const;
 
   int getSuperClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
-  int getIsolClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
+  //  int getIsolClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
 
   int nrSuperClus()const{return superClusArray_.GetLast()+1;}
   int nrElectrons()const{return electronArray_.GetLast()+1;}
   int nrMCParticles()const{return mcPartArray_.GetLast()+1;}
   int nrJets()const{return jetArray_.GetLast()+1;}
-  int nrIsolClus()const{return isolClusArray_.GetLast()+1;}
-  int nrIsolSuperClus()const{return isolSuperClusArray_.GetLast()+1;}
+  // int nrIsolClus()const{return isolClusArray_.GetLast()+1;}
+  // int nrIsolSuperClus()const{return isolSuperClusArray_.GetLast()+1;}
   int nrIsolTrks()const{return isolTrkArray_.GetLast()+1;}
   int nrTrigs()const{return trigArray_.GetLast()+1;}
-  int nrL1Cands()const{return l1CandArray_.GetLast()+1;}
+  //  int nrL1Cands()const{return l1CandArray_.GetLast()+1;}
   int nrMuons()const{return muArray_.GetLast()+1;}
   
 
@@ -224,6 +223,7 @@ class SHEvent : public TObject {
   SHCaloHitContainer& getCaloHits(){return caloHits_;}
   const SHCaloTowerContainer& getCaloTowers()const{return caloTowers_;}
   SHCaloTowerContainer& getCaloTowers(){return caloTowers_;}
+  TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   double genEventPtHat()const{return genEventPtHat_;}
   const TBits& l1Bits()const{return l1Bits_;}
   int bx()const{return bx_;}
@@ -263,7 +263,7 @@ class SHEvent : public TObject {
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
 
-  ClassDef(SHEvent,20) //5 is v3, 6 is v4
+  ClassDef(SHEvent,21)
 
 };
   

@@ -6,16 +6,18 @@ SHCaloHit::SHCaloHit(int id,float nrgy):
   nrgy_(nrgy),
   detId_(id),
   time_(0),
-  flag_(0)
+  flag_(0),
+  flagBits_(0)
 {
 
 }
 
-SHCaloHit::SHCaloHit(int id,float nrgy,float time,uint32_t flag):
-  nrgy_(nrgy),
-  detId_(id),
-  time_(time),
-  flag_(flag)
+SHCaloHit::SHCaloHit(int iId,float iNrgy,float iTime,uint32_t iFlag,uint32_t iFlagBits):
+  nrgy_(iNrgy),
+  detId_(iId),
+  time_(iTime),
+  flag_(iFlag),
+  flagBits_(iFlagBits)
 {
 
 }

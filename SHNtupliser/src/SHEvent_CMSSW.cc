@@ -103,46 +103,46 @@ void SHEvent::addMuon(const reco::Muon& mu)
   new(muArray_[nrMuons()]) SHMuon(mu,beamSpot_);
 }
 
-void SHEvent::addIsolSuperCluster(const reco::SuperCluster& superClus)
-{
-  //first make the supercluster
-  float nrgy = superClus.energy();
-  float rawNrgy = superClus.rawEnergy();
-  TVector3 pos(superClus.x(),superClus.y(),superClus.z());
-  new(isolSuperClusArray_[nrIsolSuperClus()]) SHIsolSuperCluster(nrgy,rawNrgy,pos);
-  SHIsolSuperCluster* shSuperClus = (SHIsolSuperCluster*) isolSuperClusArray_[nrIsolSuperClus()-1];
+// void SHEvent::addIsolSuperCluster(const reco::SuperCluster& superClus)
+// {
+//   //first make the supercluster
+//   float nrgy = superClus.energy();
+//   float rawNrgy = superClus.rawEnergy();
+//   TVector3 pos(superClus.x(),superClus.y(),superClus.z());
+//   new(isolSuperClusArray_[nrIsolSuperClus()]) SHIsolSuperCluster(nrgy,rawNrgy,pos);
+//   SHIsolSuperCluster* shSuperClus = (SHIsolSuperCluster*) isolSuperClusArray_[nrIsolSuperClus()-1];
 
-  //now add the basic clusters to the event if not already addeded
-  for(reco::CaloCluster_iterator clusIt=superClus.clustersBegin();
-      clusIt!=superClus.clustersEnd();++clusIt){
-    int clusIndx = getIsolClusIndx((*clusIt)->energy(),(*clusIt)->position().Eta(),(*clusIt)->position().Phi());
-    if(clusIndx==-1){//not already added, need to add
-      clusIndx=nrIsolClus();
-      float clusNrgy((*clusIt)->energy());
-      TVector3 clusPos((*clusIt)->x(),(*clusIt)->y(),(*clusIt)->z());
-      const std::vector<std::pair<DetId,float> >& detIds = (*clusIt)->hitsAndFractions();
-      std::vector<int> detIdsAsInts(detIds.size(),0);
-      for(size_t i=0;i<detIds.size();i++) detIdsAsInts[i]=detIds[i].first.rawId();
+//   //now add the basic clusters to the event if not already addeded
+//   for(reco::CaloCluster_iterator clusIt=superClus.clustersBegin();
+//       clusIt!=superClus.clustersEnd();++clusIt){
+//     int clusIndx = getIsolClusIndx((*clusIt)->energy(),(*clusIt)->position().Eta(),(*clusIt)->position().Phi());
+//     if(clusIndx==-1){//not already added, need to add
+//       clusIndx=nrIsolClus();
+//       float clusNrgy((*clusIt)->energy());
+//       TVector3 clusPos((*clusIt)->x(),(*clusIt)->y(),(*clusIt)->z());
+//       const std::vector<std::pair<DetId,float> >& detIds = (*clusIt)->hitsAndFractions();
+//       std::vector<int> detIdsAsInts(detIds.size(),0);
+//       for(size_t i=0;i<detIds.size();i++) detIdsAsInts[i]=detIds[i].first.rawId();
      
-      new(isolClusArray_[nrIsolClus()]) SHIsolCluster(clusNrgy,clusPos,detIdsAsInts);
-    }
-    shSuperClus->addBasicCluster(clusIndx);
-  }//end basic cluster loop
-}
+//       new(isolClusArray_[nrIsolClus()]) SHIsolCluster(clusNrgy,clusPos,detIdsAsInts);
+//     }
+//     shSuperClus->addBasicCluster(clusIndx);
+//   }//end basic cluster loop
+// }
    
-void SHEvent::addIsolCluster(const reco::BasicCluster& clus)
-{
-  //first check if its been added before
-  int clusIndx = getIsolClusIndx(clus.energy(),clus.position().Eta(),clus.position().Phi());
-  if(clusIndx==-1){ //it hasnt
-    float clusNrgy(clus.energy());
-    TVector3 clusPos(clus.x(),clus.y(),clus.z());
-    const std::vector<std::pair<DetId,float> >& detIds = clus.hitsAndFractions();
-    std::vector<int> detIdsAsInts(detIds.size(),0);
-    for(size_t i=0;i<detIds.size();i++) detIdsAsInts[i]=detIds[i].first.rawId();
-    new(isolClusArray_[nrIsolClus()]) SHIsolCluster(clusNrgy,clusPos,detIdsAsInts);
-  }
-}
+// void SHEvent::addIsolCluster(const reco::BasicCluster& clus)
+// {
+//   //first check if its been added before
+//   int clusIndx = getIsolClusIndx(clus.energy(),clus.position().Eta(),clus.position().Phi());
+//   if(clusIndx==-1){ //it hasnt
+//     float clusNrgy(clus.energy());
+//     TVector3 clusPos(clus.x(),clus.y(),clus.z());
+//     const std::vector<std::pair<DetId,float> >& detIds = clus.hitsAndFractions();
+//     std::vector<int> detIdsAsInts(detIds.size(),0);
+//     for(size_t i=0;i<detIds.size();i++) detIdsAsInts[i]=detIds[i].first.rawId();
+//     new(isolClusArray_[nrIsolClus()]) SHIsolCluster(clusNrgy,clusPos,detIdsAsInts);
+//   }
+// }
 
 
 void SHEvent::addSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits)

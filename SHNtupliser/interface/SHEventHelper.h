@@ -38,6 +38,7 @@ private:
   
   float minEtToPromoteSC_;
   bool addCaloTowers_;
+  bool addIsolTrks_;
   bool addMet_;
   bool addJets_;
   bool addTrigs_;
@@ -91,10 +92,10 @@ public:
   void addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const;
   void addJets(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const;
-  void addIsolClus(const heep::Event& heepEvent,SHEvent& shEvent)const{}
+  // void addIsolClus(const heep::Event& heepEvent,SHEvent& shEvent)const{}
   void addMet(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const;
-  void addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  //void addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const;
@@ -108,7 +109,7 @@ private:
   void initEcalHitVec_()const;
   void initHcalHitVec_()const;
   
-  
+  static uint32_t getEcalFlagBits_(const EcalRecHit& hit);//because a simple accessor to the bit was too much to ask
 
 };
 

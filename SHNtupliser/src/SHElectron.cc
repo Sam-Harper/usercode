@@ -77,6 +77,13 @@ SHElectron::SHElectron():
   dCotTheta_(-1),
   dist_(-1),
   radius_(-999),
+  isolChargedHadron_(-999.),
+  isolNeutralHadron_(-999.),
+  isolPhoton_(-999.),
+  hademDepth1BC_(-999.),
+  hademDepth2BC_(-999.),
+  isolHadDepth1BC_(-999.),
+  isolHadDepth2BC_(-999.),
   mEvent_(NULL)
 {
 
@@ -155,7 +162,14 @@ SHElectron::SHElectron(const SHElectron &rhs):
   nrMissingHits_(rhs.nrMissingHits_),
   dCotTheta_(rhs.dCotTheta_),
   dist_(rhs.dist_),
-  radius_(rhs.radius_),
+  radius_(rhs.radius_), 
+  isolChargedHadron_(rhs.isolChargedHadron_),
+  isolNeutralHadron_(rhs.isolNeutralHadron_),
+  isolPhoton_(rhs.isolPhoton_),  
+  hademDepth1BC_(rhs.hademDepth1BC_),
+  hademDepth2BC_(rhs.hademDepth2BC_),
+  isolHadDepth1BC_(rhs.isolHadDepth1BC_),
+  isolHadDepth2BC_(rhs.isolHadDepth2BC_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
 
@@ -215,76 +229,76 @@ void SHElectron::fixTrkIsol()
 }
 
 
-float SHElectron::isolEmClus(double coneRadius)const
-{ 
+// float SHElectron::isolEmClus(double coneRadius)const
+// { 
 
-  const SHIsolSuperCluster* matchedSC =&(getIsolSuperClus());
-  if(matchedSC==NULL) return 999999.;
+//   const SHIsolSuperCluster* matchedSC =&(getIsolSuperClus());
+//   if(matchedSC==NULL) return 999999.;
 
 
-  //std::cout <<" ele nrgy "<<nrgy()<<" nr isol clus "<<mEvent_->nrIsolClus()<<std::endl;
+//   //std::cout <<" ele nrgy "<<nrgy()<<" nr isol clus "<<mEvent_->nrIsolClus()<<std::endl;
 
-  float emNrgy=0.;
+//   float emNrgy=0.;
  
-  for(int clusNr=0;clusNr<mEvent_->nrIsolClus();clusNr++){
+//   for(int clusNr=0;clusNr<mEvent_->nrIsolClus();clusNr++){
    
-    bool isInSuperClus =false;
-    for(int superClusNr=0;superClusNr<matchedSC->nrClus();superClusNr++){
-      //   std::cout <<"sc index "<<matchedSC->getClusNr(superClusNr)<<std::endl;
-      if(clusNr==matchedSC->getClusNr(superClusNr)) isInSuperClus = true;
-    }
-    if(!isInSuperClus){
-      const SHIsolCluster* clus = mEvent_->getIsolClus(clusNr);
-      if(MathFuncs::calDeltaR(clus->position(),posCal())<coneRadius){
-	//std::cout <<"clus nr "<<clusNr<<" eta "<<mEvent_->getIsolClus(clusNr).position().Eta()<<" phi "<<mEvent_->getIsolClus(clusNr).position().Phi()<<" nrgy "<<mEvent_->getIsolClus(clusNr).nrgy()<<std::endl;
-	emNrgy+=clus->nrgy();
-      }
-    }
-  }
-  return emNrgy;
-}
+//     bool isInSuperClus =false;
+//     for(int superClusNr=0;superClusNr<matchedSC->nrClus();superClusNr++){
+//       //   std::cout <<"sc index "<<matchedSC->getClusNr(superClusNr)<<std::endl;
+//       if(clusNr==matchedSC->getClusNr(superClusNr)) isInSuperClus = true;
+//     }
+//     if(!isInSuperClus){
+//       const SHIsolCluster* clus = mEvent_->getIsolClus(clusNr);
+//       if(MathFuncs::calDeltaR(clus->position(),posCal())<coneRadius){
+// 	//std::cout <<"clus nr "<<clusNr<<" eta "<<mEvent_->getIsolClus(clusNr).position().Eta()<<" phi "<<mEvent_->getIsolClus(clusNr).position().Phi()<<" nrgy "<<mEvent_->getIsolClus(clusNr).nrgy()<<std::endl;
+// 	emNrgy+=clus->nrgy();
+//       }
+//     }
+//   }
+//   return emNrgy;
+// }
 
-float SHElectron::isolEmEtClus(double coneRadius)const
-{ 
+// float SHElectron::isolEmEtClus(double coneRadius)const
+// { 
 
-  const SHIsolSuperCluster* matchedSC =&(getIsolSuperClus());
-  if(matchedSC==NULL) return 999999.;
+//   const SHIsolSuperCluster* matchedSC =&(getIsolSuperClus());
+//   if(matchedSC==NULL) return 999999.;
 
-  float emEt=0.;
+//   float emEt=0.;
  
-  for(int clusNr=0;clusNr<mEvent_->nrIsolClus();clusNr++){
+//   for(int clusNr=0;clusNr<mEvent_->nrIsolClus();clusNr++){
    
-    bool isInSuperClus =false;
-    for(int superClusNr=0;superClusNr<matchedSC->nrClus();superClusNr++){
-      if(clusNr==matchedSC->getClusNr(superClusNr)) isInSuperClus = true;
-    }
-    if(!isInSuperClus){
-      const SHIsolCluster* clus = mEvent_->getIsolClus(clusNr);
-      if(MathFuncs::calDeltaR(clus->position(),posCal())<coneRadius){
-	//	std::cout <<"clus nr "<<clusNr<<" eta "<<mEvent_->getIsolClus(clusNr).position().Eta()<<" phi "<<mEvent_->getIsolClus(clusNr).position().Phi()<<" nrgy "<<mEvent_->getIsolClus(clusNr).nrgy()<<" et "<<clus.nrgy()*sin(2*atan(exp(clus.position().Eta())))<<" deltaR "<< MathFuncs::calDeltaR(clus.position(),posCal())<<std::endl;
+//     bool isInSuperClus =false;
+//     for(int superClusNr=0;superClusNr<matchedSC->nrClus();superClusNr++){
+//       if(clusNr==matchedSC->getClusNr(superClusNr)) isInSuperClus = true;
+//     }
+//     if(!isInSuperClus){
+//       const SHIsolCluster* clus = mEvent_->getIsolClus(clusNr);
+//       if(MathFuncs::calDeltaR(clus->position(),posCal())<coneRadius){
+// 	//	std::cout <<"clus nr "<<clusNr<<" eta "<<mEvent_->getIsolClus(clusNr).position().Eta()<<" phi "<<mEvent_->getIsolClus(clusNr).position().Phi()<<" nrgy "<<mEvent_->getIsolClus(clusNr).nrgy()<<" et "<<clus.nrgy()*sin(2*atan(exp(clus.position().Eta())))<<" deltaR "<< MathFuncs::calDeltaR(clus.position(),posCal())<<std::endl;
 	
-	emEt+=clus->nrgy()*sin(2*atan(exp(clus->position().Eta())));
-      }
-    }
-  }
-  return emEt;
-}
+// 	emEt+=clus->nrgy()*sin(2*atan(exp(clus->position().Eta())));
+//       }
+//     }
+//   }
+//   return emEt;
+// }
 
-const SHIsolSuperCluster& SHElectron::getIsolSuperClus()const
-{
-  const SHIsolSuperCluster* matchedSC=NULL;
-  if(mEvent_!=NULL){
-    double minDeltaR = 9999.;
-    for(int scNr=0;scNr<mEvent_->nrIsolSuperClus();scNr++){
-      double deltaR= MathFuncs::calDeltaR(posCal(),mEvent_->getIsolSuperClus(scNr)->position());
-      if(deltaR<minDeltaR){
-	minDeltaR=deltaR;
-	matchedSC = mEvent_->getIsolSuperClus(scNr);
-      }
-    }
-  }
-  return *matchedSC;
-}
+// const SHIsolSuperCluster& SHElectron::getIsolSuperClus()const
+// {
+//   const SHIsolSuperCluster* matchedSC=NULL;
+//   if(mEvent_!=NULL){
+//     double minDeltaR = 9999.;
+//     for(int scNr=0;scNr<mEvent_->nrIsolSuperClus();scNr++){
+//       double deltaR= MathFuncs::calDeltaR(posCal(),mEvent_->getIsolSuperClus(scNr)->position());
+//       if(deltaR<minDeltaR){
+// 	minDeltaR=deltaR;
+// 	matchedSC = mEvent_->getIsolSuperClus(scNr);
+//       }
+//     }
+//   }
+//   return *matchedSC;
+// }
   
 
 
@@ -297,7 +311,7 @@ float SHElectron::dzTrkVtx()const
 
 std::pair<int,float> SHElectron::isolTrk(double minDeltaR,double maxDeltaR,double lipCut,double ptCut)const
 {
-  if(mEvent_==NULL) return std::make_pair<int,float>(999999,999999.); //need event link
+  if(mEvent_==NULL) return std::pair<int,float>(999999,999999.); //need event link
   
   int nrTracks=0;
   float ptSum=0.;
@@ -313,7 +327,7 @@ std::pair<int,float> SHElectron::isolTrk(double minDeltaR,double maxDeltaR,doubl
       // std::cout <<"track pt "<<trk.pt()<<" deltaR "<<deltaR<<" lip "<<trk.dz()-dzTrkVtx()<<std::endl;
     }
   }
-  return std::make_pair<int,float>(nrTracks,ptSum);
+  return std::pair<int,float>(nrTracks,ptSum);
   
 }
 

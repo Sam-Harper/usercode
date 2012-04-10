@@ -21,10 +21,12 @@ public:
 	      float iEta,float iPhi);//iEta = input eta not iEta..
   
 
-  float towerId()const{return towerId_;}
+  int towerId()const{return towerId_;}
+  int detId()const{return towerId_;}
   float emNrgy()const{return emNrgy_;}
   float hadD1Nrgy()const{return hadD1Nrgy_;}
   float hadD2Nrgy()const{return hadD2Nrgy_;}
+  float hadNrgy()const{return hadD1Nrgy()+hadD2Nrgy();}
   float eta()const{return eta_;}
   float phi()const{return phi_;}
 

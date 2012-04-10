@@ -1,4 +1,4 @@
-
+isMC=True
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -22,7 +22,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
-process.GlobalTag.globaltag = cms.string('START42_V15B::All')
+if isMC:
+    process.GlobalTag.globaltag = autoCond['startup'] 
+else:
+    process.GlobalTag.globaltag = autoCond['com10']
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -66,7 +69,7 @@ process.shNtupliser.muonTag = cms.untracked.InputTag("patMuonsPFlow")
 process.shNtupliser.jetTag = cms.untracked.InputTag("patJetsPFlow")
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotonsPFlow")
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETsPFlow")
-
+process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
 isCrabJob=False #script seds this if its a crab job
 
 #if 1, its a crab job...

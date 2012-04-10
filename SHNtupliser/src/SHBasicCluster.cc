@@ -1,5 +1,7 @@
 #include "SHarper/SHNtupliser/interface/SHBasicCluster.hh"
   
+#include "SHarper/SHNtupliser/interface/LogErr.hh"
+#include <algorithm>
 ClassImp(SHBasicCluster)
 
 SHBasicCluster::SHBasicCluster():
@@ -9,7 +11,9 @@ SHBasicCluster::SHBasicCluster():
   e2ndId_(0),
   eta_(0.),
   phi_(0.),
-  hitDetIds_()
+  hitDetIds_(),
+  seedId_(0),
+  hitInfo_(0)
 {
 
 }
@@ -22,20 +26,72 @@ SHBasicCluster::SHBasicCluster(const SHBasicCluster& rhs):
   e2ndId_(rhs.e2ndId_),
   eta_(rhs.eta_),
   phi_(rhs.phi_),
-  hitDetIds_(rhs.hitDetIds_)
+  hitDetIds_(), //intensionally not copying, we can remake it later if required
+  seedId_(rhs.seedId_),
+  hitInfo_(rhs.hitInfo_)
 {
-
+  
 }
 
 SHBasicCluster::SHBasicCluster(float nrgy,int seedId,int e2ndId,float eta,float phi,const std::vector<int>& hits):
   totNrgy_(nrgy),
   nrCrys_(hits.size()),
-  eMaxId_(seedId),
+  eMaxId_(0),
   e2ndId_(e2ndId),
   eta_(eta),
   phi_(phi),
-  hitDetIds_(hits)
+  hitDetIds_(),
+  seedId_(seedId)
 {
+  hitInfo_ = packHits_(seedId_,hits);
 
+}
+
+
+int SHBasicCluster::packHits_(int seedId,const std::vector<int>& hits)
+{
+  if(DetIdTools::isEcalBarrel(seedId)){
+    int maxIPhiPos=0;
+    int maxIPhiNeg=0;
+    int seedIPhi = DetIdTools::iPhiBarrel(seedId);
+    for(size_t hitNr=0;hitNr<hits.size();hitNr++){
+      int hitIPhi = DetIdTools::iPhiBarrel(hits[hitNr]);
+      int dIPhi = hitIPhi-seedIPhi;
+      while(dIPhi<=-180) dIPhi+=360;
+      while(dIPhi>180) dIPhi-=360;
+      
+      if(dIPhi>0 && dIPhi>maxIPhiPos) maxIPhiPos=dIPhi;
+      else if(dIPhi<0 && dIPhi*-1>maxIPhiNeg) maxIPhiNeg=dIPhi*-1;
+      
+    }
+    int nrNegSteps=maxIPhiNeg;
+    int nrPosSteps=maxIPhiPos;
+
+    if(nrNegSteps<0 || nrNegSteps>17 || nrPosSteps<0 || nrPosSteps>17){
+      LogErr <<" warning phi steps out of bounds: neg "<<nrNegSteps << " pos "<<nrPosSteps<<" seed "<<seedIPhi<<std::endl;
+    }
+    
+    int packedHits=0x0;
+    packedHits |= nrNegSteps<<1;
+    packedHits |= nrPosSteps<<6;
+    return packedHits;
+  }else if(DetIdTools::isEcalEndcap(seedId)){
+    int packedHits=0x1;
+    
+    DetIdTools::EcalNavigator nav(seedId);
+    int bitNr=1;
+    for(int iY=-2;iY<=2;iY++){
+      for(int iX=-2;iX<=2;iX++){
+	int hitId = nav.getIdAtPos(iX,iY);
+	if(hitId!=0 && std::find(hits.begin(),hits.end(),hitId)!=hits.end()){
+	  packedHits |= (0x1<<bitNr);
+	  
+	}
+	bitNr++;
+      }
+    }
+    return packedHits;
+
+  }else return 0;
 
 }

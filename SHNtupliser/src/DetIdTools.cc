@@ -4,9 +4,15 @@
 
 #include<cstdlib>
 #include<cmath>
+#include<cstring>
+#include<fstream>
 
+#include <functional>
+#include <boost/bind.hpp>
+#include <algorithm>
+#include <sstream>
 
-
+std::vector<std::pair<int,int> > DetIdTools::eeDetIdToTowerId_;
 
 DetIdTools::EcalNavigator::EcalNavigator(int startId):
   startId_(startId)
@@ -91,6 +97,77 @@ int DetIdTools::EcalNavigator::getDetId_(int etaOrX,int phiOrY)const
   }
 }
 
+DetIdTools::CaloNavigator::CaloNavigator(int startId):
+  startId_(startId)
+{
+  if(isValidCaloId(startId)){
+    startId_=startId;
+    initPosCoords_();
+  }else {
+    startId_=0;
+    LogErr <<" Error "<<startId<<" is not valid calo id, navigation is undefined"<<std::endl;
+  }
+}
+
+int DetIdTools::CaloNavigator::moveInEta(int nrSteps)
+{
+  
+  int newEta = currEta_+=nrSteps;
+  if(newEta*currEta_<=0) { //sign change
+    if(currEta_>0) newEta--;
+    if(currEta_<0) newEta++;
+  }
+  
+  if(changedPhiSeg(newEta,currEta_)){
+    if(abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
+      if(currPhi_%2==0) currPhi_--;
+    }//going the other way is fine
+  }
+  currEta_=newEta;
+  
+  return curPos();
+}
+
+int DetIdTools::CaloNavigator::moveInPhi(int nrSteps)
+{
+  //okay so we need to 
+  if(abs(currEta_)>kIEtaPhiSegChange) nrSteps*=2; //even segments are now invalid, we move 2 at time
+  
+  int newPhi = currPhi_+=nrSteps;
+  while(newPhi<=0) newPhi+= kNrPhiSeg;
+  while(newPhi>kNrPhiSeg) newPhi-=kNrPhiSeg;
+
+  return curPos();
+}
+
+int DetIdTools::CaloNavigator::getIdAtPos(int nrStepsEta,int nrStepsPhi)const
+{
+  int newEta = currEta_+nrStepsEta;
+  if(newEta*currEta_<=0) { //sign change
+    if(currEta_>0) newEta--;
+    if(currEta_<0) newEta++;
+  }
+  int newPhi = currPhi_;
+  if(changedPhiSeg(newEta,currEta_)){
+    
+    if(abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
+      if(newPhi%2==0) newPhi--;
+    }//going the other way is fine
+  }
+  
+  if(abs(newEta)>kIEtaPhiSegChange) nrStepsPhi*=2; //even segments are now invalid, we move 2 at time  
+  newPhi+=nrStepsPhi;
+  while(newPhi<=0) newPhi+= kNrPhiSeg;
+  while(newPhi>kNrPhiSeg) newPhi-=kNrPhiSeg;
+
+  return DetIdTools::makeCaloDetId(newEta,newPhi);
+  
+}  
+void DetIdTools::CaloNavigator::initPosCoords_()
+{
+  currEta_= iEtaCalo(startId_);
+  currPhi_= iPhiCalo(startId_);
+}
 
 //magic numbers stolen from CMSSW EEDetId
 const int DetIdTools::nBegin_[kIXMax_] = { 41, 41, 41, 36, 36, 26, 26, 26, 21, 21, 21, 21, 21, 16, 16, 14, 14, 14, 14, 14, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9, 14, 14, 14, 14, 14, 16, 16, 21, 21, 21, 21, 21, 26, 26, 26, 36, 36, 41, 41, 41 };
@@ -203,6 +280,21 @@ void DetIdTools::printHcalDetId(int detId)
   std::cout <<"detId "<<std::hex<<detId<<std::dec<<" isHcal "<<isHcal(detId)<<" isBarrel "<<isBarrel(detId)<<" isEndcap "<<isEndcap(detId)<<" iEta "<<iEtaHcal(detId)<<" iPhi "<<iPhiHcal(detId)<<" depth "<<depthHcal(detId)<<std::endl;
 }
 
+int DetIdTools::makeCaloDetId(int iEta,int iPhi)
+{
+  if(!isValidCaloId(iEta,iPhi)) return 0;
+     
+  const int subDetCode=1<< kSubDetOffset;
+  
+  int detId=0x0;
+  detId |= kCaloCode;
+  detId |= subDetCode;
+  detId |= (iPhi&0x7F);
+  if(iEta>0) detId |= (0x2000 | ((iEta&0x3f)<<7) );
+ else detId |= (((-iEta)&0x3f)<<7);
+  
+  return detId;
+}
 
 // int DetIdTools::getHashHcal(int detId)
 // {
@@ -303,6 +395,23 @@ int DetIdTools::calHashHcal(int detId)
   return index;
 }
 
+int DetIdTools::calHashCalo(int detId)
+{
+  if(!isValidCaloId(detId)) return -1;
+  int iPhi = DetIdTools::iPhiCalo(detId);
+  int iEtaAbs = DetIdTools::iEtaAbsCalo(detId);
+  int zSide = DetIdTools::zSideCalo(detId);
+  
+  //std::cout <<"iEta "<<iEtaAbs<<" iPhi "<<iPhi<<std::endl;
+
+  int index=0;
+  if(iEtaAbs<=20) index=(iEtaAbs-1)*72+iPhi-1;
+  else index = 20*72+(iEtaAbs-20)*36+(iPhi+1)/2-1; //only odd iPhi = 1, 3, 5 are now valid, add 1 and divide by 2 to get the compact phi 
+  
+  if(zSide>0) index+=kNrCaloTowers/2;
+  return index;
+}
+
 //you know, using the info in SHCaloGeom, I could achieve this faster and in half the lines in one loop
 //but it somehow doesnt feel right going there
 //if any entry has zero, its a wildcard, to select all cells in tower 20, on both sides at depth 2, do
@@ -341,7 +450,6 @@ bool DetIdTools::isNextToBarrelPhiGap(int detId)
     else return false;
   }
   return false;
-
 }
 
 
@@ -402,6 +510,18 @@ bool DetIdTools::isValidHcalId(int iEta,int iPhi,int depth)
 {
   return isValidHcalBarrelId(iEta,iPhi,depth) || isValidHcalEndcapId(iEta,iPhi,depth);
 }
+
+bool DetIdTools::isValidCaloId(int iEta,int iPhi)
+{
+  if(abs(iEta)>=1 && abs(iEta)<=29 && iPhi>=1 && iPhi<=72){
+    if(abs(iEta)>20){
+      if(iPhi%2==1) return true;
+      else return false;
+    }else return true;
+  }
+  return false;
+}
+
 
 //depth 1= all towers up to and including tower 17 + depth 1 18-29 + depth 2 27-29
 //depth 2= depth 2 18-26, depth 3 27-29
@@ -650,6 +770,38 @@ std::vector<int> DetIdTools::makeEEFastHashTable_()
   return hashTable;
 }
 
+struct PairLessThan {
+
+  bool operator()(int lhs,int rhs)const{return lhs<rhs;}
+  bool operator()(int lhs,const std::pair<int,int>& rhs)const{return lhs<rhs.first;}
+  bool operator()(const std::pair<int,int>&lhs,int rhs)const{return lhs.first<rhs;}
+  bool operator()(const std::pair<int,int>&lhs,const std::pair<int,int>& rhs)const{return lhs.first<rhs.first;}
+};
+
+int DetIdTools::towerIdEndcap(int detId)
+{
+  if(eeDetIdToTowerId_.empty()) fillEEToTowerIdMap("input/CaloTowerEEGeometric.map");
+  if(eeDetIdToTowerId_.empty()){
+    LogErr <<" Warning, you didnt load in a tower map, I didnt find the default, so I'm now going to put a dummy entry in which will stop all warnings and just fail silently ";
+    eeDetIdToTowerId_.push_back(std::make_pair<int,int>(0,0)); 
+  }
+  typedef std::vector<std::pair<int,int> >::const_iterator ConstIt;
+  std::pair<ConstIt,ConstIt> result = std::equal_range(eeDetIdToTowerId_.begin(),eeDetIdToTowerId_.end(),detId,PairLessThan());
+						    
+  if(result.second!=result.first){
+    if(result.second-result.first>1) LogErr<<" Warrning multiple entries for det id "<<detId<<std::endl;
+    return result.first->second;
+  }
+  return 0;
+}
+int DetIdTools::ecalToTowerId(int detId)
+{
+  if(isEcalBarrel(detId)) return makeCaloDetId(iEtaBarrelTower(detId),iPhiBarrelTower(detId));
+  else if(isEcalEndcap(detId)) return towerIdEndcap(detId);
+  else return 0;
+}
+
+
 std::vector<int> DetIdTools::makeHcalFastHashTable_()
 {
   //not all entries will be filled, the 0x40000 is because the z, eta,phi depth max bit is 0x20000 so we are guaranteed to have enough space
@@ -674,3 +826,58 @@ std::vector<int> DetIdTools::makeHcalFastHashTable_()
   }
   return hashTable;
 }
+ 
+
+void DetIdTools::fillEEToTowerIdMap(const std::string& filename)
+{
+  
+  eeDetIdToTowerId_.clear();
+  if(!filename.empty()){
+    std::ifstream file(filename.c_str());
+    if(file.bad()){
+      std::cout <<"file map not found"<<std::endl;
+    } else if(file.eof()){
+      std::cout <<"file map found but empty"<<std::endl;
+    }
+
+    if(!file.bad()){
+      while(!file.eof()){
+	char tempBuffer[1024];
+	file.getline(tempBuffer,1024);
+	
+	
+	char* detIdChar = strtok(tempBuffer," ");
+	char* etaChar = strtok(NULL," ");
+	char* phiChar = strtok(NULL," ");
+	
+	//std::cout <<detIdChar<<std::endl;
+
+	int detId;
+	std::stringstream ss;
+	ss << std::hex << detIdChar;
+	ss >> detId;
+
+	
+	int eta= atoi(etaChar);
+	int phi = atoi(phiChar);
+	
+	
+	int towerId = makeCaloDetId(eta,phi);
+
+	//std::cout <<" detId "<<detId<<" "<<eta<<" "<<phi<<std::endl;
+	eeDetIdToTowerId_.push_back(std::make_pair(detId,towerId));
+
+      }
+    }//bad file check  
+       
+  }//empty file name check
+  //  std::cout <<"end of the menu "<<std::endl;
+  std::sort(eeDetIdToTowerId_.begin(),eeDetIdToTowerId_.end(),boost::bind( std::less<int>(),boost::bind(&std::pair<int,int>::first,_1),boost::bind(&std::pair<int,int>::first,_2)));
+
+  //std::cout <<"here "<<std::endl;
+  //for(size_t i=0;i<eeDetIdToTowerId_.size();i++){
+    //std::cout <<" index "<<i<<" val "<<eeDetIdToTowerId_[i].first<<std::endl;
+    
+    //}
+}
+  

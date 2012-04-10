@@ -15,8 +15,8 @@ SHEvent::SHEvent():
   mcPartArray_("SHMCParticle",30),
   jetArray_("SHJet",10),
   caloHits_(),
-  isolSuperClusArray_("SHIsolSuperCluster",5),
-  isolClusArray_("SHIsolCluster",20),
+  // isolSuperClusArray_("SHIsolSuperCluster",5),
+  // isolClusArray_("SHIsolCluster",20),
   isolTrkArray_("SHIsolTrack",20),
   trigArray_("SHTrigInfo",20),
   muArray_("SHMuon",12),
@@ -25,7 +25,7 @@ SHEvent::SHEvent():
   weight_(0.),
   metData_(),
   l1Bits_(0x0),
-  l1CandArray_("SHL1Cand",20),
+  // l1CandArray_("SHL1Cand",20),
   lumiSec_(0),
   bx_(0),
   orbNr_(0),
@@ -76,8 +76,8 @@ void SHEvent::clear()
   electronArray_.Delete();
   mcPartArray_.Delete();
   jetArray_.Delete();
-  isolSuperClusArray_.Delete();
-  isolClusArray_.Delete();
+  // isolSuperClusArray_.Delete();
+  //isolClusArray_.Delete();
   isolTrkArray_.Delete();
   trigArray_.Delete();
   muArray_.Delete();
@@ -92,7 +92,7 @@ void SHEvent::clear()
   orbNr_=0;
   time_=0;
   metData_.clear(); 
-  l1CandArray_.Delete();
+  //l1CandArray_.Delete();
   l1Bits_.ResetAllBits();
   nrVertices_=-1;
   vertex_.SetXYZ(-999,-999,-999); 
@@ -111,11 +111,11 @@ SHEvent::~SHEvent()
   electronArray_.Delete();
   mcPartArray_.Delete();
   jetArray_.Delete();
-  isolSuperClusArray_.Delete();
-  isolClusArray_.Delete();
+  //isolSuperClusArray_.Delete();
+  //isolClusArray_.Delete();
   isolTrkArray_.Delete();
   trigArray_.Delete();
-  l1CandArray_.Delete();
+  //l1CandArray_.Delete();
   muArray_.Delete();
 }
 
@@ -166,8 +166,8 @@ void SHEvent::addElectron(const SHElectron& ele)
 
 void SHEvent::addIsolInfo(const SHEvent& rhs)
 {
-  TempFuncs::copyTClonesArray<SHIsolSuperCluster>(isolSuperClusArray_,rhs.isolSuperClusArray_);
-  TempFuncs::copyTClonesArray<SHIsolCluster>(isolClusArray_,rhs.isolClusArray_);
+  //TempFuncs::copyTClonesArray<SHIsolSuperCluster>(isolSuperClusArray_,rhs.isolSuperClusArray_);
+  //TempFuncs::copyTClonesArray<SHIsolCluster>(isolClusArray_,rhs.isolClusArray_);
   TempFuncs::copyTClonesArray<SHIsolTrack>(isolTrkArray_,rhs.isolTrkArray_);
 }
 
@@ -198,16 +198,16 @@ void SHEvent::addTrigInfo(const SHTrigInfo& trigInfo)
   
 }
 
-void SHEvent::addL1Cand(const SHL1Cand& l1Cand)
-{
-  new(l1CandArray_[nrL1Cands()]) SHL1Cand(l1Cand);
+// void SHEvent::addL1Cand(const SHL1Cand& l1Cand)
+// {
+//   new(l1CandArray_[nrL1Cands()]) SHL1Cand(l1Cand);
   
-}
-void SHEvent::addL1Cand(const TLorentzVector& p4,int type)
-{
-  new(l1CandArray_[nrL1Cands()]) SHL1Cand(p4,type);
+// }
+// void SHEvent::addL1Cand(const TLorentzVector& p4,int type)
+// {
+//   new(l1CandArray_[nrL1Cands()]) SHL1Cand(p4,type);
   
-}
+// }
 //we only store hits which actually have information
 void SHEvent::addEcalHits(const std::vector<SHCaloHit> & hitVec)
 {
@@ -283,11 +283,11 @@ const SHTrigInfo* SHEvent::getTrigInfo(int trigNr)const
   return trigInfo;
 }
 
-const SHL1Cand* SHEvent::getL1Cand(int candNr)const
-{
-  SHL1Cand* l1Cand = (SHL1Cand*) l1CandArray_[candNr];
-  return l1Cand;
-}
+// const SHL1Cand* SHEvent::getL1Cand(int candNr)const
+// {
+//   SHL1Cand* l1Cand = (SHL1Cand*) l1CandArray_[candNr];
+//   return l1Cand;
+// }
 
 //non const acccess
 SHElectron* SHEvent::getElectron(int eleNr)
@@ -297,17 +297,17 @@ SHElectron* SHEvent::getElectron(int eleNr)
   return ele;
 }
 
-const SHIsolCluster* SHEvent::getIsolClus(int clusNr)const
-{
-  SHIsolCluster* clus = (SHIsolCluster*) isolClusArray_[clusNr];
-  return clus;
-}
+// const SHIsolCluster* SHEvent::getIsolClus(int clusNr)const
+// {
+//   SHIsolCluster* clus = (SHIsolCluster*) isolClusArray_[clusNr];
+//   return clus;
+// }
 
-const SHIsolSuperCluster* SHEvent::getIsolSuperClus(int clusNr)const
-{
-  SHIsolSuperCluster* clus = (SHIsolSuperCluster*) isolSuperClusArray_[clusNr];
-  return clus;
-}
+// const SHIsolSuperCluster* SHEvent::getIsolSuperClus(int clusNr)const
+// {
+//   SHIsolSuperCluster* clus = (SHIsolSuperCluster*) isolSuperClusArray_[clusNr];
+//   return clus;
+// }
 
 
 int SHEvent::getSuperClusIndx(float rawNrgy,float eta,float phi)const
@@ -322,17 +322,17 @@ int SHEvent::getSuperClusIndx(float rawNrgy,float eta,float phi)const
   return -1;//didnt find it
 }
 
-int SHEvent::getIsolClusIndx(float rawNrgy,float eta,float phi)const
-{
-  for(int clusNr=0;clusNr<nrIsolClus();clusNr++){
-    const SHIsolCluster* clus = getIsolClus(clusNr);
-    float dNrgyAbs = fabs(clus->nrgy()-rawNrgy);
-    float dEtaAbs = fabs(clus->eta()-eta);
-    float dPhiAbs = fabs(clus->phi()-phi);
-    if(dNrgyAbs<1.0E-10 && dEtaAbs<1.0E-10 && dPhiAbs<1.0E-10) return clusNr;
-  }
-  return -1;//didnt find it
-}
+// int SHEvent::getIsolClusIndx(float rawNrgy,float eta,float phi)const
+// {
+//   for(int clusNr=0;clusNr<nrIsolClus();clusNr++){
+//     const SHIsolCluster* clus = getIsolClus(clusNr);
+//     float dNrgyAbs = fabs(clus->nrgy()-rawNrgy);
+//     float dEtaAbs = fabs(clus->eta()-eta);
+//     float dPhiAbs = fabs(clus->phi()-phi);
+//     if(dNrgyAbs<1.0E-10 && dEtaAbs<1.0E-10 && dPhiAbs<1.0E-10) return clusNr;
+//   }
+//   return -1;//didnt find it
+// }
 
 
 
@@ -343,7 +343,7 @@ void SHEvent::dropTrackerOnlyEles()
   std::vector<std::pair<const SHElectron*,const SHSuperCluster*> >  ecalEles;
   for(int eleNr=0;eleNr<nrElectrons();eleNr++){
     const SHElectron* ele = getElectron(eleNr);
-    if(ele->isEcalDriven()) ecalEles.push_back(std::make_pair(new SHElectron(*ele),ele->superClus()));
+    if(ele->isEcalDriven()) ecalEles.push_back(std::pair<const SHElectron*,const SHSuperCluster*>(new SHElectron(*ele),ele->superClus()));
   }
   electronArray_.Delete();
   for(size_t eleNr=0;eleNr<ecalEles.size();eleNr++){
@@ -357,6 +357,7 @@ void SHEvent::flushTempData()const
 {
   nrPUInteractions_=-1;
   caloHits_.flushIndxTable();
+  caloTowers_.flushIndxTable();
 }
 
 

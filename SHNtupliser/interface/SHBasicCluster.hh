@@ -38,6 +38,14 @@ class SHBasicCluster : public TObject {
 
   
   std::vector<int> hitDetIds_;
+  int seedId_;
+  //packed info telling us about the hits used by the cluster
+  //used to populate hitDetIds,saves a lot of space...
+  //format: bit 0: 0 EB, 1 EE
+  //if EE: bits 1-26 represent the 5x5 cluster : 0 hit used, 1 hit not, starts at -2,-2
+  //if EB: bits 1-6: -ve phi road, 7-12 +ve phi road
+  int hitInfo_; 
+  
 
  public:
   SHBasicCluster();
@@ -57,9 +65,9 @@ class SHBasicCluster : public TObject {
   float nrgy()const{return totNrgy_;}
   float et()const{return sin(pos().Theta())*totNrgy_;}
   int nrCrys()const{return nrCrys_;}
-  int eMaxId()const{return eMaxId_;}
+  int eMaxId()const{return eMaxId_==0 ? seedId(): eMaxId_;} //transition to dumping emax
   int e2ndId()const{return e2ndId_;}
-  int seedId()const{return eMaxId_;} //seed!=eMax 100% of the time in future
+  int seedId()const{return seedId_;} //seed!=eMax 100% of the time in future
   
   float eta()const{return eta_;}
   float phi()const{return phi_;}
@@ -72,8 +80,9 @@ class SHBasicCluster : public TObject {
 
  private:
   //SHBasicCluster& operator=(const SHBasicCluster &rhs){return *this;}
+  static int packHits_(int seedId,const std::vector<int>& hits);
 
-  ClassDef(SHBasicCluster,4)
+  ClassDef(SHBasicCluster,5)
 
 };
 
