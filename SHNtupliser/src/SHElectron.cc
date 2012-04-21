@@ -221,6 +221,13 @@ void SHElectron::setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,d
 
 }
 
+void SHElectron::setPFIsol(float charged,float neutral,float photon)
+{
+  isolChargedHadron_=charged;
+  isolNeutralHadron_=neutral;
+  isolPhoton_ = photon;
+}
+
 void SHElectron::fixTrkIsol()
 {
   std::pair<int,float> trkIsol = isolTrk(0.1,0.2,0.1,1.5);

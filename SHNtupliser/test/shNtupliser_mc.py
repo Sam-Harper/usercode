@@ -1,4 +1,10 @@
 isMC=True
+pfNoPU=False
+
+patCandID=""
+if pfNoPU:
+    patCandID="PFlow"
+
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -7,10 +13,6 @@ process = cms.Process("HEEP")
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkSummary = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(500),
-    limit = cms.untracked.int32(10000000)
-)
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
     reportEvery = cms.untracked.int32(500),
     limit = cms.untracked.int32(10000000)
@@ -22,10 +24,12 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
+from Configuration.AlCa.autoCond import autoCond
 if isMC:
     process.GlobalTag.globaltag = autoCond['startup'] 
 else:
     process.GlobalTag.globaltag = autoCond['com10']
+
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -36,7 +40,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
-#process.load("Configuration.StandardSequences.Reconstruction_cff")
+
 
 
 import sys
@@ -53,6 +57,8 @@ process.shNtupliser.addMet = False
 process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = True
 process.shNtupliser.addCaloTowers = True
+process.shNtupliser.addCaloHits = True
+process.shNtupliser.addIsolTrks = False
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
@@ -63,12 +69,12 @@ process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.compTwoMenus = cms.bool(False)
 process.shNtupliser.secondHLTTag = cms.string("")
-process.shNtupliser.electronTag = cms.untracked.InputTag("patElectronsPFlow")
-process.shNtupliser.tauTag = cms.untracked.InputTag("patTausPFlow")
-process.shNtupliser.muonTag = cms.untracked.InputTag("patMuonsPFlow")
-process.shNtupliser.jetTag = cms.untracked.InputTag("patJetsPFlow")
-process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotonsPFlow")
-process.shNtupliser.metTag = cms.untracked.InputTag("patMETsPFlow")
+process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
+process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
+process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
+process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
+process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
+process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
 isCrabJob=False #script seds this if its a crab job
 
@@ -110,63 +116,69 @@ process.out = cms.OutputModule("PoolOutputModule",
 #process.out.outputCommands = cms.untracked.vstring('drop *','keep *_MEtoEDMConverter_*_RelValTest')
 #
 #outPath = cms.EndPath(out)
+
+
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
+if pfNoPU:
+    # Get a list of good primary vertices, in 42x, these are DAF vertices
+    from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
+    process.goodOfflinePrimaryVertices = cms.EDFilter(
+        "PrimaryVertexObjectFilter",
+        filterParams = pvSelector.clone( minNdof = cms.double(4.0), maxZ = cms.double(24.0) ),
+        src=cms.InputTag('offlinePrimaryVertices')
+        )
 
-# Get a list of good primary vertices, in 42x, these are DAF vertices
-from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
-process.goodOfflinePrimaryVertices = cms.EDFilter(
-    "PrimaryVertexObjectFilter",
-    filterParams = pvSelector.clone( minNdof = cms.double(4.0), maxZ = cms.double(24.0) ),
-    src=cms.InputTag('offlinePrimaryVertices')
+
+    # Configure PAT to use PF2PAT instead of AOD sources
+    # this function will modify the PAT sequences. It is currently 
+    # not possible to run PF2PAT+PAT and standart PAT at the same time
+    from PhysicsTools.PatAlgos.tools.pfTools import *
+    postfix = "PFlow"
+    usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
+    process.pfPileUpPFlow.Enable = True
+    process.pfPileUpPFlow.checkClosestZVertex = cms.bool(False)
+    process.pfPileUpPFlow.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
+    process.pfJetsPFlow.doAreaFastjet = True
+    process.pfJetsPFlow.doRhoFastjet = False   
+    process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJets", "rho")
+
+    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+    process.kt6PFJets = kt4PFJets.clone(
+        rParam = cms.double(0.6),
+        doAreaFastjet = cms.bool(True),
+        doRhoFastjet = cms.bool(True)
     )
 
-
-# Configure PAT to use PF2PAT instead of AOD sources
-# this function will modify the PAT sequences. It is currently 
-# not possible to run PF2PAT+PAT and standart PAT at the same time
-from PhysicsTools.PatAlgos.tools.pfTools import *
-postfix = "PFlow"
-usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
-process.pfPileUpPFlow.Enable = True
-process.pfPileUpPFlow.checkClosestZVertex = cms.bool(False)
-process.pfPileUpPFlow.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
-process.pfJetsPFlow.doAreaFastjet = True
-process.pfJetsPFlow.doRhoFastjet = False
-
-
-# Compute the mean pt per unit area (rho) from the
-# PFchs inputs
-from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-process.kt6PFJetsPFlow = kt4PFJets.clone(
-    rParam = cms.double(0.6),
-    src = cms.InputTag('pfNoElectron'+postfix),
-    doAreaFastjet = cms.bool(True),
-    doRhoFastjet = cms.bool(True)
-    )
-process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJetsPFlow", "rho")
-
-# Add the PV selector and KT6 producer to the sequence
-getattr(process,"patPF2PATSequence"+postfix).replace(
+    # Add the PV selector and KT6 producer to the sequence
+    getattr(process,"patPF2PATSequence"+postfix).replace(
     getattr(process,"pfNoElectron"+postfix),
-    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJetsPFlow )
+    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
 
-process.patseq = cms.Sequence(    
-    process.goodOfflinePrimaryVertices*
-    getattr(process,"patPF2PATSequence"+postfix)
-    )
+    process.patseq = cms.Sequence(    
+        process.goodOfflinePrimaryVertices*
+        getattr(process,"patPF2PATSequence"+postfix)
+        )
+
 
 #process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
-
 process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute')
 
-process.load('RecoJets.JetProducers.kt4PFJets_cfi')
-process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
-process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-process.p = cms.Path(#process.primaryVertexFilter*
-    #process.patDefaultSequence*
-    process.patseq*process.kt6PFJets*
-    #     process.patDefaultSequence*
-    process.shNtupliser)
+from PhysicsTools.PatAlgos.tools.coreTools import *
+removeSpecificPATObjects(process, ['Taus'])
 
+from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
+process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
+
+if  pfNoPU:
+    process.p = cms.Path(#process.primaryVertexFilter*
+        process.pfParticleSelectionSequence* process.eleIsoSequence* 
+        process.patseq*
+        process.shNtupliser)
+else:
+    
+    process.p = cms.Path(#process.primaryVertexFilter*
+        process.pfParticleSelectionSequence* process.eleIsoSequence* 
+        process.patDefaultSequence*
+        process.shNtupliser)

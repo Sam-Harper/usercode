@@ -37,7 +37,7 @@ class SHBasicCluster : public TObject {
   float phi_;
 
   
-  std::vector<int> hitDetIds_;
+  mutable std::vector<int> hitDetIds_; //think of it like a temporary cache
   int seedId_;
   //packed info telling us about the hits used by the cluster
   //used to populate hitDetIds,saves a lot of space...
@@ -73,14 +73,15 @@ class SHBasicCluster : public TObject {
   float phi()const{return phi_;}
   
   TVector3 pos()const{TVector3 thePos;thePos.SetPtEtaPhi(1.,eta_,phi_);return thePos;}
-  int crysDetId(int crysNr)const{return hitDetIds_[crysNr];}
-  int nrCrysStored()const{return hitDetIds_.size();}
+  int crysDetId(int crysNr)const{unpackHits_();return hitDetIds_[crysNr];}
+  int nrCrysStored()const{unpackHits_();return hitDetIds_.size();}
 
-  const std::vector<int>& getHitsByDetId()const{return hitDetIds_;}
+  const std::vector<int>& getHitsByDetId()const{unpackHits_();return hitDetIds_;}
 
  private:
-  //SHBasicCluster& operator=(const SHBasicCluster &rhs){return *this;}
+  SHBasicCluster& operator=(const SHBasicCluster &rhs){return *this;}
   static int packHits_(int seedId,const std::vector<int>& hits);
+  bool unpackHits_(bool forceUnpack=false)const;
 
   ClassDef(SHBasicCluster,5)
 

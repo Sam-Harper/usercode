@@ -170,6 +170,7 @@ private:
   void setD0(float d0){d0_=d0;}
   
   void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
+  void setPFIsol(float charged,float neutral,float photon);
   void fixTrkIsol();
   //accessors
   void setIsConversion(float isCon){dCotTheta_=isCon;}

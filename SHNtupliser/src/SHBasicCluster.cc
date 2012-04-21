@@ -95,3 +95,35 @@ int SHBasicCluster::packHits_(int seedId,const std::vector<int>& hits)
   }else return 0;
 
 }
+
+bool SHBasicCluster::unpackHits_(bool forceUnpack)const
+{
+  if(!hitDetIds_.empty() && !forceUnpack) return false;
+  
+  hitDetIds_.clear();
+  hitDetIds_.reserve(nrCrys_);
+
+  if((hitInfo_&0x1)==0){ //barrel
+    int nrNegSteps = (hitInfo_ >> 1) &0x1F;
+    int nrPosSteps = (hitInfo_ >> 6) &0x1F;
+    
+    DetIdTools::EcalNavigator nav(seedId_);
+    for(int phiNr=nrNegSteps;phiNr<=nrPosSteps;phiNr++){
+      for(int etaNr=-2;etaNr<=2;etaNr++){
+	hitDetIds_.push_back(nav.getIdAtPos(etaNr,phiNr));
+      }
+    }
+  }else { //endcap
+    DetIdTools::EcalNavigator nav(seedId_); 
+    int bitNr=1;
+    for(int ix=-2;ix<=2;ix++){
+      for(int iy=-2;iy<=2;iy++){
+	if((hitInfo_&(0x1<<bitNr))==1){
+	  hitDetIds_.push_back(nav.getIdAtPos(ix,iy));
+	}
+	bitNr++;
+      }
+    }
+  }
+  return true;
+}

@@ -177,6 +177,19 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
   
+  //grrr
+  
+  for(size_t i=0;i<heepEvent.handles().gsfEle->size();i++){
+    if(&gsfEle==&(*heepEvent.handles().gsfEle)[i]){
+      reco::GsfElectronRef eleRef(heepEvent.handles().gsfEle,i);
+ 
+      float pfChargedIso = heepEvent.handles().pfChargedIsoValEleMap.isValid() ? (*heepEvent.handles().pfChargedIsoValEleMap)[eleRef] : -999;
+      float pfPhotonIso = heepEvent.handles().pfPhotonIsoValEleMap.isValid() ? (*heepEvent.handles().pfPhotonIsoValEleMap)[eleRef] : -999;
+      float pfNeutralIso = heepEvent.handles().pfNeutralIsoValEleMap.isValid() ? (*heepEvent.handles().pfNeutralIsoValEleMap)[eleRef] : -999;
+      shEle->setPFIsol(pfChargedIso,pfNeutralIso,pfPhotonIso);
+    }
+  }
+
   if(shEle->seedId()!=0 && false){
     
     const TVector3& seedPos = GeomFuncs::getCell(shEle->seedId()).pos();
@@ -201,6 +214,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     }else shEle->setPosTrackInnToSeed(dummy);
     //  std::cout <<"set state"<<std::endl;
   }
+
+  
   
   //std::cout <<"ele "<<gsfEle.et()<<" eta "<<gsfEle.eta()<<" miss hits "<<gsfEle.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()<<" covDist "<<gsfEle.convDist()<<" dcot "<<gsfEle.convDcot()<<" radius "<<gsfEle.convRadius()<<std::endl;
 
