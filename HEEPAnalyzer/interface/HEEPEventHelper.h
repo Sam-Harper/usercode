@@ -62,6 +62,9 @@ namespace heep {
     edm::InputTag verticesTag_;
     edm::InputTag caloTowersTag_;
     edm::InputTag eleRhoCorrTag_;
+    edm::InputTag pfChargedIsoValEleMapTag_;
+    edm::InputTag pfPhotonIsoValEleMapTag_; 
+    edm::InputTag pfNeutralIsoValEleMapTag_;
 
     //trigger matching parameters
     std::string hltProcName_;

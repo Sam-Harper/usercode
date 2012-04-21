@@ -48,7 +48,9 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   verticesTag_ = conf.getParameter<edm::InputTag>("verticesTag");
   caloTowersTag_ = conf.getParameter<edm::InputTag>("caloTowersTag");
   eleRhoCorrTag_ = conf.getParameter<edm::InputTag>("eleRhoCorrTag");
-  
+  pfChargedIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfChargedIsoValEleMapTag");
+  pfPhotonIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfPhotonIsoValEleMapTag"); 
+  pfNeutralIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfNeutralIsoValEleMapTag"); 
 
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -112,6 +114,9 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(verticesTag_,handles.vertices);
   event.getByLabel(caloTowersTag_,handles.caloTowers);
   event.getByLabel(eleRhoCorrTag_,handles.eleRhoCorr);
+  event.getByLabel(pfChargedIsoValEleMapTag_,handles.pfChargedIsoValEleMap);
+  event.getByLabel(pfPhotonIsoValEleMapTag_,handles.pfPhotonIsoValEleMap);
+  event.getByLabel(pfNeutralIsoValEleMapTag_,handles.pfNeutralIsoValEleMap);
   event.getByType(handles.beamSpot);
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);

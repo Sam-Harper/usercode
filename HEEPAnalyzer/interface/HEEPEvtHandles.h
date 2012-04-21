@@ -85,6 +85,9 @@ namespace heep {
     edm::Handle<double> eleRhoCorr;
     edm::ESHandle<L1GtTriggerMenu> l1Menu;
     
+    edm::Handle<edm::ValueMap<double> > pfChargedIsoValEleMap;
+    edm::Handle<edm::ValueMap<double> > pfPhotonIsoValEleMap;
+    edm::Handle<edm::ValueMap<double> > pfNeutralIsoValEleMap;
 
     edm::ESHandle<MagneticField> bField;
     edm::ESHandle<TrackerGeometry> trackGeom;
