@@ -159,7 +159,30 @@ if pfNoPU:
         process.goodOfflinePrimaryVertices*
         getattr(process,"patPF2PATSequence"+postfix)
         )
+else:
+     from RecoJets.JetProducers.kt4PFJets_cfi import *
+    inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute','L2L3Residual'])
+    process.patJetCorrFactors.useRho=False
 
+    # add pf met
+    from PhysicsTools.PatAlgos.tools.metTools import *
+    addPfMET(process, 'PF')
+
+    # Add PF jets
+    from PhysicsTools.PatAlgos.tools.jetTools import *
+    switchJetCollection(process,cms.InputTag('ak5PFJets'),
+                        doJTA        = True,
+                        doBTagging   = True,
+                        jetCorrLabel = inputJetCorrLabel,
+                        doType1MET   = True,
+                        genJetCollection=cms.InputTag("ak5GenJets"),
+                        doJetID      = True
+                        )
+    process.patJets.addTagInfos = True
+    process.patJets.tagInfoSources  = cms.VInputTag(
+        cms.InputTag("secondaryVertexTagInfosAOD"),
+    )
+    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
 
 #process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
 process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute')
@@ -171,14 +194,21 @@ removeSpecificPATObjects(process, ['Taus'])
 from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
 
+
+#for isolation correction
+process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
+
 if  pfNoPU:
     process.p = cms.Path(#process.primaryVertexFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patseq*
+        process.kt6PFJetsForIsolation*
         process.shNtupliser)
 else:
     
     process.p = cms.Path(#process.primaryVertexFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patDefaultSequence*
+        process.kt6PFJetsForIsolation*
         process.shNtupliser)
