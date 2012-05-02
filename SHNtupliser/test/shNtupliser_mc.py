@@ -160,7 +160,7 @@ if pfNoPU:
         getattr(process,"patPF2PATSequence"+postfix)
         )
 else:
-     from RecoJets.JetProducers.kt4PFJets_cfi import *
+    from RecoJets.JetProducers.kt4PFJets_cfi import *
     inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute','L2L3Residual'])
     process.patJetCorrFactors.useRho=False
 
