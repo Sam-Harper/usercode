@@ -199,8 +199,12 @@ process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
 process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
+process.load("SHarper.HEEPAnalyzer.gsfElectronsHEEPCorr_cfi")
+process.load("RecoEgamma.ElectronIdentification.electronIdSequence_cff")
+
 if  pfNoPU:
     process.p = cms.Path(#process.primaryVertexFilter*
+        process.gsfElectronsHEEPCorr*process.eIdSequence*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patseq*
         process.kt6PFJetsForIsolation*
@@ -208,7 +212,12 @@ if  pfNoPU:
 else:
     
     process.p = cms.Path(#process.primaryVertexFilter*
+        process.gsfElectronsHEEPCorr*process.eIdSequence*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patDefaultSequence*
         process.kt6PFJetsForIsolation*
         process.shNtupliser)
+
+
+from SHarper.HEEPAnalyzer.heepTools import *
+swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")
