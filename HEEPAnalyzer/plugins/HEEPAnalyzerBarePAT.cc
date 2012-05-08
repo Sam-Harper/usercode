@@ -22,7 +22,7 @@ HEEPAnalyzerBarePAT::HEEPAnalyzerBarePAT(const edm::ParameterSet& iPara):
 void HEEPAnalyzerBarePAT::beginJob()
 {
   edm::Service<TFileService> fs;
-  massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 5 GeV/c^{2}",290,50,1500); 
+  massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 10 GeV/c^{2}",250,50,2550); 
 }
 
 //this analyser shows you how to apply the heep selection to pat electrons straight out of pat
