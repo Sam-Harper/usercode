@@ -54,6 +54,14 @@ heepEndcapCuts = cms.PSet (
     maxNrMissHits=cms.int32(0),
 )
 
+heepEffectiveAreas = cms.PSet (
+    trackerBarrel = cms.double(0.),
+    trackerEndcap = cms.double(0.),
+    ecalBarrel = cms.double(0.14),
+    ecalEndcap = cms.double(0.14),
+    hcalBarrel = cms.double(0.14),
+    hcalEndcap = cms.double(0.14)
+              )                                
 
 heepBarrelCutsV31 = cms.PSet (
     cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks"),

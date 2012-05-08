@@ -40,14 +40,7 @@ heepEventPara  = cms.PSet (
     barrelCuts = cms.PSet(heepBarrelCuts),
     endcapCuts = cms.PSet(heepEndcapCuts),
     applyRhoCorrToEleIsol = cms.bool(True), 
-    eleIsolEffectiveAreas = cms.PSet (
-        trackerBarrel = cms.double(0.),
-        trackerEndcap = cms.double(0.),
-        ecalBarrel = cms.double(0.14), #note, as we sum ecal + hcal, I've set this to 0.14 each to add to 0.28
-        ecalEndcap = cms.double(0.14),
-        hcalBarrel = cms.double(0.14),
-        hcalEndcap = cms.double(0.14)
-        ),
+    eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
     onlyAddEcalDriven = cms.bool(True), #only promote ecal driven (ie not tracker driven PF electrons) to heep electrons
     heepEleSource = cms.int32(0) #0 = GsfElectrons, 1 = pat::Electrons to make the heep electrons from 
     

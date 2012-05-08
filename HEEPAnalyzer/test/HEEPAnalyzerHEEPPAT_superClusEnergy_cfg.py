@@ -61,14 +61,7 @@ process.heepPatElectrons = cms.EDProducer("HEEPAttStatusToPAT",
                                           barrelCuts = cms.PSet(heepBarrelCuts),
                                           endcapCuts = cms.PSet(heepEndcapCuts),
                                           applyRhoCorrToEleIsol = cms.bool(True), 
-                                          eleIsolEffectiveAreas = cms.PSet (
-                                              trackerBarrel = cms.double(0.),
-                                              trackerEndcap = cms.double(0.),
-                                              ecalBarrel = cms.double(0.14),
-                                              ecalEndcap = cms.double(0.14),
-                                              hcalBarrel = cms.double(0.14),
-                                              hcalEndcap = cms.double(0.14)
-                                              ),
+                                          eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
                                           eleRhoCorrLabel = cms.InputTag("kt6PFJetsForIsolation","rho"),
                                           )
 

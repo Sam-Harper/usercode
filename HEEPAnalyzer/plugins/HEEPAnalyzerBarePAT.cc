@@ -16,6 +16,7 @@ HEEPAnalyzerBarePAT::HEEPAnalyzerBarePAT(const edm::ParameterSet& iPara):
 {
   eleLabel_=iPara.getParameter<edm::InputTag>("eleLabel");
   eleRhoCorrLabel_=iPara.getParameter<edm::InputTag>("eleRhoCorrLabel");
+  applyRhoCorrToEleIsol_=iPara.getParameter<bool>("applyRhoCorrToEleIsol");
 }
 
 void HEEPAnalyzerBarePAT::beginJob()
@@ -35,7 +36,7 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
 
   edm::Handle<double> rhoHandle;
   iEvent.getByLabel(eleRhoCorrLabel_,rhoHandle);
-  double rho = rhoHandle.isValid() ? *rhoHandle : 0;
+  double rho = applyRhoCorrToEleIsol_ ? *rhoHandle : 0;
 
   //do what ever you wa
   //count the number that pass / fail cuts
