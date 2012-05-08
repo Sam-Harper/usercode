@@ -108,7 +108,15 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 removeSpecificPATObjects( process, ['Taus'] )
 process.patDefaultSequence.remove( process.patTaus )
 
-process.p = cms.Path(process.patDefaultSequence* #runs PAT 
+
+#for isolation correction
+from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
+
+
+process.p = cms.Path(process.kt6PFJetsForIsolation*
+                     process.patDefaultSequence* #runs PAT 
                      process.heepPatElectrons* #heepifies the pat electrons (resets energy to ecal energy and adds heep id)
                      process.heepAnalyzerHEEPPAT) #runs heep analyzer
 

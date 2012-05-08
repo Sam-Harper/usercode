@@ -22,8 +22,8 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   
   edm::Handle<double> rhoHandle;
   iEvent.getByLabel(eleRhoCorrLabel_,rhoHandle);
-  double rho = rhoHandle.isValid() ? *rhoHandle : 0;
-  
+  //double rho = rhoHandle.isValid() ? *rhoHandle : 0;
+  double rho = applyRhoCorrToEleIsol_ ? *rhoHandle : 0; //actually I want to throw an exception if rho is missing
 
   //prepare output collection
   std::auto_ptr<pat::ElectronCollection> outEle(new pat::ElectronCollection());

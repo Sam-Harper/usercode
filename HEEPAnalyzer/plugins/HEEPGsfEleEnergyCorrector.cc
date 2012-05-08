@@ -8,6 +8,7 @@
 HEEPGsfEleEnergyCorrector::HEEPGsfEleEnergyCorrector(const edm::ParameterSet& iPara)
 {
   inputEleTag_ = iPara.getParameter<edm::InputTag>("inputEleTag");
+  useSuperClusterEnergy_ = iPara.getParameter<bool>("useSuperClusterEnergy");
   produces < reco::GsfElectronCollection >();
 }
 
@@ -23,10 +24,11 @@ void HEEPGsfEleEnergyCorrector::produce(edm::Event& iEvent,const edm::EventSetup
   std::auto_ptr<reco::GsfElectronCollection> outEles(new reco::GsfElectronCollection);
 
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
-    reco::GsfElectron ele(eles[eleNr]);
-    if(ele.isEB()){
+    reco::GsfElectron ele(eles[eleNr]);  
+    if(useSuperClusterEnergy_) ele.setCorrectedEcalEnergy(ele.superCluster()->energy());
+    else if(ele.isEB()){
       float rawEt = ele.superCluster()->rawEnergy()*sin(ele.superCluster()->position().Theta());
-      ele.setCorrectedEcalEnergy(ele.correctedEcalEnergy()*fEtCorr(rawEt,ele.classification()));
+      ele.setCorrectedEcalEnergy(ele.correctedEcalEnergy()*fEtCorr(rawEt,ele.classification())); 
     }
     outEles->push_back(ele);
   }

@@ -14,7 +14,7 @@ class HEEPGsfEleEnergyCorrector : public edm::EDProducer {
 
 private:
   edm::InputTag inputEleTag_;
- 
+  bool useSuperClusterEnergy_;
 
 public:
   explicit HEEPGsfEleEnergyCorrector(const edm::ParameterSet& iPara);

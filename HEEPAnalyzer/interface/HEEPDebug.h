@@ -23,6 +23,8 @@ namespace heep {
   //module name is just the message category of the LogInfo
   template<typename PROD> int listAllProducts(const edm::Event& iEvent,const char* moduleName);
 
+
+  
 }
 
 

@@ -60,16 +60,16 @@ process.heepPatElectrons = cms.EDProducer("HEEPAttStatusToPAT",
                                           eleLabel = cms.InputTag("patElectrons"),
                                           barrelCuts = cms.PSet(heepBarrelCuts),
                                           endcapCuts = cms.PSet(heepEndcapCuts),
-                                          applyRhoCorrToEleIsol = cms.bool(False), 
+                                          applyRhoCorrToEleIsol = cms.bool(True), 
                                           eleIsolEffectiveAreas = cms.PSet (
                                               trackerBarrel = cms.double(0.),
                                               trackerEndcap = cms.double(0.),
-                                              ecalBarrel = cms.double(0.101),
-                                              ecalEndcap = cms.double(0.046),
-                                              hcalBarrel = cms.double(0.021),
-                                              hcalEndcap = cms.double(0.040)
+                                              ecalBarrel = cms.double(0.14),
+                                              ecalEndcap = cms.double(0.14),
+                                              hcalBarrel = cms.double(0.14),
+                                              hcalEndcap = cms.double(0.14)
                                               ),
-                                          eleRhoCorrLabel = cms.InputTag("kt6PFJets","rho"),
+                                          eleRhoCorrLabel = cms.InputTag("kt6PFJetsForIsolation","rho"),
                                           )
 
 process.heepAnalyzerHEEPPAT = cms.EDAnalyzer("HEEPAnalyzerHEEPPAT",
@@ -109,14 +109,20 @@ removeSpecificPATObjects( process, ['Taus'] )
 process.patDefaultSequence.remove( process.patTaus )
 
 ##define the heep energy corrector
-process.load("SHarper.HEEPAnalyzer.gsfElectronsHEEPCorrs_cfi")
+process.load("SHarper.HEEPAnalyzer.gsfElectronsHEEPCorr_cfi")
 ## we also need to re-run the electron ID value maps as they will be no longer valid
 process.load("RecoEgamma.ElectronIdentification.electronIdSequence_cff")
 
 
+from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
+
+
 process.p = cms.Path(process.gsfElectronsHEEPCorr*process.eIdSequence* #make the new energy corrected gsf electrons and id value maps
-                     process.patDefaultSequence* #runs PAT 
-                     process.heepPatElectrons* #heepifies the pat electrons (resets energy to ecal energy and adds heep id)
+                     process.kt6PFJetsForIsolation* # rho for isolation
+                     process.patDefaultSequence* #runs PAT
+                     process.heepPatElectrons* #heepifies the pat electrons (resets energy to sc energy and adds heep id)
                      process.heepAnalyzerHEEPPAT) #runs heep analyzer
 
 #now we need to swap everything over to the new gsfElectron collection, this should be last in the config

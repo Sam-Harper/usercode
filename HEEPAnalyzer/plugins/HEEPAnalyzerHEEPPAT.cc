@@ -6,6 +6,7 @@
 
 
 #include "TH1D.h"
+#include "TTree.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
@@ -20,7 +21,12 @@ HEEPAnalyzerHEEPPAT::HEEPAnalyzerHEEPPAT(const edm::ParameterSet& iPara):
 void HEEPAnalyzerHEEPPAT::beginJob()
 {
   edm::Service<TFileService> fs;
-  massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 5 GeV/c^{2}",290,50,1500); 
+  massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 10 GeV/c^{2}",250,50,2550); 
+  tree_ = fs->make<TTree>("debugTree","test");
+  singleTree_ = fs->make<TTree>("debugSingleTree","test");
+  treeData_.createBranches(tree_);
+  singleTreeData_.createBranches(singleTree_);
+
 }
 
 //this analyser shows you how to use pat electrons that have been remade by HEEPAttStatusToPAT to have 
@@ -37,20 +43,40 @@ void HEEPAnalyzerHEEPPAT::analyze(const edm::Event& iEvent,const edm::EventSetup
     if(eles[eleNr].userInt("HEEPId")) nrPass_++;
     else nrFail_++;
   }
-  
+  singleTreeData_.evtInfo.runnr=iEvent.id().run();
+  singleTreeData_.evtInfo.eventnr=iEvent.id().event();
+  singleTreeData_.evtInfo.lumiSec=iEvent.luminosityBlock();
   //lets fill a mass hist
   for(size_t ele1Nr=0;ele1Nr<eles.size();ele1Nr++){
+    singleTreeData_.region = eles[ele1Nr].isEE();
+    singleTreeData_.cutCode = eles[ele1Nr].userInt("HEEPId");
+    singleTreeData_.p4.fill(eles[ele1Nr].p4());
+    singleTree_->Fill();
+
     for(size_t ele2Nr=ele1Nr+1;ele2Nr<eles.size();ele2Nr++){
       const pat::Electron& ele1 = eles[ele1Nr];
       const pat::Electron& ele2 = eles[ele2Nr];
       int ele1CutCode =  ele1.userInt("HEEPId");
       int ele2CutCode =  ele2.userInt("HEEPId");
-    
+    	
+      math::XYZTLorentzVector ele1P4 = ele1.p4();
+      math::XYZTLorentzVector ele2P4 = ele2.p4();
+      float mass = (ele1P4+ele2P4).mag();
+
+      treeData_.evtRegion = ele1.isEE() + ele2.isEE();
+      treeData_.mass = mass;
+      treeData_.ele1CutCode=ele1CutCode;
+      treeData_.ele2CutCode=ele2CutCode;
+      treeData_.evtInfo.runnr=iEvent.id().run();
+      treeData_.evtInfo.eventnr=iEvent.id().event();
+      treeData_.evtInfo.lumiSec=iEvent.luminosityBlock();
+      tree_->Fill();
+	
       if(ele1CutCode==0x0 && ele2CutCode==0x0 && !(ele1.isEE() && ele2.isEE())){ //EB-EB, EB-EE only
-	math::XYZTLorentzVector ele1P4 = ele1.p4();
-	math::XYZTLorentzVector ele2P4 = ele2.p4();
-	float mass = (ele1P4+ele2P4).mag();
+
 	massHist_->Fill(mass);
+	
+
       }
     }
   }

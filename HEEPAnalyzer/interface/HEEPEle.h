@@ -72,7 +72,7 @@ namespace heep {
     Ele(const reco::GsfElectron& ele):
       gsfEle_(&ele),patEle_(dynamic_cast<const pat::Electron*>(&ele)),
       cutCode_(heep::CutCodes::INVALID),
-      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
+      p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()),
       rhoForIsolCorr_(0),
       applyRhoIsolCorr_(false),
       isolEffectAreas_()
@@ -82,7 +82,7 @@ namespace heep {
     Ele(const pat::Electron& ele):
       gsfEle_(&ele),patEle_(&ele),
       cutCode_(heep::CutCodes::INVALID),
-      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
+      p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()),
       rhoForIsolCorr_(0),
       applyRhoIsolCorr_(false),
       isolEffectAreas_(){}
@@ -135,12 +135,12 @@ namespace heep {
     float ptCalo()const{return gsfEle_->trackMomentumAtCalo().rho();}
      
     //abreviations of overly long GsfElectron methods, I'm sorry but if you cant figure out what hOverE() means, you shouldnt be using this class
-    float hOverE()const{return gsfEle_->hadronicOverEm();}
+    float hOverE()const{return gsfEle_->hadronicOverEm()/p4_.E()*gsfEle_->caloEnergy();}
     float dEtaIn()const{return gsfEle_->deltaEtaSuperClusterTrackAtVtx();}
     float dPhiIn()const{return gsfEle_->deltaPhiSuperClusterTrackAtVtx();}
     float dPhiOut()const{return gsfEle_->deltaPhiSeedClusterTrackAtCalo();}
-    float epIn()const{return gsfEle_->eSuperClusterOverP();}
-    float epOut()const{return gsfEle_->eSeedClusterOverPout();}
+    float epIn()const{return gsfEle_->eSuperClusterOverP()*p4_.E()/gsfEle_->caloEnergy();}
+    float epOut()const{return gsfEle_->eSeedClusterOverPout()*p4_.E()/gsfEle_->caloEnergy();}
     float fbrem()const{return gsfEle_->fbrem();}
     float bremFrac()const{return fbrem();}
     float invEOverInvP()const{return gsfEle_->trackMomentumAtVtx().R()!=0. ? 1./gsfEle_->caloEnergy() - 1./gsfEle_->trackMomentumAtVtx().R() : std::numeric_limits<float>::max();}

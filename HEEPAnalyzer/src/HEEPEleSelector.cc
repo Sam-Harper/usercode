@@ -71,7 +71,7 @@ int heep::EleSelector::getCutCode(float rho,const reco::GsfElectron& ele,const h
   if(fabs(ele.deltaPhiSuperClusterTrackAtVtx()) > cuts.maxDPhiIn ) cutCode |=CutCodes::DPHIIN;
   if(ele.hadronicOverEm()> cuts.maxHadem) cutCode |= CutCodes::HADEM;
   if(ele.scSigmaIEtaIEta()>cuts.maxSigmaIEtaIEta) cutCode |= CutCodes::SIGMAIETAIETA;
-  if(ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt() - rho*(effectAreas.hcal(ele.superCluster()->eta())+effectAreas.hcal(ele.superCluster()->eta())) >( cuts.isolEmHadDepth1ConstTerm + cuts.isolEmHadDepth1GradTerm*(et<cuts.isolEmHadDepth1GradStart ? 0. : (et-cuts.isolEmHadDepth1GradStart)))) cutCode |=CutCodes::ISOLEMHADDEPTH1; 
+  if(ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt() - rho*(effectAreas.ecal(ele.superCluster()->eta())+effectAreas.hcal(ele.superCluster()->eta())) >( cuts.isolEmHadDepth1ConstTerm + cuts.isolEmHadDepth1GradTerm*(et<cuts.isolEmHadDepth1GradStart ? 0. : (et-cuts.isolEmHadDepth1GradStart)))) cutCode |=CutCodes::ISOLEMHADDEPTH1; 
   if(ele.e2x5Max()/ele.e5x5()< cuts.minE2x5Over5x5 && ele.e1x5()/ele.e5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
   if(ele.dr03HcalDepth2TowerSumEt() - rho*effectAreas.hcal(ele.superCluster()->eta()) > (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(et<cuts.isolHadDepth2GradStart ? 0. : (et-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
   if(ele.dr03TkSumPt() - rho*effectAreas.tracker(ele.superCluster()->eta()) > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(et<cuts.isolPtTrksGradStart ? 0. : (et-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
