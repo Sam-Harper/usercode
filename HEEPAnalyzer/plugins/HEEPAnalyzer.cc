@@ -28,7 +28,7 @@ HEEPAnalyzer::HEEPAnalyzer(const edm::ParameterSet& iPara):
 void HEEPAnalyzer::beginJob()
 {
   edm::Service<TFileService> fs;
-  massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 5 GeV/c^{2}",290,50,1500); 
+  massHist_ = fs->make<TH1D>("massHist","Di-Electron Mass;M_{ee} (GeV/c^{2});# Events / 10 GeV/c^{2}",250,50,2550); 
 }
 
 void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
