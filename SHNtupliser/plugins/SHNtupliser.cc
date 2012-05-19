@@ -32,6 +32,8 @@
 #include "TTree.h"
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
@@ -73,7 +75,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
 SHNtupliser::~SHNtupliser()
 {
   if(shEvt_) delete shEvt_;
-  if(outFile_) delete outFile_;
+  //if(outFile_) delete outFile_;
   if(trigDebugHelper_) delete trigDebugHelper_;
   if(shTrigObjs_) delete shTrigObjs_;
   if(puSummary_) delete puSummary_;
@@ -86,11 +88,14 @@ void SHNtupliser::beginJob()
   shCaloHits_= &(shEvt_->getCaloHits());
   shIsolTrks_= &(shEvt_->getIsolTrks());
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
-  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
+  //  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
+  edm::Service<TFileService> fs;
+  outFile_ = &fs->file();
+  outFile_->cd();
   evtTree_= new TTree("evtTree","Event Tree");
-
+ 
   int splitLevel=2;
-  evtTree_->SetCacheSize(1024*1024*10);
+  evtTree_->SetCacheSize(1024*1024*100);
 					       
   evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,splitLevel);
   
@@ -242,11 +247,11 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
     
     
 
-    if(shEvt_->datasetCode()>130){ //for all non Z MC
+    if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
       shEvt_->getCaloHits().clear();
       shEvt_->clearTrigs();
     }  
-    //  bool passEle=true;
+    passEle=true; //moved to a seperate filter run first
     if(passEle || !(shEvt_->datasetCode()>=120 && shEvt_->datasetCode()<700)){ //only for phoJet, qcdJet, actually sod it everything but Z
       nrPass_++;
       evtTree_->Fill();
@@ -296,13 +301,15 @@ void SHNtupliser::endJob()
   
   //outFile_->WriteObject(&nrPass_,"nrPass");
   //outFile_->WriteObject(&nrTot_,"nrTot");
-  outFile_->Write();
-  outFile_->Close();
-  delete outFile_;
-  outFile_=NULL;
-  evtTree_=NULL; //it is owned by the file, once closed its gone 
-  delete shEvt_;
-  shEvt_=NULL;
+ 
+  //  outFile_->Write();
+  // outFile_->Close();
+  // delete outFile_;
+  //outFile_=NULL;
+  // evtTree_=NULL; //it is owned by the file, once closed its gone 
+  //delete shEvt_;
+  //shEvt_=NULL;
+  std::cout <<"job ended "<<std::endl;
 }
 
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits)

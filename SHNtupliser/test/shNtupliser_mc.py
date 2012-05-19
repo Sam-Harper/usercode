@@ -36,7 +36,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(300)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -53,7 +53,7 @@ process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
 process.shNtupliser.gsfEleTag = "gsfElectrons"
-process.shNtupliser.addMet = False
+process.shNtupliser.addMet = True
 process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = True
 process.shNtupliser.addCaloTowers = True
@@ -76,19 +76,44 @@ process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
+
+process.TFileService = cms.Service("TFileService",
+                                   fileName = cms.string("output.root")
+)
+
+
 isCrabJob=False #script seds this if its a crab job
 
 #if 1, its a crab job...
 if isCrabJob:
     print "using crab specified filename"
-    process.shNtupliser.outputFilename= "OUTPUTFILE"
+    process.TFileService.fileName= "OUTPUTFILE"
+    #process.shNtupliser.outputFilename= "OUTPUTFILE"
     process.shNtupliser.datasetCode = DATASETCODE
     process.shNtupliser.sampleWeight = SAMPLEWEIGHT
 else:
     print "using user specified filename"
-    process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
+    process.TFileService.fileName= sys.argv[len(sys.argv)-1]
+    #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
     process.shNtupliser.datasetCode = -1
     process.shNtupliser.sampleWeight = 1
+
+
+
+process.egammaFilter = cms.EDFilter("EGammaFilter",
+                                      nrElesRequired=cms.int32(-1),
+                                      nrPhosRequired=cms.int32(-1),
+                                      eleEtCut=cms.double(25),
+                                      phoEtCut=cms.double(25),
+                                      eleTag=process.shNtupliser.gsfEleTag,
+                                      phoTag=process.shNtupliser.recoPhoTag 
+                                     )
+
+print "dataset code: ",process.shNtupliser.datasetCode.value()
+if process.shNtupliser.datasetCode.value()>=200:
+    if process.shNtupliser.datasetCode.value()<1000:
+        print "applying filter for 1 ele"
+        process.egammaFilter.nrElesRequired=cms.int32(1)
 
 
 filePrefex="file:"
@@ -195,16 +220,17 @@ from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
 
 
-#for isolation correction
+#for isolation correction from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
 process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
-process.load("SHarper.HEEPAnalyzer.gsfElectronsHEEPCorr_cfi")
-process.load("RecoEgamma.ElectronIdentification.electronIdSequence_cff")
+#process.load("SHarper.HEEPAnalyzer.gsfElectronsHEEPCorrs_cfi")
+#process.load("RecoEgamma.ElectronIdentification.electronIdSequence_cff")
 
 if  pfNoPU:
     process.p = cms.Path(#process.primaryVertexFilter*
-        process.gsfElectronsHEEPCorr*process.eIdSequence*
+ #       process.gsfElectronsHEEPCorr*process.eIdSequence*
+        process.egammaFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patseq*
         process.kt6PFJetsForIsolation*
@@ -212,12 +238,13 @@ if  pfNoPU:
 else:
     
     process.p = cms.Path(#process.primaryVertexFilter*
-        process.gsfElectronsHEEPCorr*process.eIdSequence*
+        #process.gsfElectronsHEEPCorr*process.eIdSequence*
+        process.egammaFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patDefaultSequence*
         process.kt6PFJetsForIsolation*
         process.shNtupliser)
 
 
-from SHarper.HEEPAnalyzer.heepTools import *
-swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")
+#from SHarper.HEEPAnalyzer.heepTools import *
+#swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")
