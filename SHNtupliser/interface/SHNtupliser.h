@@ -89,6 +89,9 @@ private:
 
   SHPileUpSummary* puSummary_;
   bool writePUInfo_;
+  
+  bool writePDFInfo_;
+  std::vector<double> pdfWeightsVec_;
 
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;

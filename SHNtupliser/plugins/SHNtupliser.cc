@@ -67,6 +67,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   addCaloTowers_ = iPara.getParameter<bool>("addCaloTowers");
   addCaloHits_ = iPara.getParameter<bool>("addCaloHits");
   addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
+  writePDFInfo_ = iPara.getParameter<bool>("writePDFInfo");
   if(useHLTDebug_){
     trigDebugHelper_ = new TrigDebugObjHelper(iPara);
   }
@@ -127,6 +128,10 @@ void SHNtupliser::beginJob()
 
   }
 
+  if(writePDFInfo_){
+    evtTree_->Branch("PDFWeights",&pdfWeightsVec_);
+  }
+
   // scTree_=new TTree("scTree","tree");
   // scTree_->Branch("sc",&oldSigmaIEtaIEta_,"oldSigmaIEtaIEta/F:newSigmaIEtaIEta:affectedByCaloNavBug:scNrgy:scEta:scPhi:scEt");
 
@@ -167,7 +172,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
  
   //even easier to convert from heep to shEvt
 
-
+  pdfWeightsVec_.clear();
 
   nrTot_++;
   //  std::cout <<"analysing "<<std::endl;
@@ -206,6 +211,12 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
       }
     }
       
+    if(writePDFInfo_){
+      edm::Handle<std::vector<double> > pdfWeightsHandle;
+      edm::InputTag pdfTag("pdfWeights:cteq66");
+      iEvent.getByLabel(pdfTag,pdfWeightsHandle);
+      if(pdfWeightsHandle.isValid()) pdfWeightsVec_ = *pdfWeightsHandle;
+    }
 
     bool passSC=false;
 
