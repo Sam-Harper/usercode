@@ -34,7 +34,7 @@ echo files: $inputFiles
 
 
 
-cat shNtupliser_withJets_cfg.py > shNtupliser_autoGen.py
+cat shNtupliser_data.py > shNtupliser_autoGen.py
 
 echo "process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(" >> shNtupliser_autoGen.py
 echo $inputLumis | awk -F "," '{ for(i=1;i<=NF;i++) print "\""$i"\","} ' >>shNtupliser_autoGen.py

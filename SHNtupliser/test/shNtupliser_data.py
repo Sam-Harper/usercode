@@ -249,7 +249,7 @@ if  pfNoPU:
         process.shNtupliser)
 else:
     
-    process.p = cms.Path(process.skimHLTFilter*
+    process.p = cms.Path(#process.skimHLTFilter*
         process.primaryVertexFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patDefaultSequence*

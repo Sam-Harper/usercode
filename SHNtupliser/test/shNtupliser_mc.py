@@ -36,7 +36,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(300)
+    input = cms.untracked.int32(50000)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -226,6 +226,20 @@ process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
 #process.load("SHarper.HEEPAnalyzer.gsfElectronsHEEPCorrs_cfi")
 #process.load("RecoEgamma.ElectronIdentification.electronIdSequence_cff")
+process.shNtupliser.writePDFInfo=cms.bool(True)
+process.pdfWeights = cms.EDProducer("PdfWeightProducer",
+                                    # Fix POWHEG if buggy (this PDF set will also appear on output,
+                                    # so only two more PDF sets can be added in PdfSetNames if not "")
+                                    #FixPOWHEG = cms.untracked.string("cteq66.LHgrid"),
+                                    #GenTag = cms.untracked.InputTag("genParticles"),
+                                    PdfInfoTag = cms.untracked.InputTag("generator"),
+                                    PdfSetNames = cms.untracked.vstring(
+                                                    "cteq66.LHgrid",
+                                        "MRST2006nnlo.LHgrid",
+                                         "NNPDF10_100.LHgrid"
+                                        )
+      )
+
 
 if  pfNoPU:
     process.p = cms.Path(#process.primaryVertexFilter*
@@ -243,6 +257,7 @@ else:
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patDefaultSequence*
         process.kt6PFJetsForIsolation*
+        process.pdfWeights*
         process.shNtupliser)
 
 
