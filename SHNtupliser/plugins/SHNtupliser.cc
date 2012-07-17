@@ -113,6 +113,11 @@ void SHNtupliser::beginJob()
   if(addIsolTrks_){
     evtTree_->Branch("IsolTrksBranch","TClonesArray",&shIsolTrks_,32000,splitLevel);
   }
+  if(addIsoDeps_){
+    //evtTree_->Branch("PFChargedHadBranch","TClonesArray",
+    shPFCands_=new SHPFCandContainer;
+    evtTree_->Branch("PFIsolBranch","SHPFCandContainer",&shPFCands_,32000,splitLevel);
+  }
   if(compTwoMenus_){
     shEvt2ndTrig_ = new SHEvent;
     evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,splitLevel);
