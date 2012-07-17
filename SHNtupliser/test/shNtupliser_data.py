@@ -238,7 +238,9 @@ process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
 process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
-
+#overriding vetos
+process.elPFIsoValueCharged03PFId.deposits.vetos  = cms.vstring('EcalEndcaps:ConeVeto(0.015)','EcalBarrel:ConeVeto(0.015)')
+process.elPFIsoValueGamma03PFId.deposits.vetos =  vetos = cms.vstring('EcalEndcaps:ConeVeto(0.08)','EcalBarrel:ConeVeto(0.015)')
 
 if  pfNoPU:
     process.p = cms.Path(process.skimHLTFilter*
@@ -249,7 +251,7 @@ if  pfNoPU:
         process.shNtupliser)
 else:
     
-    process.p = cms.Path(#process.skimHLTFilter*
+    process.p = cms.Path(process.skimHLTFilter*
         process.primaryVertexFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patDefaultSequence*

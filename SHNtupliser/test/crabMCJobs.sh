@@ -1,0 +1,20 @@
+crabJob_MC_G_Pt-120to170_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-120to170_TuneZ2_7TeV_pythia6.111122_035612
+crab:   52 Total Jobs 
+crabJob_MC_G_Pt-15to30_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-15to30_TuneZ2_7TeV_pythia6.111122_022155
+crab:   51 Total Jobs 
+crabJob_MC_G_Pt-170to300_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-170to300_TuneZ2_7TeV_pythia6.111122_021729
+crab:   52 Total Jobs 
+crabJob_MC_G_Pt-300to470_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-300to470_TuneZ2_7TeV_pythia6.111122_042741
+crab:   52 Total Jobs 
+crabJob_MC_G_Pt-30to50_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-30to50_TuneZ2_7TeV_pythia6.111122_025221
+crab:   51 Total Jobs 
+crabJob_MC_G_Pt-470to800_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-470to800_TuneZ2_7TeV_pythia6.111122_045958
+crab:   52 Total Jobs 
+crabJob_MC_G_Pt-50to80_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-50to80_TuneZ2_7TeV_pythia6.111122_032354
+crab:   52 Total Jobs 
+crabJob_MC_G_Pt-80to120_TuneZ2_7TeV_pythia6.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_G_Pt-80to120_TuneZ2_7TeV_pythia6.111122_021552
+crab:   51 Total Jobs 
+crabJob_MC_WJetsToLNu_PtW-100_TuneZ2_7TeV-madgraph.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_WJetsToLNu_PtW-100_TuneZ2_7TeV-madgraph.111122_015453
+crab:   102 Total Jobs 
+crabJob_MC_WJetsToLNu_TuneZ2_7TeV-madgraph-tauola.428_v20MC_AOD_Summer11-PU_S4_START42_V11-v1_WJetsToLNu_TuneZ2_7TeV-madgraph-tauola.111122_013441
+crab:   233 Total Jobs 

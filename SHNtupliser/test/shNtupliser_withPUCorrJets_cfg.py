@@ -25,7 +25,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
-process.GlobalTag.globaltag = cms.string('GR_R_42_V21::All')
+process.GlobalTag.globaltag = 'GR_R_52_V7::All'
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
@@ -73,10 +73,10 @@ phoSkim=True
 #PHOSKIMOVERWRITE
 if phoSkim:
     #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33*","HLT_Photon*","HLT_DoubleEle33*")
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33_v*","HLT_DoublePhoton50_v*","HLT_DoublePhoton60_v*","HLT_DoublePhoton70_v*","HLT_DoublePhoton80_v*", #all the double photons
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton70_v*","HLT_DoublePhoton80_v*", #all the double photons
                                                  "HLT_Photon26_Photon18_v*","HLT_Photon36_Photon22_v*", #prescale double photon
-                                                 "HLT_Photon*CaloIdVL_v*","HLT_Photon125_v*","HLT_Photon135_v*","HLT_Photon*NoHE*", #single photon
-                                                 "HLT_DoubleEle33_CaloId*","HLT_DoubleEle45_CaloIdL_v*")
+                                                 "HLT_Photon*CaloIdVL_v*","HLT_Photon135_v*","HLT_Photon150_v*","HLT_Photon160_v*","HLT_Photon*NoHE*", #single photon
+                                                 "HLT_DoubleEle33_CaloId*")
 else:
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*")
 
