@@ -38,7 +38,8 @@ SHEvent::SHEvent():
   caloTowers_(),
   nrPUInteractions_(-1),
   nrPUInteractionsNeg_(-1),
-  nrPUInteractionsPos_(-1)
+  nrPUInteractionsPos_(-1),
+  nrTruePUInteractions_(-1)
   // puSummary_()
 {
  
@@ -65,6 +66,7 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   nrPUInteractions_ = rhs.nrPUInteractions_;
   nrPUInteractionsPos_ = rhs.nrPUInteractionsPos_;
   nrPUInteractionsNeg_ = rhs.nrPUInteractionsNeg_;
+  nrTruePUInteractions_ = rhs.nrTruePUInteractions_;
   eleRhoCorr_ = rhs.eleRhoCorr_;
   // puSummary_ =rhs.puSummary_;
 }
@@ -102,7 +104,8 @@ void SHEvent::clear()
   caloTowers_.clear();
   nrPUInteractions_=-1; 
   nrPUInteractionsNeg_=-1; 
-  nrPUInteractionsPos_=-1;
+  nrPUInteractionsPos_=-1; 
+  nrTruePUInteractions_=-1;
   // puSummary_.clear();
 }
 SHEvent::~SHEvent()
@@ -256,6 +259,7 @@ const SHElectron* SHEvent::getElectron(int eleNr)const
 {
   SHElectron* ele = (SHElectron*) electronArray_[eleNr];
   ele->setMotherEvent(this);
+  ele->setRhoCorr(eleRhoCorr());
   return ele;
 }
 
@@ -339,23 +343,34 @@ int SHEvent::getSuperClusIndx(float rawNrgy,float eta,float phi)const
 
 void SHEvent::dropTrackerOnlyEles()
 {
-  //okay it is late and I am tired, hence crap hack
-  std::vector<std::pair<const SHElectron*,const SHSuperCluster*> >  ecalEles;
-  for(int eleNr=0;eleNr<nrElectrons();eleNr++){
+  bool anyTrackerDrivenEle=false;
+  for(int eleNr=0;eleNr<nrElectrons() && !anyTrackerDrivenEle;eleNr++){
     const SHElectron* ele = getElectron(eleNr);
-    if(ele->isEcalDriven()) ecalEles.push_back(std::pair<const SHElectron*,const SHSuperCluster*>(new SHElectron(*ele),ele->superClus()));
+    if(!ele->isEcalDriven()) anyTrackerDrivenEle=true;
   }
-  electronArray_.Delete();
-  for(size_t eleNr=0;eleNr<ecalEles.size();eleNr++){
-    addElectron(*ecalEles[eleNr].first,*ecalEles[eleNr].second);
-    delete ecalEles[eleNr].first;
-  }
-  
+  if(anyTrackerDrivenEle){
+
+    //okay it is late and I am tired, hence crap hack
+    std::vector<std::pair<const SHElectron*,const SHSuperCluster*> >  ecalEles;
+    for(int eleNr=0;eleNr<nrElectrons();eleNr++){
+      const SHElectron* ele = getElectron(eleNr);
+      if(ele->isEcalDriven()) ecalEles.push_back(std::pair<const SHElectron*,const SHSuperCluster*>(new SHElectron(*ele),ele->superClus()));
+    }
+    electronArray_.Delete();
+    for(size_t eleNr=0;eleNr<ecalEles.size();eleNr++){
+      addElectron(*ecalEles[eleNr].first,*ecalEles[eleNr].second);
+      delete ecalEles[eleNr].first;
+    }
+  }    
+
 }
 
 void SHEvent::flushTempData()const
 {
-  nrPUInteractions_=-1;
+  nrPUInteractions_=-1; 
+  nrPUInteractionsNeg_=-1; 
+  nrPUInteractionsPos_=-1; 
+  nrTruePUInteractions_=-1;
   caloHits_.flushIndxTable();
   caloTowers_.flushIndxTable();
 }
@@ -375,145 +390,6 @@ void SHEvent::printTruth(int nrLines)const
   }
 }
 
-
-// int SHEvent::getTrigCode()const
-// {
-//   int trigCode = 0x0;
-//   std::vector<std::string> trigs;
-//   // trigs.push_back("HLT_Ele15_SW_L1R");
-//   //trigs.push_back("HLT_Photon20_L1R");
-//   trigs.push_back("HLT_DoublePhoton33_v2");
-//   trigs.push_back("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1");
-//   trigs.push_back("HLT_Ele45_CaloIdVT_TrkIdT_v2");
-//   trigs.push_back("HLT_Ele90_NoSpikeFilter_v2");
-  
-//   // trigs.push_back("HLT_DoublePhoton15_L1R"); //0x1
-// //   trigs.push_back("HLT_DoublePhoton20_L1R");//0x2
-// //   trigs.push_back("HLT_DoublePhoton17_L1R");//0x4
-// //   trigs.push_back("HLT_DoublePhoton22_L1R");//0x8
-// //   trigs.push_back("HLT_Photon20_Cleaned_L1R");//0x10
-// //   trigs.push_back("HLT_Photon30_Cleaned_L1R");//0x20
-// //   trigs.push_back("HLT_Photon50_Cleaned_L1R_v1");//0x40
-// //   trigs.push_back("HLT_Photon70_Cleaned_L1R_v1");//0x80
-// //   trigs.push_back("HLT_Photon50_NoHE_Cleaned_L1R");//0x100
-// //   trigs.push_back("HLT_Photon70_NoHE_Cleaned_L1R_v1");//0x200
-// //   trigs.push_back("HLT_Photon100_NoHE_Cleaned_L1R_v1");//0x400
-// //   trigs.push_back("HLT_Photon110_NoHE_Cleaned_L1R_v1");//0x800
-// //   trigs.push_back("HLT_Photon17_SC17HE_L1R_v1");//0x1000;
-// //   trigs.push_back("HLT_Photon22_SC22HE_L1R_v1");//0x2000;
-// //   trigs.push_back("HLT_DoubleEle15_SW_L1R_v1");//0x4000
-
-// //trigs.push_back("HLT_Ele12_SW_TightEleIdIsol_L1R");  //0x1
-//   // trigs.push_back("HLT_Ele12_SW_TightEleId_L1R"); //0x2
-//   //trigs.push_back("HLT_Ele17_SW_CaloEleId_L1R"); //0x4
-//   //trigs.push_back("HLT_Ele17_SW_EleId_L1R"); //0x8
-//   //trigs.push_back("HLT_Photon20_Cleaned_L1R");  //0x10
-//   // trigs.push_back("HLT_L1SingleEG8"); //0x20
-//   // trigs.push_back("HLT_Activity_Ecal_SC7"); //0x40 
-//   //trigs.push_back("HLT_Ele10_SW_L1R"); //0x80
-//   //trigs.push_back("HLT_Photon17_SC17HE_L1R"); 
-//   //trigs.push_back("HLT_Ele17_SW_TightCaloId_SC8HE_L1R");
-//   // trigs.push_back("HLT_Photon15_L1R");
-//   // trigs.push_back("HLT_Photon15_Cleaned_L1R");
-  
-//   for(size_t trigNr=0;trigNr<trigs.size();trigNr++){
-//     int trigBit = 0x1;
-//     trigBit = trigBit << trigNr;
-    
-//     if(passTrig(trigs[trigNr])) trigCode |=trigBit;
-//   } 
-
-  
-//   return trigCode;
-// }
-
-
-// int SHEvent::getTrigCode(double detEta,double detPhi,double eta,double phi)const
-// {
-//   int trigCode = 0x0;
-//   std::vector<std::string> trigs;
- 
-//   trigs.push_back("hltDoublePhoton33EgammaLHEDoubleFilter");
-//   trigs.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter");
-//   trigs.push_back("hltEle45CaloIdVTTrkIdTDphiFilter");
-//   trigs.push_back("hltEle90NoSpikeFilterPixelMatchFilter");
-
- 
-
-//   //trigs.clear();
-
-
-
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt10PixelMatchFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17PixelMatchFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17IsolTrackIsolFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TighterEleIdIsolTrackIsolFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEPixelMatchFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEDoublePixelMatchFilter");
-
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22PixelMatchFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterCaloIdIsolTrackIsolFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterEleIdDphiFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt32TighterEleIdDphiFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoDoubleElectronEt17PixelMatchFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt10HEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt17IsolSC17HEDoubleHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt17IsolSC17HETrackIsolFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20HEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20CleanedHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20IsolCleanedTrackIsolFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEDoubleHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt30CleanedHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40CaloIdCleanedHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40IsolCleanedTrackIsolFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50CleanedHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50HEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt70CleanedHEFilter");
-// // trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt110NoHECleanedHEFilter");
-
-//   // trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt10PixelMatchFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt12TighterEleIdDphiFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17PixelMatchFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17IsolTrackIsolFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TighterEleIdIsolTrackIsolFilter"); 
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEPixelMatchFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt17TightCaloEleIdEle8HEDoublePixelMatchFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22PixelMatchFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterCaloIdIsolTrackIsolFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt22TighterEleIdDphiFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSingleElectronEt32TighterEleIdDphiFilter");
-
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoDoubleElectronEt17PixelMatchFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt10HEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt17IsolSC17HEDoubleHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20HEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20CleanedHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt20IsolCleanedTrackIsolFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt22SC22HEDoubleHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt30CleanedHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40CaloIdCleanedHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt40IsolCleanedTrackIsolFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50CleanedHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt50HEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt70CleanedHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoSinglePhotonEt110NoHECleanedHEFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoDoublePhotonEt17SingleIsolTrackIsolFilter");
-// //   trigs.push_back("hltL1NonIsoHLTNonIsoDoublePhotonEt22HEFilter");
-  
-//   for(size_t trigNr=0;trigNr<trigs.size();trigNr++){
-//     int trigBit = 0x1;
-//     trigBit = trigBit << trigNr;
-    
-//     if(trigs[trigNr].find("EleId")!=std::string::npos && trigs[trigNr].find("CaloEleId")==std::string::npos){ //this indicates it is an electron trigger, uses vertex corrected p4
-
-//       if(passTrig(trigs[trigNr],eta,phi)) trigCode |=trigBit;
-//     }else if(passTrig(trigs[trigNr],detEta,detPhi)) trigCode |=trigBit;
-//   } 
-
-//   return trigCode;
-// }
 
 
 bool SHEvent::passTrig(const std::string& trigName,double eta,double phi)const
@@ -614,4 +490,32 @@ void SHEvent::removeDupEles(std::vector<int>& dupEleNrs)
   // }
 
 
+}
+
+
+void SHEvent::fixElesNrgy()
+{
+  for(int eleNr=0;eleNr<nrElectrons();eleNr++){
+    SHElectron* ele = getElectron(eleNr);
+   
+      //  ele->setNewNrgy(ele->nrgy()*fEtCorr_(ele->rawEt(),ele->type()));
+    ele->setNewNrgy(ele->clusNrgy());
+  }
+}
+
+float SHEvent::fEtCorr_(float et,int type)const
+{
+  float par[5][5] =
+    {
+      { 0.974507, 1.16569, -0.000884133, 0.161423, -125.356 },
+      { 0.974507, 1.16569, -0.000884133, 0.161423, -125.356 },
+      { 0.96449, 0.991457, 0.000237869, 0.159983, -4.38755 },
+      { 0.97956, 0.883959, 0.000782834, -0.106388, -124.394 },
+      { 0.97213, 0.999528, 5.61192e-06, 0.0143269, -17.1776 }
+    } ;
+  if ( et > 200 )  et =200 ; 
+  if ( et < 5 )  return 1. ; 
+  if ( 5 <= et && et < 10 )  return par[type][0] ; 
+  if ( et <= et && et <= 200 ) return (par[type][1]  + et*par[type][2])*(1- par[type][3]*exp(et/par[type][4]));
+  else return 1.;
 }

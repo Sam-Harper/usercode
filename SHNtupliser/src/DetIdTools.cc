@@ -618,6 +618,13 @@ bool DetIdTools::isValidHcalEndcapId(int iEta,int iPhi,int depth)
   }else return false;
 }
 
+bool DetIdTools::isValidEcalId(int detId)
+{
+  if(DetIdTools::isEcalBarrel(detId)) return isValidEcalBarrelId(detId);
+  else if(DetIdTools::isEcalEndcap(detId)) return isValidEcalEndcapId(detId);
+  else return false;
+}
+
 bool DetIdTools::isValidEcalBarrelId(int iEta, int iPhi) 
 {
   bool valid = true;

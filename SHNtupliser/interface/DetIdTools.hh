@@ -156,6 +156,7 @@ private:
   static bool isValidEcalBarrelId(int detId){return isEcalBarrel(detId) && isValidEcalBarrelId(iEtaBarrel(detId),iPhiBarrel(detId));}
   static bool isValidEcalEndcapId(int crystal_ix,int crystal_iy,int iz);
   static bool isValidEcalEndcapId(int detId){return isEcalEndcap(detId) && isValidEcalEndcapId(iXEndcap(detId),iYEndcap(detId),zEndcap(detId));}
+  static bool isValidEcalId(int detId);
   static bool isValidHcalId(int iEta,int iPhi,int depth); 
   static bool isValidHcalId(int detId){return isHcal(detId)&& isValidHcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
   static bool isValidHcalBarrelId(int iEta,int iPhi,int depth); 

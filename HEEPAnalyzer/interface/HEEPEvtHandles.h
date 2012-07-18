@@ -27,6 +27,8 @@
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
@@ -66,6 +68,7 @@ namespace heep {
     edm::Handle<edm::View<pat::Photon> > pho;
     edm::Handle<edm::View<pat::Tau> > tau;
 
+    edm::Handle<reco::PFCandidateCollection> pfCandidate;
     edm::Handle<reco::SuperClusterCollection> superClusEB;
     edm::Handle<reco::SuperClusterCollection> superClusEE;  
     edm::Handle<reco::GsfElectronCollection> gsfEle; 

@@ -21,6 +21,8 @@
 #include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloTowerContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloTower.hh"
+#include "SHarper/SHNtupliser/interface/SHPFCandidate.hh"
+#include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -55,5 +57,7 @@
 #pragma link C++ class SHPileUpInfo+;
 #pragma link C++ class SHCaloTower+;
 #pragma link C++ class SHCaloTowerContainer+;
+#pragma link C++ class SHPFCandidate+;
+#pragma link C++ class SHPFCandContainer+;
 
 #endif

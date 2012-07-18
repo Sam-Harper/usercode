@@ -6,6 +6,7 @@
 #include "SHarper/SHNtupliser/interface/SHGeomFiller.h"
 #include "SHarper/SHNtupliser/interface/TrigDebugObjHelper.h"
 #include "SHarper/SHNtupliser/interface/SHTrigObjContainer.hh"
+#include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPDebug.h"
 
@@ -38,9 +39,10 @@
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits);
+void fillPFCands(SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands);
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
-  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true)
+  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL)
 {
   evtHelper_.setup(iPara);
   shEvtHelper_.setup(iPara);
@@ -66,6 +68,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   secondHLTTag_ = iPara.getParameter<std::string>("secondHLTTag");
   addCaloTowers_ = iPara.getParameter<bool>("addCaloTowers");
   addCaloHits_ = iPara.getParameter<bool>("addCaloHits");
+  addPFCands_=iPara.getParameter<bool>("addPFCands");
   addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
   writePDFInfo_ = iPara.getParameter<bool>("writePDFInfo");
   if(useHLTDebug_){
@@ -80,6 +83,7 @@ SHNtupliser::~SHNtupliser()
   if(trigDebugHelper_) delete trigDebugHelper_;
   if(shTrigObjs_) delete shTrigObjs_;
   if(puSummary_) delete puSummary_;
+  if(shPFCands_) delete shPFCands_;
 }
 
 void SHNtupliser::beginJob()
@@ -88,6 +92,7 @@ void SHNtupliser::beginJob()
   shCaloTowers_ = &(shEvt_->getCaloTowers());
   shCaloHits_= &(shEvt_->getCaloHits());
   shIsolTrks_= &(shEvt_->getIsolTrks());
+ 
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
   //  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   edm::Service<TFileService> fs;
@@ -113,10 +118,9 @@ void SHNtupliser::beginJob()
   if(addIsolTrks_){
     evtTree_->Branch("IsolTrksBranch","TClonesArray",&shIsolTrks_,32000,splitLevel);
   }
-  if(addIsoDeps_){
-    //evtTree_->Branch("PFChargedHadBranch","TClonesArray",
-    shPFCands_=new SHPFCandContainer;
-    evtTree_->Branch("PFIsolBranch","SHPFCandContainer",&shPFCands_,32000,splitLevel);
+  if(addPFCands_){ 
+    shPFCands_= new SHPFCandContainer;
+    evtTree_->Branch("PFCandsBranch","SHPFCandContainer",&shPFCands_,32000,splitLevel);
   }
   if(compTwoMenus_){
     shEvt2ndTrig_ = new SHEvent;
@@ -176,103 +180,109 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
  
   //even easier to convert from heep to shEvt
-
+  
   pdfWeightsVec_.clear();
-
+  
   nrTot_++;
   //  std::cout <<"analysing "<<std::endl;
- 
-    shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
-    // std::cout <<"made even "<<std::endl;
-    if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
-    if(compTwoMenus_){ //ugly hack alert...
-      shEvt2ndTrig_->clear();
-      if(useHLTDebug_){
-	trigDebugHelper_->setHLTTag(secondHLTTag_);
-	trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs2ndTrig_);
-	trigDebugHelper_->setHLTTag(hltTag_);
-      }
-      shEvtHelper_.addEventPara(heepEvt_,*shEvt2ndTrig_);
-      edm::Handle<trigger::TriggerEvent> trigEvt2nd;
-      edm::Handle<edm::TriggerResults> trigResults2nd;
-      iEvent.getByLabel(edm::InputTag("hltTriggerSummaryAOD","",secondHLTTag_),trigEvt2nd);
-      iEvent.getByLabel(edm::InputTag("TriggerResults","",secondHLTTag_),trigResults2nd);
-      const edm::TriggerNames& trigNames2nd = iEvent.triggerNames(*trigResults2nd);
-      shEvtHelper_.addTrigInfo(*trigEvt2nd,*trigResults2nd,trigNames2nd,*shEvt2ndTrig_);
-    }
+  
+  shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
-    if(writePUInfo_){ //naughty but its almost 1am...
-      puSummary_->clear();
-      edm::InputTag PileupSrc_("addPileupInfo");
-      edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-      iEvent.getByLabel(PileupSrc_, PupInfo);
-      if(PupInfo.isValid()){
-	std::vector<PileupSummaryInfo>::const_iterator PVI;
-	// (then, for example, you can do)
-	for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
-	  puSummary_->addPUInfo( PVI->getBunchCrossing(),PVI->getPU_NumInteractions(),PVI->getTrueNumInteractions());
-	  //std::cout << " Pileup Information: bunchXing, nvtx: " << PVI->getBunchCrossing() << " " << PVI->getPU_NumInteractions() << std::endl;	
-	}
-      }
-    }
-      
-    if(writePDFInfo_){
-      edm::Handle<std::vector<double> > pdfWeightsHandle;
-      edm::InputTag pdfTag("pdfWeights:cteq66");
-      iEvent.getByLabel(pdfTag,pdfWeightsHandle);
-      if(pdfWeightsHandle.isValid()) pdfWeightsVec_ = *pdfWeightsHandle;
-    }
-
-    bool passSC=false;
-
-    int nrSCPassing=0;
-    for(int scNr=0;scNr<shEvt_->nrSuperClus();scNr++){
-      if(shEvt_->getSuperClus(scNr)->et()>minSCEtToPass_){
- 	nrSCPassing++;
-      }
-    }
-    if(nrSCPassing>=minNrSCToPass_) passSC=true;
-    
-    
-    bool passJet=false;
-    int nrJetPassing=0;
-    for(int jetNr=0;jetNr<shEvt_->nrJets();jetNr++){
-      if(shEvt_->getJet(jetNr)->et()>minJetEtToPass_){
-	nrJetPassing++;
-      }
-    }
-    if(nrJetPassing>=minNrJetToPass_) passJet=true;
-    
-    
-     int nrEle=0;
-     for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
-       const SHElectron* ele = shEvt_->getElectron(eleNr);
-       if(ele->isEcalDriven() && ele->et()>25 && ele->trkPt()>0.2) nrEle++;
-     }
-     bool passEle=nrEle>=1;
-
+  if(addPFCands_) shPFCands_->clear();
+  if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(*shPFCands_,heepEvt_.pfCands());
    
-    SHCaloHitContainer outputHits;
-    filterHcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);  
-    filterEcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);
-    shEvt_->addCaloHits(outputHits);
-    
-    SHCaloTowerContainer outputTowers;
-    filterCaloTowers(shEvt_,0.5,shEvt_->getCaloTowers(),outputTowers);  
-    shEvt_->addCaloTowers(outputTowers);
-    
-    
 
-    if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
-      shEvt_->getCaloHits().clear();
-      shEvt_->clearTrigs();
-    }  
-    passEle=true; //moved to a seperate filter run first
-    if(passEle || !(shEvt_->datasetCode()>=120 && shEvt_->datasetCode()<700)){ //only for phoJet, qcdJet, actually sod it everything but Z
-      nrPass_++;
-      evtTree_->Fill();
+
+  // std::cout <<"made even "<<std::endl;
+  if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
+  if(compTwoMenus_){ //ugly hack alert...
+    shEvt2ndTrig_->clear();
+    if(useHLTDebug_){
+      trigDebugHelper_->setHLTTag(secondHLTTag_);
+      trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs2ndTrig_);
+      trigDebugHelper_->setHLTTag(hltTag_);
     }
+    shEvtHelper_.addEventPara(heepEvt_,*shEvt2ndTrig_);
+    edm::Handle<trigger::TriggerEvent> trigEvt2nd;
+    edm::Handle<edm::TriggerResults> trigResults2nd;
+    iEvent.getByLabel(edm::InputTag("hltTriggerSummaryAOD","",secondHLTTag_),trigEvt2nd);
+    iEvent.getByLabel(edm::InputTag("TriggerResults","",secondHLTTag_),trigResults2nd);
+    const edm::TriggerNames& trigNames2nd = iEvent.triggerNames(*trigResults2nd);
+    shEvtHelper_.addTrigInfo(*trigEvt2nd,*trigResults2nd,trigNames2nd,*shEvt2ndTrig_);
+  }
 
+  if(writePUInfo_){ //naughty but its almost 1am...
+    puSummary_->clear();
+    edm::InputTag PileupSrc_("addPileupInfo");
+    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+    iEvent.getByLabel(PileupSrc_, PupInfo);
+    if(PupInfo.isValid()){
+      std::vector<PileupSummaryInfo>::const_iterator PVI;
+      // (then, for example, you can do)
+      for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+	puSummary_->addPUInfo( PVI->getBunchCrossing(),PVI->getPU_NumInteractions(),PVI->getTrueNumInteractions());
+	//std::cout << " Pileup Information: bunchXing, nvtx: " << PVI->getBunchCrossing() << " " << PVI->getPU_NumInteractions() << std::endl;	
+      }
+    }
+  }
+  
+  if(writePDFInfo_){
+    edm::Handle<std::vector<double> > pdfWeightsHandle;
+    edm::InputTag pdfTag("pdfWeights:cteq66");
+    iEvent.getByLabel(pdfTag,pdfWeightsHandle);
+    if(pdfWeightsHandle.isValid()) pdfWeightsVec_ = *pdfWeightsHandle;
+  }
+  
+  bool passSC=false;
+  
+  int nrSCPassing=0;
+  for(int scNr=0;scNr<shEvt_->nrSuperClus();scNr++){
+    if(shEvt_->getSuperClus(scNr)->et()>minSCEtToPass_){
+      nrSCPassing++;
+    }
+  }
+  if(nrSCPassing>=minNrSCToPass_) passSC=true;
+  
+    
+  bool passJet=false;
+  int nrJetPassing=0;
+  for(int jetNr=0;jetNr<shEvt_->nrJets();jetNr++){
+    if(shEvt_->getJet(jetNr)->et()>minJetEtToPass_){
+      nrJetPassing++;
+    }
+  }
+  if(nrJetPassing>=minNrJetToPass_) passJet=true;
+  
+  
+  int nrEle=0;
+  for(int eleNr=0;eleNr<shEvt_->nrElectrons();eleNr++){
+    const SHElectron* ele = shEvt_->getElectron(eleNr);
+    if(ele->isEcalDriven() && ele->et()>25 && ele->trkPt()>0.2) nrEle++;
+  }
+  bool passEle=nrEle>=1;
+  
+  
+  SHCaloHitContainer outputHits;
+  filterHcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);  
+  filterEcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);
+  shEvt_->addCaloHits(outputHits);
+    
+  SHCaloTowerContainer outputTowers;
+  filterCaloTowers(shEvt_,0.5,shEvt_->getCaloTowers(),outputTowers);  
+  shEvt_->addCaloTowers(outputTowers);
+  
+    
+
+  if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
+    shEvt_->getCaloHits().clear();
+    shEvt_->clearTrigs();
+  }  
+  passEle=true; //moved to a seperate filter run first
+  if(passEle || !(shEvt_->datasetCode()>=120 && shEvt_->datasetCode()<700)){ //only for phoJet, qcdJet, actually sod it everything but Z
+    nrPass_++;
+    evtTree_->Fill();
+  }
+  
 }
 
 
@@ -420,8 +430,24 @@ void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContain
 
 }
 
-
-
+void fillPFCands(SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands)
+{
+  for(size_t candNr=0;candNr<pfCands.size();candNr++){
+    const reco::PFCandidate& pfParticle = pfCands[candNr];
+    int scSeedCrysId=0;
+    if(pfParticle.superClusterRef().isNonnull()) scSeedCrysId=pfParticle.superClusterRef()->seed()->seed().rawId();
+  
+    if(pfParticle.pdgId()==22){   
+      shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+    }else if(abs(pfParticle.pdgId())==130){
+      shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+    
+    }else if(abs(pfParticle.pdgId()) == 211){
+      shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+      
+    }
+  }	 
+}
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(SHNtupliser);

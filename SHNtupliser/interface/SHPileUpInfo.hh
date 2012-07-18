@@ -17,7 +17,7 @@ public:
   
   int bx()const{return bx_;}
   int nrInteractions()const{return nrInteractions_;}
-
+  int nrTrueInteractions()const{return nrTrueInteractions_;}
   ClassDef(SHPileUpInfo,1)
      
 };

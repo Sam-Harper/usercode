@@ -40,6 +40,7 @@ namespace edm {
 class SHEvent;
 class SHCaloTowerContainer;
 class SHCaloHitContainer;
+class SHPFCandContainer;
 class TTree;
 class TFile;
 
@@ -77,6 +78,7 @@ private:
   bool addCaloTowers_;
   bool addCaloHits_;
   bool addIsolTrks_;
+  bool addPFCands_;
   
   bool useHLTDebug_;
   bool compTwoMenus_;
@@ -92,7 +94,8 @@ private:
   
   bool writePDFInfo_;
   std::vector<double> pdfWeightsVec_;
-
+  
+  SHPFCandContainer* shPFCands_;
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;
   //disabling copy and assignment 

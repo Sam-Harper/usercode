@@ -30,7 +30,8 @@ public:
 
   unsigned nrPUInfos()const{return puInfos_.GetLast()+1;}
   int nrInteractionsByBx(int bx)const;
- 
+  int nrTrueInteractions()const{return getPUInfo(1) && getPUInfo(1)->bx()==0 ? getPUInfo(1)->nrTrueInteractions() : 0;}
+
   ClassDef(SHPileUpSummary,1)
 
 

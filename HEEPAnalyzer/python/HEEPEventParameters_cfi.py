@@ -16,6 +16,7 @@ heepEventPara  = cms.PSet (
     hbheRecHitsTag = cms.InputTag("hbhereco"),
     gsfEleTag = cms.InputTag("gsfElectrons"),
     recoPhoTag = cms.InputTag("photons"),
+    pfCandidateTag = cms.InputTag("pfCandidates"),
     superClusterEBTag = cms.InputTag("correctedHybridSuperClusters"),
     superClusterEETag = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower"),
     ctfTrackTag = cms.InputTag("generalTracks"),

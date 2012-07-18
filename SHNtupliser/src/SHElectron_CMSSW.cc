@@ -97,6 +97,7 @@ hademDepth1BC_(ele.hcalDepth1OverEcalBc()),
 hademDepth2BC_(ele.hcalDepth2OverEcalBc()),
 isolHadDepth1BC_(ele.dr03HcalDepth1TowerSumEtBc()),
 isolHadDepth2BC_(ele.dr03HcalDepth2TowerSumEtBc()),
+rhoCorr_(-999.),
 mEvent_(NULL)
 {
  
@@ -183,6 +184,7 @@ hademDepth1BC_(pho.hadTowDepth1OverEm()),
 hademDepth2BC_(pho.hadTowDepth2OverEm()),
 isolHadDepth1BC_(-999.),
 isolHadDepth2BC_(-999.),
+rhoCorr_(-999.),
 mEvent_(NULL)
 {
  
@@ -275,6 +277,7 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   hademDepth2BC_(-999.),
   isolHadDepth1BC_(-999.),
   isolHadDepth2BC_(-999.),
+  rhoCorr_(-999.),
 mEvent_(NULL)
 {
 }

@@ -48,6 +48,7 @@ namespace heep {
     edm::InputTag hcalRecHitsTag_;
     edm::InputTag gsfEleTag_;
     edm::InputTag recoPhoTag_;
+    edm::InputTag pfCandidateTag_;
     edm::InputTag superClusterEBTag_;
     edm::InputTag superClusterEETag_; 
     edm::InputTag ctfTrackTag_;

@@ -84,6 +84,7 @@ SHElectron::SHElectron():
   hademDepth2BC_(-999.),
   isolHadDepth1BC_(-999.),
   isolHadDepth2BC_(-999.),
+  rhoCorr_(-999.),
   mEvent_(NULL)
 {
 
@@ -170,6 +171,7 @@ SHElectron::SHElectron(const SHElectron &rhs):
   hademDepth2BC_(rhs.hademDepth2BC_),
   isolHadDepth1BC_(rhs.isolHadDepth1BC_),
   isolHadDepth2BC_(rhs.isolHadDepth2BC_),
+  rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
 
@@ -364,5 +366,19 @@ int SHElectron::calPhiRoad()const
   else return 2;
 }
 
+void SHElectron::setNewNrgy(float newNrgy)
+{
+  float oldNrgy = nrgy_;
 
-  
+  p4_*=newNrgy/oldNrgy;
+  nrgy_=newNrgy;
+  nrgyErr_*=newNrgy/oldNrgy;
+  et_*=newNrgy/oldNrgy;
+  epIn_*=newNrgy/oldNrgy;
+  epOut_*=newNrgy/oldNrgy;
+
+  hadem_*=oldNrgy/newNrgy;
+  hademDepth1_*=oldNrgy/newNrgy;
+  hademDepth2_*=oldNrgy/newNrgy;
+
+}

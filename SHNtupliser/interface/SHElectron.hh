@@ -138,6 +138,7 @@ class SHElectron : public TObject {
   float isolHadDepth1BC_;
   float isolHadDepth2BC_;
 
+  float rhoCorr_; //! set by the event each time we get it
 
   //backwards link to the mother event
   //needs to be set everytime the event is read
@@ -266,7 +267,7 @@ private:
   float isolHadDepth1DR04()const{return isolHadDepth1DR04_;}
   float isolHadDepth2DR04()const{return isolHadDepth2DR04_;}
   float isolPtTrksDR04()const{return isolPtTrksDR04_;}
-
+  float epCombNrgy()const{return epCombNrgy_;}
   bool isEcalDriven()const{return isEcalDriven_;}
   bool isTrackerDriven()const{return isTrackerDriven_;}
 
@@ -291,6 +292,8 @@ private:
   float isolNeutralHadron()const{return isolNeutralHadron_;}
   float isolPhoton()const{return isolPhoton_;}
 
+  float rhoCorr()const{return rhoCorr_;}
+  
   // const SHIsolSuperCluster& getIsolSuperClus()const;
   // float isolEmClus(double coneRadius)const;
   // float isolEmEtClus(double coneRadius)const;
@@ -301,10 +304,12 @@ private:
   int superClusIndex()const{return superClusIndx_;}
 
   //modifiers
+  void setRhoCorr(float rho){rhoCorr_=rho;}
   void setSuperClusIndex(int index){superClusIndx_=index;}
   void setMotherEvent(const SHEvent* event){mEvent_=event;}
   const SHEvent* motherEvent()const{return mEvent_;}
 
+  void setNewNrgy(float nrgy);
 
   ClassDef(SHElectron,19) 
 

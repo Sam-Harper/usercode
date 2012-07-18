@@ -79,7 +79,7 @@ class SHBasicCluster : public TObject {
   const std::vector<int>& getHitsByDetId()const{unpackHits_();return hitDetIds_;}
 
  private:
-  SHBasicCluster& operator=(const SHBasicCluster &rhs){return *this;}
+  SHBasicCluster& operator=(const SHBasicCluster &){return *this;}
   static int packHits_(int seedId,const std::vector<int>& hits);
   bool unpackHits_(bool forceUnpack=false)const;
 

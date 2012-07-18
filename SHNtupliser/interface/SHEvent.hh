@@ -95,6 +95,7 @@ class SHEvent : public TObject {
   mutable int nrPUInteractions_; //!
   mutable int nrPUInteractionsNeg_; //!
   mutable int nrPUInteractionsPos_; //!
+  mutable int nrTruePUInteractions_; //!
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -151,8 +152,9 @@ class SHEvent : public TObject {
   int nrPUInteractions()const{return nrPUInteractions_;}
   int nrPUInteractionsNeg()const{return nrPUInteractionsNeg_;}
   int nrPUInteractionsPos()const{return nrPUInteractionsPos_;}
+  int nrTruePUInteractions()const{return nrTruePUInteractions_;}
   void setNrPUInteractions(int iNrPU){nrPUInteractions_=iNrPU;}
-  void setNrPUInteractions(int iNrPUNeg,int iNrPU,int iNrPUPos){nrPUInteractions_=iNrPU;nrPUInteractionsNeg_=iNrPUNeg;nrPUInteractionsPos_=iNrPUPos;}
+  void setNrPUInteractions(int iNrPUNeg,int iNrPU,int iNrPUPos,int iNrTruePU){nrPUInteractions_=iNrPU;nrPUInteractionsNeg_=iNrPUNeg;nrPUInteractionsPos_=iNrPUPos;nrTruePUInteractions_=iNrTruePU;}
   void setRunnr(int iRunnr){runnr_=iRunnr;}
   void setEventnr(int iEventnr){eventnr_=iEventnr;}
   void setIsMC(bool iIsMC){isMC_=iIsMC;}
@@ -256,14 +258,18 @@ class SHEvent : public TObject {
   //a tempory function, this removes all the duplicate electrons in the event
   void removeDupEles(std::vector<int>& dupEleNrs);
   void dropTrackerOnlyEles();
+  // void rmFEtCorrFromEles();
+  void fixElesNrgy();
+  
 
   void printTruth(int nrLines=-1)const;
 
  private:
   
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
+  float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,21)
+  ClassDef(SHEvent,21) //we should go to back to 21 when we want muons
 
 };
   

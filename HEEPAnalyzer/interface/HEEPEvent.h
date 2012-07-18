@@ -67,6 +67,7 @@ namespace heep{
     const std::vector<reco::SuperCluster>& superClustersEE()const{return *handles_.superClusEE;}
     const std::vector<reco::GsfElectron>& gsfEles()const{return *handles_.gsfEle;}
     const std::vector<reco::Photon>& recoPhos()const{return *handles_.recoPho;}
+    const std::vector<reco::PFCandidate>& pfCands()const{return *handles_.pfCandidate;}
     const EcalRecHitCollection* ebHitsFull()const{return &(*handles_.ebRecHits);}
     const EcalRecHitCollection* eeHitsFull()const{return &(*handles_.eeRecHits);}
     const HBHERecHitCollection* hbheHits()const{return &(*handles_.hbheRecHits);}
