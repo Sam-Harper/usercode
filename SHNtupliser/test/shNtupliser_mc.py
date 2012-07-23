@@ -36,7 +36,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(300)
+    input = cms.untracked.int32(-1)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -228,9 +228,9 @@ process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 #process.load("RecoEgamma.ElectronIdentification.electronIdSequence_cff")
 
 #adding barrel veto
-process.elPFIsoValueCharged03PFId.deposits.vetos  = cms.vstring('EcalEndcaps:ConeVeto(0.015)','EcalBarrel:ConeVeto(0.015)')
-process.elPFIsoValueGamma03PFId.deposits.vetos =  vetos = cms.vstring('EcalEndcaps:ConeVeto(0.08)','EcalBarrel:ConeVeto(0.015)')
-      
+process.elPFIsoValueCharged03PFIdPFIso.deposits.vetos  = cms.vstring('EcalEndcaps:ConeVeto(0.015)','EcalBarrel:ConeVeto(0.015)')
+process.elPFIsoValueGamma03PFIdPFIso.deposits.vetos =  vetos = cms.vstring('EcalEndcaps:ConeVeto(0.08)','EcalBarrel:ConeVeto(0.015)')
+process.shNtupliser.addPFCands = cms.bool(True)    
 
 if  pfNoPU:
     process.p = cms.Path(#process.primaryVertexFilter*

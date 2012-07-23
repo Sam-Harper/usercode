@@ -39,7 +39,7 @@
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits);
-void fillPFCands(SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands);
+void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands);
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL)
@@ -189,7 +189,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
   if(addPFCands_) shPFCands_->clear();
-  if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(*shPFCands_,heepEvt_.pfCands());
+  if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(shEvt_,0.5,*shPFCands_,heepEvt_.pfCands());
    
 
 
@@ -430,23 +430,42 @@ void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContain
 
 }
 
-void fillPFCands(SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands)
+void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands)
 {
+  const double maxDR2 = maxDR*maxDR;
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    if(ele->et()>20){
+      eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+    }
+  }
+
   for(size_t candNr=0;candNr<pfCands.size();candNr++){
     const reco::PFCandidate& pfParticle = pfCands[candNr];
     int scSeedCrysId=0;
     if(pfParticle.superClusterRef().isNonnull()) scSeedCrysId=pfParticle.superClusterRef()->seed()->seed().rawId();
   
-    if(pfParticle.pdgId()==22){   
-      shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
-    }else if(abs(pfParticle.pdgId())==130){
-      shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
-    
-    }else if(abs(pfParticle.pdgId()) == 211){
-      shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
-      
-    }
-  }	 
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       pfParticle.eta(),pfParticle.phi())<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+    if(accept){
+      if(pfParticle.pdgId()==22){   
+	shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+      }else if(abs(pfParticle.pdgId())==130){
+	shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+	
+      }else if(abs(pfParticle.pdgId()) == 211){
+	shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+	
+      }
+    }	 
+  }
 }
 
 //define this as a plug-in
