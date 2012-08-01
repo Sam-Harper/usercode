@@ -12,7 +12,8 @@
 
 
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
-
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -39,7 +40,8 @@
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits);
-void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands);
+void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands,const reco::VertexRef mainVtx,const edm::Handle< reco::VertexCollection > vertices);
+reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle< reco::VertexCollection > verticesColl);
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL)
@@ -189,7 +191,9 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
   if(addPFCands_) shPFCands_->clear();
-  if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(shEvt_,0.5,*shPFCands_,heepEvt_.pfCands());
+  // std::cout <<"adding PF Cands "<<addPFCands_<<" is valid "<<heepEvt_.handles().pfCandidate.isValid()<<std::endl;
+  reco::VertexRef mainVtx(heepEvt_.handles().vertices,0);
+  if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(shEvt_,0.5,*shPFCands_,heepEvt_.pfCands(),mainVtx,heepEvt_.handles().vertices);
    
 
 
@@ -430,8 +434,10 @@ void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContain
 
 }
 
-void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands)
+void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands,const reco::VertexRef mainVtx,const edm::Handle<reco::VertexCollection> vertices)
 {
+  //  std::cout <<"filling candidates "<<std::endl;
+
   const double maxDR2 = maxDR*maxDR;
   std::vector<std::pair<float,float> > eleEtaPhi;
   for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
@@ -454,6 +460,8 @@ void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
 	break;
       }
     }//end ele loop
+    //std::cout <<"cand nr "<<candNr<<" / "<<pfCands.size()<<" accept "<<std::endl;
+
     if(accept){
       if(pfParticle.pdgId()==22){   
 	shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
@@ -461,12 +469,95 @@ void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
 	shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
 	
       }else if(abs(pfParticle.pdgId()) == 211){
-	shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+	reco::VertexRef pfCandVtx= chargedHadronVertex(pfParticle,vertices);
+
+	//	float dz = fabs(pfCandVtx->z()-mainVtx->z());
+	if(pfCandVtx==mainVtx){
 	
+	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+	  shPFCand.setVertex(pfCandVtx->x(),pfCandVtx->y(),pfCandVtx->z());
+	}
       }
     }	 
   }
 }
+
+//stolen from EGamma/PFIsolationEstimator
+reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle< reco::VertexCollection > verticesColl)
+{
+
+  //code copied from Florian's PFNoPU class
+    
+  reco::TrackBaseRef trackBaseRef( pfcand.trackRef() );
+
+  size_t  iVertex = 0;
+  unsigned index=0;
+  unsigned nFoundVertex = 0;
+
+  float bestweight=0;
+  
+  const reco::VertexCollection& vertices = *(verticesColl.product());
+
+  for( reco::VertexCollection::const_iterator iv=vertices.begin(); iv!=vertices.end(); ++iv, ++index) {
+    
+    const reco::Vertex& vtx = *iv;
+    
+    // loop on tracks in vertices
+    for(reco::Vertex::trackRef_iterator iTrack=vtx.tracks_begin();iTrack!=vtx.tracks_end(); ++iTrack) {
+
+      const reco::TrackBaseRef& baseRef = *iTrack;
+
+      // one of the tracks in the vertex is the same as 
+      // the track considered in the function
+      if(baseRef == trackBaseRef ) {
+        float w = vtx.trackWeight(baseRef);
+        //select the vertex for which the track has the highest weight
+        if (w > bestweight){
+          bestweight=w;
+          iVertex=index;
+          nFoundVertex++;
+        }
+      }
+    }
+    
+  }
+ 
+ 
+  
+  if (nFoundVertex>0){
+    //if (nFoundVertex!=1)
+      //  edm::LogWarning("TrackOnTwoVertex")<<"a track is shared by at least two verteces. Used to be an assert";
+    return  reco::VertexRef( verticesColl, iVertex);
+  }
+  // no vertex found with this track. 
+
+  // optional: as a secondary solution, associate the closest vertex in z
+  bool checkClosestZVertex=true;
+  if ( checkClosestZVertex ) {
+
+    double dzmin = 10000.;
+    double ztrack = pfcand.vertex().z();
+    bool foundVertex = false;
+    index = 0;
+    for( reco::VertexCollection::const_iterator  iv=vertices.begin(); iv!=vertices.end(); ++iv, ++index) {
+
+      double dz = fabs(ztrack - iv->z());
+      if(dz<dzmin) {
+        dzmin = dz;
+        iVertex = index;
+        foundVertex = true;
+      }
+    }
+
+    if( foundVertex ) 
+      return  reco::VertexRef( verticesColl, iVertex);  
+  
+  }
+   
+  return  reco::VertexRef( );
+}
+
+
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(SHNtupliser);
