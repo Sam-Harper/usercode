@@ -45,10 +45,10 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.autoCond import autoCond
 process.GlobalTag.globaltag = autoCond['com10']
 
-process.trigComp = cms.EDAnalyzer("TrigResultsComp",           
+process.trigComp = cms.EDAnalyzer("TrigResultsComparer",           
                                    #trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT"),
                                   prevTrigResultsTag = cms.InputTag("TriggerResults","","HLT"),
-                                  newTrigResultsTag = cms.InputTag("TriggerResults","","HLT3"),
+                                  newTrigResultsTag = cms.InputTag("TriggerResults","","HLT3PB"),
                                     )
 
 

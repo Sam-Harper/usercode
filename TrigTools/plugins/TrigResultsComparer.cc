@@ -114,6 +114,7 @@ int TrigResultsComparer::getTrigCode(const TrigResultsComparer::TrigCompData& da
 {
   int trigCode =0x0;
   size_t pathIndex = trigNames.triggerIndex(data.name);
+  
   if(pathIndex<trigResults.size()){
     trigCode |=kInMenu;
     if(trigResults.wasrun(pathIndex)) trigCode|=kWasRun;
@@ -124,9 +125,10 @@ int TrigResultsComparer::getTrigCode(const TrigResultsComparer::TrigCompData& da
       
       //a little bit of debug just to check things
       if(pathIndexInConfig>=hltConfig.size()) std::cout <<"TrigResultsComparer::getTrigCode : Warning pathIndex out of bounds, path index "<<pathIndexInConfig<<", max="<<hltConfig.size()<<std::endl;
-      else if(lastModuleRun>=hltConfig.size(pathIndexInConfig)) std::cout <<"TrigResultsComparer::getTrigCode : Warning moduleIndex out of bounds, module index "<<lastModuleRun<<", max="<<hltConfig.size(pathIndexInConfig)<<std::endl;
-    
-      if(hltConfig.moduleType(hltConfig.moduleLabel(pathIndexInConfig,lastModuleRun))=="HLTPrescaler") trigCode|=kFailedPreScale; 
+      //else if(lastModuleRun>=hltConfig.size(pathIndexInConfig)) std::cout <<"TrigResultsComparer::getTrigCode : Warning moduleIndex out of bounds, module index "<<lastModuleRun<<", max="<<hltConfig.size(pathIndexInConfig)<<std::endl;
+      
+      
+      if(lastModuleRun<hltConfig.size(pathIndexInConfig) && hltConfig.moduleType(hltConfig.moduleLabel(pathIndexInConfig,lastModuleRun))=="HLTPrescaler") trigCode|=kFailedPreScale; 
     }
   }
   return trigCode;//will be zero if its not in the menu and if its not in the menu, it cant be run or pass either...
