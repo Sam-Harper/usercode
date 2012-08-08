@@ -2,8 +2,6 @@
 #define SHARPER_TRIGTOOLS_TRIGRESULTTREEMAKER
 
 
-//this is a simple class which simulates another trigger based on the already calculated trigger object P4s and filters on that
-
 #include "HLTrigger/HLTcore/interface/HLTFilter.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
