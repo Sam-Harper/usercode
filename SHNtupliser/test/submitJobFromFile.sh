@@ -19,12 +19,12 @@ dataFormat=`echo $datasetPath | awk -F "/" '{print $NF}'`
 
 weight=`echo $line | awk -F "&" '{print $4*$5}'`
 cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}'`
-outputFile=${dataset}_ntuples_${cmsswVersion}_SHv23.root
+outputFile=${dataset}_ntuples_${cmsswVersion}_SHv23B.root
 
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=524p1/v23A_V2/${dataFormat}/${cmsswVersion}/${dataset}
+outputPath=525/v23B/${dataFormat}/${cmsswVersion}/${dataset}
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
 
