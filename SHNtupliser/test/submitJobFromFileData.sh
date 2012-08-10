@@ -26,7 +26,7 @@ minRun=`echo $line | awk -F "&" '{print $2}' | awk '{print $1}'`
 maxRun=`echo $line | awk -F "&" '{print $3}' | awk '{print $1}'`
 nrJobs=99999
 datasetCode=0
-outputFile=${dataset}_ntuples_${cmsswVersion}_SHv23A.root
+outputFile=${dataset}_ntuples_${cmsswVersion}_SHv23B.root
 
 
 
@@ -42,7 +42,7 @@ fi
 
 echo phoSkim $phoSkim
 
-outputPath=525/v23AIsoDepTest/${cmsswVersion}/${dataset}/Run${minRun}-${maxRun}
+outputPath=533/v23B/${cmsswVersion}/${dataset}/Run${minRun}-${maxRun}
 
 
 jsonFile=run${minRun}-${maxRun}_JSON.txt

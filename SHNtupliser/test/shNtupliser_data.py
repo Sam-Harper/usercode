@@ -21,7 +21,7 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Load geometry
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 from Configuration.AlCa.autoCond import autoCond
@@ -205,6 +205,12 @@ if pfNoPU:
     process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
 else:
     from RecoJets.JetProducers.kt4PFJets_cfi import *
+   
+    process.kt6PFJets = kt4PFJets.clone(
+        rParam = cms.double(0.6),
+        doAreaFastjet = cms.bool(True),
+        doRhoFastjet = cms.bool(True)
+    )
     inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute','L2L3Residual'])
     process.patJetCorrFactors.useRho=False
 
@@ -241,7 +247,7 @@ process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 #overriding vetos
 process.elPFIsoValueCharged03PFId.deposits.vetos  = cms.vstring('EcalEndcaps:ConeVeto(0.015)','EcalBarrel:ConeVeto(0.015)')
 process.elPFIsoValueGamma03PFId.deposits.vetos =  vetos = cms.vstring('EcalEndcaps:ConeVeto(0.08)','EcalBarrel:ConeVeto(0.015)')
-
+process.shNtupliser.addPFCands = cms.bool(True)  
 if  pfNoPU:
     process.p = cms.Path(process.skimHLTFilter*
         process.primaryVertexFilter*
