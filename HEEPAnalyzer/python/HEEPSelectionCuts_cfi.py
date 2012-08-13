@@ -30,7 +30,7 @@ heepBarrelCuts = cms.PSet (
 
 heepEndcapCuts = cms.PSet (
     cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits"),
-    minEt=cms.double(40),
+    minEt=cms.double(35),
     minEta=cms.double(1.56),
     maxEta=cms.double(2.5),
     maxDEtaIn=cms.double(0.007),
