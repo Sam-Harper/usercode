@@ -1,3 +1,4 @@
+import FWCore.ParameterSet.Config as cms
 
 def swapCollection(process,oldCollection,newCollection):
     for pathName in process.pathNames().split():
@@ -14,6 +15,8 @@ def swapCollection(process,oldCollection,newCollection):
  #print paraName,type(para).__name__,para.getModuleLabel()
                     if type(para).__name__=="VInputTag":
                         for tag in para:
+                            if type(tag).__name__ == "str":
+                                tag = cms.InputTag( tag ) 
                             if tag.getModuleLabel()==oldCollection:
                                 tag.setModuleLable(newCollection)
 
@@ -35,6 +38,8 @@ def swapCollectionModuleAndProductLabels(process,oldModuleLabel,oldProdInstLabel
  #print paraName,type(para).__name__,para.getModuleLabel()
                     if type(para).__name__=="VInputTag":
                         for tag in para:
+                            if type(tag).__name__ == "str":
+                                tag = cms.InputTag( tag ) 
                             if tag.getModuleLabel()==oldModuleLabel:
                                 if tag.getProductInstanceLabel()==oldProdInstLabel:
                                     tag.setModuleLable(newModuleLable)
