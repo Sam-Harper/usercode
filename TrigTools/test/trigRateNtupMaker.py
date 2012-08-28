@@ -72,9 +72,11 @@ process.trigRateNtupMaker.filterNames = cms.vstring(
     "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f24QL3crIsoFiltered10"
     )
 
-
+process.dumper = cms.EDAnalyzer("UsedProductsDumper",           
+                                
+                                    )
 process.p = cms.Path(process.skimHLTFilter*                  
-                     process.trigRateNtupMaker)
+                     process.trigRateNtupMaker*process.dumper)
 
 ##import PhysicsTools.PythonAnalysis.LumiList as LumiList
 ##import FWCore.ParameterSet.Types as CfgTypes

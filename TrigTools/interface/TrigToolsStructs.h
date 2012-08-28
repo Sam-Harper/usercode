@@ -4,6 +4,7 @@
 #include "TLorentzVector.h"
 #include <string>
 #include <vector>
+#include <set>
 
 namespace edm {
   class Event;
