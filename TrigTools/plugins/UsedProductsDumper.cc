@@ -4,6 +4,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+//#define BUILDUSEDPRODDUMPER
+#ifdef BUILDUSEDPRODDUMPER
+
 #include "FWCore/Framework/interface/UsedProducts.h"
 
 class UsedProductsDumper : public edm::EDAnalyzer {
@@ -23,5 +26,6 @@ public:
 
 
 
-
 DEFINE_FWK_MODULE(UsedProductsDumper);
+
+#endif
