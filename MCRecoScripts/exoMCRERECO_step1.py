@@ -39,7 +39,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.381.2.2 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('REDIGI nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -61,7 +61,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 
 #set the PU dataset, we could in theory get this via cmsDriver with the -pileup_input dbs:/MinBias_TuneZ2star_8TeV-pythia6/Summer12-START50_V13-v3/GEN-SIM option but it adds 350K lines to file...
-from PUInputFiles_MinBias_TuneZ2star_8TeV-pythia6_Summer12-START50_V13-v3 import *
+from PUInputFiles_MinBias_TuneZ2star_8TeV_pythia6_Summer12_START50_V13_v3 import *
 setPUInputFiles(process)
 
 # customise the HLT menu for running on MC

@@ -56,6 +56,6 @@ sed 's|TOSED:OUTPUTFILE|'$outputFile'|' exoMCRERECO.sh > exoMCRERECO_autoGen.sh
 sed 's|TOSED:OUTPUTFILE|'$outputFile'|' exoMCRERECO_step2.py > exoMCRERECO_step2_autoGen.py
 
 crab -create -cfg crab_autoGen.cfg
-#crab -c $workingDir -submit
+crab -c $workingDir -submit
 
  
