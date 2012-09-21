@@ -17,7 +17,7 @@ dataset=${11}
 lowRun=${12}
 highRun=${13}
 
-lumisPerJob=50
+lumisPerJob=100 #just moved from 50 which was ICHEP number
 #lumisPerJob=100
 #lumisPerJob=50
 totLumis=99999999
@@ -65,6 +65,6 @@ sed 's|DATASETCODE|'$datasetCode'|' > shNtupliser_autoGen_cfg.py
 
 
 crab -create -cfg crab_autoGen.cfg
-#crab -c $workingDir -submit
+crab -c $workingDir -submit
 
  

@@ -24,7 +24,7 @@ outputFile=${dataset}_ntuples_${cmsswVersion}_SHv23B.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=525/v23B/${dataFormat}/${cmsswVersion}/${dataset}
+outputPath=533/v23B/${dataFormat}/${cmsswVersion}/${dataset}
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
 
@@ -37,7 +37,8 @@ datasetCode=`echo $line | awk -F "&" '{print $6}'`
 
 
 subDirs=`echo $outputPath | sed 's|/|_|g'`
-workingDir=`echo $datasetPath | awk -F "/" '{print "crabJob_MC_"$2}' `.${subDirs}.`date +%y%m%d`_`date +%H%M%S`
+#workingDir=`echo $datasetPath | awk -F "/" '{print "crabJob_MC_"$2}' `.${subDirs}.`date +%y%m%d`_`date +%H%M%S`
+workingDir=`echo $datasetPath | awk -F "/" '{print "crabJob_MC_"$2}' `.`date +%y%m%d`_`date +%H%M%S`
 
 
 if [[ "$live" == "ON" ]] ; then

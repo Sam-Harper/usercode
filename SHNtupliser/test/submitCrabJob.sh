@@ -11,7 +11,8 @@ datasetCode=$6
 sampleWeight=$7
 baseCfg=$8
 workingDir=$9
-#dbsUrl=$9
+
+#dbsUrl="dbs_url=http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet"
 
 scheduler=glitecoll
 #workingDir=`echo $datasetPath | awk -F "/" '{print $2"_"$3}' `.`date +%y%m%d`_`date +%H%M%S`

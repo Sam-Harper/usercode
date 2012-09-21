@@ -122,6 +122,10 @@ if(sys.argv[2].find("/pnfs/")==0):
 
 if(sys.argv[2].find("/store/")==0):
     filePrefex=""
+if(sys.argv[2].find("/eos/")==0):
+    filePrefex="'root://eoscms/"
+
+
 
 process.source = cms.Source("PoolSource",
                  #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
@@ -186,6 +190,11 @@ if pfNoPU:
         )
 else:
     from RecoJets.JetProducers.kt4PFJets_cfi import *
+    process.kt6PFJets = kt4PFJets.clone(
+        rParam = cms.double(0.6),
+        doAreaFastjet = cms.bool(True),
+        doRhoFastjet = cms.bool(True)
+    )
     inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute','L2L3Residual'])
     process.patJetCorrFactors.useRho=False
 
