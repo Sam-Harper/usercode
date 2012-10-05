@@ -41,3 +41,21 @@ void trigtools::getP4sOfObsPassingFilter(std::vector<TLorentzVector>& p4s,const 
 }
 
 
+void trigtools::dumpTriggerEvent(const trigger::TriggerEvent& trigEvt)
+{
+  std::cout <<"number of filters in event "<<trigEvt.sizeFilters()<<std::endl;
+  for(size_t filterNr=0;filterNr<trigEvt.sizeFilters();filterNr++){
+    const std::string filterName(trigEvt.filterTag(filterNr).label());
+   
+    const trigger::Keys& trigKeys = trigEvt.filterKeys(filterNr);  //trigger::Keys is actually a vector<uint16_t> holding the position of trigger objects in the trigger collection passing the filter
+    std::cout <<"filter "<<filterName<<" has "<<trigKeys.size()<<" passing "<<std::endl;
+    const trigger::TriggerObjectCollection & trigObjColl(trigEvt.getObjects());
+    for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){
+      const trigger::TriggerObject& obj = trigObjColl[*keyIt];
+      TLorentzVector p4;
+      p4.SetPtEtaPhiM(obj.pt(),obj.eta(),obj.phi(),obj.mass());
+    }
+  } 
+
+  
+}

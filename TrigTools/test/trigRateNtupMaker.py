@@ -40,6 +40,7 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Mu15_Photon20_CaloIdL_v14")
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Mu17_Ele8_CaloIdL_v13")
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_GlobalRunHPDNoise_v*")
 process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 
@@ -50,33 +51,29 @@ process.maxEvents = cms.untracked.PSet(
 
 process.load("SHarper.TrigTools.trigRateNtupMaker_cfi")
 process.trigRateNtupMaker.outputFilename= sys.argv[len(sys.argv)-1]
-process.trigRateNtupMaker.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT3")
+process.trigRateNtupMaker.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLT")
 #these are the filters which the P4s are going to be saved for
-##process.trigRateNtupMaker.filterNames = cms.vstring(
-##    "hltEle30CaloIdTTrkIdTPFDiPF25NoPUCleaned",
-##    "hltEle27CaloIdTTrkIdTPFDiPF25Cleaned",
-##    "hltEle27WP80CentralDiPFJet25CleanedNoPU",
-##    "hltEle27WP80CentralDiPFJet25Cleaned",
-##    "hltMu15Photon20CaloIdLHEFilter",
-##    "hltL1Mu7EG5L3MuFiltered17",
-##    "hltL1NonIsoHLTNonIsoMu17Ele8PixelMatchFilter"
-##                                                )
 process.trigRateNtupMaker.filterNames = cms.vstring(
-    "hltPhoton135HEFilter",
-    "hltEG200EtFilter",
-    "hltEle80CaloIdVTTrkIdTDphiFilter",
-    "hltEG70HEFilter",
-    "hltDoubleEG70HEDoubleFilter",
-    "hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40",
-    "hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q",
-    "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f24QL3crIsoFiltered10"
-    )
+    "hltEle30CaloIdTTrkIdTPFDiPF25NoPUCleaned",
+    "hltEle27CaloIdTTrkIdTPFDiPF25Cleaned",
+    "hltEle27WP80CentralDiPFJet25CleanedNoPU",
+    "hltEle27WP80CentralDiPFJet25Cleaned",
+    "hltMu15Photon20CaloIdLHEFilter",
+    "hltL1Mu7EG5L3MuFiltered17",
+    "hltL1NonIsoHLTNonIsoMu17Ele8PixelMatchFilter"
+                                              )
+##process.trigRateNtupMaker.filterNames = cms.vstring(
+##    "hltL1sL1SingleJet20CentralNoBPTXNoHalo",
+##    "hltL1sL1SingleEG5",
+##    "hltL1sL1SingleEG22"
+   
+##    )
 
-process.dumper = cms.EDAnalyzer("UsedProductsDumper",           
+#process.dumper = cms.EDAnalyzer("UsedProductsDumper",           
                                 
-                                    )
+#                                    )
 process.p = cms.Path(process.skimHLTFilter*                  
-                     process.trigRateNtupMaker*process.dumper)
+                     process.trigRateNtupMaker)#*process.dumper)
 
 ##import PhysicsTools.PythonAnalysis.LumiList as LumiList
 ##import FWCore.ParameterSet.Types as CfgTypes

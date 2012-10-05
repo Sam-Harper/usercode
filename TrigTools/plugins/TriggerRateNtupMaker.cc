@@ -87,6 +87,8 @@ void TriggerRateNtupMaker::analyze(const edm::Event& iEvent, const edm::EventSet
   if(pfMET.isValid()){
     pfMET_=pfMET->front().et();
   }
+  //usefule for dumping everything to screen
+  //trigtools::dumpTriggerEvent(*trigEvent);
  
   
   std::vector<TLorentzVector> trigP4s;

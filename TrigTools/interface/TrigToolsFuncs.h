@@ -22,7 +22,7 @@ namespace trigtools {
   //a TLorentzVector version for my ntuplising needs
   void getP4sOfObsPassingFilter(std::vector<TLorentzVector>& p4s,const trigger::TriggerEvent& trigEvent,const std::string& filterName,const std::string& hltProcess="HLT");
   
-  
+  void dumpTriggerEvent(const trigger::TriggerEvent& trigEvt);
 
 }
 
