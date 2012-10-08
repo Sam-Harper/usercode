@@ -71,6 +71,7 @@ baseCfg="shNtupliser_data.py"
 subDirs=`echo $outputPath | sed 's|/|_|g'`
 workingDir=`echo $datasetPath | awk -F "/" '{print "crabJob_DATA_"$2}' `.${subDirs}.`date +%y%m%d`_`date +%H%M%S`
 
+
 if [[ "$live" == "ON" ]] ; then
 echo about to submit for real ./submitCrabJobData.sh $datasetPath $nrEvents $nrJobs $outputFile $outputPath $datasetCode $runningOn35X $baseCfg $jsonFile $workingDir  $dataset $minRun $maxRun
 sleep 5s

@@ -17,7 +17,7 @@ dataset=${11}
 lowRun=${12}
 highRun=${13}
 
-lumisPerJob=100 #just moved from 50 which was ICHEP number
+lumisPerJob=125 #just moved from 50 which was ICHEP number
 #lumisPerJob=100
 #lumisPerJob=50
 totLumis=99999999

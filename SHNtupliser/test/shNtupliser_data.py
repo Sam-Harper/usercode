@@ -129,7 +129,8 @@ if(sys.argv[2].find("/pnfs/")==0):
 
 if(sys.argv[2].find("/store/")==0):
     filePrefex=""
-
+if(sys.argv[2].find("/castor/")==0):
+    filePrefex="rfio:"
 process.source = cms.Source("PoolSource",
                  #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                        #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
@@ -263,3 +264,5 @@ else:
         process.patDefaultSequence*
         process.kt6PFJetsForIsolation*
         process.shNtupliser)
+
+
