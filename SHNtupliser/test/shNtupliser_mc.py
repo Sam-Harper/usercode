@@ -21,7 +21,7 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Load geometry
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 from Configuration.AlCa.autoCond import autoCond
@@ -153,7 +153,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 
 
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
-
+from RecoJets.JetProducers.kt4PFJets_cfi import *
 if pfNoPU:
     # Get a list of good primary vertices, in 42x, these are DAF vertices
     from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
