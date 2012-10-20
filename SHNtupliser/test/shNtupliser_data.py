@@ -1,5 +1,5 @@
 isMC=False
-pfNoPU=False
+pfNoPU=True
 
 patCandID=""
 if pfNoPU:
@@ -25,10 +25,27 @@ process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 from Configuration.AlCa.autoCond import autoCond
-if isMC:
-    process.GlobalTag.globaltag = autoCond['startup'] 
+#if isMC:
+  #  process.GlobalTag.globaltag = autoCond['startup'] 
+#else:
+   # process.GlobalTag.globaltag = "GR_P_V42_AN2::All"
+
+
+dataset="Photon"
+#DATASETSOVERWRITE
+datasetVersion="dummy"
+#DATASETVERSIONOVERWRITE
+
+if datasetVersion.find("13Jul")!=-1:
+    process.GlobalTag.globaltag = "FT_53_V6_AN2::All"
+elif datasetVersion.find("Aug06")!=-1:
+    process.GlobalTag.globaltag = "FT_53_V6_AN2::All"
+elif datasetVersion.find("24Aug")!=-1:
+    process.GlobalTag.globaltag = "FT_53_V6_AN2::All"   
 else:
-    process.GlobalTag.globaltag = autoCond['com10']
+    process.GlobalTag.globaltag = "GR_P_V42_AN2::All"
+
+print "Global Tag is ",process.GlobalTag.globaltag 
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
@@ -36,7 +53,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -56,7 +73,8 @@ process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = True
 process.shNtupliser.addCaloTowers = True
 process.shNtupliser.addCaloHits = True
-process.shNtupliser.addIsolTrks = False
+process.shNtupliser.addIsolTrks = True
+process.shNtupliser.addPFCands = True  
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
@@ -81,8 +99,6 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 
 
-dataset="Photon"
-#DATASETSOVERWRITE
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33*","HLT_Photon*","HLT_DoubleEle33*")
 process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton70_v*","HLT_DoublePhoton80_v*", #all the double photons
                                              "HLT_Photon26_Photon18_v*","HLT_Photon36_Photon22_v*", #prescale double photon
@@ -98,7 +114,7 @@ if dataset=="DoubleElectron":
     process.shNtupliser.addCaloTowers = False
     process.shNtupliser.addCaloHits = False
     process.shNtupliser.addIsolTrks = False
-    process.shNtupliser.addIsolTrks = False
+    process.shNtupliser.addPFCands = False
 
 
 process.TFileService = cms.Service("TFileService",
@@ -160,9 +176,9 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
-removeSpecificPATObjects(process, ['Taus'])
-removeMCMatching(process, ['All'])
 
+from RecoJets.JetProducers.kt4PFJets_cfi import *
+#removeSpecificPATObjects(process, ['Taus'])
 if pfNoPU:
     # Get a list of good primary vertices, in 42x, these are DAF vertices
     from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
@@ -178,43 +194,33 @@ if pfNoPU:
     # not possible to run PF2PAT+PAT and standart PAT at the same time
     from PhysicsTools.PatAlgos.tools.pfTools import *
     postfix = "PFlow"
-    usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
-    process.pfPileUpPFlow.Enable = True
+    print "pf2pat running"
+    usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=False, postfix=postfix,
+              jetCorrections=('AK5PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']),
+              pvCollection=cms.InputTag('goodOfflinePrimaryVertices'),
+            
+
+              )
+    
     process.pfPileUpPFlow.checkClosestZVertex = cms.bool(False)
-    process.pfPileUpPFlow.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
-    process.pfJetsPFlow.doAreaFastjet = True
-    process.pfJetsPFlow.doRhoFastjet = False   
-    process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJets", "rho")
-
-    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-    process.kt6PFJets = kt4PFJets.clone(
-        rParam = cms.double(0.6),
-        doAreaFastjet = cms.bool(True),
-        doRhoFastjet = cms.bool(True)
-    )
-
-    # Add the PV selector and KT6 producer to the sequence
-    getattr(process,"patPF2PATSequence"+postfix).replace(
-    getattr(process,"pfNoElectron"+postfix),
-    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
-
     process.patseq = cms.Sequence(    
         process.goodOfflinePrimaryVertices*
         getattr(process,"patPF2PATSequence"+postfix)
         )
 
-    process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
+    removeSpecificPATObjects(process, ['Taus'],postfix=postfix)
+#removeMCMatching(process, ['All'])
 else:
-    from RecoJets.JetProducers.kt4PFJets_cfi import *
-   
+    removeSpecificPATObjects(process, ['Taus'])
+    removeMCMatching(process, ['All'])
+    #PAT for some reason wants to re-run this
     process.kt6PFJets = kt4PFJets.clone(
         rParam = cms.double(0.6),
         doAreaFastjet = cms.bool(True),
         doRhoFastjet = cms.bool(True)
     )
     inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute','L2L3Residual'])
-    process.patJetCorrFactors.useRho=False
-
+  
     # add pf met
     from PhysicsTools.PatAlgos.tools.metTools import *
     addPfMET(process, 'PF')
@@ -227,38 +233,44 @@ else:
                         jetCorrLabel = inputJetCorrLabel,
                         doType1MET   = True,
                         genJetCollection=cms.InputTag("ak5GenJets"),
-                        doJetID      = True
+                        doJetID      = True,
+                        btagdiscriminators=['jetBProbabilityBJetTags','jetProbabilityBJetTags','trackCountingHighPurBJetTags','trackCountingHighEffBJetTags'],
                         )
     process.patJets.addTagInfos = True
     process.patJets.tagInfoSources  = cms.VInputTag(
         cms.InputTag("secondaryVertexTagInfosAOD"),
     )
-
-process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
+    
+#process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
 #process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute')
+
 
 
 from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
 
 #for isolation correction
+
 process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
-#overriding vetos
-process.elPFIsoValueCharged03PFId.deposits.vetos  = cms.vstring('EcalEndcaps:ConeVeto(0.015)','EcalBarrel:ConeVeto(0.015)')
-process.elPFIsoValueGamma03PFId.deposits.vetos =  vetos = cms.vstring('EcalEndcaps:ConeVeto(0.08)','EcalBarrel:ConeVeto(0.015)')
-process.shNtupliser.addPFCands = cms.bool(True)  
+process.load('RecoMET.METFilters.ecalLaserCorrFilter_cfi')
+process.ecalLaserCorrFilter.taggingMode= True
+
+
 if  pfNoPU:
-    process.p = cms.Path(process.skimHLTFilter*
+   
+    process.p = cms.Path(process.skimHLTFilter*process.ecalLaserCorrFilter*
         process.primaryVertexFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patseq*
         process.kt6PFJetsForIsolation*
         process.shNtupliser)
-else:
+   
     
-    process.p = cms.Path(process.skimHLTFilter*
+else:
+    print process.patDefaultSequence
+    process.p = cms.Path(process.skimHLTFilter*process.ecalLaserCorrFilter*
         process.primaryVertexFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patDefaultSequence*

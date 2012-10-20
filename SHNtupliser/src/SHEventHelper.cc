@@ -128,6 +128,11 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
      const reco::Vertex& vertex = heepEvent.handles().vertices->front();
      vtxPos.SetXYZ(vertex.x(),vertex.y(),vertex.z()); 
      shEvent.setNrVertices(heepEvent.handles().vertices->size());
+     const std::vector<reco::Vertex>& vertices = *(heepEvent.handles().vertices);
+     for(size_t vtxNr=0;vtxNr<vertices.size();vtxNr++){
+       shEvent.addVertex(vertices[vtxNr]);
+     }
+
    }
    shEvent.setVertex(vtxPos);
    TVector3 bs;
@@ -139,6 +144,12 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
   
    if(heepEvent.handles().eleRhoCorr.isValid()) shEvent.setEleRhoCorr(heepEvent.eleRhoCorr());
    else shEvent.setEleRhoCorr(-999);
+   if(heepEvent.handles().eleRhoCorr2012.isValid()) shEvent.setRhoCorr(heepEvent.eleRhoCorr2012());
+   else shEvent.setRhoCorr(-999);
+
+   if(heepEvent.passEcalLaserFilter()) shEvent.setFlags(1);
+   else shEvent.setFlags(0);
+
      // std::cout <<" rho "<<heepEvent.eleRhoCorr()<<std::endl;
      // edm::Handle<double> pfHand;
      // edm::InputTag pfTag("kt6PFJetsPFlow","rho");
@@ -178,7 +189,13 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
   
   //grrr
+  // const reco::Vertex& vtx = heepEvent.handles().vertices->front();
+  //  std::cout <<"x "<<gsfEle.TrackPositionAtVtx().X()<<" track x "<<gsfEle.gsfTrack()->vx()<<" vx "<<vtx.x()<<" y "<<gsfEle.TrackPositionAtVtx().Y()<<" trk y "<<gsfEle.gsfTrack()->vy()<<" y "<<vtx.y()<<" z "<<gsfEle.TrackPositionAtVtx().Z()<<" trk z "<<gsfEle.gsfTrack()->vz()<<" vz "<<vtx.z()<<std::endl;
+   //std::cout <<"x "<<gsfEle.trackMomentumAtVtx().X()<<" track x "<<gsfEle.gsfTrack()->px()<<" y "<<gsfEle.trackMomentumAtVtx().Y()<<" trk y "<<gsfEle.gsfTrack()->py()<<" z "<<gsfEle.trackMomentumAtVtx().Z()<<" trk z "<<gsfEle.gsfTrack()->pz()<<std::endl;
+  // const reco::Vertex& vtx = heepEvent.handles().vertices->front();
+  //  std::cout <<"CMSSW dxy "<<gsfEle.gsfTrack()->dxy( math::XYZPoint(vtx.x(),vtx.y(),vtx.z()) )<<" my dxy "<<shEle->dxy()<<std::endl;
   
+
   for(size_t i=0;i<heepEvent.handles().gsfEle->size();i++){
     if(&gsfEle==&(*heepEvent.handles().gsfEle)[i]){
       reco::GsfElectronRef eleRef(heepEvent.handles().gsfEle,i);
@@ -569,7 +586,7 @@ void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
 void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   TVector3 trkP3,trkVtxPos;
-  const float minPtCut=1.0;
+  const float minPtCut=-1;
 
   if(heepEvent.handles().ctfTrack.isValid()){
     const std::vector<reco::Track>& tracks = heepEvent.ctfTracks();
@@ -578,7 +595,9 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
       const reco::Track& trk = tracks[trkNr];
       trkP3.SetXYZ(trk.px(),trk.py(),trk.pz());
       trkVtxPos.SetXYZ(trk.vx(),trk.vy(),trk.vz());
-      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0);
+      int vertexNr=-1;
+      if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
+      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,trk.chi2(),trk.ndof());
     }
   } 
 }
@@ -791,4 +810,51 @@ uint32_t SHEventHelper::getEcalFlagBits_(const EcalRecHit& hit)
   }
   return bits;
 
+}
+
+int SHEventHelper::getVertexNr(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices)
+{ //code inspired by Florian's PFNoPU class
+  int returnVal = -1;
+ 
+  float bestweight=0;
+  
+  for(size_t vertexNr=0;vertexNr<vertices.size();vertexNr++){
+    const reco::Vertex& vtx = vertices[vertexNr];
+    
+    // loop on tracks in vertices
+    for(reco::Vertex::trackRef_iterator trkIt=vtx.tracks_begin();trkIt!=vtx.tracks_end(); ++trkIt) {
+
+      const reco::TrackBaseRef& vertexTrkRef = *trkIt;
+
+      // one of the tracks in the vertex is the same as 
+      // the track considered in the function
+      if(vertexTrkRef.get() ==  &track) {
+        float weight = vtx.trackWeight(vertexTrkRef);
+        //select the vertex for which the track has the highest weight
+        if (weight > bestweight){
+          bestweight=weight;
+          returnVal = vertexNr;
+        }
+      }
+    }//end loop over vertex tracks
+    
+  }//end loop over vertices
+ 
+  if(returnVal<0) returnVal = SHEventHelper::getVertexNrClosestZ(track,vertices);
+  return returnVal;
+}
+
+int SHEventHelper::getVertexNrClosestZ(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices)
+{
+  
+  double dzMin = 999.;
+  int bestVertexNr = -1;
+  for(size_t vertexNr=0;vertexNr<vertices.size();vertexNr++){
+    double dz = fabs(track.vz() - vertices[vertexNr].z());
+    if(dz<dzMin) {
+      dzMin = dz;
+      bestVertexNr=vertexNr;
+    }
+  }
+  return bestVertexNr;
 }

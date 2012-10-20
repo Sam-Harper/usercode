@@ -2,7 +2,8 @@
 #define SHPFCANDIDATE_HH
 
 #include "TObject.h"
-
+#include "TVector3.h"
+#include <cmath>
 //will ultimately expand but want  it to be light weight for now...
 class SHPFCandidate {
   
@@ -23,7 +24,16 @@ public:
   float eta()const{return eta_;}
   float phi()const{return phi_;}
   float mass()const{return mass_;}
+  float mvaNothingGamma()const{return mvaNothingGamma_;}
+  int scSeedCrysId()const{return scSeedCrysId_;}
   
+  float py()const{return pt_*std::sin(phi_);}
+  float px()const{return pt_*std::cos(phi_);}
+  float dxy(const TVector3& pos)const;
+  float vx()const{return vx_;}
+  float vy()const{return vy_;}
+  float vz()const{return vz_;}
+
   void setVertex(float x,float y,float z){vx_=x;vy_=y;vz_=z;}
 
   ClassDef(SHPFCandidate,1)

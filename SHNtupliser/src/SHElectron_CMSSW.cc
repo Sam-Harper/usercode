@@ -34,14 +34,15 @@ detEta_(ele.superCluster()->eta()),
 p3TrackVtx_(ele.trackMomentumAtVtx().X(),ele.trackMomentumAtVtx().Y(),ele.trackMomentumAtVtx().Z()),
 p3TrackCal_(ele.trackMomentumAtCalo().X(),ele.trackMomentumAtCalo().Y(),ele.trackMomentumAtCalo().Z()),
 //p3TrackInn_(ele.gsfTrack()->innerMomentum().X(),ele.gsfTrack()->innerMomentum().Y(),ele.gsfTrack()->innerMomentum().Z()),
-p3TrackInn_(0.001,0,0.),
+p3TrackInn_(ele.gsfTrack()->px(),ele.gsfTrack()->py(),ele.gsfTrack()->pz()),
 p3TrackOut_(ele.trackMomentumOut().X(),ele.trackMomentumOut().Y(),ele.trackMomentumOut().Z()),
 //positions
 posTrackVtx_(ele.TrackPositionAtVtx().X(),ele.TrackPositionAtVtx().Y(),ele.TrackPositionAtVtx().Z()),
 posTrackCal_(ele.TrackPositionAtCalo().X(),ele.TrackPositionAtCalo().Y(),ele.TrackPositionAtCalo().Z()),
+posTrackInn_(ele.gsfTrack()->vx(),ele.gsfTrack()->vy(),ele.gsfTrack()->vz()),
 //posTrackInn_(ele.gsfTrack()->innerPosition().X(),ele.gsfTrack()->innerPosition().Y(),ele.gsfTrack()->innerPosition().Z()),
 //posTrackOut_(ele.gsfTrack()->outerPosition().X(),ele.gsfTrack()->outerPosition().Y(),ele.gsfTrack()->outerPosition().Z()),
-posTrackInn_(0.001,0,0.),
+//posTrackInn_(0.001,0,0.),
 posTrackOut_(0.001,0,0.),
 trkChi2_(ele.gsfTrack()->chi2()),
 nrDof_(static_cast<int>(ele.gsfTrack()->ndof())),
@@ -97,6 +98,8 @@ hademDepth1BC_(ele.hcalDepth1OverEcalBc()),
 hademDepth2BC_(ele.hcalDepth2OverEcalBc()),
 isolHadDepth1BC_(ele.dr03HcalDepth1TowerSumEtBc()),
 isolHadDepth2BC_(ele.dr03HcalDepth2TowerSumEtBc()),
+dxyErr_(ele.gsfTrack()->dxyError()),
+dzErr_(ele.gsfTrack()->dzError()),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -184,6 +187,8 @@ hademDepth1BC_(pho.hadTowDepth1OverEm()),
 hademDepth2BC_(pho.hadTowDepth2OverEm()),
 isolHadDepth1BC_(-999.),
 isolHadDepth2BC_(-999.),
+dxyErr_(-999.),
+dzErr_(-999.),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -277,8 +282,10 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   hademDepth2BC_(-999.),
   isolHadDepth1BC_(-999.),
   isolHadDepth2BC_(-999.),
+  dxyErr_(-999.),
+  dzErr_(-999.),
   rhoCorr_(-999.),
-mEvent_(NULL)
+  mEvent_(NULL)
 {
 }
 

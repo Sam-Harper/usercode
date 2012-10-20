@@ -35,6 +35,9 @@ SHEvent::SHEvent():
   beamSpot_(-999,-999,-999),
   preScaleCol_(-1), 
   eleRhoCorr_(-999.),
+  vertexArray_("SHVertex",70),
+  rhoCorr_(-999.),
+  flags_(0),
   caloTowers_(),
   nrPUInteractions_(-1),
   nrPUInteractionsNeg_(-1),
@@ -68,6 +71,8 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   nrPUInteractionsNeg_ = rhs.nrPUInteractionsNeg_;
   nrTruePUInteractions_ = rhs.nrTruePUInteractions_;
   eleRhoCorr_ = rhs.eleRhoCorr_;
+  rhoCorr_=rhs.rhoCorr_;
+  flags_=rhs.flags_;
   // puSummary_ =rhs.puSummary_;
 }
 
@@ -101,6 +106,9 @@ void SHEvent::clear()
   beamSpot_.SetXYZ(-999,-999,-999);
   preScaleCol_=-1;
   eleRhoCorr_ = -999.;
+  vertexArray_.Delete();
+  rhoCorr_ = -999.;
+  flags_=0;
   caloTowers_.clear();
   nrPUInteractions_=-1; 
   nrPUInteractionsNeg_=-1; 
@@ -120,6 +128,7 @@ SHEvent::~SHEvent()
   trigArray_.Delete();
   //l1CandArray_.Delete();
   muArray_.Delete();
+  vertexArray_.Delete();
 }
 
 void SHEvent::addMCParticle(int partIndx,int partStdhep,int partIdhep,
@@ -189,9 +198,9 @@ void SHEvent::addIsolTrk(const SHIsolTrack& trk)
   
 }
 
-void SHEvent::addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge)
+void SHEvent::addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof)
 {
-  new(isolTrkArray_[nrIsolTrks()]) SHIsolTrack(p3,vtxPos,posCharge);
+  new(isolTrkArray_[nrIsolTrks()]) SHIsolTrack(p3,vtxPos,posCharge,vertexNr,chi2,ndof);
   
 }
 

@@ -42,7 +42,7 @@ fi
 
 echo phoSkim $phoSkim
 
-outputPath=533/v23B/${cmsswVersion}/${dataset}/Run${minRun}-${maxRun}
+outputPath=534/v24A/${cmsswVersion}/${dataset}/Run${minRun}-${maxRun}
 
 
 jsonFile=run${minRun}-${maxRun}_JSON.txt

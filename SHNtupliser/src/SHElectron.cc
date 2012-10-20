@@ -84,6 +84,8 @@ SHElectron::SHElectron():
   hademDepth2BC_(-999.),
   isolHadDepth1BC_(-999.),
   isolHadDepth2BC_(-999.),
+  dxyErr_(-999.),
+  dzErr_(-999.),
   rhoCorr_(-999.),
   mEvent_(NULL)
 {
@@ -171,6 +173,8 @@ SHElectron::SHElectron(const SHElectron &rhs):
   hademDepth2BC_(rhs.hademDepth2BC_),
   isolHadDepth1BC_(rhs.isolHadDepth1BC_),
   isolHadDepth2BC_(rhs.isolHadDepth2BC_),
+  dxyErr_(rhs.dxyErr_),
+  dzErr_(rhs.dzErr_),
   rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
@@ -237,6 +241,18 @@ void SHElectron::fixTrkIsol()
   isolNrTrks_ = trkIsol.first;
 }
 
+
+float SHElectron::dxy()const
+{
+  return mEvent_!=NULL ? dxy(mEvent_->vertex()) : dxy();
+}
+
+float SHElectron::dxy(const TVector3& point)const
+{
+  const TVector3& trkPoint = posTrackInn();
+  const TVector3& trkMom = p3TrackInn();
+  return ( - (trkPoint.X()-point.X()) * trkMom.Y() + (trkPoint.Y()-point.Y()) * trkMom.X() ) / trkMom.Pt(); 
+}
 
 // float SHElectron::isolEmClus(double coneRadius)const
 // { 

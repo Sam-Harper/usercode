@@ -29,6 +29,8 @@ scheduler=glitecoll
 copyData=1
 returnData=0
 
+datasetVersion=`echo $datasetPath | awk -F "/" '{print $3}'`
+
 #nrEvents=10
 #nrJobs=2
 
@@ -60,6 +62,7 @@ sed 's|OUTPUTFILE|'$outputFile'|' $baseCfg | \
 sed 's|SAMPLEWEIGHT|'$sampleWeight'|' | \
 sed 's|isCrabJob=False|isCrabJob=True|' | \
 sed 's|#DATASETSOVERWRITE|dataset="'$dataset'"|' | \
+sed 's|#DATASETVERSIONOVERWRITE|datasetVersion="'$datasetVersion'"|' | \
 sed 's|#CRAB35XSAMPLEOVERWRITE|runningOn35XSample='$runningOn35XSample'|' | \
 sed 's|DATASETCODE|'$datasetCode'|' > shNtupliser_autoGen_cfg.py
 

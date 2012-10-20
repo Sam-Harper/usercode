@@ -18,7 +18,9 @@
 #include "SHarper/SHNtupliser/interface/SHMuon.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloTowerContainer.hh"
 //#include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
+#include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
+#include "SHarper/SHNtupliser/interface/SHVertex.hh"
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -35,6 +37,7 @@ namespace reco{
   class CaloCluster;
   class GsfElectron;
   class Muon;
+  class Vertex;
 }
 
 
@@ -54,14 +57,13 @@ class SHEvent : public TObject {
   TClonesArray mcPartArray_;
   TClonesArray jetArray_; 
   SHCaloHitContainer caloHits_; //! now transisent, stored in seperate branch for 5X
-  // TClonesArray isolSuperClusArray_; //not been used for a long time, redundant for 5X
-  //TClonesArray isolClusArray_; //not been used for a long time, redundant for 5X
   TClonesArray isolTrkArray_; //! now transisent, stored in seperate branch for 5X
   TClonesArray trigArray_;
   TClonesArray muArray_;
   
  
   int runnr_;
+
   int eventnr_;
   bool isMC_;
   int datasetCode_;
@@ -85,10 +87,15 @@ class SHEvent : public TObject {
 
   int preScaleCol_; //new for V17
  
-  float eleRhoCorr_; //new for V20
-  
+  float eleRhoCorr_; //new for V20 (2011 rho corr defination for electrons)
+   
   //SHPileUpSummary puSummary_; //new for V18
 
+  TClonesArray vertexArray_; //new for V22
+
+  float rhoCorr_; //new for V22 
+  int flags_; //new for V22, usefull for flagging things like events with bad laser corrections
+  
   SHCaloTowerContainer caloTowers_; //! so this is a new experimental design, I store this on another branch and give it this memory location
   
   //naughty naughty, a temporary PU fix
@@ -96,6 +103,9 @@ class SHEvent : public TObject {
   mutable int nrPUInteractionsNeg_; //!
   mutable int nrPUInteractionsPos_; //!
   mutable int nrTruePUInteractions_; //!
+
+  SHPFCandContainer pfCands_; //! like calo towers, this is stored on a seperate branch
+  
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -125,7 +135,7 @@ class SHEvent : public TObject {
   /// void addIsolCluster(const reco::CaloCluster& clus);
   // void addIsolSuperCluster(const reco::SuperCluster& superClus);
   void addIsolTrk(const SHIsolTrack& trk);
-  void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge);
+  void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof);
  
   void addMCParticle(int partIndx,int partStdhep,int partIdhep,
 		     int partJmo1,int partJmo2,int partNrMo,
@@ -140,6 +150,7 @@ class SHEvent : public TObject {
   //void addL1Cand(const TLorentzVector& p4,int type);
   void addMuon(const reco::Muon& mu);
   void addMuon(const SHMuon& mu);
+  void addVertex(const reco::Vertex& vtx);
   //usefull for copying an event
   void addCaloHits(const SHEvent& rhs);
   void addCaloHits(const SHCaloHitContainer& hits){caloHits_ = hits;}
@@ -173,6 +184,8 @@ class SHEvent : public TObject {
   void setBeamSpot(const TVector3& iBS){beamSpot_=iBS;}
   void setPreScaleCol(int iPreScaleCol){preScaleCol_=iPreScaleCol;}
   void setEleRhoCorr(float iRho){eleRhoCorr_=iRho;}
+  void setRhoCorr(float iRho){rhoCorr_=iRho;}
+  void setFlags(int iFlags){flags_=iFlags;}
  
   void copyEventPara(const SHEvent& rhs);
   void clear();
@@ -208,7 +221,7 @@ class SHEvent : public TObject {
   int nrTrigs()const{return trigArray_.GetLast()+1;}
   //  int nrL1Cands()const{return l1CandArray_.GetLast()+1;}
   int nrMuons()const{return muArray_.GetLast()+1;}
-  
+  int nrVertices()const{return vertexArray_.GetLast()+1;}
 
   int runnr()const{return runnr_;}
   int eventnr()const{return eventnr_;}
@@ -225,6 +238,8 @@ class SHEvent : public TObject {
   SHCaloHitContainer& getCaloHits(){return caloHits_;}
   const SHCaloTowerContainer& getCaloTowers()const{return caloTowers_;}
   SHCaloTowerContainer& getCaloTowers(){return caloTowers_;}
+  const SHPFCandContainer& getPFCands()const{return pfCands_;}
+  SHPFCandContainer& getPFCands(){return pfCands_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   double genEventPtHat()const{return genEventPtHat_;}
   const TBits& l1Bits()const{return l1Bits_;}
@@ -233,7 +248,7 @@ class SHEvent : public TObject {
   int orbNr()const{return orbNr_;}
   unsigned long long time()const{return time_;}
   const TVector3& vertex()const{return vertex_;}
-  int nrVertices()const{return nrVertices_;}
+  //int nrVertices()const{return nrVertices_;}
   int preScaleCol()const{return preScaleCol_;}
   float eleRhoCorr()const{return eleRhoCorr_;}
   //first function gets the triggers passed for the event
@@ -269,7 +284,7 @@ class SHEvent : public TObject {
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
   float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,21) //we should go to back to 21 when we want muons
+  ClassDef(SHEvent,22) 
 
 };
   

@@ -100,6 +100,9 @@ public:
 
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const;
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const;
+  static int getVertexNr(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
+  static int getVertexNrClosestZ(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
+
 private:
   //the hashing functions for vector positions
   int ecalHitHash_(const DetId detId)const;

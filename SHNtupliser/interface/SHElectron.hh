@@ -138,6 +138,10 @@ class SHElectron : public TObject {
   float isolHadDepth1BC_;
   float isolHadDepth2BC_;
 
+  //dxy error info
+  float dxyErr_;
+  float dzErr_;
+  
   float rhoCorr_; //! set by the event each time we get it
 
   //backwards link to the mother event
@@ -226,6 +230,9 @@ private:
   const TVector3& posTrackCal()const{return posTrackCal_;}
   const TVector3& posTrackInn()const{return posTrackInn_;}
   const TVector3& posTrackOut()const{return posTrackOut_;}
+  float dxy(const TVector3& point) const;
+  float dxy()const;
+  float dxy00()const{TVector3 zeroPoint;return dxy(zeroPoint);}
   float dzTrkVtx()const;
   const TVector3& posTrackInnToSeed()const{return posTrackInnToSeed_;}
   const TVector3& posTrackOutToSeed()const{return posTrackOutToSeed_;}
@@ -311,7 +318,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,19) 
+  ClassDef(SHElectron,20) 
 
 };
 

@@ -1,5 +1,5 @@
 isMC=True
-pfNoPU=False
+pfNoPU=True
 
 patCandID=""
 if pfNoPU:
@@ -58,7 +58,8 @@ process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = True
 process.shNtupliser.addCaloTowers = True
 process.shNtupliser.addCaloHits = True
-process.shNtupliser.addIsolTrks = False
+process.shNtupliser.addIsolTrks = True
+process.shNtupliser.addPFCands = True  
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
@@ -112,8 +113,12 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
 print "dataset code: ",process.shNtupliser.datasetCode.value()
 if process.shNtupliser.datasetCode.value()>=200:
     if process.shNtupliser.datasetCode.value()<1000:
-        print "applying filter for 1 ele"
+        print "applying filter for 1 ele and disabling large collections"
         process.egammaFilter.nrElesRequired=cms.int32(1)
+        process.shNtupliser.addCaloTowers = False
+        process.shNtupliser.addCaloHits = False
+        process.shNtupliser.addIsolTrks = False
+        process.shNtupliser.addPFCands = False
 
 
 filePrefex="file:"
@@ -164,40 +169,33 @@ if pfNoPU:
     # not possible to run PF2PAT+PAT and standart PAT at the same time
     from PhysicsTools.PatAlgos.tools.pfTools import *
     postfix = "PFlow"
-    usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix)
-    process.pfPileUpPFlow.Enable = True
+    print "pf2pat running"
+    usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix=postfix,
+              jetCorrections=('AK5PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']),
+              pvCollection=cms.InputTag('goodOfflinePrimaryVertices'),
+            
+
+              )
+    
     process.pfPileUpPFlow.checkClosestZVertex = cms.bool(False)
-    process.pfPileUpPFlow.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
-    process.pfJetsPFlow.doAreaFastjet = True
-    process.pfJetsPFlow.doRhoFastjet = False   
-    process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJets", "rho")
-
-    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-    process.kt6PFJets = kt4PFJets.clone(
-        rParam = cms.double(0.6),
-        doAreaFastjet = cms.bool(True),
-        doRhoFastjet = cms.bool(True)
-    )
-
-    # Add the PV selector and KT6 producer to the sequence
-    getattr(process,"patPF2PATSequence"+postfix).replace(
-    getattr(process,"pfNoElectron"+postfix),
-    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
-
     process.patseq = cms.Sequence(    
         process.goodOfflinePrimaryVertices*
         getattr(process,"patPF2PATSequence"+postfix)
         )
+
+    removeSpecificPATObjects(process, ['Taus'],postfix=postfix)
+
 else:
-    from RecoJets.JetProducers.kt4PFJets_cfi import *
+    removeSpecificPATObjects(process, ['Taus'])
+   
+    #PAT for some reason wants to re-run this
     process.kt6PFJets = kt4PFJets.clone(
         rParam = cms.double(0.6),
         doAreaFastjet = cms.bool(True),
         doRhoFastjet = cms.bool(True)
     )
-    inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute','L2L3Residual'])
-    process.patJetCorrFactors.useRho=False
-
+    inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute'])
+  
     # add pf met
     from PhysicsTools.PatAlgos.tools.metTools import *
     addPfMET(process, 'PF')
@@ -210,20 +208,20 @@ else:
                         jetCorrLabel = inputJetCorrLabel,
                         doType1MET   = True,
                         genJetCollection=cms.InputTag("ak5GenJets"),
-                        doJetID      = True
+                        doJetID      = True,
+                        btagdiscriminators=['jetBProbabilityBJetTags','jetProbabilityBJetTags','trackCountingHighPurBJetTags','trackCountingHighEffBJetTags'],
                         )
     process.patJets.addTagInfos = True
     process.patJets.tagInfoSources  = cms.VInputTag(
         cms.InputTag("secondaryVertexTagInfosAOD"),
     )
-    from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-
+     
 #process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual')
 process.patJetCorrFactors.levels = cms.vstring('L1Offset', 'L2Relative', 'L3Absolute')
 
 
-from PhysicsTools.PatAlgos.tools.coreTools import *
-removeSpecificPATObjects(process, ['Taus'])
+#from PhysicsTools.PatAlgos.tools.coreTools import *
+#removeSpecificPATObjects(process, ['Taus'])
 
 from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
@@ -236,10 +234,7 @@ process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 #process.load("SHarper.HEEPAnalyzer.gsfElectronsHEEPCorrs_cfi")
 #process.load("RecoEgamma.ElectronIdentification.electronIdSequence_cff")
 
-#adding barrel veto
-process.elPFIsoValueCharged03PFIdPFIso.deposits.vetos  = cms.vstring('EcalEndcaps:ConeVeto(0.015)','EcalBarrel:ConeVeto(0.015)')
-process.elPFIsoValueGamma03PFIdPFIso.deposits.vetos =  vetos = cms.vstring('EcalEndcaps:ConeVeto(0.08)','EcalBarrel:ConeVeto(0.015)')
-process.shNtupliser.addPFCands = cms.bool(True)    
+ 
 
 if  pfNoPU:
     process.p = cms.Path(#process.primaryVertexFilter*

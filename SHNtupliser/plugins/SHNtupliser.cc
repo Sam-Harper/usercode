@@ -195,7 +195,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
   reco::VertexRef mainVtx(heepEvt_.handles().vertices,0);
   if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(shEvt_,0.5,*shPFCands_,heepEvt_.pfCands(),mainVtx,heepEvt_.handles().vertices);
    
-
+  
 
   // std::cout <<"made even "<<std::endl;
   if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
@@ -287,6 +287,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
     evtTree_->Fill();
   }
   
+
 }
 
 

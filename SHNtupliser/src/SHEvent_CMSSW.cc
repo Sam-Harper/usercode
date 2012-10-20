@@ -5,7 +5,7 @@
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
-
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 //note: change pointers to reference variables
 void SHEvent::addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits)
@@ -101,6 +101,11 @@ void SHEvent::addJet(const pat::Jet& jet)
 void SHEvent::addMuon(const reco::Muon& mu)
 {
   new(muArray_[nrMuons()]) SHMuon(mu,beamSpot_);
+}
+
+void SHEvent::addVertex(const reco::Vertex& vtx)
+{
+  new(vertexArray_[nrVertices()]) SHVertex(vtx);
 }
 
 // void SHEvent::addIsolSuperCluster(const reco::SuperCluster& superClus)

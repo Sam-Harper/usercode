@@ -5,28 +5,25 @@ ClassImp(SHIsolTrack)
 SHIsolTrack::SHIsolTrack():
   p3_(0.,0.,0.),
   vtxPos_(0.,0.,0.),
-  posCharge_(false)
+  posCharge_(false),
+  vertexNr_(-1),
+  chi2_(-999),
+  ndof_(-1)
 {
 
 }
 
-SHIsolTrack::SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge):
+SHIsolTrack::SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof):
   p3_(p3),
   vtxPos_(vtxPos),
-  posCharge_(posCharge)
+  posCharge_(posCharge),
+  vertexNr_(vertexNr),
+  chi2_(chi2),
+  ndof_(ndof)
 {
 
 }
 
-
-
-SHIsolTrack::SHIsolTrack(const SHIsolTrack& rhs):
-  p3_(rhs.p3_),
-  vtxPos_(rhs.vtxPos_),
-  posCharge_(rhs.posCharge_)
-{
-
-}
 
 float SHIsolTrack::dz()const
 {

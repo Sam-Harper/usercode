@@ -19,12 +19,12 @@ public:
   void clear();
 
   size_t nrPhos()const{return photon_.size();}
-  size_t nrChargedHad()const{return chargedHad_.size();}
-  size_t nrNeutralHad()const{return neutralHad_.size();}
+  size_t nrChargedHads()const{return chargedHad_.size();}
+  size_t nrNeutralHads()const{return neutralHad_.size();}
   
-  const SHPFCandidate& photon(size_t nr)const{return photon_[nr];}
-  const SHPFCandidate& chargedHad(size_t nr)const{return chargedHad_[nr];}
-  const SHPFCandidate& neutralHad(size_t nr)const{return neutralHad_[nr];}
+  const SHPFCandidate* photon(size_t nr)const{return &photon_[nr];}
+  const SHPFCandidate* chargedHad(size_t nr)const{return &chargedHad_[nr];}
+  const SHPFCandidate* neutralHad(size_t nr)const{return &neutralHad_[nr];}
 
   ClassDef(SHPFCandContainer,1)
 
