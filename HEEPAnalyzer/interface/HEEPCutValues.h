@@ -38,6 +38,7 @@ namespace heep {
     double maxIsolEmRel03;     // WP80
     double maxIsolHadRel03;    // WP80
     int maxNrMissHits; 
+    float maxDXY; //HEEP V4.1 conversion cut
     
     EleCutValues();
     explicit EleCutValues(const edm::ParameterSet& iConfig);

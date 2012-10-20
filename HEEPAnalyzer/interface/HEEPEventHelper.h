@@ -63,6 +63,8 @@ namespace heep {
     edm::InputTag verticesTag_;
     edm::InputTag caloTowersTag_;
     edm::InputTag eleRhoCorrTag_;
+    edm::InputTag eleRhoCorr2012Tag_;
+    edm::InputTag ecalLaserFilterTag_;
     edm::InputTag pfChargedIsoValEleMapTag_;
     edm::InputTag pfPhotonIsoValEleMapTag_; 
     edm::InputTag pfNeutralIsoValEleMapTag_;

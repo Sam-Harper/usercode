@@ -1,3 +1,4 @@
+
 #ifndef SHarper_HEEPAnalyzer_HEEPAttStatusToPAT_h
 #define SHarper_HEEPAnalyzer_HEEPAttStatusToPAT_h
 
@@ -19,6 +20,7 @@ private:
   heep::EleSelector cuts_; //allows us to apply the heep selection
   edm::InputTag eleLabel_; 
   edm::InputTag eleRhoCorrLabel_;
+  edm::InputTag verticesLabel_;
   bool applyRhoCorrToEleIsol_;
 
 public:

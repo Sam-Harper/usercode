@@ -49,6 +49,8 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   verticesTag_ = conf.getParameter<edm::InputTag>("verticesTag");
   caloTowersTag_ = conf.getParameter<edm::InputTag>("caloTowersTag");
   eleRhoCorrTag_ = conf.getParameter<edm::InputTag>("eleRhoCorrTag");
+  eleRhoCorr2012Tag_ = conf.getParameter<edm::InputTag>("eleRhoCorr2012Tag");
+  ecalLaserFilterTag_ = conf.getParameter<edm::InputTag>("ecalLaserFilter");
   pfChargedIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfChargedIsoValEleMapTag");
   pfPhotonIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfPhotonIsoValEleMapTag"); 
   pfNeutralIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfNeutralIsoValEleMapTag"); 
@@ -116,6 +118,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(verticesTag_,handles.vertices);
   event.getByLabel(caloTowersTag_,handles.caloTowers);
   event.getByLabel(eleRhoCorrTag_,handles.eleRhoCorr);
+  event.getByLabel(eleRhoCorr2012Tag_,handles.eleRhoCorr2012);
+  event.getByLabel(ecalLaserFilterTag_,handles.ecalLaserFilter);
   event.getByLabel(pfChargedIsoValEleMapTag_,handles.pfChargedIsoValEleMap);
   event.getByLabel(pfPhotonIsoValEleMapTag_,handles.pfPhotonIsoValEleMap);
   event.getByLabel(pfNeutralIsoValEleMapTag_,handles.pfNeutralIsoValEleMap);
@@ -170,6 +174,10 @@ void heep::EventHelper::addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::
   //now we need to set isolation rho corrections
   ele.setApplyRhoIsolCorr(applyRhoCorrToEleIsol_);
   ele.setIsolEffectiveAreas(eleIsolEffectiveAreas_);
+  
+  math::XYZPoint pvPos(0,0,0);
+  if(handles.vertices.isValid() && !handles.vertices->empty()) pvPos = handles.vertices->front().position();
+  ele.setEvtPrimVertexPos(pvPos);
   if(handles.eleRhoCorr.isValid()) ele.setRhoForIsolCorr(*handles.eleRhoCorr);
   //now we would like to set the cut results, this has to come after setting isolation parameters
   ele.setCutCode(cuts_.getCutCode(ele)); 

@@ -31,6 +31,8 @@ heepEventPara  = cms.PSet (
     verticesTag = cms.InputTag("offlinePrimaryVerticesWithBS"),
     caloTowersTag = cms.InputTag("towerMaker"),
     eleRhoCorrTag = cms.InputTag("kt6PFJetsForIsolation","rho"),
+    eleRhoCorr2012Tag = cms.InputTag("kt6PFJets","rho"),
+    ecalLaserFilter = cms.InputTag("ecalLaserCorrFilter"),
     pfChargedIsoValEleMapTag = cms.InputTag("elPFIsoValueCharged03PFIdPFIso"),
     pfNeutralIsoValEleMapTag = cms.InputTag("elPFIsoValueNeutral03PFIdPFIso"),
     pfPhotonIsoValEleMapTag = cms.InputTag("elPFIsoValueGamma03PFIdPFIso"),
@@ -40,7 +42,7 @@ heepEventPara  = cms.PSet (
     hltFiltersToCheck = cms.vstring(),#only these filters are checked
     barrelCuts = cms.PSet(heepBarrelCuts),
     endcapCuts = cms.PSet(heepEndcapCuts),
-    applyRhoCorrToEleIsol = cms.bool(True), 
+    applyRhoCorrToEleIsol = cms.bool(True),
     eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
     onlyAddEcalDriven = cms.bool(True), #only promote ecal driven (ie not tracker driven PF electrons) to heep electrons
     heepEleSource = cms.int32(0) #0 = GsfElectrons, 1 = pat::Electrons to make the heep electrons from 

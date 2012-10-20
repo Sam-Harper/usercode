@@ -15,7 +15,7 @@ void heep::EleSelector::setup(const edm::ParameterSet& iConfig)
 }
 
 
-int heep::EleSelector::getCutCode(const heep::Ele& ele,int cutMask)const
+int heep::EleSelector::getCutCode(const heep::Ele& ele,const int cutMask)const
 {
   const EleCutValues* cuts = ele.isEB() ? getBarrelCuts() : getEndcapCuts();
   if(cuts!=NULL) return getCutCode(ele,*cuts,cutMask);
@@ -24,7 +24,7 @@ int heep::EleSelector::getCutCode(const heep::Ele& ele,int cutMask)const
 
 //if it fails a cut, set the bit
 //use the enums for speed
-int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,int cutMask)
+int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,const int cutMask)
 { 
   int cutCode = 0x0;
   if(ele.et()< cuts.minEt) cutCode |= CutCodes::ET;
@@ -43,20 +43,29 @@ int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,
   if(ele.isolEmRel03() > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
   if(ele.isolHadRel03() > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03; 
   if(ele.nrMissHits() > cuts.maxNrMissHits ) cutCode |=CutCodes::NRMISSHITS; 
+  if(fabs(ele.dxy()) > cuts.maxDXY) cutCode |=CutCodes::DXY;
   return (cutCode & cuts.cutMask & cutMask) ;
 }
 
 
-int heep::EleSelector::getCutCode(float rho,const reco::GsfElectron& ele,int cutMask)const
+int heep::EleSelector::getCutCode(const float rho,const math::XYZPoint &vertex,const reco::GsfElectron& ele,const int cutMask)const
 {
   const EleCutValues* cuts = ele.isEB() ? getBarrelCuts() : getEndcapCuts();
-  if(cuts!=NULL) return getCutCode(rho,ele,isolEffectAreas_,*cuts,cutMask);
+  if(cuts!=NULL) return getCutCode(rho,vertex,ele,isolEffectAreas_,*cuts,cutMask);
   else return CutCodes::INVALID;
+}
+
+int heep::EleSelector::getCutCode(const float rho,const std::vector<reco::Vertex>& vertices,const reco::GsfElectron& ele,const int cutMask)const
+{
+  math::XYZPoint vertex(0,0,0);
+  if(!vertices.empty()) vertex = vertices[0].position();
+  return getCutCode(rho,vertex,ele,cutMask);
+
 }
 
 //if it fails a cut, set the bit    
 //use the enums for speed
-int heep::EleSelector::getCutCode(float rho,const reco::GsfElectron& ele,const heep::EffectiveAreas& effectAreas,const EleCutValues& cuts,int cutMask)
+int heep::EleSelector::getCutCode(const float rho,const math::XYZPoint &vertex,const reco::GsfElectron& ele,const heep::EffectiveAreas& effectAreas,const EleCutValues& cuts,const int cutMask)
 { 
   int cutCode = 0x0;
   //now we need to calculate the et of the gsf electron using supercluster energy
@@ -79,6 +88,7 @@ int heep::EleSelector::getCutCode(float rho,const reco::GsfElectron& ele,const h
   if((ele.dr03EcalRecHitSumEt()- rho*effectAreas.ecal(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho() > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
   if((ele.dr03HcalTowerSumEt()- rho*effectAreas.hcal(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho()  > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03;   
   if(ele.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() > cuts.maxNrMissHits ) cutCode |=CutCodes::NRMISSHITS; 
+  if(fabs(ele.gsfTrack()->dxy(vertex))>cuts.maxDXY) cutCode |=CutCodes::DXY;
 
   return (cutCode & cuts.cutMask & cutMask) ;
 }

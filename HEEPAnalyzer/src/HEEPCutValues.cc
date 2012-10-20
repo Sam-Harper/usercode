@@ -33,7 +33,8 @@ heep::EleCutValues::EleCutValues():
   maxIsolPtTrksRel03(0),
   maxIsolEmRel03(0),    
   maxIsolHadRel03(0),
-  maxNrMissHits(0)
+  maxNrMissHits(0),
+  maxDXY(0)
 {
 
 }
@@ -74,7 +75,7 @@ heep::EleCutValues& heep::EleCutValues::operator=(const edm::ParameterSet& iConf
   maxIsolPtTrksRel03 = iConfig.getParameter<double>("maxIsolPtTrksRel03");//WP80
   
   maxNrMissHits = iConfig.getParameter<int>("maxNrMissHits");
-
+  maxDXY = iConfig.getParameter<double>("maxDXY");
 
   return *this;
 }

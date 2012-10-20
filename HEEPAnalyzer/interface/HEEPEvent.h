@@ -80,7 +80,9 @@ namespace heep{
     int hltPreScale(const std::string& hltPath)const{return hltConfig_.inited() ? hltConfig_.prescaleValue(event(),eventSetup(),hltPath) : -1;}
     int preScaleColumn()const{return hltConfig_.inited() ? hltConfig_.prescaleSet(event(),eventSetup()) : -1;}
     double eleRhoCorr()const{return *handles_.eleRhoCorr;}
-
+    double eleRhoCorr2012()const{return *handles_.eleRhoCorr2012;}
+    double eleRhoCorr2011()const{return *handles_.eleRhoCorr;}
+    bool passEcalLaserFilter(bool passIfNotFound=true)const{return handles_.ecalLaserFilter.isValid() ? *handles_.ecalLaserFilter : passIfNotFound;}
     heep::EvtHandles& handles(){return handles_;}
     const heep::EvtHandles& handles()const{return handles_;}
     std::vector<heep::Ele>& heepEles(){return heepEles_;}

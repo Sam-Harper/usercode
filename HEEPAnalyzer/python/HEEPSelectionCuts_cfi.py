@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 #this is where the HEEP selection is defined
 
-heepBarrelCuts = cms.PSet (
-    cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks:nrMissHits"),
+heepBarrelCutsV41 = cms.PSet (
+    cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks:nrMissHits:dxy"),
     minEt=cms.double(35),
     minEta=cms.double(0.),
     maxEta=cms.double(1.442),
@@ -26,10 +26,11 @@ heepBarrelCuts = cms.PSet (
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
     maxNrMissHits=cms.int32(0),
+    maxDXY=cms.double(0.02)
 )
 
-heepEndcapCuts = cms.PSet (
-    cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits"),
+heepEndcapCutsV41 = cms.PSet (
+    cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits:dxy"),
     minEt=cms.double(35),
     minEta=cms.double(1.56),
     maxEta=cms.double(2.5),
@@ -52,7 +53,21 @@ heepEndcapCuts = cms.PSet (
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
     maxNrMissHits=cms.int32(0),
+    maxDXY=cms.double(0.05)
 )
+
+heepBarrelCuts = heepBarrelCutsV41.clone()
+heepEndcapCuts = heepEndcapCutsV41.clone()
+
+heepBarrelCutsV40 = heepBarrelCutsV41.clone()
+heepBarrelCutsV40.maxNrMissHits=cms.int32(0)
+heepBarrelCutsV40.cuts =cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits")
+
+heepEndcapCutsV40 = heepEndcapCutsV41.clone()
+heepEndcapCutsV40.maxNrMissHits=cms.int32(0)
+heepEndcapCutsV40.cuts =cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits")
+
+
 
 heepEffectiveAreas = cms.PSet (
     trackerBarrel = cms.double(0.),
@@ -87,6 +102,7 @@ heepBarrelCutsV31 = cms.PSet (
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
     maxNrMissHits=cms.int32(0),
+    maxDXY=cms.double(0)
 )
 
 heepEndcapCutsV31 = cms.PSet (
@@ -113,7 +129,7 @@ heepEndcapCutsV31 = cms.PSet (
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
     maxNrMissHits=cms.int32(0),
-
+    maxDXY=cms.double(0)
 )
 
 heepBarrelCutsV31WithMissHitsCut =heepEndcapCutsV31.clone()

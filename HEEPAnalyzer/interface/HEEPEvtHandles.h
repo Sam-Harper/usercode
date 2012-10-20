@@ -86,6 +86,8 @@ namespace heep {
     edm::Handle<reco::VertexCollection> vertices;
     edm::Handle<reco::BeamSpot> beamSpot;
     edm::Handle<double> eleRhoCorr;
+    edm::Handle<double> eleRhoCorr2012;
+    edm::Handle<bool> ecalLaserFilter;
     edm::ESHandle<L1GtTriggerMenu> l1Menu;
     
     edm::Handle<edm::ValueMap<double> > pfChargedIsoValEleMap;

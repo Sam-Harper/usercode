@@ -65,6 +65,8 @@ namespace heep {
     float rhoForIsolCorr_; // the value of rho for the electron isolation correction, defaults to zero
     bool applyRhoIsolCorr_; //whether we apply the rho correction or not. Note if set true, all isolations from this wrapper are corrected
     EffectiveAreas isolEffectAreas_; //the effective areas used for the rho correction
+
+    math::XYZPoint evtPrimVertexPos_; //the first vertex in the vertex collection
     
   public:
     
@@ -94,7 +96,7 @@ namespace heep {
     void setApplyRhoIsolCorr(bool applyCorr){applyRhoIsolCorr_=applyCorr;}
     void setRhoForIsolCorr(float rho){rhoForIsolCorr_=rho;}
     void setIsolEffectiveAreas(const heep::EffectiveAreas& areas){isolEffectAreas_=areas;}
-    
+    void setEvtPrimVertexPos(const math::XYZPoint& point){evtPrimVertexPos_ = point;}
 
     const reco::GsfElectron& gsfEle()const{return *gsfEle_;}
     const pat::Electron& patEle()const; //this function will throw an exception if its not a pat electron (check with isPatEle())
@@ -188,6 +190,7 @@ namespace heep {
 
 
     int nrMissHits()const{return gsfEle_->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();}
+    float dxy()const{return gsfEle_->gsfTrack()->dxy(evtPrimVertexPos_);}
 
     //selection cuts
     int cutCode()const{return cutCode_;}

@@ -43,7 +43,9 @@ namespace heep {
      
       NRMISSHITS      =0x8000,
       
-      ECALDRIVEN     =0x20000,
+      DXY             =0x10000,
+      ECALDRIVEN      =0x20000,
+                   
 
       
       
