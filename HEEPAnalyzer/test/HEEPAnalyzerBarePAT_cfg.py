@@ -1,7 +1,7 @@
 #this config file configures the PAT to be suitable for HEEP analyses and then runs an example analyzer
 #this uses only bare pat and does not use the HEEP event
 
-isMC=True
+isMC=False
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -12,7 +12,7 @@ process = cms.Process("HEEP")
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(10),
+    reportEvery = cms.untracked.int32(500),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -82,6 +82,8 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 removeSpecificPATObjects( process, ['Taus'] )
 process.patDefaultSequence.remove( process.patTaus )
 
+if isMC==False:
+    removeMCMatching(process, ['All'])
 
 #for isolation correction
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets

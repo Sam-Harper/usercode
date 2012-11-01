@@ -3,7 +3,7 @@
 #this config file configures the PAT to be suitable for HEEP analyses and then runs an example analyzer
 #this uses only bare pat and does not use the HEEP event
 
-isMC=True
+isMC=False
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -20,7 +20,7 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Load geometry
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.autoCond import autoCond
 if isMC:
@@ -63,6 +63,7 @@ process.heepPatElectrons = cms.EDProducer("HEEPAttStatusToPAT",
                                           applyRhoCorrToEleIsol = cms.bool(True), 
                                           eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
                                           eleRhoCorrLabel = cms.InputTag("kt6PFJetsForIsolation","rho"),
+                                          verticesLabel = cms.InputTag("offlinePrimaryVerticesWithBS"),
                                           )
 
 process.heepAnalyzerHEEPPAT = cms.EDAnalyzer("HEEPAnalyzerHEEPPAT",
@@ -100,7 +101,8 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeSpecificPATObjects( process, ['Taus'] )
 process.patDefaultSequence.remove( process.patTaus )
-
+if isMC==False:
+    removeMCMatching(process, ['All'])
 
 #for isolation correction
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets

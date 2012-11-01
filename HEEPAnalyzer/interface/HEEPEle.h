@@ -74,7 +74,8 @@ namespace heep {
     Ele(const reco::GsfElectron& ele):
       gsfEle_(&ele),patEle_(dynamic_cast<const pat::Electron*>(&ele)),
       cutCode_(heep::CutCodes::INVALID),
-      p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()),
+      //p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()),  
+      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
       rhoForIsolCorr_(0),
       applyRhoIsolCorr_(false),
       isolEffectAreas_()
@@ -84,7 +85,8 @@ namespace heep {
     Ele(const pat::Electron& ele):
       gsfEle_(&ele),patEle_(&ele),
       cutCode_(heep::CutCodes::INVALID),
-      p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()),
+      //    p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()), 
+      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
       rhoForIsolCorr_(0),
       applyRhoIsolCorr_(false),
       isolEffectAreas_(){}

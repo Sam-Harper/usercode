@@ -9,4 +9,6 @@ heepAnalyzerBarePAT = cms.EDAnalyzer("HEEPAnalyzerBarePAT",
                               applyRhoCorrToEleIsol = cms.bool(True), 
                               eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
                               eleRhoCorrLabel = cms.InputTag("kt6PFJetsForIsolation","rho"),
+                              verticesLabel = cms.InputTag("offlinePrimaryVerticesWithBS"),
+
 )

@@ -1,5 +1,5 @@
 #this config places the HEEPId into allLayer1Electrons
-isMC=True
+isMC=False
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -17,7 +17,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 
 # Load geometry
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.autoCond import autoCond
 if isMC:
@@ -61,6 +61,7 @@ process.HEEPId = cms.EDProducer("HEEPIdValueMapProducer",
                                 eleIsolEffectiveAreas = cms.PSet(heepEffectiveAreas),
                                 eleRhoCorrLabel = cms.InputTag("kt6PFJetsForIsolation","rho"),
                                 applyRhoCorrToEleIsol = cms.bool(True),
+                                verticesLabel = cms.InputTag("offlinePrimaryVerticesWithBS"),
                                 writeIdAsInt =cms.bool(True) #true saves the heep ID as an int, false: saves as a float, user request
                                 )
 
@@ -94,6 +95,10 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 removeSpecificPATObjects( process, ['Taus'] )
 process.patDefaultSequence.remove( process.patTaus )
 
+if isMC==False:
+    removeMCMatching(process, ['All'])
+
+
 process.patElectrons.userData.userInts.src = cms.VInputTag('HEEPId')
 
 #for isolation correction
@@ -102,6 +107,13 @@ process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = Tr
 process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
 
+#little example analyzer
+process.heepAnalyzer = cms.EDAnalyzer("HEEPAnalyzerPATHEEPId",
+                                      eleLabel=cms.InputTag("patElectrons")
+)
+
 process.p = cms.Path(process.kt6PFJetsForIsolation*
                      process.HEEPId* #makes the HEEPID value map
-                     process.patDefaultSequence) #runs PAT
+                     process.patDefaultSequence* #runs pat
+                     process.heepAnalyzer #example analyser module
+                     ) 

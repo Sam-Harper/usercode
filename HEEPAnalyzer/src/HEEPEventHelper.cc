@@ -181,5 +181,8 @@ void heep::EventHelper::addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::
   if(handles.eleRhoCorr.isValid()) ele.setRhoForIsolCorr(*handles.eleRhoCorr);
   //now we would like to set the cut results, this has to come after setting isolation parameters
   ele.setCutCode(cuts_.getCutCode(ele)); 
+  
+  //int cutCode = cuts_.getCutCode(*handles.eleRhoCorr,pvPos,gsfEle);
+  //if(cutCode!=ele.cutCode()) std::cout <<" cutCode "<<ele.cutCode()<<" "<<cuts_.getCutCode(*handles.eleRhoCorr,pvPos,gsfEle)<<" rho "<<*handles.eleRhoCorr<<" pv z "<<pvPos.z()<<std::endl;
 }
 
