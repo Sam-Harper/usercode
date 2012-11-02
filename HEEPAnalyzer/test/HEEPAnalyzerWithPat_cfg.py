@@ -1,4 +1,4 @@
-isMC=True
+isMC=False
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -58,6 +58,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # input heep analyzer sequence
 process.load("SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi")
+heepEleSource = cms.int32(1)
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(sys.argv[len(sys.argv)-1])
