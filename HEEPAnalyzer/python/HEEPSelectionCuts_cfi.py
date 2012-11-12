@@ -25,7 +25,7 @@ heepBarrelCutsV41 = cms.PSet (
     maxIsolPtTrksRel03=cms.double(0.09),  #WP80
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
-    maxNrMissHits=cms.int32(0),
+    maxNrMissHits=cms.int32(1),
     maxDXY=cms.double(0.02)
 )
 
@@ -52,7 +52,7 @@ heepEndcapCutsV41 = cms.PSet (
     maxIsolPtTrksRel03=cms.double(0.09),  #WP80
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
-    maxNrMissHits=cms.int32(0),
+    maxNrMissHits=cms.int32(1),
     maxDXY=cms.double(0.05)
 )
 
