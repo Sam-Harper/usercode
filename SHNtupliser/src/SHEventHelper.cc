@@ -189,10 +189,10 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
   
   //grrr
-  // const reco::Vertex& vtx = heepEvent.handles().vertices->front();
+  //const reco::Vertex& vtx = heepEvent.handles().vertices->front();
   //  std::cout <<"x "<<gsfEle.TrackPositionAtVtx().X()<<" track x "<<gsfEle.gsfTrack()->vx()<<" vx "<<vtx.x()<<" y "<<gsfEle.TrackPositionAtVtx().Y()<<" trk y "<<gsfEle.gsfTrack()->vy()<<" y "<<vtx.y()<<" z "<<gsfEle.TrackPositionAtVtx().Z()<<" trk z "<<gsfEle.gsfTrack()->vz()<<" vz "<<vtx.z()<<std::endl;
    //std::cout <<"x "<<gsfEle.trackMomentumAtVtx().X()<<" track x "<<gsfEle.gsfTrack()->px()<<" y "<<gsfEle.trackMomentumAtVtx().Y()<<" trk y "<<gsfEle.gsfTrack()->py()<<" z "<<gsfEle.trackMomentumAtVtx().Z()<<" trk z "<<gsfEle.gsfTrack()->pz()<<std::endl;
-  // const reco::Vertex& vtx = heepEvent.handles().vertices->front();
+  //   const reco::Vertex& vtx = heepEvent.handles().vertices->front();
   //  std::cout <<"CMSSW dxy "<<gsfEle.gsfTrack()->dxy( math::XYZPoint(vtx.x(),vtx.y(),vtx.z()) )<<" my dxy "<<shEle->dxy()<<std::endl;
   
 

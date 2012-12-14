@@ -19,7 +19,7 @@ public:
     pt_(0.),eta_(0.),phi_(0.),mass_(0.),scSeedCrysId_(0){}
   SHPFCandidate(float iPt,float iEta,float iPhi,float iMass,float iMVANothingGamma,int iSCSeedCrysId):
     pt_(iPt),eta_(iEta),phi_(iPhi),mass_(iMass),mvaNothingGamma_(iMVANothingGamma),scSeedCrysId_(iSCSeedCrysId),vx_(0.),vy_(0.),vz_(0.){}
-  
+  virtual ~SHPFCandidate(){}
   float pt()const{return pt_;}
   float eta()const{return eta_;}
   float phi()const{return phi_;}

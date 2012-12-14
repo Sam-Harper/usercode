@@ -244,7 +244,7 @@ void SHElectron::fixTrkIsol()
 
 float SHElectron::dxy()const
 {
-  return mEvent_!=NULL ? dxy(mEvent_->vertex()) : dxy();
+  return mEvent_!=NULL ? dxy(mEvent_->vertex()) : dxy00();
 }
 
 float SHElectron::dxy(const TVector3& point)const

@@ -22,7 +22,7 @@ class SHCaloTowerContainer {
  public:
   SHCaloTowerContainer();
   SHCaloTowerContainer(const SHCaloTowerContainer& rhs);
-  ~SHCaloTowerContainer(){}//need to check if need to delete TClonesArray objects
+  virtual ~SHCaloTowerContainer(){}//need to check if need to delete TClonesArray objects
   
   //just uses the assignment operators of the TClonesArray 
   SHCaloTowerContainer& operator=(const SHCaloTowerContainer& rhs);

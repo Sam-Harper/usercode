@@ -19,7 +19,7 @@ public:
   
   SHPileUpSummary();
   SHPileUpSummary(const SHPileUpSummary& rhs);
-  ~SHPileUpSummary(){}
+  virtual ~SHPileUpSummary(){}
   
   SHPileUpSummary& operator=(const SHPileUpSummary& rhs);
 
