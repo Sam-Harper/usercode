@@ -15,6 +15,8 @@
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 
+#include "DataFormats/MuonReco/interface/MuonCocktails.h"
+
 #include "TrackingTools/GsfTools/interface/MultiTrajectoryStateTransform.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
 
@@ -51,6 +53,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   addMet_ = conf.getParameter<bool>("addMet");
   addJets_ = conf.getParameter<bool>("addJets");
   addMuons_ = conf.getParameter<bool>("addMuons");
+  applyMuonId_ = conf.getParameter<bool>("applyMuonId");
   addTrigs_ = conf.getParameter<bool>("addTrigs");
   addCaloTowers_ = conf.getParameter<bool>("addCaloTowers");
   addIsolTrks_ = conf.getParameter<bool>("addIsolTrks");
@@ -297,9 +300,27 @@ void SHEventHelper::addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const
     for(size_t muNr=0;muNr<heepEvent.muons().size();muNr++){
       const reco::Muon& muon = heepEvent.muons()[muNr];
       
-      if(muon.isGlobalMuon()) shEvent.addMuon(muon);
+      if(muon.isGlobalMuon() && (!applyMuonId_ || passMuonId(muon,heepEvent))) shEvent.addMuon(muon);
     }
   }
+}
+
+bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEvent)
+{
+  if(muon.isGlobalMuon() && 
+     muon.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
+     muon.numberOfMatchedStations()>1 &&
+     muon.globalTrack()->hitPattern().numberOfValidPixelHits()>0 && 
+     muon.globalTrack()->hitPattern().trackerLayersWithMeasurement() > 5 ){
+    reco::TrackRef cktTrackRef = (muon::tevOptimized(muon, 200, 17., 40., 0.25)).first;
+    const reco::Track& cktTrack = *cktTrackRef;
+    const reco::Vertex& vertex = heepEvent.handles().vertices->front();
+    if(cktTrack.ptError()/cktTrack.pt()<0.3 && 
+       fabs(cktTrack.dxy(vertex.position())) < 0.2 &&
+       fabs(cktTrack.dz(vertex.position())) < 0.5) return true;
+    
+  }
+  return false;
 }
 
 size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const

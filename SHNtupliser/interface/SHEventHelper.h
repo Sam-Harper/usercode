@@ -43,6 +43,7 @@ private:
   bool addJets_;
   bool addTrigs_;
   bool addMuons_;
+  bool applyMuonId_;
   bool fillFromGsfEle_;
 
   //temp variables for hlt debug hack
@@ -102,6 +103,8 @@ public:
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const;
   static int getVertexNr(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
   static int getVertexNrClosestZ(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
+
+  static bool passMuonId(const reco::Muon& muon,const heep::Event& heepEvent);
 
 private:
   //the hashing functions for vector positions
