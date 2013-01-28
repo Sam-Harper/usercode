@@ -56,6 +56,7 @@ process.shNtupliser.gsfEleTag = "gsfElectrons"
 process.shNtupliser.addMet = True
 process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = True
+process.shNtupliser.applyMuonId = True
 process.shNtupliser.addCaloTowers = True
 process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True

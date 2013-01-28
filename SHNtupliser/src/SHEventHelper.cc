@@ -466,6 +466,7 @@ void SHEventHelper::addTrigInfo(const trigger::TriggerEvent& trigEvt,
     const trigger::TriggerObjectCollection & trigObjColl(trigEvt.getObjects());
     for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){
       const trigger::TriggerObject& obj = trigObjColl[*keyIt];
+      //  std::cout <<" filter "<<trigEvt.filterTag(filterNr).label()<<" obj id "<<obj.id()<<std::endl;
       TLorentzVector p4;
       //note I call this function as its probably the fastest way to get info out of  TriggerObject in 22X (look at how it calculates et, its impressive, it might be possible to do it slower but I doubt it)
       // if(trigEvt.filterTag(filterNr).process()=="HLT" && trigEvt.filterTag(filterNr).label()=="hltSingleMu15L3Filtered15") std::cout <<"filter: "<<trigEvt.filterTag(filterNr).label()<<" prod "<<trigEvt.filterTag(filterNr).process()<<" obj.pt "<<obj.pt()<<std::endl;

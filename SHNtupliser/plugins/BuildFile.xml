@@ -1,5 +1,5 @@
 <export>
 </export>
-<library   name="SHarperSHNtupliser_plugins" file="SHNtupliser.cc,VertexFilter.cc,EGammaFilter.cc,PDFTreeMaker.cc">
+<library   name="SHarperSHNtupliser_plugins" file="SHNtupliser.cc,VertexFilter.cc,EGammaFilter.cc,PDFTreeMaker.cc,DeCalibEcalRecHitProducer.cc">
   <use   name="SHarper/SHNtupliser"/>
 </library>

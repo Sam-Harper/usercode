@@ -43,6 +43,11 @@ void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContain
 void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands,const reco::VertexRef mainVtx,const edm::Handle< reco::VertexCollection > vertices);
 reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle< reco::VertexCollection > verticesColl);
 
+//some hacky functions to allow use to reset the trigger energies
+void addInDeLaseredTriggerNrgys(const heep::Event& heepEvent,SHEvent& shEvent);
+void setTrigObsToNewNrgy(const reco::SuperClusterCollection& ebSCs,const reco::SuperClusterCollection& eeSCs,trigger::TriggerObjectCollection& trigObjs);
+
+
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL)
 {
@@ -275,7 +280,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
   filterCaloTowers(shEvt_,0.5,shEvt_->getCaloTowers(),outputTowers);  
   shEvt_->addCaloTowers(outputTowers);
   
-    
+  addInDeLaseredTriggerNrgys(heepEvt_,*shEvt_);
 
   if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
     shEvt_->getCaloHits().clear();
@@ -321,6 +326,8 @@ bool passFilter(const edm::Event& iEvent,float detEta,float detPhi,std::string f
 }
 
 
+
+
 void SHNtupliser::endJob()
 { 
   outFile_->cd();
@@ -329,17 +336,7 @@ void SHNtupliser::endJob()
   tree->Branch("nrPass",&nrPass_,"nrPass/I");
   tree->Branch("nrTot",&nrTot_,"nrTot/I");
   tree->Fill();
-  
-  //outFile_->WriteObject(&nrPass_,"nrPass");
-  //outFile_->WriteObject(&nrTot_,"nrTot");
- 
-  //  outFile_->Write();
-  // outFile_->Close();
-  // delete outFile_;
-  //outFile_=NULL;
-  // evtTree_=NULL; //it is owned by the file, once closed its gone 
-  //delete shEvt_;
-  //shEvt_=NULL;
+
   std::cout <<"job ended "<<std::endl;
 }
 
@@ -556,6 +553,66 @@ reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle
   }
    
   return  reco::VertexRef( );
+}
+
+
+void addInDeLaseredTriggerNrgys(const heep::Event& heepEvent,SHEvent& shEvent)
+{
+  edm::InputTag newSCEETag("hltCorrectedMulti5x5SuperClustersWithPreshowerActivity");
+  edm::InputTag newSCEBTag("hltCorrectedHybridSuperClustersActivity");
+  edm::Handle<reco::SuperClusterCollection> newSCEEHandle;
+  heepEvent.event().getByLabel(newSCEETag,newSCEEHandle);
+  edm::Handle<reco::SuperClusterCollection> newSCEBHandle;
+  heepEvent.event().getByLabel(newSCEBTag,newSCEBHandle);
+ 
+  trigger::TriggerObjectCollection trigObjsWithNewNrgy(heepEvent.triggerEvent().getObjects());
+  setTrigObsToNewNrgy(*newSCEBHandle,*newSCEEHandle,trigObjsWithNewNrgy);
+  
+  const trigger::TriggerEvent& trigEvt = heepEvent.triggerEvent();
+  //  const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
+  // const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults); 
+
+  for(size_t filterNr=0;filterNr<trigEvt.sizeFilters();filterNr++){
+    SHTrigInfo trigInfo;
+    trigInfo.setTrigId(-1);
+    trigInfo.setTrigName(trigEvt.filterTag(filterNr).label()+"NewNrgy");
+    const trigger::Keys& trigKeys = trigEvt.filterKeys(filterNr);  //trigger::Keys is actually a vector<uint16_t> holding the position of trigger objects in the trigger collection passing the filter
+  
+    for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){
+      const trigger::TriggerObject& obj = trigObjsWithNewNrgy[*keyIt];
+      TLorentzVector p4;
+      p4.SetPtEtaPhiM(obj.pt(),obj.eta(),obj.phi(),obj.mass());
+      trigInfo.addObj(p4);
+    }
+    if(!trigKeys.empty()) shEvent.addTrigInfo(trigInfo); //only adding triggers which actually have objects passing
+  } 
+}
+
+void setTrigObsToNewNrgy(const reco::SuperClusterCollection& ebSCs,const reco::SuperClusterCollection& eeSCs,trigger::TriggerObjectCollection& trigObjs)
+{
+  
+  for(size_t trigNr=0;trigNr<trigObjs.size();trigNr++){ //so trigObj.id() is only set if its actually ided as a particle (ie muon (possibly), ele, tau) so have to do all of them
+    if(abs(trigObjs[trigNr].id())!=11 && trigObjs[trigNr].id()!=0) continue; //it will be iether 0 or 11, sadly most things are zero
+
+    const reco::SuperClusterCollection& scColl = fabs(trigObjs[trigNr].eta())<1.5 ? ebSCs : eeSCs;
+    float bestDR2 = 0.02*.02;
+    const reco::SuperCluster* bestSC = 0;
+    for(size_t scNr=0;scNr<scColl.size();scNr++){
+      float dR2=reco::deltaR2(scColl[scNr].eta(),scColl[scNr].phi(),trigObjs[trigNr].eta(),trigObjs[trigNr].phi());
+      //std::cout <<"scNr "<<scNr<<" dR2 "<<dR2<<std::endl;
+      if(dR2<bestDR2){
+	bestDR2 = dR2;
+	bestSC = &scColl[scNr];
+      }
+    } //end loop over sc
+    if(bestSC){
+      //std::cout <<" new energy "<<bestSC->energy()<<" old energy "<<trigObjs[trigNr].energy()<<std::endl;
+      trigObjs[trigNr].setPt(bestSC->energy()/trigObjs[trigNr].energy()*trigObjs[trigNr].pt());
+    }else trigObjs[trigNr].setPt(-1*trigObjs[trigNr].pt());
+    
+    
+    //std::cout <<"trigObj "<<trigNr<<" id "<<trigObjs[trigNr].id()<<" et "<<trigObjs[trigNr].pt()<<std::endl;
+  }//end loop over 
 }
 
 
