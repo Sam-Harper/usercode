@@ -22,6 +22,11 @@ SHCaloHit::SHCaloHit(int iId,float iNrgy,float iTime,uint32_t iFlag,uint32_t iFl
 
 }
 
+bool operator<(int lhs,const SHCaloHit& rhs)
+{
+  return lhs<rhs.detId_;
+}
+
 // SHCaloHit::SHCaloHit(const SHCaloHit& rhs):
 //   nrgy_(rhs.nrgy_),
 //   detId_(rhs.detId_)

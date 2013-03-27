@@ -23,6 +23,8 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
+#include "DataFormats/EgammaReco/interface/PreshowerCluster.h"
+#include "DataFormats/EgammaReco/interface/PreshowerClusterFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
@@ -71,6 +73,8 @@ namespace heep {
     edm::Handle<reco::PFCandidateCollection> pfCandidate;
     edm::Handle<reco::SuperClusterCollection> superClusEB;
     edm::Handle<reco::SuperClusterCollection> superClusEE;  
+    edm::Handle<reco::PreshowerClusterCollection> preShowerClusX;
+    edm::Handle<reco::PreshowerClusterCollection> preShowerClusY; 
     edm::Handle<reco::GsfElectronCollection> gsfEle; 
     edm::Handle<reco::PhotonCollection> recoPho;
     edm::Handle<reco::TrackCollection> ctfTrack;

@@ -34,6 +34,8 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   hcalRecHitsTag_ = conf.getParameter<edm::InputTag>("hbheRecHitsTag");
   superClusterEBTag_ =conf.getParameter<edm::InputTag>("superClusterEBTag");
   superClusterEETag_ =conf.getParameter<edm::InputTag>("superClusterEETag");
+  preShowerClusterXTag_ =conf.getParameter<edm::InputTag>("preShowerClusterXTag");
+  preShowerClusterYTag_ =conf.getParameter<edm::InputTag>("preShowerClusterYTag");
   gsfEleTag_ = conf.getParameter<edm::InputTag>("gsfEleTag");
   recoPhoTag_ = conf.getParameter<edm::InputTag>("recoPhoTag");
   pfCandidateTag_ = conf.getParameter<edm::InputTag>("pfCandidateTag");
@@ -106,6 +108,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(pfCandidateTag_,handles.pfCandidate);
   event.getByLabel(superClusterEBTag_,handles.superClusEB);
   event.getByLabel(superClusterEETag_,handles.superClusEE); 
+  event.getByLabel(preShowerClusterXTag_,handles.preShowerClusX);
+  event.getByLabel(preShowerClusterYTag_,handles.preShowerClusY); 
   event.getByLabel(ctfTrackTag_,handles.ctfTrack);
   event.getByLabel(genParticleTag_,handles.genParticle);
   event.getByLabel(trigEventTag_,handles.trigEvent);

@@ -82,6 +82,7 @@ public:
   void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const;
   void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const;
   void addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const;
+  void addPreShowerClusters(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addCaloHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addCaloTowers(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addEcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;

@@ -24,6 +24,7 @@
 #include "SHarper/SHNtupliser/interface/SHPFCandidate.hh"
 #include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHVertex.hh"
+#include "SHarper/SHNtupliser/interface/SHPreShowerCluster.hh"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -61,6 +62,6 @@
 #pragma link C++ class SHPFCandidate+;
 #pragma link C++ class SHPFCandContainer+;
 #pragma link C++ class SHVertex+;
-
+#pragma link C++ class SHPreShowerCluster+;
 
 #endif

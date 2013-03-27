@@ -31,9 +31,9 @@ from Configuration.AlCa.autoCond import autoCond
    # process.GlobalTag.globaltag = "GR_P_V42_AN2::All"
 
 
-dataset="Photon"
+dataset="DoublePhotonHighPt"
 #DATASETSOVERWRITE
-datasetVersion="dummy"
+datasetVersion=""
 #DATASETVERSIONOVERWRITE
 
 if datasetVersion.find("13Jul")!=-1:
@@ -53,7 +53,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -65,7 +65,7 @@ import sys
 
 hltName="HLT"
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
-process.shNtupliser.datasetCode = 1
+process.shNtupliser.datasetCode = 0
 process.shNtupliser.sampleWeight = 1
 process.shNtupliser.gsfEleTag = "gsfElectrons"
 process.shNtupliser.addMet = True
@@ -105,6 +105,7 @@ process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton70_v*","HLT_Double
                                              "HLT_Photon*CaloIdVL_v*","HLT_Photon135_v*","HLT_Photon150_v*","HLT_Photon160_v*","HLT_Photon*NoHE*", #single photon
                                              "HLT_DoubleEle33_CaloId*")
 if dataset=="DoubleElectron":
+    print "Double Electron dataset"
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*","HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_Mass50_v*")
 process.skimHLTFilter.throw = False
 
@@ -135,7 +136,7 @@ else:
     print "using user specified filename"
     #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
     process.TFileService.fileName= sys.argv[len(sys.argv)-1]
-    process.shNtupliser.datasetCode = -1
+    process.shNtupliser.datasetCode = 0
     process.shNtupliser.sampleWeight = 1
 
 
@@ -260,7 +261,7 @@ process.ecalLaserCorrFilter.taggingMode= True
 
 if  pfNoPU:
    
-    process.p = cms.Path(process.skimHLTFilter*process.ecalLaserCorrFilter*
+    process.p = cms.Path(process.skimHLTFilter*#*process.ecalLaserCorrFilter*
         process.primaryVertexFilter*
         process.pfParticleSelectionSequence* process.eleIsoSequence* 
         process.patseq*

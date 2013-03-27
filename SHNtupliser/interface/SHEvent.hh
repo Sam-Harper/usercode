@@ -60,6 +60,7 @@ class SHEvent : public TObject {
   TClonesArray isolTrkArray_; //! now transisent, stored in seperate branch for 5X
   TClonesArray trigArray_;
   TClonesArray muArray_;
+  TClonesArray preShowerClusArray_; //new in version 23
   
  
   int runnr_;
@@ -158,6 +159,8 @@ class SHEvent : public TObject {
   void addCaloTowers(const SHCaloTowerContainer& towers){caloTowers_ = towers;}
   void addIsolInfo(const SHEvent& rhs);
   
+  void addPreShowerCluster(const SHPreShowerCluster& clus);
+
   // void addPUInfo(int iBx,int iNrInteractions,int iNrTrueInteractions){puSummary_.addPUInfo(iBx,iNrInteractions,iNrTrueInteractions);}
 
   int nrPUInteractions()const{return nrPUInteractions_;}
@@ -193,6 +196,7 @@ class SHEvent : public TObject {
 
 
   const SHSuperCluster* getSuperClus(int clusNr)const;
+  const SHPreShowerCluster* getPreShowerClus(int clusNr)const;
   const SHMCParticle* getMCParticle(int partNr)const;
   const SHElectron* getElectron(int eleNr)const;
   ///const SHIsolCluster* getIsolClus(int clusNr)const;
@@ -200,7 +204,7 @@ class SHEvent : public TObject {
   const SHJet* getJet(int jetNr)const;
   SHJet* getJet(int jetNr);
   const SHMuon* getMuon(int muNr)const;
-  
+  const SHVertex* getVertex(int vertNr)const;
 
   const SHIsolTrack* getIsolTrk(int trkNr)const;
   SHElectron* getElectron(int eleNr); //allows the event to modify the electron
@@ -211,7 +215,8 @@ class SHEvent : public TObject {
   int getSuperClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
   //  int getIsolClusIndx(float rawNrgy,float eta,float phi)const; //exactly matches based on energy, calorimeter eta, phi returns -1 if not found
 
-  int nrSuperClus()const{return superClusArray_.GetLast()+1;}
+  int nrSuperClus()const{return superClusArray_.GetLast()+1;} 
+  int nrPreShowerClus()const{return preShowerClusArray_.GetLast()+1;}
   int nrElectrons()const{return electronArray_.GetLast()+1;}
   int nrMCParticles()const{return mcPartArray_.GetLast()+1;}
   int nrJets()const{return jetArray_.GetLast()+1;}
@@ -284,7 +289,7 @@ class SHEvent : public TObject {
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
   float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,22) 
+  ClassDef(SHEvent,23) 
 
 };
   

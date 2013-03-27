@@ -280,7 +280,7 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
   filterCaloTowers(shEvt_,0.5,shEvt_->getCaloTowers(),outputTowers);  
   shEvt_->addCaloTowers(outputTowers);
   
-  addInDeLaseredTriggerNrgys(heepEvt_,*shEvt_);
+  // addInDeLaseredTriggerNrgys(heepEvt_,*shEvt_);
 
   if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
     shEvt_->getCaloHits().clear();
@@ -607,7 +607,11 @@ void setTrigObsToNewNrgy(const reco::SuperClusterCollection& ebSCs,const reco::S
     } //end loop over sc
     if(bestSC){
       //std::cout <<" new energy "<<bestSC->energy()<<" old energy "<<trigObjs[trigNr].energy()<<std::endl;
-      trigObjs[trigNr].setPt(bestSC->energy()/trigObjs[trigNr].energy()*trigObjs[trigNr].pt());
+      // trigObjs[trigNr].setPt(bestSC->energy()/trigObjs[trigNr].energy()*trigObjs[trigNr].pt()); 
+      trigObjs[trigNr].setPt(bestSC->energy()*sin(bestSC->position().theta()));
+      trigObjs[trigNr].setEta(bestSC->eta());
+      trigObjs[trigNr].setPhi(bestSC->phi());
+      
     }else trigObjs[trigNr].setPt(-1*trigObjs[trigNr].pt());
     
     

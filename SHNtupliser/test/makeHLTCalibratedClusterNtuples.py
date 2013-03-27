@@ -6,7 +6,7 @@ import FWCore.ParameterSet.Config as cms
 outputReco=False
 
 # set up process
-process = cms.Process("USER")
+process = cms.Process("USER2")
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -50,8 +50,11 @@ elif datasetVersion.find("24Aug")!=-1:
 else:
     process.GlobalTag.globaltag = "GR_P_V42_AN2::All"
 
-print "Global Tag is ",process.GlobalTag.globaltag 
 
+process.GlobalTag.globaltag = "GR_H_V29::All"
+print "Global Tag is ",process.GlobalTag.globaltag 
+process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
+process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
 
 
 filePrefex="file:"
@@ -78,11 +81,14 @@ for i in range(2,len(sys.argv)-1):
 
 
 process.deCalibRecHits = cms.EDProducer("DeCalibEcalRecHitProducer",
-                                        inputEBRecHitTag=cms.InputTag("reducedEcalRecHitsEB"),
-                                        inputEERecHitTag=cms.InputTag("reducedEcalRecHitsEE"),
-                                        doLaser=cms.bool(True),
+                                        #inputEBRecHitTag=cms.InputTag("reducedEcalRecHitsEB"),
+                                        #inputEERecHitTag=cms.InputTag("reducedEcalRecHitsEE"),
+                                        inputEBRecHitTag=cms.InputTag("deCalibRecHits","EcalRecHitsEB"),
+                                        inputEERecHitTag=cms.InputTag("deCalibRecHits","EcalRecHitsEE"),
+                                        doLaser=cms.bool(False),
                                         doInterCalib=cms.bool(False),
-                                        deCalib=cms.bool(True),
+                                        doADCToGeV=cms.bool(True),
+                                        deCalib=cms.bool(False),
                                         ebLaserMin=cms.double(0.5),
                                         ebLaserMax=cms.double(2),
                                         eeLaserMin=cms.double(0.5),

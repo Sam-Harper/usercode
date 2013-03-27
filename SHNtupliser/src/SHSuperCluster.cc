@@ -7,7 +7,9 @@ SHSuperCluster::SHSuperCluster():
   nrgy_(0.),preShowerNrgy_(0.),
   pos_(0.,0.,0.),eta_(0.),
   nrCrys_(0),
-  clusterArray_("SHBasicCluster",4)
+  clusterArray_("SHBasicCluster",4),
+  flags_(0)
+			      //preShowerArray_("SHPreShowerCluster",10)
 {
 
 }
@@ -16,20 +18,26 @@ SHSuperCluster::SHSuperCluster(const SHSuperCluster& rhs):
   nrgy_(rhs.nrgy_),preShowerNrgy_(rhs.preShowerNrgy_),
   pos_(rhs.pos_),eta_(rhs.eta_),
   nrCrys_(rhs.nrCrys_),
-  clusterArray_("SHBasicCluster",4)
+  clusterArray_("SHBasicCluster",4),
+  flags_(rhs.flags_)
+			      //preShowerArray_("SHPreShowerCluster",10)
 {
   //for some unknown reason I cant auto copy the array across, something to do with the clone function
   for(int clusNr=0;clusNr<rhs.nrClus();clusNr++){
     new(clusterArray_[nrClus()]) SHBasicCluster(*rhs.getClus(clusNr));
   }
-  
+ //  for(int clusNr=0;clusNr<rhs.nrPreShowerClus();clusNr++){
+//     new(preShowerArray_[nrPreShowerClus()]) SHPreShowerCluster(*rhs.getPreShowerClus(clusNr));
+//   }
 }
 
 SHSuperCluster::SHSuperCluster(const std::vector<SHBasicCluster>& basicClusters):
   nrgy_(0.),preShowerNrgy_(0.),
   pos_(0.,0.,0.),eta_(0.),
   nrCrys_(0),
-  clusterArray_("SHBasicCluster",4)
+  clusterArray_("SHBasicCluster",4),
+  flags_(0)
+			      // preShowerArray_("SHPreShowerCluster",10)
 {
   //float etaSum=0;
   // float phiSum=0;
@@ -53,7 +61,7 @@ SHSuperCluster::SHSuperCluster(const std::vector<SHBasicCluster>& basicClusters)
 SHSuperCluster::~SHSuperCluster()
 {
   clusterArray_.Delete();
- 
+  //  preShowerArray_.Delete();
 }
 
 const SHBasicCluster* SHSuperCluster::getClus(int clusNr)const
@@ -61,6 +69,12 @@ const SHBasicCluster* SHSuperCluster::getClus(int clusNr)const
   SHBasicCluster* clus = (SHBasicCluster*) clusterArray_[clusNr];
   return clus;
 }
+
+// const SHPreShowerCluster* SHSuperCluster::getPreShowerClus(int clusNr)const
+// {
+//   SHPreShowerCluster* clus = (SHPreShowerCluster*) preShowerArray_[clusNr];
+//   return clus;
+// }
 
 
 const SHBasicCluster* SHSuperCluster::seedClus()const
@@ -103,4 +117,20 @@ void SHSuperCluster::getHitsByDetId(std::vector<int>& hitDetIds)const
     for(size_t i=0;i<clusHits.size();i++) hitDetIds.push_back(clusHits[i]);
   }
   std::sort(hitDetIds.begin(),hitDetIds.end());
+}
+
+std::ostream& SHSuperCluster::print(std::ostream& output)const
+{
+  output<<"supercluster nrgy: "<<nrgy()<<" preshow nrgy "<<preShowerNrgy()<<" et "<<et()<<" eta "<<eta()<<" phi "<<phi()<<std::endl;
+  output<<"nr basic clusters "<<nrClus()<<" nr crys "<<nrCrys()<<std::endl;//<<" nr ps clusters "<<nrPreShowerClus()<<std::endl;
+  //  for(int clusNr=0;clusNr<nrPreShowerClus();clusNr++){
+    //   output <<" ps clus "<<clusNr<<" "<<*(getPreShowerClus(clusNr))<<std::endl;
+  //}
+  return output;
+
+
+}
+std::ostream &operator <<(std::ostream& output,const SHSuperCluster& clus)
+{
+  return clus.print(output);
 }

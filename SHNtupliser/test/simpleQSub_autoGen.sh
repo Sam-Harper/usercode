@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
 
 
-source /gridsoft/SL5/cms/cmsset_default.sh
-export SCRAM_ARCH=slc5_amd64_gcc434
+export SCRAM_ARCH=slc5_amd64_gcc462
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch/
+source $VO_CMS_SW_DIR/cmsset_default.sh
 
+cd /home/ppd/mjf21517/scratch/CMSSW/CMSSW_534_SHNtup/src/SHarper/SHNtupliser/test
 
-cd /opt/ppd/scratch/harper/CMSSW_423_SHNtup/src/SHarper/JobSubmission/test
-
-outFile=/opt/ppd/scratch/harper/Photon_PromptV4_run165633-165969/pho_SHv19/3E00574B-D58A-E011-ADC8-003048F117EC_shNtup.root
+outFile=/opt/ppd/scratch/harper/data//Photon_Run2012A-13Jul/534/PreShower//Photon_Run2012A-13Jul_003D1FBB-66D0-E111-B5E2-00304866C368_ntuples_SHv24B_deLasered.root
 
 echo current dir $PWD
 echo tempDir $TMPDIR
 eval `scramv1 runtime -sh`
 ls $TMPDIR
 
+echo "starting ntup Job ">/opt/ppd/scratch/harper/data/logs//Photon_Run2012A-13Jul/534/PreShower//Photon_Run2012A-13Jul_003D1FBB-66D0-E111-B5E2-00304866C368_ntuples_SHv24B_deLasered.log
 
-
-echo "starting NTUP Job ">>logs/pho_SHv19/3E00574B-D58A-E011-ADC8-003048F117EC_shNtup.log
-cmsRun shNtupliser_cfg.py /store/data/Run2011A/Photon/AOD/PromptReco-v4/000/165/633/3E00574B-D58A-E011-ADC8-003048F117EC.root  $TMPDIR/ntup.root >> logs/pho_SHv19/3E00574B-D58A-E011-ADC8-003048F117EC_shNtup.log 2>&1
+cmsRun ntupReRunAutoGen.py /store/data/Run2012A/Photon/AOD/13Jul2012-v1/00000/003D1FBB-66D0-E111-B5E2-00304866C368.root $TMPDIR/ntup.root >> /opt/ppd/scratch/harper/data/logs//Photon_Run2012A-13Jul/534/PreShower//Photon_Run2012A-13Jul_003D1FBB-66D0-E111-B5E2-00304866C368_ntuples_SHv24B_deLasered.log 2>&1
 
 
 cp $TMPDIR/ntup.root $outFile

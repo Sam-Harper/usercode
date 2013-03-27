@@ -3,6 +3,7 @@
 
 #include "SHarper/SHNtupliser/interface/SHBasicCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloHitContainer.hh"
+#include "SHarper/SHNtupliser/interface/SHPreShowerCluster.hh"
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -27,7 +28,9 @@ class SHSuperCluster : public TObject {
   float eta_;
   int nrCrys_;
   TClonesArray clusterArray_;
- 
+  //new for version 5
+  int flags_;
+  //  TClonesArray preShowerArray_;
  public:
   SHSuperCluster();
   SHSuperCluster(const SHSuperCluster& rhs);
@@ -46,20 +49,23 @@ class SHSuperCluster : public TObject {
   const TVector3& pos()const{return pos_;}
   int nrCrys()const{return nrCrys_;}
   int nrClus()const{return clusterArray_.GetLast()+1;}
+  //int nrPreShowerClus()const{return preShowerArray_.GetLast()+1;}
   float eta()const{return eta_;}
   float phi()const{return position().Phi();}
   //  int seedCrys()const;
   
   const SHBasicCluster* seedClus()const;
   const SHBasicCluster* getClus(int clusNr)const; //clusNr=0 always seed cluster
- 
+  // const SHPreShowerCluster* getPreShowerClus(int clusNr)const;
   
   void getHitsByDetId(std::vector<int>& hitDetIds)const;
+  friend std::ostream &operator <<(std::ostream& output,const SHSuperCluster &clus);
+  std::ostream& print(std::ostream& output)const;
 
  private:
 
 
-  ClassDef(SHSuperCluster,4)
+  ClassDef(SHSuperCluster,6)
 
 };
 

@@ -20,6 +20,7 @@ SHEvent::SHEvent():
   isolTrkArray_("SHIsolTrack",20),
   trigArray_("SHTrigInfo",20),
   muArray_("SHMuon",12),
+  preShowerClusArray_("SHPreShowerCluster",20),
   runnr_(0),eventnr_(0),
   isMC_(0),datasetCode_(0),
   weight_(0.),
@@ -88,6 +89,7 @@ void SHEvent::clear()
   isolTrkArray_.Delete();
   trigArray_.Delete();
   muArray_.Delete();
+  preShowerClusArray_.Delete();
   caloHits_.clear();
   runnr_=0;
   eventnr_=0;
@@ -128,6 +130,7 @@ SHEvent::~SHEvent()
   trigArray_.Delete();
   //l1CandArray_.Delete();
   muArray_.Delete();
+  preShowerClusArray_.Delete();
   vertexArray_.Delete();
 }
 
@@ -156,6 +159,12 @@ void SHEvent::addMuon(const SHMuon& mu)
 {
   new(muArray_[nrMuons()]) SHMuon(mu);
 }
+
+void SHEvent::addPreShowerCluster(const SHPreShowerCluster& clus)
+{
+  new(preShowerClusArray_[nrPreShowerClus()]) SHPreShowerCluster(clus);
+}
+
 void SHEvent::addElectron(const SHElectron& ele,const SHSuperCluster& superClus)
 {
   int superClusIndx = getSuperClusIndx(superClus.rawNrgy(),superClus.eta(),superClus.phi());
@@ -246,6 +255,12 @@ const SHSuperCluster* SHEvent::getSuperClus(int clusNr)const
   return clus;
 }
 
+const SHPreShowerCluster* SHEvent::getPreShowerClus(int clusNr)const
+{
+  SHPreShowerCluster* clus = (SHPreShowerCluster*) preShowerClusArray_[clusNr];
+  return clus;
+}
+
 SHSuperCluster* SHEvent::getSuperClus_(int clusNr)
 {
   SHSuperCluster* clus = (SHSuperCluster*) superClusArray_[clusNr];
@@ -263,7 +278,11 @@ const SHMuon* SHEvent::getMuon(int muNr)const
   SHMuon* mu = (SHMuon*) muArray_[muNr];
   return mu;
 }
-
+const SHVertex* SHEvent::getVertex(int vertexNr)const
+{
+  SHVertex* vertex = (SHVertex*) vertexArray_[vertexNr];
+  return vertex;
+}
 const SHElectron* SHEvent::getElectron(int eleNr)const
 {
   SHElectron* ele = (SHElectron*) electronArray_[eleNr];

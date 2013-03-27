@@ -84,7 +84,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   addEventPara(heepEvent,shEvent); //this must be filled second (ele + mu need beam spot info)
   addSuperClusters(heepEvent,shEvent);
   addElectrons(heepEvent,shEvent);
-
+  addPreShowerClusters(heepEvent,shEvent);
   if(addMuons_) addMuons(heepEvent,shEvent); 
  
     
@@ -354,6 +354,22 @@ void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEv
     const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE(); 
     for(size_t superClusNr=0;superClusNr<superClusEE.size();superClusNr++){
       shEvent.addSuperCluster(superClusEE[superClusNr],shEvent.getCaloHits());
+    }
+  }
+}
+
+void SHEventHelper::addPreShowerClusters(const heep::Event& heepEvent, SHEvent& shEvent)const
+{
+  if(heepEvent.handles().preShowerClusX.isValid()){
+    const std::vector<reco::PreshowerCluster>& preShowerClus = *(heepEvent.handles().preShowerClusX);
+    for(size_t clusNr=0;clusNr<preShowerClus.size();clusNr++){
+      shEvent.addPreShowerCluster(preShowerClus[clusNr]);
+    }
+  }
+  if(heepEvent.handles().preShowerClusY.isValid()){
+    const std::vector<reco::PreshowerCluster>& preShowerClus = *(heepEvent.handles().preShowerClusY); 
+    for(size_t clusNr=0;clusNr<preShowerClus.size();clusNr++){
+      shEvent.addPreShowerCluster(preShowerClus[clusNr]);
     }
   }
 }

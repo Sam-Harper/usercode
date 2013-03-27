@@ -40,7 +40,10 @@ class SHCaloHit : public TObject {
   void setFlagBits(uint32_t iFlagBits){flagBits_=iFlagBits;}
   
   bool operator==(const SHCaloHit& rhs)const{return detId_==rhs.detId_;}
-  
+  bool operator<(const SHCaloHit& rhs)const{return detId_<rhs.detId_;}
+  bool operator<(int rhs)const{return detId_<rhs;}
+  friend bool operator<(int lhs,const SHCaloHit& rhs);
+
   ClassDef(SHCaloHit,3)
 
 };

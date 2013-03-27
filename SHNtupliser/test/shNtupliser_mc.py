@@ -97,7 +97,7 @@ else:
     print "using user specified filename"
     process.TFileService.fileName= sys.argv[len(sys.argv)-1]
     #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
-    process.shNtupliser.datasetCode = -1
+    process.shNtupliser.datasetCode = 11000
     process.shNtupliser.sampleWeight = 1
 
 

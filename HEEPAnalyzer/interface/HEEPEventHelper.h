@@ -51,6 +51,8 @@ namespace heep {
     edm::InputTag pfCandidateTag_;
     edm::InputTag superClusterEBTag_;
     edm::InputTag superClusterEETag_; 
+    edm::InputTag preShowerClusterXTag_;
+    edm::InputTag preShowerClusterYTag_;
     edm::InputTag ctfTrackTag_;
     edm::InputTag genParticleTag_;
     edm::InputTag trigEventTag_;  
