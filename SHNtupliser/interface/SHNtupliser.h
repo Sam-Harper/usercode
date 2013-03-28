@@ -59,6 +59,7 @@ private:
   SHCaloTowerContainer* shCaloTowers_; //pointer to caloTowers of shEvt (blame root)
   SHCaloHitContainer* shCaloHits_;
   TClonesArray* shIsolTrks_;
+  TClonesArray* shPreShowerClusters_;
 
   TTree* evtTree_; //the outFile owns it
   TFile* outFile_; //we own it
@@ -79,6 +80,7 @@ private:
   bool addCaloHits_;
   bool addIsolTrks_;
   bool addPFCands_;
+  bool addPreShowerClusters_;
   
   bool useHLTDebug_;
   bool compTwoMenus_;

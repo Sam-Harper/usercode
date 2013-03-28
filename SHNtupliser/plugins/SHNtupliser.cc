@@ -77,6 +77,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   addCaloHits_ = iPara.getParameter<bool>("addCaloHits");
   addPFCands_=iPara.getParameter<bool>("addPFCands");
   addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
+  addPreShowerClusters_ = true;
   writePDFInfo_ = iPara.getParameter<bool>("writePDFInfo");
   if(useHLTDebug_){
     trigDebugHelper_ = new TrigDebugObjHelper(iPara);
@@ -99,6 +100,7 @@ void SHNtupliser::beginJob()
   shCaloTowers_ = &(shEvt_->getCaloTowers());
   shCaloHits_= &(shEvt_->getCaloHits());
   shIsolTrks_= &(shEvt_->getIsolTrks());
+  shPreShowerClusters_ = &(shEvt_->getPreShowerClusters());
  
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
   //  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
@@ -125,6 +127,11 @@ void SHNtupliser::beginJob()
   if(addIsolTrks_){
     evtTree_->Branch("IsolTrksBranch","TClonesArray",&shIsolTrks_,32000,splitLevel);
   }
+  if(addPreShowerClusters_){
+    evtTree_->Branch("PreShowerClustersBranch","TClonesArray",&shPreShowerClusters_,32000,splitLevel);
+  }
+  
+
   if(addPFCands_){ 
     shPFCands_= new SHPFCandContainer;
     evtTree_->Branch("PFCandsBranch","SHPFCandContainer",&shPFCands_,32000,splitLevel);

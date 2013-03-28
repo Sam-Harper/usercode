@@ -60,7 +60,7 @@ class SHEvent : public TObject {
   TClonesArray isolTrkArray_; //! now transisent, stored in seperate branch for 5X
   TClonesArray trigArray_;
   TClonesArray muArray_;
-  TClonesArray preShowerClusArray_; //new in version 23
+  TClonesArray preShowerClusArray_; //! new in version 23
   
  
   int runnr_;
@@ -246,6 +246,7 @@ class SHEvent : public TObject {
   const SHPFCandContainer& getPFCands()const{return pfCands_;}
   SHPFCandContainer& getPFCands(){return pfCands_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
+  TClonesArray& getPreShowerClusters(){return preShowerClusArray_;}
   double genEventPtHat()const{return genEventPtHat_;}
   const TBits& l1Bits()const{return l1Bits_;}
   int bx()const{return bx_;}
@@ -289,7 +290,7 @@ class SHEvent : public TObject {
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
   float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,23) 
+  ClassDef(SHEvent,24) 
 
 };
   
