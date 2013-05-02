@@ -39,7 +39,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('REDIGI nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -68,7 +68,7 @@ setPUInputFiles(process)
 from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC
 process = customizeHLTforMC(process)
 
-process.GlobalTag.globaltag = 'START53_V7A::All'
+process.GlobalTag.globaltag = 'START53_V7C::All'
 
 # Path and EndPath definitions
 process.digitisation_step = cms.Path(process.pdigi)

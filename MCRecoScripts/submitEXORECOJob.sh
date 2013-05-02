@@ -16,7 +16,7 @@ fi
 #these are the identifiers of the conditions and campaign
 #do not change
 reRECOVersion=Summer12_DR53X
-conditions=PU_S10_START53_V7A
+conditions=PU_S10_START53_V7C
 
 
 publishDataname=EXOMCRECO_${reRECOVersion}_${conditions}-${version}

@@ -43,7 +43,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('STEP2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -77,7 +77,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 process.mix.playback = True
 process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
-process.GlobalTag.globaltag = 'START53_V7A::All'
+process.GlobalTag.globaltag = 'START53_V7C::All'
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
