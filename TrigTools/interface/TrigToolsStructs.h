@@ -90,6 +90,12 @@ namespace trigtools{
     void fill(const edm::Event& event);
     static std::string contents(){return "runnr/I:lumiSec:eventnr:bx";}
   };
+
+  struct TowerStruct {
+    float emNrgy,hadNrgy,iEta,iPhi;
+
+  };
+
 }
 
 #endif
