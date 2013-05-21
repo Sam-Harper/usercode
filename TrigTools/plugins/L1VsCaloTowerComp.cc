@@ -24,11 +24,11 @@ class L1VsCaloTowerComp : public edm::EDAnalyzer {
 
 public:
   struct TowerStruct {
-    float emNrgy,hadNrgy,iEta,iPhi;
-    static std::string contents(){return "emNrgy/F:hadNrgy:iEta:iPhi";}
+    float emEt,hadEt,iEta,iPhi;
+    static std::string contents(){return "emEt/F:hadEt:iEta:iPhi";}
     void fill(const l1slhc::L1CaloTower& tower);
     void fill(const CaloTower& tower);
-    void clear(){emNrgy=hadNrgy=iEta=iPhi=-999;}
+    void clear(){emEt=hadEt=iEta=iPhi=-999;}
   };
 
 private:
@@ -93,19 +93,32 @@ void L1VsCaloTowerComp::analyze(const edm::Event& iEvent,const edm::EventSetup& 
     for(size_t caloTowerNr=0;caloTowerNr<caloTowers.size();caloTowerNr++){
       const CaloTower& tower = caloTowers[caloTowerNr];
       recoTower_.fill(tower);
+      l1Tower_.clear();
+      if(abs(tower.ieta())<=20){
+	EtaPhiContainer<l1slhc::L1CaloTower>::const_iterator it = l1TowersHandle->find(tower.ieta(),tower.iphi());
+	if(it!=l1TowersHandle->end()){
+	  usedTowers.push_back(it);
+	  //std::cout <<"L1 E "<<it->E()<<" H "<<it->H()<<" eta "<<it->iEta()<<" phi "<<it->iPhi()<<" tower E "<<tower.emEnergy()<<" H "<<tower.hadEnergy()<<" eta "<<tower.ieta()<<" phi "<<tower.iphi()<<std::endl;
+	  //	std::cout <<"it "<<(&(*it))<<" "<<&(*(l1TowersHandle->end()))<<std::endl;
+	  l1Tower_.fill(*it);
+	}
+      }else{ //phi segmenation changes but L1 deals with this by making a new tower. HCAL puts half the original tower energy in, ECAL is a bit smarter as it has finer grainularity
+	EtaPhiContainer<l1slhc::L1CaloTower>::const_iterator it1 = l1TowersHandle->find(tower.ieta(),tower.iphi());
+	EtaPhiContainer<l1slhc::L1CaloTower>::const_iterator it2 = l1TowersHandle->find(tower.ieta(),tower.iphi()+1); //phi wrap around is not an issue here as iphi max can be 71
+	if(it1!=l1TowersHandle->end()){
+	  l1Tower_.fill(*it1);
+	  if(it2!=l1TowersHandle->end()){
+	    l1Tower_.emEt+=it2->E();
+	    l1Tower_.hadEt+=it2->H();
+	  }
+	}
+      }
       
-      EtaPhiContainer<l1slhc::L1CaloTower>::const_iterator it = l1TowersHandle->find(tower.ieta(),tower.iphi());
-      if(it!=l1TowersHandle->end()){
-	usedTowers.push_back(it);
-	//   std::cout <<"L1 E "<<it->E()<<" H "<<it->H()<<" eta "<<it->iEta()<<" phi "<<it->iPhi()<<" tower E "<<tower.emEnergy()<<" H "<<tower.hadEnergy()<<" eta "<<tower.ieta()<<" phi "<<tower.iphi()<<std::endl;
-	//std::cout <<"it "<<(&(*it))<<" "<<&(*(l1TowersHandle->end()))<<std::endl;
-	l1Tower_.fill(*it);
-      }else l1Tower_.clear();
       tree_->Fill();
     }
   }
   std::sort(usedTowers.begin(),usedTowers.end());
-  // std::cout <<"dump of L1 towers "<<std::endl;
+  //std::cout <<"dump of L1 towers "<<std::endl;
   
   recoTower_.clear();
   typedef EtaPhiContainer<l1slhc::L1CaloTower>::const_iterator ConstIt;
@@ -114,7 +127,7 @@ void L1VsCaloTowerComp::analyze(const edm::Event& iEvent,const edm::EventSetup& 
       l1Tower_.fill(*it);
       tree_->Fill();
     }
-    //   std::cout <<"L1 E "<<it->E()<<" H "<<it->H()<<" eta "<<it->iEta()<<" phi "<<it->iPhi()<<std::endl;
+    // std::cout <<"L1 E "<<it->E()<<" H "<<it->H()<<" eta "<<it->iEta()<<" phi "<<it->iPhi()<<std::endl;
 
   }
   
@@ -123,16 +136,16 @@ void L1VsCaloTowerComp::analyze(const edm::Event& iEvent,const edm::EventSetup& 
 
 void L1VsCaloTowerComp::TowerStruct::fill(const l1slhc::L1CaloTower& tower)
 {
-  emNrgy = tower.E();
-  hadNrgy = tower.H();
+  emEt = tower.E();
+  hadEt = tower.H();
   iEta = tower.iEta();
   iPhi = tower.iPhi();
 }
 
 void L1VsCaloTowerComp::TowerStruct::fill(const CaloTower& tower)
 {
-  emNrgy = tower.emEnergy();
-  hadNrgy = tower.hadEnergy();
+  emEt = tower.emEt();
+  hadEt = tower.hadEt();
   iEta = tower.ieta();
   iPhi = tower.iphi();
 }
