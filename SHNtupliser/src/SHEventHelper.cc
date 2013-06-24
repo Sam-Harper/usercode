@@ -312,7 +312,8 @@ bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEve
      muon.numberOfMatchedStations()>1 &&
      muon.globalTrack()->hitPattern().numberOfValidPixelHits()>0 && 
      muon.globalTrack()->hitPattern().trackerLayersWithMeasurement() > 5 ){
-    reco::TrackRef cktTrackRef = (muon::tevOptimized(muon, 200, 17., 40., 0.25)).first;
+    // reco::TrackRef cktTrackRef = (muon::tevOptimized(muon, 200, 17., 40., 0.25)).first; //53X
+    reco::TrackRef cktTrackRef = (muon::tevOptimized(muon)).first; //60X
     const reco::Track& cktTrack = *cktTrackRef;
     const reco::Vertex& vertex = heepEvent.handles().vertices->front();
     if(cktTrack.ptError()/cktTrack.pt()<0.3 && 

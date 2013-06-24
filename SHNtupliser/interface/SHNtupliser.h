@@ -54,8 +54,9 @@ private:
   heep::Event heepEvt_;
 
   SHEventHelper shEvtHelper_;
-
-  SHEvent* shEvt_; //pointer because thats what root likes, we own it
+protected:
+  SHEvent* shEvt_; //pointer because thats what root likes, we own it, its protected as derived classes need to set it (and they have a pointer the derived SHEvent so theres no point protecting access, they have it...)
+private:
   SHCaloTowerContainer* shCaloTowers_; //pointer to caloTowers of shEvt (blame root)
   SHCaloHitContainer* shCaloHits_;
   TClonesArray* shIsolTrks_;
@@ -115,6 +116,13 @@ private:
   virtual void beginRun(const edm::Run& run,const edm::EventSetup& iSetup);
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
   virtual void endJob() ;
+
+protected:
+  bool fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iSetup);
+  void fillTree();
+  
+  //makes this able to store objects inheriting from SHEvent
+  virtual void initSHEvent();
   
   
 

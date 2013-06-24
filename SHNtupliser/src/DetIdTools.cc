@@ -439,6 +439,17 @@ void DetIdTools::getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::v
   }//end of eta loop
 }
 
+int DetIdTools::calHashL1Calo(int iEta,int iPhi)
+{
+  if(abs(iEta)<kL1CaloIEtaAbsMin || abs(iEta)>kL1CaloIEtaAbsMax || 
+     iPhi<kL1CaloIPhiMin || iPhi>kL1CaloIPhiMax) return -1; //invalid id
+
+  int etaIndex=iEta+kL1CaloIEtaAbsMax;
+  if(iEta>0) etaIndex--; // theres is no 0 in ieta
+  int phiIndex = iPhi-1; //going from 1-72 to 0-71
+  return etaIndex*kL1CaloIPhiMax+phiIndex;
+
+}
 
 bool DetIdTools::isNextToBarrelPhiGap(int detId)
 {

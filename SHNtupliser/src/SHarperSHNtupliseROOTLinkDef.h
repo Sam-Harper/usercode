@@ -25,6 +25,10 @@
 #include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHVertex.hh"
 #include "SHarper/SHNtupliser/interface/SHPreShowerCluster.hh"
+#include "SHarper/SHNtupliser/interface/SHL1Cluster.hh"
+#include "SHarper/SHNtupliser/interface/SHL1Event.hh"
+#include "SHarper/SHNtupliser/interface/SHL1CaloTowerContainer.hh"
+#include "SHarper/SHNtupliser/interface/SHL1CaloTower.hh"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -63,5 +67,9 @@
 #pragma link C++ class SHPFCandContainer+;
 #pragma link C++ class SHVertex+;
 #pragma link C++ class SHPreShowerCluster+;
+#pragma link C++ class SHL1Cluster+;
+#pragma link C++ class SHL1Event+;
+#pragma link C++ class SHL1CaloTower;
+#pragma link C++ class SHL1CaloTowerContainer;
 
 #endif

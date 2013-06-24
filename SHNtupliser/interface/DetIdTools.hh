@@ -47,6 +47,7 @@ public:
     int startId_; //the initial position
     int currEta_; //where we are currently
     int currPhi_;
+  public:
     const static int kIEtaPhiSegChange=20;
     const static int kNrPhiSeg=72;
 
@@ -129,6 +130,13 @@ private:
   static const int kHcalIEtaAbsMax = 29;
   static const int kHcalDepthMin = 1;
   static const int kHcalDepthMax = 3;
+
+  static const int kNrL1CaloTowers = 64*72; //not strictly true, its actually 28*72 + 4*16 (HF towers have less phi segmentation) but easier for maths right now
+  static const int kL1CaloIPhiMin =1;
+  static const int kL1CaloIPhiMax =72;
+  static const int kL1CaloIEtaAbsMin = 1;
+  static const int kL1CaloIEtaAbsMax = 32;
+
 
   //detector id
   static bool isEcal(int detId){return (detId&kDetMask) == kEcalCode;}
@@ -219,8 +227,12 @@ private:
   static int zSideCalo(int detId){return (detId&0x2000) ? (1) : (-1);}
   static int iEtaCalo(int detId){return zSideCalo(detId)*iEtaAbsCalo(detId);}
   
-
-  
+  //preshower tools
+  static int zSideES(int detId){return (detId&0x80000) ? 1 : -1;}
+  static int planeES(int detId){return ((detId>>18)&0x1) + 1;}
+  static int sixES(int detId){return (detId>>6)&0x3F;}
+  static int siyES(int detId){return (detId>>12)&0x3F;}
+  static int stripES(int detId){return detId&0x3F;}
   
   //hashes for fast lookup
 
@@ -237,6 +249,8 @@ private:
   static int calHashHcal(int detId);
   
   static int calHashCalo(int detId);
+
+  static int calHashL1Calo(int iEta,int iPhi);
 
   static int getHashHcal(int detId){return hcalFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
   static int getHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? getHashEcalBarrel(detId) : getHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}

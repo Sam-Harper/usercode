@@ -113,7 +113,7 @@ class SHEvent : public TObject {
 
  public:
   SHEvent();
-  ~SHEvent();//need to check if need to delete TClonesArray objects
+  virtual ~SHEvent();//need to check if need to delete TClonesArray objects
 
   //note: change pointers to reference variables
   //shapeMap : all the clusters + shape making up the cluster with seed 1st
@@ -190,8 +190,8 @@ class SHEvent : public TObject {
   void setRhoCorr(float iRho){rhoCorr_=iRho;}
   void setFlags(int iFlags){flags_=iFlags;}
  
-  void copyEventPara(const SHEvent& rhs);
-  void clear();
+  virtual void copyEventPara(const SHEvent& rhs);
+  virtual void clear();
   void clearTrigs(){trigArray_.Delete();}
 
 
@@ -274,7 +274,7 @@ class SHEvent : public TObject {
   //some objects have a temporary transisent data cache which root doesnt
   //override when it fills them
   //so it needs to be manually cleared (very annoying)
-  void flushTempData()const;
+  virtual void flushTempData()const;
   
   //a tempory function, this removes all the duplicate electrons in the event
   void removeDupEles(std::vector<int>& dupEleNrs);

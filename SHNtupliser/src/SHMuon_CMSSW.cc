@@ -30,7 +30,8 @@ SHMuon::SHMuon(const reco::Muon& mu,const TVector3& beamPoint):
     reco::TrackBase::Point cmsswBeamPoint(beamPoint.X(),beamPoint.Y(),beamPoint.Z());
     d0_ = -1.0 * innerTrack->dxy( cmsswBeamPoint );
   }
-  reco::TrackRef cktTrackRef = (muon::tevOptimized(mu, 200, 17., 40., 0.25)).first;
+  //reco::TrackRef cktTrackRef = (muon::tevOptimized(mu, 200., 17., 40., 0.25)).first; // 53X 
+  reco::TrackRef cktTrackRef = (muon::tevOptimized(mu)).first; //60X
   const reco::Track& cktTrack = *cktTrackRef;
   eta_=cktTrack.eta();
   p4_.SetPtEtaPhiM(cktTrack.pt(),cktTrack.eta(),cktTrack.phi(),0.1057);

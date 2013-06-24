@@ -50,6 +50,6 @@ sed 's|DATASETCODE|'$datasetCode'|' > shNtupliser_autoGen_cfg.py
 
 
 crab -create -cfg crab_autoGen.cfg
-crab -c $workingDir -submit
+#crab -c $workingDir -submit
 
  

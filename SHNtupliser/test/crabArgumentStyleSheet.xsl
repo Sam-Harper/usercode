@@ -18,7 +18,15 @@
                  <xsl:for-each select="@InputFiles">
                         <xsl:value-of select="."/>
                         <xsl:value-of select="'::'"/>
-                </xsl:for-each>
+                </xsl:for-each> 
+		<xsl:for-each select="@MaxEvents">
+                        <xsl:value-of select="."/>
+                        <xsl:value-of select="'::'"/>
+                </xsl:for-each> 
+        	<xsl:for-each select="@SkipEvents">
+                        <xsl:value-of select="."/>
+                        <xsl:value-of select="'::'"/>
+                </xsl:for-each> 
                 <xsl:text>&#10;</xsl:text>
         </xsl:template> 
 </xsl:stylesheet>

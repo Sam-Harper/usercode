@@ -43,6 +43,17 @@ void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContain
 void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands,const reco::VertexRef mainVtx,const edm::Handle< reco::VertexCollection > vertices);
 reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle< reco::VertexCollection > verticesColl);
 
+void SHNtupliser::initSHEvent()
+{
+  if(shEvt_) delete shEvt_;
+  shEvt_ = new SHEvent;
+}
+
+void SHNtupliser::fillTree()
+{
+  evtTree_->Fill();
+}
+
 //some hacky functions to allow use to reset the trigger energies
 void addInDeLaseredTriggerNrgys(const heep::Event& heepEvent,SHEvent& shEvent);
 void setTrigObsToNewNrgy(const reco::SuperClusterCollection& ebSCs,const reco::SuperClusterCollection& eeSCs,trigger::TriggerObjectCollection& trigObjs);
@@ -96,7 +107,7 @@ SHNtupliser::~SHNtupliser()
 
 void SHNtupliser::beginJob()
 {
-  shEvt_= new SHEvent;
+  initSHEvent();
   shCaloTowers_ = &(shEvt_->getCaloTowers());
   shCaloHits_= &(shEvt_->getCaloHits());
   shIsolTrks_= &(shEvt_->getIsolTrks());
@@ -112,7 +123,7 @@ void SHNtupliser::beginJob()
   int splitLevel=2;
   evtTree_->SetCacheSize(1024*1024*100);
 					       
-  evtTree_->Branch("EventBranch","SHEvent",&shEvt_,32000,splitLevel);
+  evtTree_->Branch("EventBranch",shEvt_->GetName(),&shEvt_,32000,splitLevel);
   
   if(writePUInfo_) {
     puSummary_ = new SHPileUpSummary;
@@ -187,26 +198,32 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
   heepEvt_.initHLTConfig(run,iSetup,hltTag_);
 }
 
-
 void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
   
+  if(fillSHEvent(iEvent,iSetup)) evtTree_->Fill();
+}
+
+bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iSetup)
+{
+  //std::cout <<"heep eventing" <<std::endl;
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
  
   //even easier to convert from heep to shEvt
-  
+  //std::cout <<"converting eventing" <<std::endl;
   pdfWeightsVec_.clear();
   
   nrTot_++;
-  //  std::cout <<"analysing "<<std::endl;
+ 
   
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
   if(addPFCands_) shPFCands_->clear();
   // std::cout <<"adding PF Cands "<<addPFCands_<<" is valid "<<heepEvt_.handles().pfCandidate.isValid()<<std::endl;
-  reco::VertexRef mainVtx(heepEvt_.handles().vertices,0);
-  if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(shEvt_,0.5,*shPFCands_,heepEvt_.pfCands(),mainVtx,heepEvt_.handles().vertices);
-   
+  if(heepEvt_.handles().vertices.isValid()){
+    reco::VertexRef mainVtx(heepEvt_.handles().vertices,0);
+    if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(shEvt_,0.5,*shPFCands_,heepEvt_.pfCands(),mainVtx,heepEvt_.handles().vertices);
+  }
   
 
   // std::cout <<"made even "<<std::endl;
@@ -296,8 +313,9 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
   passEle=true; //moved to a seperate filter run first
   if(passEle || !(shEvt_->datasetCode()>=120 && shEvt_->datasetCode()<700)){ //only for phoJet, qcdJet, actually sod it everything but Z
     nrPass_++;
-    evtTree_->Fill();
-  }
+    return true;
+    
+  }else return false;
   
 
 }
