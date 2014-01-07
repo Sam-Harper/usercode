@@ -88,7 +88,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   addCaloHits_ = iPara.getParameter<bool>("addCaloHits");
   addPFCands_=iPara.getParameter<bool>("addPFCands");
   addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
-  addPreShowerClusters_ = true;
+  addPreShowerClusters_ = false;
   writePDFInfo_ = iPara.getParameter<bool>("writePDFInfo");
   if(useHLTDebug_){
     trigDebugHelper_ = new TrigDebugObjHelper(iPara);
@@ -266,25 +266,25 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
     if(pdfWeightsHandle.isValid()) pdfWeightsVec_ = *pdfWeightsHandle;
   }
   
-  bool passSC=false;
+//   bool passSC=false;
   
-  int nrSCPassing=0;
-  for(int scNr=0;scNr<shEvt_->nrSuperClus();scNr++){
-    if(shEvt_->getSuperClus(scNr)->et()>minSCEtToPass_){
-      nrSCPassing++;
-    }
-  }
-  if(nrSCPassing>=minNrSCToPass_) passSC=true;
+//   int nrSCPassing=0;
+//   for(int scNr=0;scNr<shEvt_->nrSuperClus();scNr++){
+//     if(shEvt_->getSuperClus(scNr)->et()>minSCEtToPass_){
+//       nrSCPassing++;
+//     }
+//   }
+//   if(nrSCPassing>=minNrSCToPass_) passSC=true;
   
     
-  bool passJet=false;
-  int nrJetPassing=0;
-  for(int jetNr=0;jetNr<shEvt_->nrJets();jetNr++){
-    if(shEvt_->getJet(jetNr)->et()>minJetEtToPass_){
-      nrJetPassing++;
-    }
-  }
-  if(nrJetPassing>=minNrJetToPass_) passJet=true;
+//   bool passJet=false;
+//   int nrJetPassing=0;
+//   for(int jetNr=0;jetNr<shEvt_->nrJets();jetNr++){
+//     if(shEvt_->getJet(jetNr)->et()>minJetEtToPass_){
+//       nrJetPassing++;
+//     }
+//   }
+//   if(nrJetPassing>=minNrJetToPass_) passJet=true;
   
   
   int nrEle=0;
@@ -300,9 +300,9 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
   filterEcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);
   shEvt_->addCaloHits(outputHits);
     
-  SHCaloTowerContainer outputTowers;
-  filterCaloTowers(shEvt_,0.5,shEvt_->getCaloTowers(),outputTowers);  
-  shEvt_->addCaloTowers(outputTowers);
+  // SHCaloTowerContainer outputTowers;
+  //  filterCaloTowers(shEvt_,0.5,shEvt_->getCaloTowers(),outputTowers);  
+  //shEvt_->addCaloTowers(outputTowers);
   
   // addInDeLaseredTriggerNrgys(heepEvt_,*shEvt_);
 

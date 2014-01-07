@@ -19,16 +19,18 @@ dataFormat=`echo $datasetPath | awk -F "/" '{print $NF}'`
 
 weight=`echo $line | awk -F "&" '{print $4*$5}'`
 cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}'`
-outputFile=${dataset}_ntuples_${cmsswVersion}_SHv24D.root
+outputFile=${dataset}_ntuples_${cmsswVersion}_SHv24B.root
 
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=534/v24D/${dataset}/${cmsswVersion}/${dataFormat}
+#outputPath=534/v24B/${dataFormat}/${cmsswVersion}/${dataset}
+outputPath=612SLHC2/SHL1v1/NoTowerThres/${cmsswVersion}/${dataset}/
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
 
-baseCfg="shNtupliser_mc.py"
+#baseCfg="shNtupliser_mc.py"
+baseCfg="shL1Ntupliser_mc.py"
 #baseCfg="runSHNtupliser_base.cfg"
 
 #nrJobs=`echo $nrEvents/$nrEventsPerJob + 1 | bc`

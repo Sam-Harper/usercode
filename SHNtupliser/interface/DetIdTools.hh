@@ -47,12 +47,13 @@ public:
     int startId_; //the initial position
     int currEta_; //where we are currently
     int currPhi_;
+    bool l1Navigator_; //if its a L1 navigator (L1 keeps 72 towers in phi upto iEta of 28)
   public:
     const static int kIEtaPhiSegChange=20;
     const static int kNrPhiSeg=72;
 
   public:
-    CaloNavigator(int startId);
+    CaloNavigator(int startId,bool l1Navigator=false);
     ~CaloNavigator(){}
     
     //north/south is phi for barrel and y for endcap (north:increasing phi/Y
@@ -63,14 +64,16 @@ public:
     int moveInEta(int nrSteps=1);
     int moveInPhi(int nrSteps=1);
     int getIdAtPos(int nrStepsEta,int nrStepsPhi)const;
-    int curPos()const{return DetIdTools::makeCaloDetId(currEta_,currPhi_);}
+    int curPos()const{return l1Navigator_ ? DetIdTools::makeL1CaloDetId(currEta_,currPhi_) : DetIdTools::makeCaloDetId(currEta_,currPhi_);}
  
   private:
     void initPosCoords_();
-    static int changedPhiSeg(int newEta,int oldEta){ return (abs(newEta)<=kIEtaPhiSegChange) != (abs(oldEta)<=kIEtaPhiSegChange);}
+    int changedPhiSeg(int newEta,int oldEta)const{ return ( (abs(newEta)<=kIEtaPhiSegChange) != (abs(oldEta)<=kIEtaPhiSegChange) ) && !l1Navigator_;} //l1 towers dont change in phi seg (atleast in HB, HE
     
-
   };
+
+  
+  
 
  private:
   DetIdTools();
@@ -158,7 +161,8 @@ private:
   static int makeHcalBarrelDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kBarrelCode,iEta,iPhi,depth);}
   static int makeHcalEndcapDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kEndcapCode,iEta,iPhi,depth);}
   static int makeCaloDetId(int iEta,int iPhi);
- 
+  static int makeL1CaloDetId(int iEta,int iPhi);
+
   //check ids are valid
   static bool isValidEcalBarrelId(int iEta,int iPhi);
   static bool isValidEcalBarrelId(int detId){return isEcalBarrel(detId) && isValidEcalBarrelId(iEtaBarrel(detId),iPhiBarrel(detId));}
@@ -172,7 +176,8 @@ private:
 
   static bool isValidCaloId(int detId){return isCalo(detId)&& isValidCaloId(iEtaCalo(detId),iPhiCalo(detId));}
   static bool isValidCaloId(int iEta,int iPhi);
-  
+  static bool isValidL1CaloId(int detId){return isCalo(detId)&& isValidL1CaloId(iEtaCalo(detId),iPhiCalo(detId));}
+  static bool isValidL1CaloId(int iEta,int iPhi);
 
   //gap tools, maxDistToGap is number of crystals the gap is away (0=this crys is next to gap)
   static bool isNextToBarrelPhiGap(int detId);

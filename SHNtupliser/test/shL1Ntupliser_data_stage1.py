@@ -1,9 +1,8 @@
-isMC=True
-pfNoPU=False
+isMC=False
 
 patCandID=""
-if pfNoPU:
-    patCandID="PFlow"
+#if pfNoPU:
+ #   patCandID="PFlow"
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -17,6 +16,7 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
     reportEvery = cms.untracked.int32(500),
     limit = cms.untracked.int32(10000000)
 )
+process.MessageLogger.suppressWarning.extend(["muonDTDigis"],)
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
@@ -35,7 +35,7 @@ else:
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(500)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -60,11 +60,13 @@ hltName="HLT"
 from SHarper.HEEPAnalyzer.HEEPEventParameters_cfi import *
 from SHarper.SHNtupliser.shNtupliserParameters_cfi import *
 
+
 process.shNtupliser = cms.EDAnalyzer("SHL1Ntupliser", heepEventPara,shNtupPara,
-                                     l1CaloClustersTag = cms.InputTag("L1CaloClusterEGIsolator"),
+                                     l1CaloClustersTag = cms.InputTag("L1CaloClusterIsolator"),
                                      l1CaloTowersTag = cms.InputTag("L1CaloTowerProducer")
    
-) 
+)
+
 
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
@@ -108,12 +110,12 @@ if isCrabJob:
     process.TFileService.fileName= "OUTPUTFILE"
     #process.shNtupliser.outputFilename= "OUTPUTFILE"
     process.shNtupliser.datasetCode = DATASETCODE
-    process.shNtupliser.sampleWeight = SAMPLEWEIGHT
+    process.shNtupliser.sampleWeight = 1
 else:
     print "using user specified filename"
     process.TFileService.fileName= sys.argv[len(sys.argv)-1]
     #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
-    process.shNtupliser.datasetCode = 101
+    process.shNtupliser.datasetCode = 1
     process.shNtupliser.sampleWeight = 1
 
 
@@ -135,24 +137,34 @@ process.source = cms.Source("PoolSource",
                  #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                        #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
-                            skipEvents=cms.untracked.uint32(0)
+                            skipEvents = cms.untracked.uint32(0)
 )
 for i in range(2,len(sys.argv)-1):
     print filePrefex+sys.argv[i]
     process.source.fileNames.extend([filePrefex+sys.argv[i],])
 
 #for isolation correction
-from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
-process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
+#from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+#process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+#process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
 
 process.load('SLHCUpgradeSimulations.L1CaloTrigger.SLHCCaloTrigger_cff')
-process.L1CaloTriggerSetup.InputXMLFile = cms.FileInPath('SLHCUpgradeSimulations/L1CaloTrigger/data/setupHFNoTowerThres.xml')
+process.L1CaloTriggerSetup.InputXMLFile = cms.FileInPath('SLHCUpgradeSimulations/L1CaloTrigger/data/setupStage1.xml')
+
+# Additional output definition
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#print "MinimumBias dataset, requiring ZeroBias trigger"
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_ZeroBias_v*")
+
+#print "SingleMu, MU40"
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Mu40_v*")
 
 
-process.p = cms.Path(process.RawToDigi*process.SLHCCaloTrigger*
-                 #    process.kt6PFJetsForIsolation*
+process.p = cms.Path(#process.skimHLTFilter*
+                     process.RawToDigi*process.SLHCCaloTrigger*
+#                     process.kt6PFJetsForIsolation*
                      process.shNtupliser)
 
 
@@ -176,11 +188,13 @@ process.L1EGIsolRho = cms.EDProducer("L1EGIsolRhoProducer",
 
 
 
-process.rawSLHCL1ExtraParticles.EGClusters = cms.InputTag("L1CaloClusterEGIsolator")
+process.rawSLHCL1ExtraParticles.EGClusters = cms.InputTag("L1CaloClusterIsolator")
 
-process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloClusterEGFilter)
-process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloClusterEGIsolator)
+#process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloClusterEGFilter)
+#process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloClusterEGIsolator)
 process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloJetExpander)
+
+
 
 
 if isMC:
@@ -197,21 +211,10 @@ if isMC:
     HcalTPGCoderULUT.LUTGenerationMode = cms.bool(True)
     process.valRctDigis.hcalDigis             = cms.VInputTag(cms.InputTag('valHcalTriggerPrimitiveDigis'))
     process.L1CaloTowerProducer.HCALDigis =  cms.InputTag("valHcalTriggerPrimitiveDigis")
-   # process.mcFilter = cms.EDFilter("MCTruthFilter",
-   #                                 genParticlesTag = cms.InputTag("genParticles"),
-   #                                 pid=cms.int32(11)
-   #                                 )
-   # process.p.insert(0,process.mcFilter)
 
-
-#process.source.eventsToProcess = cms.untracked.VEventRange (
-#    "1:163247",
-   
- #   )
+    
 
 
 #import PhysicsTools.PythonAnalysis.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'UserCode/L1TriggerUpgrade/test/2012HPF_json_66.txt').getVLuminosityBlockRange()
 print process.GlobalTag.globaltag
-
-

@@ -47,10 +47,19 @@ public:
 
   const TLorentzVector& p4()const{return p4_;}
 
+  int leadTower()const{return leadTower_;}
+  int constituents()const{return constituents_;}
+
   void setTrigScale(int iTrigScale){trigScale_=iTrigScale;}
   
   friend std::ostream &operator <<(std::ostream& output,const SHL1Cluster& clus);
   std::ostream& print(std::ostream& output)const;
+
+  //naughty, shouldnt be tied to the class
+  static float l1ClusCalibration(float eta);
+  static float l1ClusCalibrationOld(float eta);
+
+  float etCalib()const{return p4().Et()*l1ClusCalibration(p4().Eta());}
 
   ClassDef(SHL1Cluster,2)
 

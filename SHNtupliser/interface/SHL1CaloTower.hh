@@ -1,5 +1,5 @@
-#ifndef SHL1CALOTOWER
-#define SHL1CALOTOWER
+#ifndef SHL1CALOTOWER_HH
+#define SHL1CALOTOWER_HH
 
 #include "TObject.h"
 
@@ -27,6 +27,7 @@ public:
   bool ecalFG()const{ return ecalFG_;}
   bool hcalFG()const{ return hcalFG_;}
   int trigScale()const{ return trigScale_;}
+  
   
   ClassDef(SHL1CaloTower,1)
 };

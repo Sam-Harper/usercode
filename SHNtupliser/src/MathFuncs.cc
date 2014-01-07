@@ -137,7 +137,7 @@ double MathFuncs::getAngleFromCoord(double xCoord,double yCoord)
 //but as as the number of generated events is small can get away with this. 
 double MathFuncs::randGaus()
 {  
-  double x1, x2, w, y1, y2;  
+  double x1, x2, w, y1;//, y2;  
   do {
     x1 = 2.0 * (double)rand()/((double)RAND_MAX+1.) - 1.0;
     x2 = 2.0 * (double)rand()/((double)RAND_MAX+1.) - 1.0;
@@ -146,7 +146,7 @@ double MathFuncs::randGaus()
   
   w = sqrt( (-2.0 * log( w ) ) / w );
   y1 = x1 * w;
-  y2 = x2 * w;
+  // y2 = x2 * w;
   
   return y1;
 }

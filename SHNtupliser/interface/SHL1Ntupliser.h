@@ -2,10 +2,6 @@
 #define SHarper_SHNtupliser_SHL1Ntupliser_h
 
 
-
-
-
-
 #include "SHarper/SHNtupliser/interface/SHNtupliser.h"
 #include <string>
 

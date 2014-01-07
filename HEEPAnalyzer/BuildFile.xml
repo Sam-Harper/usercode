@@ -16,7 +16,6 @@
 <use   name="MagneticField/Engine"/>
 <use   name="Geometry/TrackerGeometryBuilder"/>
 <use   name="HLTrigger/HLTcore"/>
-<use   name="HLTrigger/HLTfilters"/>
 <use   name="FWCore/ParameterSet"/>
 <use   name="MagneticField/Records"/>
 <export>

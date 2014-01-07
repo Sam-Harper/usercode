@@ -62,7 +62,7 @@ from SHarper.SHNtupliser.shNtupliserParameters_cfi import *
 
 
 process.shNtupliser = cms.EDAnalyzer("SHL1Ntupliser", heepEventPara,shNtupPara,
-                                     l1CaloClustersTag = cms.InputTag("L1CaloClusterSamIsolator"),
+                                     l1CaloClustersTag = cms.InputTag("L1CaloClusterEGIsolator"),
                                      l1CaloTowersTag = cms.InputTag("L1CaloTowerProducer")
    
 )
@@ -149,31 +149,54 @@ for i in range(2,len(sys.argv)-1):
 #process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 
 
-process.load('UserCode.L1TriggerUpgrade.L1Upgrade_EGTau_cff')
+process.load('SLHCUpgradeSimulations.L1CaloTrigger.SLHCCaloTrigger_cff')
 process.L1CaloTriggerSetup.InputXMLFile = cms.FileInPath('SLHCUpgradeSimulations/L1CaloTrigger/data/setupHFNoTowerThres.xml')
 
 
-process.p = cms.Path(process.RawToDigi*process.SLHCCaloTrigger*
+# Additional output definition
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#print "MinimumBias dataset, requiring ZeroBias trigger"
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_ZeroBias_v*")
+
+#print "SingleMu, MU40"
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Mu40_v*")
+
+
+process.p = cms.Path(#process.skimHLTFilter*
+                     process.RawToDigi*process.SLHCCaloTrigger*
 #                     process.kt6PFJetsForIsolation*
                      process.shNtupliser)
 
 
 #from SHarper.HEEPAnalyzer.heepTools import *
 #swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")
-
-process.L1CaloClusterSamIsolator = cms.EDProducer("L1CaloClusterSamIsolator",
+process.L1CaloClusterEGFilter = cms.EDProducer("L1CaloClusterFilter",
+    src = cms.InputTag("L1CaloClusterProducer"),
+    etMode = cms.int32(1)
+)
+process.L1CaloClusterEGIsolator = cms.EDProducer("L1CaloClusterEGIsolator",
                                                   caloClustersTag = cms.InputTag("L1CaloClusterFilter"),
                                                   caloTowersTag = cms.InputTag("L1CaloTowerProducer"),
                                                   rhoTag = cms.InputTag("L1RhoProducer"),
-                                                  maxTowerIEta=cms.int32(28) #HF is 29 and up
+                                                  maxTowerIEta=cms.int32(27), #HF is 29 and up
+                                                  isolEtCut=cms.int32(-1) # isolEt<=-6 
                                                   )
 process.L1EGIsolRho = cms.EDProducer("L1EGIsolRhoProducer",
                                      caloTowersTag = cms.InputTag("L1CaloTowerProducer"),
                                      towerEtThreshold = cms.int32(7) # in GeV
                                     )
 
-process.rawSLHCL1ExtraParticles.Clusters = cms.InputTag("L1CaloClusterSamIsolator")
-process.p.replace(process.L1CaloClusterIsolator,process.L1CaloClusterSamIsolator)
+
+
+process.rawSLHCL1ExtraParticles.EGClusters = cms.InputTag("L1CaloClusterEGIsolator")
+
+process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloClusterEGFilter)
+process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloClusterEGIsolator)
+process.SLHCCaloTrigger.insert(process.SLHCCaloTrigger.index(process.rawSLHCL1ExtraParticles),process.L1CaloJetExpander)
+
+
+
 
 if isMC:
     print "Going to run on MC"

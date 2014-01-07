@@ -744,8 +744,9 @@ int SHEventHelper::ecalHitHash_(const DetId detId)const
 
 int SHEventHelper::hcalHitHash_(const DetId detId)const
 {
-  HcalDetId hcalDetId(detId);
-  return hcalDetId.hashed_index();
+  return DetIdTools::calHashHcal(detId.rawId());
+  //HcalDetId hcalDetId(detId);
+  //return DetIhashed_index();
 }
 
 
@@ -803,7 +804,7 @@ void SHEventHelper::initHcalHitVec_()const
 	 for(int depth=1;depth<=maxDepth;depth++){
 	   if(HackedFuncs::validHcalDetId(HcalBarrel,iEta,iPhi,depth)){
 	     HcalDetId detId(HcalBarrel,iEta,iPhi,depth);
-	     int indx = detId.hashed_index();
+	     int indx = DetIdTools::calHashHcal(detId.rawId());
 	   
 	    //std::cout <<"iEta "<<iEta<<" iPhi "<<iPhi<<" depth "<<depth<< " pos phi "<<pos.Phi()<<" eta "<<pos.Eta()<<" index "<<indx;//<<std::endl; 
 	     
@@ -823,7 +824,7 @@ void SHEventHelper::initHcalHitVec_()const
 	for(int depth=1;depth<=3;depth++){
 	  if(HackedFuncs::validHcalDetId(HcalEndcap,iEta,iPhi,depth)){
 	    HcalDetId detId(HcalEndcap,iEta,iPhi,depth);
-	    int indx = detId.hashed_index();
+	    int indx = DetIdTools::calHashHcal(detId.rawId());
 	   
 	    // std::cout <<"iEta "<<iEta<<" iPhi "<<iPhi<<" depth "<<depth<< " pos phi "<<pos.Phi()<<" eta "<<pos.Eta()<<" index "<<indx;//<<std::endl; 
 	  

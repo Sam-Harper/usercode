@@ -19,7 +19,7 @@
 <use   name="DataFormats/RecoCandidate"/>
 <use   name="DataFormats/L1GlobalTrigger"/>
 <use   name="CondFormats/L1TObjects"/>
-<use   name="SimDataFormats/SLHC"/>
+#<use   name="SimDataFormats/SLHC"/>
 <export>
   <lib   name="1"/>
 </export>

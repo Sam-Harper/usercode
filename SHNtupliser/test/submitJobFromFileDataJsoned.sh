@@ -43,12 +43,10 @@ fi
 
 echo phoSkim $phoSkim
 
-outputPath=601p4/SHL1v1/NoTowerThres/${cmsswVersion}/${dataset}/Run${minRun}-${maxRun}
+outputPath=612SLHC2/SHL1v1/OldEG1/${cmsswVersion}/${dataset}/Run${minRun}-${maxRun}
 
 
-#baseCfg="shNtupliser_withPUCorrJets_cfg.py"
-#baseCfg="jetFilterSkim.py"
-baseCfg="shL1Ntupliser_data.py"
+baseCfg="shL1Ntupliser_data_stage1.py"
 
 
 subDirs=`echo $outputPath | sed 's|/|_|g'`

@@ -3,7 +3,7 @@
 
 
 #include "SHarper/SHNtupliser/interface/SHL1CaloTower.hh"
-
+#include "SHarper/SHNtupliser/interface/DetIdTools.hh"
 
 #include "TClonesArray.h"
 
@@ -34,6 +34,7 @@ class SHL1CaloTowerContainer {
   
   const SHL1CaloTower& getCaloTowerByIndx(unsigned indx)const{return  *((SHL1CaloTower*) caloTowerArray_[indx]);}
   const SHL1CaloTower& getCaloTower(int iEta,int iPhi)const;
+  const SHL1CaloTower& getCaloTower(int detId)const{return DetIdTools::isValidL1CaloId(detId) ? getCaloTower(DetIdTools::iEtaCalo(detId),DetIdTools::iPhiCalo(detId)) : nullTower_;}
   unsigned nrCaloTowersStored()const{return caloTowerArray_.GetLast()+1;} 
 
   void clear(){caloTowerArray_.Delete();}

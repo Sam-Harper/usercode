@@ -127,7 +127,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(pfChargedIsoValEleMapTag_,handles.pfChargedIsoValEleMap);
   event.getByLabel(pfPhotonIsoValEleMapTag_,handles.pfPhotonIsoValEleMap);
   event.getByLabel(pfNeutralIsoValEleMapTag_,handles.pfNeutralIsoValEleMap);
-  event.getByType(handles.beamSpot);
+  //event.getByType(handles.beamSpot);
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);
@@ -140,6 +140,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
 void heep::EventHelper::fillHEEPElesFromPat(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
 {
   heepEles.clear();
+  if(!handles.electron.isValid()) return;
   const edm::View<pat::Electron>& eles = *handles.electron;
   for(edm::View<pat::Electron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
     if(!onlyAddEcalDriven_ || eleIt->ecalDrivenSeed()){
@@ -156,7 +157,9 @@ void heep::EventHelper::fillHEEPElesFromPat(const heep::EvtHandles& handles,std:
 //fills the heepEles vector using GsfElectrons as starting point
 void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
 {
+
   heepEles.clear();
+  if(!handles.gsfEle.isValid()) return;
   const std::vector<reco::GsfElectron>& eles = *handles.gsfEle;
   for(std::vector<reco::GsfElectron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
     if(!onlyAddEcalDriven_ || eleIt->ecalDrivenSeed()){

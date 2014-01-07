@@ -44,19 +44,22 @@ void DetIdTools::EcalNavigator::initPosCoords_()
 
 int DetIdTools::EcalNavigator::goNorth(int nrSteps)
 {
-  currPhiOrY_+=nrSteps;
+  currPhiOrY_+=nrSteps; 
+  while(isBarrel_ && currPhiOrY_>360) currPhiOrY_-=360;
+  while(isBarrel_ && currPhiOrY_<=0) currPhiOrY_+=360;
   return curPos();
 }
 
 int DetIdTools::EcalNavigator::goEast(int nrSteps)
 {
+  int oldEtaOrX_ = currEtaOrX_;
   currEtaOrX_+=nrSteps;
   //little fix in barrel as there is no crystal at eta =0;
-  if(isBarrel_ && currEtaOrX_==0){
+  if(isBarrel_ && oldEtaOrX_*currEtaOrX_<=0){ //sign change
     if(nrSteps>0) currEtaOrX_++;
     else if(nrSteps<0) currEtaOrX_--;
   }
-    
+  
   return curPos();
 }
 
@@ -69,8 +72,8 @@ int DetIdTools::EcalNavigator::getIdAtPos(int nrStepsEast,int nrStepsNorth)const
 {
   int posEtaOrX = currEtaOrX_+nrStepsEast;
   if(isBarrel_ && posEtaOrX*currEtaOrX_<=0){ //little fix for barrel having no crystal at 0, going directly from -1 to 1
-    if(currEtaOrX_<0) posEtaOrX++;
-    else posEtaOrX--;
+    if(nrStepsNorth>0) posEtaOrX++;
+    else if(nrStepsNorth<0) posEtaOrX--;
   }
   int posPhiOrY = currPhiOrY_+nrStepsNorth;
   while(isBarrel_ && posPhiOrY>360) posPhiOrY-=360;
@@ -97,10 +100,11 @@ int DetIdTools::EcalNavigator::getDetId_(int etaOrX,int phiOrY)const
   }
 }
 
-DetIdTools::CaloNavigator::CaloNavigator(int startId):
-  startId_(startId)
+DetIdTools::CaloNavigator::CaloNavigator(int startId,bool l1Navigator):
+  startId_(startId),
+  l1Navigator_(l1Navigator)
 {
-  if(isValidCaloId(startId)){
+  if((!l1Navigator && isValidCaloId(startId)) || (l1Navigator_ && isValidL1CaloId(startId))){
     startId_=startId;
     initPosCoords_();
   }else {
@@ -114,8 +118,8 @@ int DetIdTools::CaloNavigator::moveInEta(int nrSteps)
   
   int newEta = currEta_+=nrSteps;
   if(newEta*currEta_<=0) { //sign change
-    if(currEta_>0) newEta--;
-    if(currEta_<0) newEta++;
+    if(nrSteps>0) newEta++; 
+    else if(nrSteps<0) newEta--;
   }
   
   if(changedPhiSeg(newEta,currEta_)){
@@ -131,11 +135,14 @@ int DetIdTools::CaloNavigator::moveInEta(int nrSteps)
 int DetIdTools::CaloNavigator::moveInPhi(int nrSteps)
 {
   //okay so we need to 
-  if(abs(currEta_)>kIEtaPhiSegChange) nrSteps*=2; //even segments are now invalid, we move 2 at time
+  if(abs(currEta_)>kIEtaPhiSegChange && !l1Navigator_) nrSteps*=2; //even segments are now invalid, we move 2 at time
+  
   
   int newPhi = currPhi_+=nrSteps;
   while(newPhi<=0) newPhi+= kNrPhiSeg;
   while(newPhi>kNrPhiSeg) newPhi-=kNrPhiSeg;
+  
+  currPhi_=newPhi;
 
   return curPos();
 }
@@ -144,23 +151,22 @@ int DetIdTools::CaloNavigator::getIdAtPos(int nrStepsEta,int nrStepsPhi)const
 {
   int newEta = currEta_+nrStepsEta;
   if(newEta*currEta_<=0) { //sign change
-    if(currEta_>0) newEta--;
-    if(currEta_<0) newEta++;
+    if(nrStepsEta>0) newEta++;
+    else if(nrStepsEta<0) newEta--; 
   }
   int newPhi = currPhi_;
   if(changedPhiSeg(newEta,currEta_)){
-    
     if(abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
       if(newPhi%2==0) newPhi--;
     }//going the other way is fine
   }
   
-  if(abs(newEta)>kIEtaPhiSegChange) nrStepsPhi*=2; //even segments are now invalid, we move 2 at time  
+  if(abs(newEta)>kIEtaPhiSegChange && !l1Navigator_) nrStepsPhi*=2; //even segments are now invalid, we move 2 at time  
   newPhi+=nrStepsPhi;
   while(newPhi<=0) newPhi+= kNrPhiSeg;
   while(newPhi>kNrPhiSeg) newPhi-=kNrPhiSeg;
 
-  return DetIdTools::makeCaloDetId(newEta,newPhi);
+  return l1Navigator_ ? DetIdTools::makeL1CaloDetId(newEta,newPhi) : DetIdTools::makeCaloDetId(newEta,newPhi);
   
 }  
 void DetIdTools::CaloNavigator::initPosCoords_()
@@ -283,6 +289,22 @@ void DetIdTools::printHcalDetId(int detId)
 int DetIdTools::makeCaloDetId(int iEta,int iPhi)
 {
   if(!isValidCaloId(iEta,iPhi)) return 0;
+     
+  const int subDetCode=1<< kSubDetOffset;
+  
+  int detId=0x0;
+  detId |= kCaloCode;
+  detId |= subDetCode;
+  detId |= (iPhi&0x7F);
+  if(iEta>0) detId |= (0x2000 | ((iEta&0x3f)<<7) );
+ else detId |= (((-iEta)&0x3f)<<7);
+  
+  return detId;
+}
+
+int DetIdTools::makeL1CaloDetId(int iEta,int iPhi)
+{
+  if(!isValidL1CaloId(iEta,iPhi)) return 0;
      
   const int subDetCode=1<< kSubDetOffset;
   
@@ -531,6 +553,12 @@ bool DetIdTools::isValidCaloId(int iEta,int iPhi)
     }else return true;
   }
   return false;
+}
+
+bool DetIdTools::isValidL1CaloId(int iEta,int iPhi)
+{
+  if(abs(iEta)>=1 && abs(iEta)<=28 && iPhi>=1 && iPhi<=72) return true;
+  else return false;
 }
 
 

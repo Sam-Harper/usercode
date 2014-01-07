@@ -164,7 +164,7 @@ bool HLTElectronTrackMatchFilter::matchedTrack(const reco::GsfTrackCollection& g
 {  
   bool returnVal=false;
   trkNr_=0; //debug var
-  bool matched=false;
+  //bool matched=false;
   //std::cout <<" sc "<<superClusRef->energy()<<" eta "<<superClusRef->eta()<<" phi "<<superClusRef->phi()<<std::endl;
   GlobalPoint scPos(superClusRef->x(),superClusRef->y(),superClusRef->z());
   GlobalPoint bsPos(beamSpot.position().x(),beamSpot.position().y(),beamSpot.position().z());

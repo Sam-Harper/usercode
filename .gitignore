@@ -1,0 +1,9 @@
+*.[oa]
+*~
+*.pyc
+*.root
+*.log
+crabJob_*/
+\#*\#
+*_autoGen_*
+__init__.py
