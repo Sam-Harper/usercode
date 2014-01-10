@@ -61,6 +61,11 @@ const SHL1CaloTower& SHL1CaloTowerContainer::getCaloTower(int iEta,int iPhi)cons
   
   int indx = towerIndxTable_[hash];
   if(indx<0) return nullTower_;
-  else return getCaloTowerByIndx(indx);
-
+  else{
+    const SHL1CaloTower& l1CaloTower = getCaloTowerByIndx(indx);
+    if(l1CaloTower.iEta()!=iEta || l1CaloTower.iPhi()!=iPhi){
+      LogErr<<"Warning we got tower "<<l1CaloTower.iEta()<<" "<<l1CaloTower.iPhi()<<" when we wanted "<<iEta<<" "<<iPhi<<std::endl;
+    }
+    return l1CaloTower;
+  }
 }

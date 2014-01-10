@@ -1,5 +1,7 @@
 #include "SHarper/SHNtupliser/interface/SHL1Cluster.hh"
 
+#include "SHarper/SHNtupliser/interface/DetIdTools.hh"
+
 #include "TGraph.h"
 
 ClassImp(SHL1Cluster)
@@ -17,6 +19,23 @@ SHL1Cluster::SHL1Cluster():
   constituents_(0)
 {
 
+}
+
+int SHL1Cluster::iEtaMax()const
+{
+  if((leadTower_&0x1)==0x0) return iEta_;
+  else{
+    DetIdTools::CaloNavigator nav(DetIdTools::makeL1CaloDetId(iEta_,iPhi_),true);
+    return DetIdTools::iEtaCalo(nav.getIdAtPos(1,0));
+  } 
+}
+int SHL1Cluster::iPhiMax()const
+{
+  if((leadTower_&0x2)==0x0) return iPhi_;
+  else{
+    DetIdTools::CaloNavigator nav(DetIdTools::makeL1CaloDetId(iEta_,iPhi_),true);
+    return DetIdTools::iPhiCalo(nav.getIdAtPos(0,1));
+  } 
 }
 
 
