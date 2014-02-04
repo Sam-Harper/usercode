@@ -76,31 +76,44 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
 void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)const
 
 {   
- 
+  const bool debug=false;
+  if(debug) std::cout <<"making event "<<std::endl;
   shEvent.clear(); //reseting the event 
   //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
+  if(debug) std::cout <<"adding calo hits"<<std::endl;
   addCaloHits(heepEvent,shEvent);
+  if(debug) std::cout <<"adding calo towers "<<addCaloTowers_<<std::endl;
   if(addCaloTowers_) addCaloTowers(heepEvent,shEvent);
+  if(debug) std::cout <<"adding event para "<<std::endl;
   addEventPara(heepEvent,shEvent); //this must be filled second (ele + mu need beam spot info)
+  if(debug) std::cout <<"adding superclusters"<<std::endl;
   addSuperClusters(heepEvent,shEvent);
+  if(debug) std::cout <<"adding electrons "<<std::endl;
   addElectrons(heepEvent,shEvent);
-  addPreShowerClusters(heepEvent,shEvent);
+  if(debug) std::cout <<"adding preshower "<<std::endl; 
+  // addPreShowerClusters(heepEvent,shEvent);
+  if(debug) std::cout <<"adding muons "<<std::endl;
   if(addMuons_) addMuons(heepEvent,shEvent); 
  
-    
+  
   if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
   else if(addTrigs_){
     edm::Handle<trigger::TriggerEventWithRefs> trigEventWithRefs;
     edm::InputTag trigTag("hltTriggerSummaryRAW","",hltTag_);
     heepEvent.event().getByLabel(trigTag,trigEventWithRefs);
+    if(debug) std::cout <<"adding triggers"<<std::endl;
     addTrigDebugInfo(heepEvent,shEvent,*trigEventWithRefs,hltDebugFiltersToSave_,hltTag_);
   }
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
+  if(debug)std::cout <<"adding jets"<<std::endl;
   if(addJets_) addJets(heepEvent,shEvent);
+  if(debug) std::cout <<"adding met "<<std::endl;
   if(addMet_) addMet(heepEvent,shEvent);
-  addMCParticles(heepEvent,shEvent);
+  if(debug) std::cout <<"adding mc particles "<<std::endl;
+  addMCParticles(heepEvent,shEvent);  
+  if(debug) std::cout <<"adding isol tracks"<<std::endl;
   if(addIsolTrks_) addIsolTrks(heepEvent,shEvent);
-   
+  if(debug) std::cout <<"made event "<<std::endl;
 }
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -169,6 +182,7 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
 //photons have just a H/E<0.5 cut which is fine for our needs
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
+  std::cout <<"is gsfEle valid "<<heepEvent.handles().gsfEle.isValid()<<std::endl;
   if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
