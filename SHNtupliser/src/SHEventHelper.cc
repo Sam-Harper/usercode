@@ -182,7 +182,6 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
 //photons have just a H/E<0.5 cut which is fine for our needs
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
-  std::cout <<"is gsfEle valid "<<heepEvent.handles().gsfEle.isValid()<<std::endl;
   if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
