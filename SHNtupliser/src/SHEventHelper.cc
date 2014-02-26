@@ -182,13 +182,14 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
 //photons have just a H/E<0.5 cut which is fine for our needs
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
-  std::cout <<"is gsfEle valid "<<heepEvent.handles().gsfEle.isValid()<<std::endl;
+  //std::cout <<"is gsfEle valid "<<heepEvent.handles().gsfEle.isValid()<<std::endl;
   if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
   const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
   const std::vector<reco::Photon>& photons = heepEvent.recoPhos();
-  //std::cout <<"nr photons "<<photons.size()<<std::endl;
+  //std::cout <<"nr electrons "<<electrons.size()<<std::endl;
+  // std::cout <<"nr photons "<<photons.size()<<std::endl;
   for(size_t phoNr=0;phoNr<photons.size();phoNr++){
     const reco::SuperCluster& sc = *photons[phoNr].superCluster();
     size_t eleNr = matchToEle(sc,electrons);
@@ -340,10 +341,34 @@ bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEve
 
 size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const
 {
+  //  std::cout <<"photon sc "<<superClus<<std::endl;
+ 
+  std::cout <<"start "<<std::endl;
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr];
+    
+    std::cout <<"eleNr "<<eleNr<<std::endl;//" "<<(*ele.superCluster())<<std::endl;
+    //if(math::deltaR2(ele.superCluster->eta(),ele.superCluster->phi(),superClus.eta(),superClus.phi())<0.05*0.05) return eleNr;
+
     if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
+    const reco::SuperClusterRef sc = ele.superCluster();
+    std::cout <<"nr basic clusters "<<sc->clustersSize()<<std::endl;
+    for(auto it=sc->clustersBegin();it!=sc->clustersEnd();++it){
+      const std::vector< std::pair<DetId, float> > & hits = (*it)->hitsAndFractions();
+      std::cout <<"clus energy "<<(*it)->energy()<<" nr hits"<<hits.size()<<std::endl;
+      for(size_t hitNr=0;hitNr<hits.size();hitNr++){
+	if(hits[hitNr].first.subdetId()==1){
+	  EBDetId ebDetId(hits[hitNr].first);
+	  std::cout <<"iEta "<<ebDetId.ieta()<<" iPhi "<<ebDetId.iphi()<<" frac "<<hits[hitNr].second<<std::endl;
+	}else{
+	  EEDetId eeDetId(hits[hitNr].first);
+	  std::cout <<"ix "<<eeDetId.ix()<<" iy "<<eeDetId.iy()<<" frac "<<hits[hitNr].second<<std::endl;
+	}
+      }
+    }
+
   }
+  std::cout <<"end "<<std::endl;
   return eles.size();
 }
 
