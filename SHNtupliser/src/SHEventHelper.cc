@@ -343,32 +343,33 @@ size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::
 {
   //  std::cout <<"photon sc "<<superClus<<std::endl;
  
-  std::cout <<"start "<<std::endl;
+  //  std::cout <<"start "<<std::endl;
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr];
     
-    std::cout <<"eleNr "<<eleNr<<std::endl;//" "<<(*ele.superCluster())<<std::endl;
+    //std::cout <<"eleNr "<<eleNr<<std::endl;//" "<<(*ele.superCluster())<<std::endl;
     //if(math::deltaR2(ele.superCluster->eta(),ele.superCluster->phi(),superClus.eta(),superClus.phi())<0.05*0.05) return eleNr;
 
     if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
-    const reco::SuperClusterRef sc = ele.superCluster();
-    std::cout <<"nr basic clusters "<<sc->clustersSize()<<std::endl;
-    for(auto it=sc->clustersBegin();it!=sc->clustersEnd();++it){
-      const std::vector< std::pair<DetId, float> > & hits = (*it)->hitsAndFractions();
-      std::cout <<"clus energy "<<(*it)->energy()<<" nr hits"<<hits.size()<<std::endl;
-      for(size_t hitNr=0;hitNr<hits.size();hitNr++){
-	if(hits[hitNr].first.subdetId()==1){
-	  EBDetId ebDetId(hits[hitNr].first);
-	  std::cout <<"iEta "<<ebDetId.ieta()<<" iPhi "<<ebDetId.iphi()<<" frac "<<hits[hitNr].second<<std::endl;
-	}else{
-	  EEDetId eeDetId(hits[hitNr].first);
-	  std::cout <<"ix "<<eeDetId.ix()<<" iy "<<eeDetId.iy()<<" frac "<<hits[hitNr].second<<std::endl;
-	}
-      }
-    }
+  //   const reco::SuperClusterRef sc = ele.superCluster();
+//     //std::cout <<"nr basic clusters "<<sc->clustersSize()<<std::endl;
+//     for(auto it=sc->clustersBegin();it!=sc->clustersEnd();++it){
+//       const std::vector< std::pair<DetId, float> > & hits = (*it)->hitsAndFractions();
+//       //std::cout <<"clus energy "<<(*it)->energy()<<" nr hits"<<hits.size()<<std::endl;
+//       for(size_t hitNr=0;hitNr<hits.size();hitNr++){
+// 	if(hits[hitNr].first.subdetId()==1){
+// 	  EBDetId ebDetId(hits[hitNr].first);
+// 	  std::cout <<"iEta "<<ebDetId.ieta()<<" iPhi "<<ebDetId.iphi()<<" frac "<<hits[hitNr].second<<std::endl;
+// 	}else{
+// 	  EEDetId eeDetId(hits[hitNr].first);
+// 	  std::cout <<"ix "<<eeDetId.ix()<<" iy "<<eeDetId.iy()<<" frac "<<hits[hitNr].second<<std::endl;
+// 	}
+//       }
+//     }
 
+//   }
+//   std::cout <<"end "<<std::endl;
   }
-  std::cout <<"end "<<std::endl;
   return eles.size();
 }
 

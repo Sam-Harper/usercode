@@ -47,16 +47,16 @@ patCandID=""
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
-process.shNtupliser.gsfEleTag = "gedGsfElectrons"
+process.shNtupliser.gsfEleTag = "gsfElectrons"
 process.shNtupliser.addMet = False
 process.shNtupliser.addJets = False
 process.shNtupliser.addMuons = False
 process.shNtupliser.applyMuonId = False
-process.shNtupliser.addCaloTowers = False
-process.shNtupliser.addCaloHits = False
-process.shNtupliser.addIsolTrks = False
-process.shNtupliser.addPFCands = False
-process.shNtupliser.recoPhoTag = "gedPhotons"
+process.shNtupliser.addCaloTowers = True
+process.shNtupliser.addCaloHits = True
+process.shNtupliser.addIsolTrks = True
+process.shNtupliser.addPFCands = True
+
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
@@ -79,6 +79,11 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
 
+import os
+cmsswVersion = os.environ['CMSSW_VERSION']
+if "CMSSW_34334_" in cmsswVersion:
+    process.shNtupliser.recoPhoTag = "gedPhotons"
+    process.shNtupliser.gsfEleTag = "gedGsfElectrons"
 
 isCrabJob=False #script seds this if its a crab job
 
