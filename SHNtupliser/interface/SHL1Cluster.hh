@@ -40,6 +40,9 @@ public:
   int iPhi()const{return iPhi_;}
   int isolEmEtTS()const{return isolEmEtTS_;}
   int isolHadEtTS()const{return isolHadEtTS_;}
+
+  int iEtaMax()const;
+  int iPhiMax()const;
   
   int trigScale()const{return trigScale_;}
   bool fgVeto()const{return fgVeto_;}
@@ -49,6 +52,7 @@ public:
 
   int leadTower()const{return leadTower_;}
   int constituents()const{return constituents_;}
+  int localIEta2ndStrip()const{return (leadTower_&0x1)==0 ? 1 : -1;} //is the 2nd eta strip of the cluster in the -ve or +ve direction
 
   void setTrigScale(int iTrigScale){trigScale_=iTrigScale;}
   

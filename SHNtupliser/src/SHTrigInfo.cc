@@ -37,7 +37,7 @@ TLorentzVector SHTrigInfo::getTrigObj(double eta,double phi)const
 
 //l1 triggers have discrete eta/phi, need to special matching
 //stolen from HLTEgammaL1MatchFilterRegional
-bool SHTrigInfo::passL1Trig(double eta,double phi)const
+bool SHTrigInfo::passL1Trig(double eta,double phi,TLorentzVector& matchedP4)const
 {
   // if(!pass_) return false; //can never pass if trigger didnt accept
   
@@ -69,11 +69,13 @@ bool SHTrigInfo::passL1Trig(double eta,double phi)const
     
     if(eta < etaBinHigh && eta > etaBinLow &&
        deltaPhi <regionPhiSize/2. )  {
+      matchedP4 = getObjP4(objNr);
       return true;
     }
     
   }
  
   //didnt find an object well matched in dR, input object failed
+  matchedP4.SetPtEtaPhiM(0.1,-999,0,0);
   return false;
 }

@@ -28,9 +28,9 @@ SHL1Cluster::SHL1Cluster(const l1slhc::L1CaloCluster& clus):
       int index=clus.hasConstituent(lEta,lPhi);
       int towerEmEt = index>=0 ? clus.getConstituent(index)->E() : 0;
       if(towerEmEt>highestEmEt){ //logic here (tie for same et towers) mimics isolation algo for lead tower
-	highestEmEt = towerEmEt;
-	leadTowerLEta=lEta;
-	leadTowerLPhi=lPhi;
+        highestEmEt = towerEmEt;
+        leadTowerLEta=lEta;
+        leadTowerLPhi=lPhi;
       }
       if(index>0) constituents_|=bit;
       bit = bit<<1;

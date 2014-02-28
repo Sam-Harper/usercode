@@ -50,7 +50,9 @@ public:
   bool passTrig(double eta,double phi)const;
   TLorentzVector getTrigObj(double eta,double phi)const;
   bool passL1Trig(const TLorentzVector& p4)const{return passL1Trig(p4.Eta(),p4.Phi());}
-  bool passL1Trig(double eta,double phi)const;
+  bool passL1Trig(double eta,double phi,TLorentzVector& matchedP4)const;
+  bool passL1Trig(double eta,double phi)const{TLorentzVector matchedP4;return passL1Trig(eta,phi,matchedP4);}
+  TLorentzVector getL1TrigObj(double eta,double phi)const{TLorentzVector matchedP4;passL1Trig(eta,phi,matchedP4);return matchedP4;}
   //TLorentzVector getL1TrigObj(double eta,double phi)const{}
   
   

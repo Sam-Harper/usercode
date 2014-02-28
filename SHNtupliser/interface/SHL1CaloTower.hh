@@ -24,6 +24,7 @@ public:
   int iPhi()const{ return iPhi_;}
   int emEtTS()const{ return emEtTS_;}
   int hadEtTS()const{ return hadEtTS_;}
+  int etTS()const{return emEtTS()+hadEtTS();}
   bool ecalFG()const{ return ecalFG_;}
   bool hcalFG()const{ return hcalFG_;}
   int trigScale()const{ return trigScale_;}

@@ -257,6 +257,7 @@ class SHEvent : public TObject {
   //int nrVertices()const{return nrVertices_;}
   int preScaleCol()const{return preScaleCol_;}
   float eleRhoCorr()const{return eleRhoCorr_;}
+  float rhoCorr()const{return rhoCorr_;}
   //first function gets the triggers passed for the event
   //second to functions get the triggers passed for a particlar object
   // int getTrigCode()const;
