@@ -76,31 +76,44 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
 void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)const
 
 {   
- 
+  const bool debug=false;
+  if(debug) std::cout <<"making event "<<std::endl;
   shEvent.clear(); //reseting the event 
   //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
+  if(debug) std::cout <<"adding calo hits"<<std::endl;
   addCaloHits(heepEvent,shEvent);
+  if(debug) std::cout <<"adding calo towers "<<addCaloTowers_<<std::endl;
   if(addCaloTowers_) addCaloTowers(heepEvent,shEvent);
+  if(debug) std::cout <<"adding event para "<<std::endl;
   addEventPara(heepEvent,shEvent); //this must be filled second (ele + mu need beam spot info)
+  if(debug) std::cout <<"adding superclusters"<<std::endl;
   addSuperClusters(heepEvent,shEvent);
+  if(debug) std::cout <<"adding electrons "<<std::endl;
   addElectrons(heepEvent,shEvent);
-  addPreShowerClusters(heepEvent,shEvent);
+  if(debug) std::cout <<"adding preshower "<<std::endl; 
+  // addPreShowerClusters(heepEvent,shEvent);
+  if(debug) std::cout <<"adding muons "<<std::endl;
   if(addMuons_) addMuons(heepEvent,shEvent); 
  
-    
+  
   if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
   else if(addTrigs_){
     edm::Handle<trigger::TriggerEventWithRefs> trigEventWithRefs;
     edm::InputTag trigTag("hltTriggerSummaryRAW","",hltTag_);
     heepEvent.event().getByLabel(trigTag,trigEventWithRefs);
+    if(debug) std::cout <<"adding triggers"<<std::endl;
     addTrigDebugInfo(heepEvent,shEvent,*trigEventWithRefs,hltDebugFiltersToSave_,hltTag_);
   }
   // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
+  if(debug)std::cout <<"adding jets"<<std::endl;
   if(addJets_) addJets(heepEvent,shEvent);
+  if(debug) std::cout <<"adding met "<<std::endl;
   if(addMet_) addMet(heepEvent,shEvent);
-  addMCParticles(heepEvent,shEvent);
+  if(debug) std::cout <<"adding mc particles "<<std::endl;
+  addMCParticles(heepEvent,shEvent);  
+  if(debug) std::cout <<"adding isol tracks"<<std::endl;
   if(addIsolTrks_) addIsolTrks(heepEvent,shEvent);
-   
+  if(debug) std::cout <<"made event "<<std::endl;
 }
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -169,12 +182,14 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
 //photons have just a H/E<0.5 cut which is fine for our needs
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
+
   if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
   const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
   const std::vector<reco::Photon>& photons = heepEvent.recoPhos();
-  //std::cout <<"nr photons "<<photons.size()<<std::endl;
+  //std::cout <<"nr electrons "<<electrons.size()<<std::endl;
+  // std::cout <<"nr photons "<<photons.size()<<std::endl;
   for(size_t phoNr=0;phoNr<photons.size();phoNr++){
     const reco::SuperCluster& sc = *photons[phoNr].superCluster();
     size_t eleNr = matchToEle(sc,electrons);
@@ -326,9 +341,34 @@ bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEve
 
 size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const
 {
+  //  std::cout <<"photon sc "<<superClus<<std::endl;
+ 
+  //  std::cout <<"start "<<std::endl;
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr];
+    
+    //std::cout <<"eleNr "<<eleNr<<std::endl;//" "<<(*ele.superCluster())<<std::endl;
+    //if(math::deltaR2(ele.superCluster->eta(),ele.superCluster->phi(),superClus.eta(),superClus.phi())<0.05*0.05) return eleNr;
+
     if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
+  //   const reco::SuperClusterRef sc = ele.superCluster();
+//     //std::cout <<"nr basic clusters "<<sc->clustersSize()<<std::endl;
+//     for(auto it=sc->clustersBegin();it!=sc->clustersEnd();++it){
+//       const std::vector< std::pair<DetId, float> > & hits = (*it)->hitsAndFractions();
+//       //std::cout <<"clus energy "<<(*it)->energy()<<" nr hits"<<hits.size()<<std::endl;
+//       for(size_t hitNr=0;hitNr<hits.size();hitNr++){
+// 	if(hits[hitNr].first.subdetId()==1){
+// 	  EBDetId ebDetId(hits[hitNr].first);
+// 	  std::cout <<"iEta "<<ebDetId.ieta()<<" iPhi "<<ebDetId.iphi()<<" frac "<<hits[hitNr].second<<std::endl;
+// 	}else{
+// 	  EEDetId eeDetId(hits[hitNr].first);
+// 	  std::cout <<"ix "<<eeDetId.ix()<<" iy "<<eeDetId.iy()<<" frac "<<hits[hitNr].second<<std::endl;
+// 	}
+//       }
+//     }
+
+//   }
+//   std::cout <<"end "<<std::endl;
   }
   return eles.size();
 }
