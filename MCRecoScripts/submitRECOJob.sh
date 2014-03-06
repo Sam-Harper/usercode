@@ -14,22 +14,22 @@ if [ -z "$version" ];then
 fi
 
 #these are the identifiers of the conditions and campaign
-config=reco_700_POSTLS1.py
+config=reco_700_POSTLS1_DYToEEFilter.py
 
 
 reRECOVersion=EGM700
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "_" '{print $2}'`
 globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
-conditions="$pileUp_$globalTag"
+conditions="${pileUp}_$globalTag"
 publishDataname=${reRECOVersion}_${conditions}-${version}
 dbsUrlForPub="https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
 
 echo $conditions
 
 #allows us to publish the data and copy to T2
-publishData=0
-copyData=0
-returnData=1
+publishData=1
+copyData=1
+returnData=0
 
 datasetName=`echo $datasetPath | awk -F "/" '{print $2}'`
 outputPath=TSGMCReRECO/$reRECOVersion/$datasetName/$conditions/${version}  #note, outputPath is overriden by crab when publishing, this is only when we are publishData=0
