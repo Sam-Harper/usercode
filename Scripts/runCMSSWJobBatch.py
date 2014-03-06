@@ -52,9 +52,14 @@ def copyReleaseFiles(newRelease):
 
 def splitInput(inputFilesRAW,nrJobs):
     import glob
-    
-    inputFiles=glob.glob(inputFilesRAW)
-   # print inputFiles
+
+    if ".list" in inputFilesRAW:
+        inputFiles= [line.strip() for line in open(inputFilesRAW)]
+    #    with open(inputFilesRAW) as f:
+     #       inputFiles=f.readlines()
+    else:
+        inputFiles=glob.glob(inputFilesRAW)
+    print inputFiles
     inputFilesEachJob=nrJobs*[None];
 
     nrFiles=len(inputFiles)
@@ -111,11 +116,13 @@ batchSubmitFile="qsub_autoGen.sh"
 print "config file ",args.config," base batch file ",batchSubmitBaseFile
     
 fullOutputDir=baseOutputDir+"/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
+fullLogDir="/opt/ppd/scratch/harper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
 if os.path.exists(fullOutputDir):
     print "output directory ",fullOutputDir," exists, aborting "
     exit(1)
 os.makedirs(fullOutputDir)
-
+if not os.path.exists(fullLogDir):
+    os.makedirs(fullLogDir)
 import datetime
 currTime=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
@@ -148,5 +155,5 @@ for jobNr in range(0,args.nrJobs):
     cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
     batchFile.write(cmd)
     batchFile.close()
-    os.system("qsub "+batchSubmitFile+" -j oe -o /opt/ppd/scratch/harper/qsubLogs -q prod")
+    os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod")
     os.remove(batchSubmitFile)        

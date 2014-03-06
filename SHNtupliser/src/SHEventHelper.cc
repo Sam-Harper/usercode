@@ -214,16 +214,16 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   //  std::cout <<"CMSSW dxy "<<gsfEle.gsfTrack()->dxy( math::XYZPoint(vtx.x(),vtx.y(),vtx.z()) )<<" my dxy "<<shEle->dxy()<<std::endl;
   
 
-  for(size_t i=0;i<heepEvent.handles().gsfEle->size();i++){
-    if(&gsfEle==&(*heepEvent.handles().gsfEle)[i]){
-      reco::GsfElectronRef eleRef(heepEvent.handles().gsfEle,i);
+//   for(size_t i=0;i<heepEvent.handles().gsfEle->size();i++){
+//     if(&gsfEle==&(*heepEvent.handles().gsfEle)[i]){
+//       reco::GsfElectronRef eleRef(heepEvent.handles().gsfEle,i);
  
-      float pfChargedIso = heepEvent.handles().pfChargedIsoValEleMap.isValid() ? (*heepEvent.handles().pfChargedIsoValEleMap)[eleRef] : -999;
-      float pfPhotonIso = heepEvent.handles().pfPhotonIsoValEleMap.isValid() ? (*heepEvent.handles().pfPhotonIsoValEleMap)[eleRef] : -999;
-      float pfNeutralIso = heepEvent.handles().pfNeutralIsoValEleMap.isValid() ? (*heepEvent.handles().pfNeutralIsoValEleMap)[eleRef] : -999;
-      shEle->setPFIsol(pfChargedIso,pfNeutralIso,pfPhotonIso);
-    }
-  }
+//       float pfChargedIso = heepEvent.handles().pfChargedIsoValEleMap.isValid() ? (*heepEvent.handles().pfChargedIsoValEleMap)[eleRef] : -999;
+//       float pfPhotonIso = heepEvent.handles().pfPhotonIsoValEleMap.isValid() ? (*heepEvent.handles().pfPhotonIsoValEleMap)[eleRef] : -999;
+//       float pfNeutralIso = heepEvent.handles().pfNeutralIsoValEleMap.isValid() ? (*heepEvent.handles().pfNeutralIsoValEleMap)[eleRef] : -999;
+//       shEle->setPFIsol(pfChargedIso,pfNeutralIso,pfPhotonIso);
+//     }
+//   }
 
   if(shEle->seedId()!=0 && false){
     
