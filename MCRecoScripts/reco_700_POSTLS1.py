@@ -73,8 +73,8 @@ process.output = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('AODSIM')
     )
 )
-#if not isCrabJob:
-#    process.output.fileName = cms.untracked.string(sys.argv[len(sys.argv)-1]),
+if not isCrabJob:
+    process.output.fileName = cms.untracked.string(sys.argv[len(sys.argv)-1])
 # Additional output definition
 
 # Other statements
