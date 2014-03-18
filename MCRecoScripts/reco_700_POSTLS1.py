@@ -44,10 +44,11 @@ process.source = cms.Source("PoolSource",
 isCrabJob=False #submiting script seds this to true
 
 if not isCrabJob:
-    for i in range(2,len(sys.argv)-1):
+    for i in range(3,len(sys.argv)-1):
         print filePrefex+sys.argv[i]
         process.source.fileNames.extend([filePrefex+sys.argv[i],])
-
+    
+    
 
 process.options = cms.untracked.PSet(
 
@@ -79,7 +80,12 @@ if not isCrabJob:
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'POSTLS170_V4::All', '')
+
+if isCrabJob:
+    process.GlobalTag = GlobalTag(process.GlobalTag, 'TOSED:GLOBALTAG::All', '')
+else:
+    process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2]+"::All", '')  
+
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)

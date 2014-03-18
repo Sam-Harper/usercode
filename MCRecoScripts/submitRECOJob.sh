@@ -19,7 +19,18 @@ config=reco_700_POSTLS1_DYToEEFilter.py
 
 reRECOVersion=EGM700
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "_" '{print $2}'`
-globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
+#globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
+if [[ $pileUp == *bx25 ]]
+then 
+globalTag=POSTLS170_V5
+elif [[ $pileUp == *bx50 ]]
+then
+globalTag=POSTLS170_V6
+else 
+echo "pile up senario $pileUp, not recognised, cant determin global tag"
+exit
+fi
+
 conditions="${pileUp}_$globalTag"
 publishDataname=${reRECOVersion}_${conditions}-${version}
 dbsUrlForPub="https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
@@ -57,11 +68,12 @@ sed 's|TOSED:DBSURLFORPUB|'$dbsUrlForPub'|' | \
 sed 's|TOSED:COPYDATA|'$copyData'|' > crab_autoGen.cfg
 
 sed 's|TOSED:OUTPUTFILE|'$outputFile'|' $config | \
+sed 's|TOSED:GLOBALTAG|'$globalTag'|'| \
 sed 's|isCrabJob=False|isCrabJob=True|'   > cmssw_autoGen.py
 
 
 
-crab -create -cfg crab_autoGen.cfg
-crab -c $workingDir -submit
+#crab -create -cfg crab_autoGen.cfg
+#crab -c $workingDir -submit
 
  
