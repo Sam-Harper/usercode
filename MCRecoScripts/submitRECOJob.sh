@@ -14,7 +14,7 @@ if [ -z "$version" ];then
 fi
 
 #these are the identifiers of the conditions and campaign
-config=reco_700_POSTLS1_DYToEEFilter.py
+config=reco_700_POSTLS1.py
 
 
 reRECOVersion=EGM700
@@ -22,10 +22,10 @@ pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "_" '{print $2}'`
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
 then 
-globalTag=POSTLS170_V5
+globalTag=POSTLS170_V3
 elif [[ $pileUp == *bx50 ]]
 then
-globalTag=POSTLS170_V6
+globalTag=POSTLS170_V4
 else 
 echo "pile up senario $pileUp, not recognised, cant determin global tag"
 exit
@@ -73,7 +73,7 @@ sed 's|isCrabJob=False|isCrabJob=True|'   > cmssw_autoGen.py
 
 
 
-#crab -create -cfg crab_autoGen.cfg
-#crab -c $workingDir -submit
+crab -create -cfg crab_autoGen.cfg
+crab -c $workingDir -submit
 
  

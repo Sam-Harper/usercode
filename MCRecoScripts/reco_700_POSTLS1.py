@@ -26,12 +26,12 @@ process.maxEvents = cms.untracked.PSet(
 )
 import sys
 filePrefex="file:"
-if(sys.argv[2].find("/pnfs/")==0):
+if(sys.argv[3].find("/pnfs/")==0):
     filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
 
-if(sys.argv[2].find("/store/")==0):
+if(sys.argv[3].find("/store/")==0):
     filePrefex=""
-if(sys.argv[2].find("/eos/")==0):
+if(sys.argv[3].find("/eos/")==0):
     filePrefex="'root://eoscms/"
 
 process.source = cms.Source("PoolSource",
