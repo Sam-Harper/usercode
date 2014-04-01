@@ -39,12 +39,12 @@ public:
 SinglePhoSkimmer::SinglePhoSkimmer(const edm::ParameterSet& iConfig)
 {
   trigEventTag_ = iConfig.getParameter<edm::InputTag>("trigEventTag");
-  singlePhoLastFilterNames_ = iConfig.getParameter<std::vector<std::string> >("singlePhotLastFilterNames");
+  singlePhoLastFilterNames_ = iConfig.getParameter<std::vector<std::string> >("singlePhoLastFilterNames");
   preScales_ = iConfig.getParameter<std::vector<int> >("preScales");
   nrEtBins_ = iConfig.getParameter<int>("nrEtBins");
   minEt_ = iConfig.getParameter<double>("minEt");
   maxEt_ = iConfig.getParameter<double>("maxEt");
-  produces<int>("skimPreScale");
+  produces<int>();
 }
 
 void SinglePhoSkimmer::beginJob()
@@ -72,11 +72,10 @@ bool SinglePhoSkimmer::filter(edm::Event& iEvent,const edm::EventSetup& iSetup )
 
   int preScale = getPreScale(maxEt);
 
-  std::auto_ptr<int> preScalePointer(new int);
-  *preScalePointer = preScale;
+  std::auto_ptr<int> preScalePointer(new int(preScale));
   iEvent.put(preScalePointer);
 
-  return iEvent.id().event()%preScale;
+  return iEvent.id().event()%preScale==0;
 
 }
 
