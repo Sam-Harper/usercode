@@ -104,7 +104,7 @@ print args.config
 
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
-baseOutputDir="/opt/ppd/scratch/harper/mc"
+baseOutputDir="/opt/ppd/month/harper/mc"
 batchJobBaseDir="/opt/ppd/scratch/harper/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
@@ -116,7 +116,7 @@ batchSubmitFile="qsub_autoGen.sh"
 print "config file ",args.config," base batch file ",batchSubmitBaseFile
     
 fullOutputDir=baseOutputDir+"/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
-fullLogDir="/opt/ppd/scratch/harper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
+fullLogDir="/opt/ppd/month/harper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
 if os.path.exists(fullOutputDir):
     print "output directory ",fullOutputDir," exists, aborting "
     exit(1)
@@ -139,7 +139,7 @@ copyReleaseFiles(batchJobDirAndPath)
 
 for jobNr in range(0,args.nrJobs):
     print jobNr
-    batchSubmitFile="qsub_batch_"+str(jobNr)+".sh"
+    batchSubmitFile="qsub_batch2_"+str(jobNr)+".sh"
     outputFilename = args.output.split(".root")[0]+"_"+str(jobNr+1)+".root"
     shutil.copyfile(batchSubmitBaseFile,batchSubmitFile)
     shutil.copyfile(args.config,batchJobDirAndPath+"/src/cmssw.py")
@@ -151,9 +151,16 @@ for jobNr in range(0,args.nrJobs):
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
         cmd+=" "+filename
-    cmd+=" $TMPDIR/"+outputFilename+"\n"
-    cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
+    cmd+=" "+fullOutputDir+"/"+outputFilename
+   # cmd+=" $TMPDIR/"+outputFilename+"\n"
+   # cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
     batchFile.write(cmd)
     batchFile.close()
-    os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod")
-    os.remove(batchSubmitFile)        
+    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
+    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod")
+    os.system("chmod +x "+batchSubmitFile);
+    cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
+    print cmd
+    os.system(cmd)
+    #os.system("./"+batchSubmitFile+" > "+fullLogDir+"/job_"+str(jobNr)+".log &")
+    #os.remove(batchSubmitFile)        
