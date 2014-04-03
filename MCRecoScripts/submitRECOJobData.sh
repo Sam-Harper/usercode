@@ -47,7 +47,7 @@ echo "$datasetPath $nrEvents $nrEventsPerJob $outputPath $outputFile $workingDir
 
 #we use sed to edit our output files prior to submision
 #the sed order matters...
-sed 's|TOSED:DATASETPATH|'$datasetPath'|' crab_base_reco.cfg | \
+sed 's|TOSED:DATASETPATH|'$datasetPath'|' crab_base_reco_data.cfg | \
 sed 's|TOSED:LUMISPERJOB|'$nrLumisPerJob'|' | \
 sed 's|TOSED:TOTLUMIS|'$totLumis'|' | \
 sed 's|TOSED:NREVENTS|'$nrEvents'|' | \
