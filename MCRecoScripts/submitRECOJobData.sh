@@ -3,8 +3,8 @@
 #small script to automatically submit MC RECO jobs for EXO
 
 datasetPath=$1
-nrEvents=$2
-nrEventsPerJob=$3
+totLumis=$2
+nrLumisPerJob=$3
 #outputStorageElement=T2_UK_SGrid_RALPP
 outputStorageElement=$4 #the T2 where you want this sample
 version=$5  #a user specified version tag incase you need to re-run, defaults to v1
@@ -22,7 +22,7 @@ dbsUrl="dbs_url=phys03"
 reRECOVersion=`echo $CMSSW_VERSION | sed 's/CMSSW_//g' | sed 's/_//g'`
 
 runEraAndSkim=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "-" '{print $2}'`
-globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
+globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}' | sed 's/_//g'`
 
 conditions=$globalTag
 publishDataname=${runEraAndSkim}_${reRECOVersion}_${conditions}-${version}_RECO
@@ -50,7 +50,7 @@ echo "$datasetPath $nrEvents $nrEventsPerJob $outputPath $outputFile $workingDir
 sed 's|TOSED:DATASETPATH|'$datasetPath'|' crab_base_reco_data.cfg | \
 sed 's|TOSED:LUMISPERJOB|'$nrLumisPerJob'|' | \
 sed 's|TOSED:TOTLUMIS|'$totLumis'|' | \
-sed 's|TOSED:NREVENTS|'$nrEvents'|' | \
+#sed 's|TOSED:NREVENTS|'$nrEvents'|' | \
 sed 's|TOSED:OUTPUTFILE|'$outputFile'|' | \
 sed 's|TOSED:DBSURL|'$dbsUrl'|' | \
 sed 's|TOSED:OUTPUTPATH|'$outputPath'|' | \
