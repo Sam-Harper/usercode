@@ -47,7 +47,8 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.singlePhoFilter = cms.EDFilter("EventListSkimmer",
-                                       filename = cms.string("SHarper/TrigTools/data/singlePhotonNrVertSkimSorted.list")
+                                     #  filename = cms.string("SHarper/TrigTools/data/singlePhotonNrVertSkimSorted.list")
+                                       filename = cms.string("SHarper/TrigTools/data/goodEvents.list")
                                        )
 process.skimP = cms.Path(process.skimHLTFilter*process.singlePhoFilter)    
 process.load('Configuration/EventContent/EventContent_cff')

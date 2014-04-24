@@ -43,7 +43,7 @@ process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(8000)
 )
 
 process.singlePhoFilter = cms.EDFilter("SinglePhoSkimmer",

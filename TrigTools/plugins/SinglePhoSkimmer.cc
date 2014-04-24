@@ -23,6 +23,9 @@ private:
   float minEt_;
   float maxEt_;
 
+  int nrPass_;
+  int nrTot_;
+
 public:
   explicit SinglePhoSkimmer(const edm::ParameterSet&);
   ~SinglePhoSkimmer(){}
@@ -44,6 +47,8 @@ SinglePhoSkimmer::SinglePhoSkimmer(const edm::ParameterSet& iConfig)
   nrEtBins_ = iConfig.getParameter<int>("nrEtBins");
   minEt_ = iConfig.getParameter<double>("minEt");
   maxEt_ = iConfig.getParameter<double>("maxEt");
+  if(preScales_.size()!=static_cast<size_t>(nrEtBins_+2)) std::cout <<"Warnining, input vector size "<<preScales_.size()<<" and nr bins "<<nrEtBins_<<" missmatch "<<std::endl; 
+
   produces<int>();
 }
 
@@ -75,7 +80,8 @@ bool SinglePhoSkimmer::filter(edm::Event& iEvent,const edm::EventSetup& iSetup )
   std::auto_ptr<int> preScalePointer(new int(preScale));
   iEvent.put(preScalePointer);
 
-  return iEvent.id().event()%preScale==0;
+  // if(maxEt!=-1 && iEvent.id().event()%preScale==0) std::cout <<"selectedEvent: "<<iEvent.id().run()<<" "<<iEvent.luminosityBlock()<<" "<<iEvent.id().event()<<std::endl;
+  return maxEt!=-1 && iEvent.id().event()%preScale==0;
 
 }
 
