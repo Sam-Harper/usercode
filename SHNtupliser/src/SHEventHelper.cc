@@ -66,7 +66,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   nrGenPartToStore_ = conf.getParameter<int>("nrGenPartToStore");
 
   std::cout <<"warning, disabling use of HLT debug"<<std::endl;
-  useHLTDebug_=false;
+  //useHLTDebug_=false;
 
   tracklessEleMaker_.setup(conf);
 }
@@ -441,7 +441,8 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
       SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
       shHit.setNrgy(hitIt->energy());
       shHit.setTime(hitIt->time());
-      shHit.setFlag(hitIt->flags());
+      //shHit.setFlag(hitIt->flags());
+      shHit.setFlag(0);//temp fix
       shHit.setFlagBits(getEcalFlagBits_(*hitIt));
       
     }
@@ -453,7 +454,8 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
       SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
       shHit.setNrgy(hitIt->energy());
       shHit.setTime(hitIt->time());  
-      shHit.setFlag(hitIt->flags()); 
+      //shHit.setFlag(hitIt->flags()); 
+      shHit.setFlag(0),
       shHit.setFlagBits(getEcalFlagBits_(*hitIt));
       
     }
