@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-namespace l1slhc{
-  class L1CaloCluster;
+namespace l1t{
+  class EGamma;
 }
 
 class SHL1Cluster : public TObject {
@@ -31,7 +31,7 @@ private:
   int constituents_; //bit 1 = 0,0 bit 2= 0,1, bit 3=1,0, bit 4=1,1
 public:
   SHL1Cluster();
-  SHL1Cluster(const l1slhc::L1CaloCluster& clus);
+  SHL1Cluster(const l1t::EGamma& clus);
   ~SHL1Cluster(){}
 
   int etTS()const{return etTS_;}
