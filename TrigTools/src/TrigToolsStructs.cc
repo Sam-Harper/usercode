@@ -39,20 +39,21 @@ void trigtools::PathData::fill(const std::vector<TLorentzVector>& trigP4s)
   std::sort(etEB.begin(),etEB.end(),EtP4Sorter()); 
   std::sort(etEE.begin(),etEE.end(),EtP4Sorter()); 
   
+  TLorentzVector dummy;
  
 
-  p4First = etAll.size()>=1 ? etAll[etAll.size()-1] : -1;
-  p4Second = etAll.size()>=2 ? etAll[etAll.size()-2] : -1;
-  p4Third = etAll.size()>=3 ? etAll[etAll.size()-3] : -1;
-  p4Fourth = etAll.size()>=4 ? etAll[etAll.size()-4] : -1;
-  p4Fifth = etAll.size()>=5 ? etAll[etAll.size()-5] : -1;
-  p4Sixth = etAll.size()>=6 ? etAll[etAll.size()-6] : -1;
-  p4Seventh = etAll.size()>=7 ? etAll[etAll.size()-7] : -1;
-  p4Eighth = etAll.size()>=8 ? etAll[etAll.size()-8] : -1;
-  p4FirstEB = etEB.size()>=1 ? etEB[etEB.size()-1] : -1;
-  p4SecondEB = etEB.size()>=2 ? etEB[etEB.size()-2] : -1;
-  p4FirstEE = etEE.size()>=1 ? etEE[etEE.size()-1] : -1;
-  p4SecondEE = etEE.size()>=2 ? etEE[etEE.size()-2] : -1;
+  p4First = etAll.size()>=1 ? etAll[etAll.size()-1] : dummy;
+  p4Second = etAll.size()>=2 ? etAll[etAll.size()-2] : dummy;
+  p4Third = etAll.size()>=3 ? etAll[etAll.size()-3] : dummy;
+  p4Fourth = etAll.size()>=4 ? etAll[etAll.size()-4] : dummy;
+  p4Fifth = etAll.size()>=5 ? etAll[etAll.size()-5] : dummy;
+  p4Sixth = etAll.size()>=6 ? etAll[etAll.size()-6] : dummy;
+  p4Seventh = etAll.size()>=7 ? etAll[etAll.size()-7] : dummy;
+  p4Eighth = etAll.size()>=8 ? etAll[etAll.size()-8] : dummy;
+  p4FirstEB = etEB.size()>=1 ? etEB[etEB.size()-1] : dummy;
+  p4SecondEB = etEB.size()>=2 ? etEB[etEB.size()-2] : dummy;
+  p4FirstEE = etEE.size()>=1 ? etEE[etEE.size()-1] : dummy;
+  p4SecondEE = etEE.size()>=2 ? etEE[etEE.size()-2] : dummy;
   
   // std::cout <<"done"<<std::endl;
 

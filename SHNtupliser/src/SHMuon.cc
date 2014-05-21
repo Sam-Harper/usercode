@@ -3,7 +3,7 @@
 ClassImp(SHMuon)
 
 SHMuon::SHMuon():
-  p4_(-999),
+  p4_(-999.,-999.,-999,-999),
   eta_(-999),
   posCharge_(-999),
   type_(-999),
