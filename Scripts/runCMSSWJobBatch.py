@@ -99,6 +99,7 @@ parser.add_argument('--input',help='input file or file pattern to run over',requ
 parser.add_argument('--output',help='output filebase name',required=True)
 parser.add_argument('--outputDir',help='ouput dir (under scratch/mc/CMSSWVersion/<outputdir>',required=True)
 parser.add_argument('--nrJobs',help='number of jobs to split into (can not be larger than #files to run over)',default=1,type=int)
+
 args = parser.parse_args()
 print args.config
 
@@ -146,7 +147,7 @@ for jobNr in range(0,args.nrJobs):
     batchFile=open(batchSubmitFile,'a')
     batchFile.write("#job nr "+str(jobNr)+"\n")
     batchFile.write("cd "+batchJobDirAndPath+"/src\n");
-    batchFile.write("echo $PWD")
+    batchFile.write("echo $PWD\n")
     batchFile.write("cmsenv\n eval `scramv1 runtime -sh` \n");
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
@@ -157,10 +158,11 @@ for jobNr in range(0,args.nrJobs):
     batchFile.write(cmd)
     batchFile.close()
     #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
-    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod")
-    os.system("chmod +x "+batchSubmitFile);
-    cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
-    print cmd
-    os.system(cmd)
+    os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
+    os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
+    #os.system("chmod +x "+batchSubmitFile);
+    #cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
+   ## print cmd
+   ## os.system(cmd)
     #os.system("./"+batchSubmitFile+" > "+fullLogDir+"/job_"+str(jobNr)+".log &")
     #os.remove(batchSubmitFile)        
