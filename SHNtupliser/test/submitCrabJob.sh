@@ -13,7 +13,7 @@ baseCfg=$8
 workingDir=$9
 
 #dbsUrl="dbs_url=http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_03/servlet/DBSServlet"
-dbsUrl="dbs_url=phys03"
+#dbsUrl="dbs_url=phys03"
 
 scheduler=glitecoll
 #workingDir=`echo $datasetPath | awk -F "/" '{print $2"_"$3}' `.`date +%y%m%d`_`date +%H%M%S`
