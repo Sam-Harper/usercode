@@ -80,7 +80,11 @@ if not isCrabJob:
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'POSTLS170_V4::All', '')
+
+if isCrabJob:
+    process.GlobalTag = GlobalTag(process.GlobalTag, 'TOSED:GLOBALTAG::All', '')
+else:
+    process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2]+"::All", '')  
 
 process.mcFilter = cms.EDFilter("MCTruthFilter",
                                    genParticlesTag = cms.InputTag("genParticles"),

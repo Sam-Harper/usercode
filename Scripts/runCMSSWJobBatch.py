@@ -139,7 +139,7 @@ copyReleaseFiles(batchJobDirAndPath)
 
 for jobNr in range(0,args.nrJobs):
     print jobNr
-    batchSubmitFile="qsub_batch_"+str(jobNr)+".sh"
+    batchSubmitFile="qsub_batch2_"+str(jobNr)+".sh"
     outputFilename = args.output.split(".root")[0]+"_"+str(jobNr+1)+".root"
     shutil.copyfile(batchSubmitBaseFile,batchSubmitFile)
     shutil.copyfile(args.config,batchJobDirAndPath+"/src/cmssw.py")
@@ -151,11 +151,18 @@ for jobNr in range(0,args.nrJobs):
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
         cmd+=" "+filename
-    cmd+=" $TMPDIR/"+outputFilename+"\n"
-    cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
+    cmd+=" "+fullOutputDir+"/"+outputFilename
+   # cmd+=" $TMPDIR/"+outputFilename+"\n"
+   # cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
     batchFile.write(cmd)
     batchFile.close()
-    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=8:00:00")
+
+    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
+    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod")
     os.system("chmod +x "+batchSubmitFile);
-    os.system("./"+batchSubmitFile+" >> "+fullLogDir+"/job_"+str(jobNr)+".log &")
+    cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
+    print cmd
+    os.system(cmd)
+    #os.system("./"+batchSubmitFile+" > "+fullLogDir+"/job_"+str(jobNr)+".log &")
+
     #os.remove(batchSubmitFile)        

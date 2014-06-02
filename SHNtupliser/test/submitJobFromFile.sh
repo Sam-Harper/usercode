@@ -18,31 +18,34 @@ nrEvents=`echo $line | awk -F "&" '{print $2}'`
 dataFormat=`echo $datasetPath | awk -F "/" '{print $NF}'`
 
 weight=`echo $line | awk -F "&" '{print $4*$5}'`
-cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}'`
-outputFile=${dataset}_ntuples_${cmsswVersion}_SHv24B.root
+cmsswVersion=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "-" '{print $2"-"$3}'`
+outputFile=${dataset}_ntuples_${cmsswVersion}_SHv24D.root
 
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-#outputPath=534/v24B/${dataFormat}/${cmsswVersion}/${dataset}
-outputPath=612SLHC2/SHL1v1/NoTowerThres/${cmsswVersion}/${dataset}/
+outputPath=700/v24D/${dataFormat}/${cmsswVersion}/${dataset}
+#outputPath=612SLHC2/SHL1v1/NoTowerThres/${cmsswVersion}/${dataset}/
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
 
 #baseCfg="shNtupliser_mc.py"
-baseCfg="shL1Ntupliser_mc.py"
+baseCfg="shNtupliser_mc_basic.py"
 #baseCfg="runSHNtupliser_base.cfg"
 
 #nrJobs=`echo $nrEvents/$nrEventsPerJob + 1 | bc`
 nrJobs=`echo $line | awk -F "&" '{print $7}'`
 datasetCode=`echo $line | awk -F "&" '{print $6}'`
 
+#echo out: $outputPath  
+#echo sub: $subDirs
 
-subDirs=`echo $outputPath | sed 's|/|_|g'`
+
+subDirs=`echo $outputPath | awk -F "/" '{for(i=1;i<NF-1;i++) printf("%s/",$i);print $(NF-1)}' | sed 's|/|_|g'` 
 workingDir=`echo $datasetPath | awk -F "/" '{print "crabJob_MC_"$2}' `.${subDirs}.`date +%y%m%d`_`date +%H%M%S`
 #workingDir=`echo $datasetPath | awk -F "/" '{print "crabJob_MC_"$2}' `.`date +%y%m%d`_`date +%H%M%S`
 
-
+ echo sub: $subDirs
 if [[ "$live" == "ON" ]] ; then
 echo about to submit for real ./submitCrabJob.sh $datasetPath $nrEvents $nrJobs $outputFile $outputPath $datasetCode $weight $baseCfg $workinDir
 sleep 5s
