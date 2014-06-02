@@ -66,7 +66,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   hltTag_ = conf.getParameter<std::string>("hltProcName");
   
   nrGenPartToStore_ = conf.getParameter<int>("nrGenPartToStore");
-  noFracShowerShape = conf.getParameter<bool>("noFracShowerShape");
+  noFracShowerShape_ = conf.getParameter<bool>("noFracShowerShape");
   
   std::cout <<"warning, disabling use of HLT debug"<<std::endl;
   //useHLTDebug_=false;
@@ -254,8 +254,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   }
 
   //redoing shower shape variables
-  if(noFracShowerShape) fixClusterShape(*(gsfEle.superCluster()->seed()),heepEvent,*shEle);
-  
+  if(noFracShowerShape_) fixClusterShape(*(gsfEle.superCluster()->seed()),heepEvent,*shEle);
   
   //std::cout <<"ele "<<gsfEle.et()<<" eta "<<gsfEle.eta()<<" miss hits "<<gsfEle.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()<<" covDist "<<gsfEle.convDist()<<" dcot "<<gsfEle.convDcot()<<" radius "<<gsfEle.convRadius()<<std::endl;
 
@@ -282,7 +281,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 {
   //std::cout <<"adding photon"<<std::endl;
   shEvent.addElectron(photon,shEvent.getCaloHits());
-  if(noFracShowerShape){
+  if(noFracShowerShape_){
     SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
     fixClusterShape(*(photon.superCluster()->seed()),heepEvent,*shEle);
   }
