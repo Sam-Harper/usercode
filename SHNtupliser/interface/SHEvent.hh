@@ -19,6 +19,7 @@
 #include "SHarper/SHNtupliser/interface/SHCaloTowerContainer.hh"
 //#include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
+#include "SHarper/SHNtupliser/interface/SHPFClusterContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 #include "SHarper/SHNtupliser/interface/SHVertex.hh"
 
@@ -106,7 +107,8 @@ class SHEvent : public TObject {
   mutable int nrTruePUInteractions_; //!
 
   SHPFCandContainer pfCands_; //! like calo towers, this is stored on a seperate branch
-  
+
+  SHPFClusterContainer pfClusters_; //! like pf cands stored on a seperate branch
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -244,7 +246,9 @@ class SHEvent : public TObject {
   const SHCaloTowerContainer& getCaloTowers()const{return caloTowers_;}
   SHCaloTowerContainer& getCaloTowers(){return caloTowers_;}
   const SHPFCandContainer& getPFCands()const{return pfCands_;}
-  SHPFCandContainer& getPFCands(){return pfCands_;}
+  SHPFCandContainer& getPFCands(){return pfCands_;} 
+  const SHPFClusterContainer& getPFClusters()const{return pfClusters_;}
+  SHPFClusterContainer& getPFClusters(){return pfClusters_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   TClonesArray& getPreShowerClusters(){return preShowerClusArray_;}
   double genEventPtHat()const{return genEventPtHat_;}

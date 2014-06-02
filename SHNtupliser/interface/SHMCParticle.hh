@@ -45,8 +45,9 @@ public:
   const TLorentzVector& p4()const{return fourMomentum_;}
   double nrgy()const{return fourMomentum_.E();}
   double mass()const{return fourMomentum_.Mag();}
- 
-
+  const TVector3& pos()const{return pos_;}
+  double detEta()const;
+  
   ClassDef(SHMCParticle,2)
 
 };

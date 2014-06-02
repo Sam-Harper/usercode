@@ -16,7 +16,10 @@ SHL1Cluster::SHL1Cluster():
   isIsolated_(false),
   p4_(),
   leadTower_(-1),
-  constituents_(0)
+  constituents_(0),
+  hademTS_(0),
+  clusterFlags_(0),
+  etSeedTS_(0)
 {
 
 }
@@ -121,3 +124,23 @@ float SHL1Cluster::l1ClusCalibrationOld(float eta)
 
 }
 
+float SHL1Cluster::eta()const
+{
+  const float towerEtas[29] = {0,.087,0.174,0.261,0.348,0.435,0.522,0.609,0.696,0.783,0.879,0.957,1.044,1.131,1.218,1.305,1.392,1.479,1.566,1.653,1.740,1.830,1.930,2.0432,2.1732,2.322,2.5,2.650,3.000};
+  
+  float eta = (towerEtas[abs(iEta())]+towerEtas[abs(iEta())-1])/2;
+  float sign = iEta()>0 ? 1 : -1;
+  return eta*sign;
+}
+
+float SHL1Cluster::phi()const
+{
+  return (iPhi()-0.5)*5/180*3.14;
+
+}
+
+const TLorentzVector& SHL1Cluster::p4()const
+{
+  p4Temp_.SetPtEtaPhiM(etTS()*trigScale(),eta(),phi(),0);
+  return p4Temp_;
+}

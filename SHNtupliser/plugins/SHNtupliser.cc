@@ -41,6 +41,9 @@ void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& 
 void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits);
 void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,const std::vector<reco::PFCandidate>& pfCands,const reco::VertexRef mainVtx,const edm::Handle< reco::VertexCollection > vertices);
+void fillPFClustersECAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE);
+void fillPFClustersHCAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters);
+int getSCSeedCrysId(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters);
 reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle< reco::VertexCollection > verticesColl);
 
 void SHNtupliser::initSHEvent()
@@ -60,7 +63,7 @@ void setTrigObsToNewNrgy(const reco::SuperClusterCollection& ebSCs,const reco::S
 
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
-  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL)
+  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL),shPFClusters_(NULL)
 {
   evtHelper_.setup(iPara);
   shEvtHelper_.setup(iPara);
@@ -86,7 +89,8 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   secondHLTTag_ = iPara.getParameter<std::string>("secondHLTTag");
   addCaloTowers_ = iPara.getParameter<bool>("addCaloTowers");
   addCaloHits_ = iPara.getParameter<bool>("addCaloHits");
-  addPFCands_=iPara.getParameter<bool>("addPFCands");
+  addPFCands_=iPara.getParameter<bool>("addPFCands"); 
+  addPFClusters_=iPara.getParameter<bool>("addPFClusters");
   addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
   addPreShowerClusters_ = false;
   writePDFInfo_ = iPara.getParameter<bool>("writePDFInfo");
@@ -103,6 +107,7 @@ SHNtupliser::~SHNtupliser()
   if(shTrigObjs_) delete shTrigObjs_;
   if(puSummary_) delete puSummary_;
   if(shPFCands_) delete shPFCands_;
+  if(shPFClusters_) delete shPFClusters_;
 }
 
 void SHNtupliser::beginJob()
@@ -144,8 +149,12 @@ void SHNtupliser::beginJob()
   
 
   if(addPFCands_){ 
-    shPFCands_= new SHPFCandContainer;
+    shPFCands_ = new SHPFCandContainer;
     evtTree_->Branch("PFCandsBranch","SHPFCandContainer",&shPFCands_,32000,splitLevel);
+  }
+  if(addPFClusters_){ 
+    shPFClusters_= new SHPFClusterContainer;
+    evtTree_->Branch("PFClustersBranch","SHPFClusterContainer",&shPFClusters_,32000,splitLevel);
   }
   if(compTwoMenus_){
     shEvt2ndTrig_ = new SHEvent;
@@ -219,12 +228,18 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
 
   if(addPFCands_) shPFCands_->clear();
+  if(addPFClusters_) shPFClusters_->clear();
   // std::cout <<"adding PF Cands "<<addPFCands_<<" is valid "<<heepEvt_.handles().pfCandidate.isValid()<<std::endl;
   if(heepEvt_.handles().vertices.isValid()){
     reco::VertexRef mainVtx(heepEvt_.handles().vertices,0);
     if(addPFCands_ && heepEvt_.handles().pfCandidate.isValid()) fillPFCands(shEvt_,0.5,*shPFCands_,heepEvt_.pfCands(),mainVtx,heepEvt_.handles().vertices);
   }
-  
+
+  if(addPFClusters_ && heepEvt_.handles().pfClustersECAL.isValid() && heepEvt_.handles().pfClustersHCAL.isValid() &&
+     heepEvt_.handles().superClusEB.isValid() && heepEvt_.handles().superClusEE.isValid()){
+    fillPFClustersECAL(shEvt_,0.5,*shPFClusters_,heepEvt_.pfClustersECAL(),heepEvt_.superClustersEB(),heepEvt_.superClustersEE());
+    fillPFClustersHCAL(shEvt_,0.5,*shPFClusters_,heepEvt_.pfClustersHCAL());
+  }
 
   // std::cout <<"made even "<<std::endl;
   if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
@@ -643,6 +658,84 @@ void setTrigObsToNewNrgy(const reco::SuperClusterCollection& ebSCs,const reco::S
     //std::cout <<"trigObj "<<trigNr<<" id "<<trigObjs[trigNr].id()<<" et "<<trigObjs[trigNr].pt()<<std::endl;
   }//end loop over 
 }
+
+void fillPFClustersECAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,
+		    const std::vector<reco::PFCluster>& pfClusters,
+		    const std::vector<reco::SuperCluster>& superClustersEB,const std::vector<reco::SuperCluster>& superClustersEE)
+{
+  //  std::cout <<"filling candidates "<<std::endl;
+
+  const double maxDR2 = maxDR*maxDR;
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    if(ele->et()>20){
+      eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+    }
+  }
+
+  for(size_t clusNr=0;clusNr<pfClusters.size();clusNr++){
+    const reco::PFCluster& pfCluster = pfClusters[clusNr];
+   
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       pfCluster.eta(),pfCluster.phi())<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+
+    if(accept){
+      const std::vector<reco::SuperCluster>& superClusters = pfCluster.caloID().detector(reco::CaloID::DET_ECAL_BARREL) ? superClustersEB : superClustersEE;
+      int scSeedCrysId=getSCSeedCrysId(pfCluster.seed().rawId(),superClusters);
+      shPFClusters.addECALCluster(SHPFCluster(pfCluster,scSeedCrysId));
+    } 
+  }
+}
+void fillPFClustersHCAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)
+{
+  //  std::cout <<"filling candidates "<<std::endl;
+
+  const double maxDR2 = maxDR*maxDR;
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    if(ele->et()>20){
+      eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+    }
+  }
+
+  for(size_t clusNr=0;clusNr<pfClusters.size();clusNr++){
+    const reco::PFCluster& pfCluster = pfClusters[clusNr];
+
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       pfCluster.eta(),pfCluster.phi())<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+
+    if(accept){
+      shPFClusters.addHCALCluster(SHPFCluster(pfCluster,0));
+    } 
+  }
+}
+
+int getSCSeedCrysId(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)
+{
+  for(size_t scNr=0;scNr<superClusters.size();scNr++){
+    const reco::SuperCluster& sc = superClusters[scNr];
+    for(reco::CaloCluster_iterator clusIt  = sc.clustersBegin();clusIt!=sc.clustersEnd();++clusIt){
+      if((*clusIt)->seed().rawId()==pfSeedId) return sc.seed()->seed().rawId();
+    }
+  }
+  return 0;
+}
+   
+    //std::cout <<"cand nr "<<candNr<<" / "<<pfCands.size()<<" accept "<<std::endl;
 
 
 

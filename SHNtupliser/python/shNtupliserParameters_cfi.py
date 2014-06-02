@@ -17,6 +17,7 @@ shNtupPara = cms.PSet(
     addCaloHits =cms.bool(True),
     addIsolTrks =cms.bool(True),
     addPFCands = cms.bool(False),
+    addPFClusters = cms.bool(False),
     writePDFInfo = cms.bool(False),
     fillFromGsfEle = cms.bool(True),
     minEtToPromoteSC = cms.double(-1.),
@@ -56,5 +57,5 @@ shNtupPara = cms.PSet(
                              secondHLTTag = cms.string(""),
                              
                            
-                             
+    noFracShowerShape=cms.bool(True),
     )

@@ -45,6 +45,7 @@ private:
   bool addMuons_;
   bool applyMuonId_;
   bool fillFromGsfEle_;
+  bool noFracShowerShape_;
 
   //temp variables for hlt debug hack
   std::string hltTag_;

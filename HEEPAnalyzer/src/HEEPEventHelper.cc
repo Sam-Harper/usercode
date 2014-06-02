@@ -56,6 +56,8 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   pfChargedIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfChargedIsoValEleMapTag");
   pfPhotonIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfPhotonIsoValEleMapTag"); 
   pfNeutralIsoValEleMapTag_ = conf.getParameter<edm::InputTag>("pfNeutralIsoValEleMapTag"); 
+  pfClustersECALTag_ = conf.getParameter<edm::InputTag>("pfClustersECALTag");
+  pfClustersHCALTag_ = conf.getParameter<edm::InputTag>("pfClustersHCALTag");
 
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -127,6 +129,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(pfChargedIsoValEleMapTag_,handles.pfChargedIsoValEleMap);
   event.getByLabel(pfPhotonIsoValEleMapTag_,handles.pfPhotonIsoValEleMap);
   event.getByLabel(pfNeutralIsoValEleMapTag_,handles.pfNeutralIsoValEleMap);
+  event.getByLabel(pfClustersECALTag_,handles.pfClustersECAL);
+  event.getByLabel(pfClustersHCALTag_,handles.pfClustersHCAL);
   //event.getByType(handles.beamSpot);
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);

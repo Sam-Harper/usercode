@@ -104,7 +104,7 @@ print args.config
 
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
-baseOutputDir="/opt/ppd/scratch/harper/mc"
+baseOutputDir="/opt/ppd/month/harper/mc"
 batchJobBaseDir="/opt/ppd/scratch/harper/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
@@ -116,7 +116,7 @@ batchSubmitFile="qsub_autoGen.sh"
 print "config file ",args.config," base batch file ",batchSubmitBaseFile
     
 fullOutputDir=baseOutputDir+"/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
-fullLogDir="/opt/ppd/scratch/harper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
+fullLogDir="/opt/ppd/month/harper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
 if os.path.exists(fullOutputDir):
     print "output directory ",fullOutputDir," exists, aborting "
     exit(1)
@@ -155,5 +155,7 @@ for jobNr in range(0,args.nrJobs):
     cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
     batchFile.write(cmd)
     batchFile.close()
-    os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod")
-    os.remove(batchSubmitFile)        
+    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=8:00:00")
+    os.system("chmod +x "+batchSubmitFile);
+    os.system("./"+batchSubmitFile+" >> "+fullLogDir+"/job_"+str(jobNr)+".log &")
+    #os.remove(batchSubmitFile)        

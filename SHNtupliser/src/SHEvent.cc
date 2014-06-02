@@ -424,7 +424,7 @@ bool SHEvent::passTrig(const std::string& trigName,double eta,double phi)const
 {
   for(int trigNr=0;trigNr<nrTrigs();trigNr++){
     const SHTrigInfo* trig= getTrigInfo(trigNr);
-    if(trig->trigId()==-1 && trigName==trig->name()) {
+    if( (trig->trigId()==-1 || trig->trigId()==2) && trigName==trig->name()) {
       //  std::cout <<"found trig "<<trigName<<" nr pass "<<trig->nrPass()<<" eta "<<eta<<" phi "<<phi<<" pass "<<trig->passTrig(eta,phi)<<std::endl;
       return trig->passTrig(eta,phi);
     }
