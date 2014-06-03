@@ -948,7 +948,9 @@ int SHEventHelper::getVertexNrClosestZ(const reco::TrackBase& track,const std::v
   }
   return bestVertexNr;
 }
-
+//dummy function for releases without this function
+void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& heepEvent,SHElectron& ele){}
+/*
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
@@ -1022,5 +1024,5 @@ void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& hee
   ele.setShowerShape(sigmaEtaEta,sigmaIEtaIEta,e1x5,e2x5Max,e5x5);
   
 }
-
+*/
 
