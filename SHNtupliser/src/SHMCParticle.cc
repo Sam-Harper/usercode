@@ -1,6 +1,6 @@
 
 #include "SHarper/SHNtupliser/interface/SHMCParticle.hh"
-
+#include "SHarper/SHNtupliser/interface/MathFuncs.hh"
 #include<iomanip>
 #include<iostream>
 
@@ -57,6 +57,11 @@ SHMCParticle::SHMCParticle(const SHMCParticle& rhs):
   pos_(rhs.pos_)
 {
 
+}
+
+double SHMCParticle::detEta()const
+{
+  return MathFuncs::detEtaFromEvnt(p4().Eta(),pos().Z());
 }
 
 std::ostream& SHMCParticle::print(std::ostream& output)const
