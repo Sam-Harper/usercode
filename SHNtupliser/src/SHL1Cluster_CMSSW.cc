@@ -12,7 +12,7 @@ SHL1Cluster::SHL1Cluster(const l1t::EGamma& clus):
   isolEmEtTS_(clus.hwIso()),isolHadEtTS_(0),
   trigScale_(2), //best guess
   fgVeto_(0),
-  isIsolated_(0),
+  isIsolated_(clus.hwIso()),
   p4_(),
   leadTower_(-1),
   constituents_(0)
@@ -32,3 +32,4 @@ SHL1Cluster::SHL1Cluster(const l1t::EGamma& clus)
   std::cout <<"Error, disabled for this build, clusters are not being filled"<<std::endl;
 }
 #endif
+
