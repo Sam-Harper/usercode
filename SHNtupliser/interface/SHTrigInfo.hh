@@ -41,6 +41,8 @@ public:
   const std::string& name()const{return trigName_;}
   const std::string& lastFilter()const{return lastFilterName_;}
 
+  float maxEtObj()const;
+
   //trigger pass functions
 
   //just asks is there an object which has passed the trigger in the event

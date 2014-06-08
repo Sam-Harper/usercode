@@ -73,6 +73,8 @@ public:
   TVector3 cell3Vec()const{return (rearPos_-pos_).Unit();}
   float cellOPTheta()const;
   const std::vector<TVector3>& corners()const{return corners_;}
+  float frontArea()const;
+  const TVector3& rearPos()const{return rearPos_;}
 
 private:
   void checkAndSetSinTheta_()const{if(detIdParityCheck_!=detId_) {sinTheta_=pos().Pt()/pos().Mag();detIdParityCheck_=detId_;}}

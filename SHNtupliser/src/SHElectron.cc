@@ -398,3 +398,18 @@ void SHElectron::setNewNrgy(float newNrgy)
   hademDepth2_*=oldNrgy/newNrgy;
 
 }
+
+
+void SHElectron::setShowerShape(float sigmaEtaEta,float sigmaIEtaIEta,float e1x5,float e2x5Max,float e5x5)
+{
+  sigmaEtaEta_=sigmaEtaEta;
+  sigmaIEtaIEta_=sigmaIEtaIEta;
+  if(e5x5!=0){
+    e1x5Over5x5_=e1x5/e5x5;
+    e2x5Over5x5_=e2x5Max/e5x5;
+  }else{
+    e1x5Over5x5_=0;
+    e2x5Over5x5_=0;
+  }
+  e5x5_=e5x5;
+}

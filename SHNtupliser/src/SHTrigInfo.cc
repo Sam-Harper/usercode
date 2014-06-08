@@ -35,6 +35,18 @@ TLorentzVector SHTrigInfo::getTrigObj(double eta,double phi)const
   return returnP4;
 }
 
+float SHTrigInfo::maxEtObj()const
+{
+  float maxEt=0;
+  for(int objNr=0;objNr<nrPass();objNr++){
+    //   std::cout <<"objNr "<<objNr<<" / "<<nrPass()<<std::endl;
+    float et = getObjP4(objNr).Et();
+    if(et>maxEt) maxEt = et;
+  }
+  return maxEt;
+}
+
+
 //l1 triggers have discrete eta/phi, need to special matching
 //stolen from HLTEgammaL1MatchFilterRegional
 bool SHTrigInfo::passL1Trig(double eta,double phi,TLorentzVector& matchedP4)const
