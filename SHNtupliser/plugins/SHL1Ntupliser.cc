@@ -6,6 +6,7 @@
 #define SLHCBUILD 1
 #if SLHCBUILD
 #include "DataFormats/L1Trigger/interface/EGamma.h"
+#include "DataFormats/L1TCalorimeter/interface/CaloCluster.h"
 #include "DataFormats/L1TCalorimeter/interface/CaloTower.h"
 
 #endif
@@ -14,7 +15,7 @@
 
 //little hacky naughty temp function
 void addL1Particles(const edm::InputTag& tag,const std::string& l1Name,const edm::Event& iEvent,SHEvent* shEvent);
-
+const l1t::CaloCluster* getEgammaCaloCluster(const l1t::EGamma& egamma,edm::Handle<l1t::CaloClusterBxCollection> l1CaloClusters);
 
 void SHL1Ntupliser::initSHEvent()
 {
@@ -43,16 +44,20 @@ void SHL1Ntupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSet
   fillSHEvent(iEvent,iSetup);
 
   #if SLHCBUILD
-  edm::Handle<l1t::EGammaBxCollection> l1CaloClusters;
+  edm::Handle<l1t::EGammaBxCollection> l1Egammas;
+  iEvent.getByLabel(l1CaloClustersTag_,l1Egammas);
+
+  edm::Handle<l1t::CaloClusterBxCollection> l1CaloClusters;
   iEvent.getByLabel(l1CaloClustersTag_,l1CaloClusters);
 
   edm::Handle<l1t::CaloTowerBxCollection> l1CaloTowers;
   iEvent.getByLabel(l1CaloTowersTag_,l1CaloTowers);
 
-  if(l1CaloClusters.isValid()){
-    typedef l1t::EGammaBxCollection::const_iterator ConstClusIt;
-    for(ConstClusIt clusIt = l1CaloClusters->begin(0);clusIt!=l1CaloClusters->end(0);++clusIt){
-      shL1Evt_->addL1Clus(SHL1Cluster(*clusIt));
+  if(l1Egammas.isValid()){
+    for(auto egammaIt = l1Egammas->begin(0);egammaIt!=l1Egammas->end(0);++egammaIt){
+      const l1t::CaloCluster* caloClus = getEgammaCaloCluster(*egammaIt,l1CaloClusters);
+      if(caloClus) shL1Evt_->addL1Clus(SHL1Cluster(*egammaIt,*caloClus));
+      else shL1Evt_->addL1Clus(SHL1Cluster(*egammaIt));
     }
   }
   
@@ -70,16 +75,28 @@ void SHL1Ntupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSet
   shL1Evt_->addL1CaloTowers(towers);
   #endif
   
-  // edm::InputTag l1UCT2015L1EGIsoTag("uct2015L1ExtraParticles","Isolated");
-  //edm::InputTag l1UCT2015L1EGNonIsoTag("uct2015L1ExtraParticles","NonIsolated");
+  edm::InputTag l1UCT2015L1EGIsoTag("stage1L1extraParticles","Isolated");
+  edm::InputTag l1UCT2015L1EGNonIsoTag("stage1L1extraParticles","NonIsolated");
   //edm::InputTag l1UCT2015L1EGRelaxedTag("uct2015L1ExtraParticles","Relaxed"); 
 
-  //addL1Particles(l1UCT2015L1EGIsoTag,"l1UTC2015Iso",iEvent,shL1Evt_);
-  //addL1Particles(l1UCT2015L1EGNonIsoTag,"l1UTC2015NonIso",iEvent,shL1Evt_);
+  addL1Particles(l1UCT2015L1EGIsoTag,"caloStage1Iso",iEvent,shL1Evt_);
+  addL1Particles(l1UCT2015L1EGNonIsoTag,"caloStage1NonIso",iEvent,shL1Evt_);
   //addL1Particles(l1UCT2015L1EGRelaxedTag,"l1UTC2015Relaxed",iEvent,shL1Evt_);
 
   fillTree();
 }
+const l1t::CaloCluster* getEgammaCaloCluster(const l1t::EGamma& egamma,edm::Handle<l1t::CaloClusterBxCollection> l1CaloClusters)
+{
+  if(l1CaloClusters.isValid()){
+    for(auto clusIt = l1CaloClusters->begin(0);clusIt!=l1CaloClusters->end(0);++clusIt){
+      if(egamma.hwEta()==clusIt->hwEta() && egamma.hwPhi()==clusIt->hwPhi() && egamma.hwPt()==clusIt->hwPt()){
+	return &(*clusIt);
+      }
+    }
+  }
+  return 0;
+}
+       
 
 void addL1Particles(const edm::InputTag& tag,const std::string& l1Name,const edm::Event& iEvent,SHEvent* shEvent)
 {
@@ -93,12 +110,10 @@ void addL1Particles(const edm::InputTag& tag,const std::string& l1Name,const edm
       p4.SetPtEtaPhiM(egs[egNr].pt(),egs[egNr].eta(),egs[egNr].phi(),egs[egNr].mass());
       trigInfo.addObj(p4);
     }
+    shEvent->addTrigInfo(trigInfo);
   }
 }
   
-
-
-
 
 
 //define this as a plug-in
