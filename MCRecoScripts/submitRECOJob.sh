@@ -14,25 +14,26 @@ if [ -z "$version" ];then
 fi
 
 #these are the identifiers of the conditions and campaign
-config=reco_700_POSTLS1.py
+config=reco_710_POSTLS1.py
 
 
-reRECOVersion=EGM700
+reRECOVersion=EGM710
+datasetTIER=AOD
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "_" '{print $2}'`
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
 then 
-globalTag=POSTLS170_V3
+globalTag=POSTLS171_V11
 elif [[ $pileUp == *bx50 ]]
 then
-globalTag=POSTLS170_V4
+globalTag=POSTLS171_V12
 else 
 echo "pile up senario $pileUp, not recognised, cant determin global tag"
 exit
 fi
 
 conditions="${pileUp}_$globalTag"
-publishDataname=${reRECOVersion}_${conditions}-${version}
+publishDataname=${reRECOVersion}_${conditions}_${datasetTIER}-${version}
 dbsUrlForPub="https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
 
 echo $conditions
