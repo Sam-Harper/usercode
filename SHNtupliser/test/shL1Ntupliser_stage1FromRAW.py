@@ -44,9 +44,14 @@ process.source = cms.Source("PoolSource",
 for i in range(2,len(sys.argv)-1):
     print filePrefex+sys.argv[i]
     process.source.fileNames.extend([filePrefex+sys.argv[i],])
+process.options = cms.untracked.PSet(
 
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) 
+)
 
+
+process.options = cms.untracked.PSet(
+
+)
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
@@ -72,22 +77,22 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-#process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
-process.GlobalTag = GlobalTag(process.GlobalTag, 'POSTLS162_V2::All', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
+
 
 # to get input digis
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 
 # upgrade calo stage 1
-process.load('L1Trigger.L1TCalorimeter.L1TCaloStage2_PPFromRaw_cff')
+process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
 
 
 from SHarper.HEEPAnalyzer.HEEPEventParameters_cfi import *
 from SHarper.SHNtupliser.shNtupliserParameters_cfi import *
 
 process.shNtupliser = cms.EDAnalyzer("SHL1Ntupliser", heepEventPara,shNtupPara,
-                                     l1CaloClustersTag = cms.InputTag("caloStage2Digis"),
-                                     l1CaloTowersTag = cms.InputTag("caloStage2Digis")
+                                     l1CaloClustersTag = cms.InputTag("caloStage1FinalDigis"),
+                                     l1CaloTowersTag = cms.InputTag("caloStage1Digis")
    
 )
 process.shNtupliser.nrGenPartToStore =cms.int32(-1)
@@ -146,8 +151,8 @@ process.mcFilter = cms.EDFilter("MCTruthFilter",
 process.L1simulation_step = cms.Path(
     process.ecalDigis
     +process.hcalDigis
-    +process.L1TCaloStage2_PPFromRaw
- #   +process.stage1L1extraParticles
+    +process.L1TCaloStage1_PPFromRaw
+    +process.stage1L1extraParticles
     +process.shNtupliser
 )
 
