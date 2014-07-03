@@ -180,6 +180,7 @@ private:
   //accessors
   void setIsConversion(float isCon){dCotTheta_=isCon;}
   void setConvInfo(float iDist,float iDcot){dCotTheta_=iDcot;dist_=iDist;}
+  void setShowerShape(float sigmaEtaEta,float sigmaIEtaIEta,float e1x5,float e2x5Max,float e5x5);
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
   //have any seed/super clusters and want those calls to degrade gracefully

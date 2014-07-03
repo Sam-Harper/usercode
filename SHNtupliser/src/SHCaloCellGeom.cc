@@ -99,6 +99,14 @@ TVector3 SHCaloCellGeom::pos(float depth)const
 
 }
 
+float SHCaloCellGeom::frontArea()const
+{
+  float dEta = fabs(corners_[0].Eta()-corners_[2].Eta());
+  float dPhi = fabs(corners_[0].Phi()-corners_[2].Phi());
+
+  return dEta*dPhi;
+}
+
 float SHCaloCellGeom::cellOPTheta()const
 {
   double posT = pos_.Pt();

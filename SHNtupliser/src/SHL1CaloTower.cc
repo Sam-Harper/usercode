@@ -12,5 +12,5 @@ ClassImp(SHL1CaloTower)
     hcalFG_(iHCALFG),
     trigScale_(iTrigScale)
 {
-  
+
 }
