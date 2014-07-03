@@ -17,9 +17,10 @@ fi
 config=reco_710_POSTLS1.py
 
 
-reRECOVersion=EGM710
+pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "_" '{print $3}'`
+timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
+reRECOVersion="EGM710${timing}"
 datasetTIER=AOD
-pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "_" '{print $2}'`
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
 then 
@@ -36,7 +37,7 @@ conditions="${pileUp}_$globalTag"
 publishDataname=${reRECOVersion}_${conditions}_${datasetTIER}-${version}
 dbsUrlForPub="https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet"
 
-echo $conditions
+echo "config: $config reRECOVersion: $reRECOVersion timing: $timing conditions: $conditions"
 
 #allows us to publish the data and copy to T2
 publishData=1
@@ -75,6 +76,14 @@ sed 's|isCrabJob=False|isCrabJob=True|'   > cmssw_autoGen.py
 
 
 crab -create -cfg crab_autoGen.cfg
-crab -c $workingDir -submit
+
+exit
+crab -c $workingDir -submit 1-500
+crab -c $workingDir -submit 501-1000
+crab -c $workingDir -submit 1001-1500
+crab -c $workingDir -submit 1501-2000
+crab -c $workingDir -submit 2001-2500
+crab -c $workingDir -submit 2501-3000
+crab -c $workingDir -submit 3001-3500
 
  
