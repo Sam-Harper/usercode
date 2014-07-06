@@ -23,7 +23,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(200)
 )
 
 import sys
@@ -52,9 +52,8 @@ if not isCrabJob:
     
     
 
-process.options = cms.untracked.PSet(
+process.options = cms.untracked.PSet(wantSummary= cms.untracked.bool(True))
 
-)
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
@@ -166,6 +165,8 @@ from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn
 
 #call to customisation function setCrossingFrameOn imported from SimGeneral.MixingModule.fullMixCustomize_cff
 process = setCrossingFrameOn(process)
+
+print process.particleFlowClusterECAL.inputECAL
 
 # End of customisation functions
 if process.particleFlowClusterECAL.inputECAL.getModuleLabel()=="particleFlowClusterECALWithTimeSelected":
