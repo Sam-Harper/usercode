@@ -14,12 +14,22 @@ if [ -z "$version" ];then
 fi
 
 #these are the identifiers of the conditions and campaign
-config=reco_710_POSTLS1.py
+config=reco_710_POSTLS1
 
+datasetName=`echo $datasetPath | awk -F "/" '{print $2}'`
+puIndex=3;
+if [[ $datasetName == DYJetsToLL* ]]
+then
+echo "DYJets detected"
+puIndex=2
+config=${config}_DYToEEFilter.py
+else
+config=${config}.py
+fi
 
-pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -F "_" '{print $3}'`
+pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
 timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
-reRECOVersion="EGM710${timing}"
+reRECOVersion="EGM711${timing}"
 datasetTIER=AOD
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
@@ -44,7 +54,7 @@ publishData=1
 copyData=1
 returnData=0
 
-datasetName=`echo $datasetPath | awk -F "/" '{print $2}'`
+
 outputPath=TSGMCReRECO/$reRECOVersion/$datasetName/$conditions/${version}  #note, outputPath is overriden by crab when publishing, this is only when we are publishData=0
 outputFile=${datasetName}_${reRECOVersion}_${conditions}-${version}.root
 
