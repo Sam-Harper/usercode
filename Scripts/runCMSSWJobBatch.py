@@ -99,13 +99,14 @@ parser.add_argument('--input',help='input file or file pattern to run over',requ
 parser.add_argument('--output',help='output filebase name',required=True)
 parser.add_argument('--outputDir',help='ouput dir (under scratch/mc/CMSSWVersion/<outputdir>',required=True)
 parser.add_argument('--nrJobs',help='number of jobs to split into (can not be larger than #files to run over)',default=1,type=int)
+
 args = parser.parse_args()
 print args.config
 
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
-baseOutputDir="/opt/ppd/month/harper/mc"
-batchJobBaseDir="/opt/ppd/scratch/harper/cmsswBatchJobFiles/"
+baseOutputDir="/afs/cern.ch/work/s/sharper/data"
+batchJobBaseDir="/afs/cern.ch/work/s/sharper/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
 
@@ -116,7 +117,7 @@ batchSubmitFile="qsub_autoGen.sh"
 print "config file ",args.config," base batch file ",batchSubmitBaseFile
     
 fullOutputDir=baseOutputDir+"/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
-fullLogDir="/opt/ppd/month/harper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
+fullLogDir="/afs/cern.ch/work/s/sharper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
 if os.path.exists(fullOutputDir):
     print "output directory ",fullOutputDir," exists, aborting "
     exit(1)
@@ -146,7 +147,7 @@ for jobNr in range(0,args.nrJobs):
     batchFile=open(batchSubmitFile,'a')
     batchFile.write("#job nr "+str(jobNr)+"\n")
     batchFile.write("cd "+batchJobDirAndPath+"/src\n");
-    batchFile.write("echo $PWD")
+    batchFile.write("echo $PWD\n")
     batchFile.write("cmsenv\n eval `scramv1 runtime -sh` \n");
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
@@ -158,11 +159,12 @@ for jobNr in range(0,args.nrJobs):
     batchFile.close()
 
     #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
-    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod")
-    os.system("chmod +x "+batchSubmitFile);
-    cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
-    print cmd
-    os.system(cmd)
+    os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
+   # os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
+    #os.system("chmod +x "+batchSubmitFile);
+    #cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
+   ## print cmd
+   ## os.system(cmd)
     #os.system("./"+batchSubmitFile+" > "+fullLogDir+"/job_"+str(jobNr)+".log &")
 
     #os.remove(batchSubmitFile)        

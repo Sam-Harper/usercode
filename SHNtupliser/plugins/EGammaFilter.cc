@@ -23,6 +23,7 @@ private:
   edm::InputTag eleTag_;
   int nrElesRequired_;
   float eleEtCut_;
+  bool requireEcalDriven_;
 
   int nrPass_;
   int nrTot_;
@@ -46,6 +47,7 @@ EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
   nrPhosRequired_=para.getParameter<int>("nrPhosRequired");
   phoEtCut_ = para.getParameter<double>("phoEtCut");
   eleEtCut_ = para.getParameter<double>("eleEtCut");
+  requireEcalDriven_ = para.getParameter<bool>("requireEcalDriven");
 }
 
 bool EGammaFilter::filter(edm::Event& event,const edm::EventSetup& setup)
@@ -59,13 +61,13 @@ bool EGammaFilter::filter(edm::Event& event,const edm::EventSetup& setup)
 }
 void EGammaFilter::endJob()
 { 
-  edm::Service<TFileService> fs;
-  fs->file().cd();
+  // edm::Service<TFileService> fs;
+  //fs->file().cd();
   //quick and dirty hack as writing ints directly isnt working
-  TTree* tree = new TTree("preFilterEventCountTree","Event count");
-  tree->Branch("nrPass",&nrPass_,"nrPass/I");
-  tree->Branch("nrTot",&nrTot_,"nrTot/I");
-  tree->Fill();
+  //TTree* tree = new TTree("preFilterEventCountTree","Event count");
+  //tree->Branch("nrPass",&nrPass_,"nrPass/I");
+  //tree->Branch("nrTot",&nrTot_,"nrTot/I");
+  // tree->Fill();
   
 }  
 bool EGammaFilter::passPho(edm::Event& event)const
@@ -94,7 +96,11 @@ bool EGammaFilter::passEle(edm::Event& event)const
   int nrEles=0;
   for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
     const reco::GsfElectron& ele = (*eleHandle)[eleNr];
-    if(ele.et()/ele.energy()*ele.superCluster()->energy()>eleEtCut_ && ele.ecalDrivenSeed()) nrEles++;
+    if(requireEcalDriven_) {
+      if(ele.et()/ele.energy()*ele.superCluster()->energy()>eleEtCut_ && ele.ecalDrivenSeed()) nrEles++;
+    }else{
+      if(ele.et()>eleEtCut_) nrEles++;
+    }
   }
   
   return nrEles>=nrElesRequired_;

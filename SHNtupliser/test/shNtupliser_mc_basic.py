@@ -34,7 +34,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
-process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
+
 
 
 import sys
@@ -52,11 +52,11 @@ process.shNtupliser.addMet = False
 process.shNtupliser.addJets = False
 process.shNtupliser.addMuons = False
 process.shNtupliser.applyMuonId = False
-process.shNtupliser.addCaloTowers = True
-process.shNtupliser.addCaloHits = True
-process.shNtupliser.addIsolTrks = True
-process.shNtupliser.addPFCands = True
-process.shNtupliser.addPFClusters = True
+process.shNtupliser.addCaloTowers = False
+process.shNtupliser.addCaloHits = False
+process.shNtupliser.addIsolTrks = False
+process.shNtupliser.addPFCands = False
+
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
@@ -74,7 +74,7 @@ process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-process.shNtupliser.nrGenPartToStore = cms.int32(-1)
+process.shNtupliser.nrGenPartToStore = cms.int32(20)
 #process.shNtupliser.eleRhoCorrTag = cms.InputTag("kt6PFJets","rho")
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -136,12 +136,12 @@ process.out = cms.OutputModule("PoolOutputModule",
 #outPath = cms.EndPath(out)
 
 #process.load("CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff")
-#from RecoJets.JetProducers.kt4PFJets_cfi import *
-#process.kt6PFJets = kt4PFJets.clone(
-#    rParam = cms.double(0.6),
-#    doAreaFastjet = cms.bool(True),
-#    doRhoFastjet = cms.bool(True)
-#) 
+from RecoJets.JetProducers.kt4PFJets_cfi import *
+process.kt6PFJets = kt4PFJets.clone(
+    rParam = cms.double(0.6),
+    doAreaFastjet = cms.bool(True),
+    doRhoFastjet = cms.bool(True)
+) 
 
 #from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 #process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons')
@@ -149,7 +149,7 @@ process.p = cms.Path(#process.primaryVertexFilter*
     #process.gsfElectronsHEEPCorr*process.eIdSequence*
    # process.egammaFilter*
  #   process.pfParticleSelectionSequence* process.eleIsoSequence*
-   # process.kt6PFJets*
+    process.kt6PFJets*
     process.shNtupliser)
         
 
