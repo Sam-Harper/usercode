@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <utility>
+#include <cmath>
 
 #include "TObject.h"
 #include "TVector3.h"
@@ -36,6 +37,7 @@ public:
   int seedId()const{return seedId_;}
 
   float nrgy()const{return nrgy_;}
+  float et()const{return nrgy()*sin(pos().Theta());}
   const TVector3& pos()const{return pos_;}
 
   ClassDef(SHPFCluster,1);

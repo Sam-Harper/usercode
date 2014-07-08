@@ -25,7 +25,8 @@ public:
   size_t nrECALClusters()const{return ecalClusters_.size();}
   size_t nrHCALClusters()const{return hcalClusters_.size();}
 
-  
+  const std::vector<SHPFCluster>& ecal()const{return ecalClusters_;}
+  const std::vector<SHPFCluster>& hcal()const{return hcalClusters_;}
   
   ClassDef(SHPFClusterContainer,1)
 };
