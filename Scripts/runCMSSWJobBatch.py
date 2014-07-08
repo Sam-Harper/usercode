@@ -157,6 +157,7 @@ for jobNr in range(0,args.nrJobs):
    # cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
     batchFile.write(cmd)
     batchFile.close()
+
     #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
     os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
    # os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
@@ -165,4 +166,5 @@ for jobNr in range(0,args.nrJobs):
    ## print cmd
    ## os.system(cmd)
     #os.system("./"+batchSubmitFile+" > "+fullLogDir+"/job_"+str(jobNr)+".log &")
+
     #os.remove(batchSubmitFile)        

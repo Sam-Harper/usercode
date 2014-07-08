@@ -92,7 +92,8 @@ namespace heep{
     const std::vector<bool> l1Decision()const{return handles_.l1Record->decisionWord();} //as decisionWord returns by value so we do to
     const std::vector<l1extra::L1EmParticle>& l1EmNonIso()const{return *handles_.l1EmNonIso;}
     const std::vector<l1extra::L1EmParticle>& l1EmIso()const{return *handles_.l1EmIso;}
-    
+    const std::vector<reco::PFCluster>& pfClustersECAL()const{return *handles_.pfClustersECAL;}
+    const std::vector<reco::PFCluster>& pfClustersHCAL()const{return *handles_.pfClustersHCAL;}
     
 
       //our three set methods

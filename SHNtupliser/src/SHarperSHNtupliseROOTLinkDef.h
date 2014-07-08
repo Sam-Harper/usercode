@@ -29,6 +29,9 @@
 #include "SHarper/SHNtupliser/interface/SHL1Event.hh"
 #include "SHarper/SHNtupliser/interface/SHL1CaloTowerContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHL1CaloTower.hh"
+#include "SHarper/SHNtupliser/interface/SHPFCluster.hh"
+#include "SHarper/SHNtupliser/interface/SHPFClusterContainer.hh"
+
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -71,5 +74,6 @@
 #pragma link C++ class SHL1Event+;
 #pragma link C++ class SHL1CaloTower;
 #pragma link C++ class SHL1CaloTowerContainer;
-
+#pragma link C++ class SHPFCluster+;
+#pragma link C++ class SHPFClusterContainer+;
 #endif

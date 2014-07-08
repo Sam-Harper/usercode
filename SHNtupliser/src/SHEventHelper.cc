@@ -36,6 +36,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
 
+//horrible hack of a function to fix annoying things
+void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& heepEvent,SHElectron& ele);
 
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
@@ -64,7 +66,8 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   hltTag_ = conf.getParameter<std::string>("hltProcName");
   
   nrGenPartToStore_ = conf.getParameter<int>("nrGenPartToStore");
-
+  noFracShowerShape_ = conf.getParameter<bool>("noFracShowerShape");
+  
   std::cout <<"warning, disabling use of HLT debug"<<std::endl;
   //useHLTDebug_=false;
 
@@ -250,7 +253,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     //  std::cout <<"set state"<<std::endl;
   }
 
-  
+  //redoing shower shape variables
+  if(noFracShowerShape_) fixClusterShape(*(gsfEle.superCluster()->seed()),heepEvent,*shEle);
   
   //std::cout <<"ele "<<gsfEle.et()<<" eta "<<gsfEle.eta()<<" miss hits "<<gsfEle.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()<<" covDist "<<gsfEle.convDist()<<" dcot "<<gsfEle.convDcot()<<" radius "<<gsfEle.convRadius()<<std::endl;
 
@@ -272,12 +276,15 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 
 }
 
+
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const
 {
   //std::cout <<"adding photon"<<std::endl;
   shEvent.addElectron(photon,shEvent.getCaloHits());
-  // SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
-  
+  if(noFracShowerShape_){
+    SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
+    fixClusterShape(*(photon.superCluster()->seed()),heepEvent,*shEle);
+  }
 //   double bField=0;
 //   if(heepEvent.runnr()>100000){ //hack to id data
 //     edm::Handle<DcsStatusCollection> dcsHandle;
@@ -941,3 +948,81 @@ int SHEventHelper::getVertexNrClosestZ(const reco::TrackBase& track,const std::v
   }
   return bestVertexNr;
 }
+//dummy function for releases without this function
+void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& heepEvent,SHElectron& ele){}
+/*
+#include "Geometry/CaloTopology/interface/CaloTopology.h"
+#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
+#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
+#include "CommonTools/Utils/interface/StringToEnumValue.h"
+#include "Geometry/Records/interface/CaloTopologyRecord.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& heepEvent,SHElectron& ele)
+{
+  
+  const EcalRecHitCollection* ebHits =heepEvent.handles().ebRecHits.isValid() ? heepEvent.ebHitsFull() : 
+    heepEvent.handles().ebReducedRecHits.isValid() ? &(*heepEvent.handles().ebReducedRecHits) : NULL;
+  const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : 
+    heepEvent.handles().eeReducedRecHits.isValid() ? &(*heepEvent.handles().eeReducedRecHits) : NULL;
+  
+  float sigmaEtaEta=0;
+  float sigmaIEtaIEta=0;
+  float e2x5Max=0;
+  float e5x5=0;
+  float e1x5=0;
+  
+  if(ebHits && eeHits){
+    
+    DetId seedXtalId = seedCluster.hitsAndFractions()[0].first ;
+    int detector = seedXtalId.subdetId() ;
+    const EcalRecHitCollection* recHits = detector==EcalBarrel ? ebHits : eeHits; 
+    edm::ESHandle<CaloTopology> topology;
+    edm::ESHandle<CaloGeometry> geom;
+    edm::ESHandle<EcalSeverityLevelAlgo> severityLevelAlgo;
+    heepEvent.eventSetup().get<CaloTopologyRecord>().get(topology);
+    heepEvent.eventSetup().get<EcalSeverityLevelAlgoRcd>().get(severityLevelAlgo);
+    heepEvent.eventSetup().get<CaloGeometryRecord>().get(geom);
+    std::vector<std::string> recHitFlagsToBeExcludedBarrelStr = {
+      "kFaultyHardware",
+      "kPoorCalib",
+      "kTowerRecovered",
+      "kDead"
+    };
+    std::vector<std::string> recHitSeverityToBeExcludedStr = {
+      "kWeird",
+      "kBad",
+      "kTime"
+    };
+    
+    std::vector<std::string> recHitFlagsToBeExcludedEndcapStr = {
+      "kFaultyHardware",
+      "kPoorCalib",
+      "kSaturated",
+      "kLeadingEdgeRecovered",
+      "kNeighboursRecovered",
+      "kTowerRecovered",
+      "kDead",
+      "kWeird"
+    };
+    std::vector<int> recHitSeverityToBeExcluded = StringToEnumValue<EcalSeverityLevel::SeverityLevel>(recHitSeverityToBeExcludedStr);
+    std::vector<int> recHitFlagsToBeExcludedBarrel= StringToEnumValue<EcalRecHit::Flags>(recHitFlagsToBeExcludedBarrelStr);  
+    std::vector<int> recHitFlagsToBeExcludedEndcap= StringToEnumValue<EcalRecHit::Flags>(recHitFlagsToBeExcludedEndcapStr);
+    std::vector<int>& recHitFlagsToBeExcluded = detector==EcalBarrel ? recHitFlagsToBeExcludedBarrel : recHitFlagsToBeExcludedEndcap;
+     
+    std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster,recHits,topology.product(),geom.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
+    sigmaEtaEta = sqrt(covariances[0]) ;
+    std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
+    
+    sigmaIEtaIEta = sqrt(localCovariances[0]) ;
+    e1x5 = noZS::EcalClusterTools::e1x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    e5x5 = noZS::EcalClusterTools::e5x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+  }
+
+  ele.setShowerShape(sigmaEtaEta,sigmaIEtaIEta,e1x5,e2x5Max,e5x5);
+  
+}
+*/
+

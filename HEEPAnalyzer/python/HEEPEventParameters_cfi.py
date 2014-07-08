@@ -47,8 +47,9 @@ heepEventPara  = cms.PSet (
     applyRhoCorrToEleIsol = cms.bool(True),
     eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
     onlyAddEcalDriven = cms.bool(True), #only promote ecal driven (ie not tracker driven PF electrons) to heep electrons
-    heepEleSource = cms.int32(0) #0 = GsfElectrons, 1 = pat::Electrons to make the heep electrons from 
-    
+    heepEleSource = cms.int32(0), #0 = GsfElectrons, 1 = pat::Electrons to make the heep electrons from
+    pfClustersECALTag = cms.InputTag("particleFlowClusterECAL"),
+    pfClustersHCALTag = cms.InputTag("particleFlowClusterHCAL") 
    
 )
 
