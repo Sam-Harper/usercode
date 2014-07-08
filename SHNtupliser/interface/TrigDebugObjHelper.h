@@ -30,7 +30,7 @@ public:
 
 
   void fillDebugTrigObjs(const edm::Event& iEvent,SHTrigObjContainer* shTrigObjs)const;
-  void fillDebugTrigObjs(const edm::Event& event,std::vector<std::pair<reco::RecoEcalCandidateRef,reco::ElectronRef> > ecalCandEles, SHTrigObjContainer* shTrigObjs)const;
+  void fillDebugTrigObjs(const edm::Event& event,std::vector<std::pair<reco::RecoEcalCandidateRef,reco::ElectronRef> > ecalCandEles, SHTrigObjContainer* shTrigObjs,bool isIso)const;
   void mergeValues(const std::vector<float> ecalCandValues,const std::vector<float> eleValues,std::vector<std::pair<std::string,float> >& values)const;
 
 
