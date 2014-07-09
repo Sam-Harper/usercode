@@ -41,11 +41,11 @@ void TrigDebugObjHelper::fillDebugTrigObjs(const edm::Event& iEvent,SHTrigObjCon
   std::vector<EcalCandElePair> ecalCandElesIso;
   std::vector<EcalCandElePair> ecalCandElesNonIso;
   
-  fillEcalCandEles(hltIsoEcalCandsHandle,hltIsoElesHandle,ecalCandElesIso,true);
-  fillEcalCandEles(hltNonIsoEcalCandsHandle,hltNonIsoElesHandle,ecalCandElesNonIso,false);
+  fillEcalCandEles(hltIsoEcalCandsHandle,hltIsoElesHandle,ecalCandElesIso);
+  fillEcalCandEles(hltNonIsoEcalCandsHandle,hltNonIsoElesHandle,ecalCandElesNonIso);
 
-  fillDebugTrigObjs(iEvent,ecalCandElesIso,shTrigObjs);
-  fillDebugTrigObjs(iEvent,ecalCandElesNonIso,shTrigObjs);
+  fillDebugTrigObjs(iEvent,ecalCandElesIso,shTrigObjs,true);
+  fillDebugTrigObjs(iEvent,ecalCandElesNonIso,shTrigObjs,false);
 }
 
 

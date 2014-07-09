@@ -51,7 +51,7 @@ SHL1Cluster::SHL1Cluster(const l1t::EGamma& egamma,const l1t::CaloCluster& clus)
 {
   std::cout <<"Error, disabled for this build, clusters are not being filled"<<std::endl;
 }
-SHL1Cluster::SHL1Cluster(const l1t::CaloCluster& clus)
+SHL1Cluster::SHL1Cluster(const l1t::EGamma& egamma)
 {
  std::cout <<"Error, disabled for this build, clusters are not being filled"<<std::endl;
 
