@@ -34,6 +34,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
+#include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 
 #include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
 #include "DataFormats/L1Trigger/interface/L1EmParticle.h"
@@ -97,6 +98,9 @@ namespace heep {
     edm::Handle<edm::ValueMap<double> > pfChargedIsoValEleMap;
     edm::Handle<edm::ValueMap<double> > pfPhotonIsoValEleMap;
     edm::Handle<edm::ValueMap<double> > pfNeutralIsoValEleMap;
+
+    edm::Handle<std::vector<reco::PFCluster> > pfClustersHCAL;
+    edm::Handle<std::vector<reco::PFCluster> > pfClustersECAL;
 
     edm::ESHandle<MagneticField> bField;
     edm::ESHandle<TrackerGeometry> trackGeom;

@@ -5,6 +5,7 @@
 
 #include "TObject.h"
 #include "TVector3.h"
+#include "TLorentzVector.h"
 
 #include <iostream>
 #include <vector>
@@ -73,6 +74,7 @@ class SHBasicCluster : public TObject {
   float phi()const{return phi_;}
   
   TVector3 pos()const{TVector3 thePos;thePos.SetPtEtaPhi(1.,eta_,phi_);return thePos;}
+  TLorentzVector p4()const{TLorentzVector theP4;theP4.SetPtEtaPhiM(et(),eta(),phi(),0);return theP4;}
   int crysDetId(int crysNr)const{unpackHits_();return hitDetIds_[crysNr];}
   int nrCrysStored()const{unpackHits_();return hitDetIds_.size();}
 

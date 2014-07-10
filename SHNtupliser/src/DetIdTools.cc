@@ -115,12 +115,7 @@ DetIdTools::CaloNavigator::CaloNavigator(int startId,bool l1Navigator):
 
 int DetIdTools::CaloNavigator::moveInEta(int nrSteps)
 {
-  
-  int newEta = currEta_+=nrSteps;
-  if(newEta*currEta_<=0) { //sign change
-    if(nrSteps>0) newEta++; 
-    else if(nrSteps<0) newEta--;
-  }
+  int newEta = offsetInEta(currEta_,nrSteps);
   
   if(changedPhiSeg(newEta,currEta_)){
     if(abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
@@ -131,6 +126,17 @@ int DetIdTools::CaloNavigator::moveInEta(int nrSteps)
   
   return curPos();
 }
+
+int DetIdTools::CaloNavigator::offsetInEta(int startEta,int nrSteps)
+{
+  int newEta =startEta+=nrSteps;
+  if(newEta*startEta<=0) { //sign change
+    if(nrSteps>0) newEta++; 
+    else if(nrSteps<0) newEta--;
+  }
+  return newEta;
+}
+
 
 int DetIdTools::CaloNavigator::moveInPhi(int nrSteps)
 {
@@ -146,6 +152,18 @@ int DetIdTools::CaloNavigator::moveInPhi(int nrSteps)
 
   return curPos();
 }
+
+
+int DetIdTools::CaloNavigator::offsetInL1Phi(int startPhi,int nrSteps)
+{
+  
+  int newPhi = startPhi+=nrSteps;
+  while(newPhi<=0) newPhi+= kNrPhiSeg;
+  while(newPhi>kNrPhiSeg) newPhi-=kNrPhiSeg;
+  return newPhi;
+ 
+}
+
 
 int DetIdTools::CaloNavigator::getIdAtPos(int nrStepsEta,int nrStepsPhi)const
 {
@@ -202,10 +220,8 @@ int DetIdTools::makeEcalBarrelId(int iEta,int iPhi)
 
 }
 
-int DetIdTools::dIEtaBarrel(int detId1,int detId2)
+int DetIdTools::dIEtaBarrel(int iEta1,int iEta2)
 {
-  int iEta1 = iEtaBarrel(detId1);
-  int iEta2 = iEtaBarrel(detId2);
   
   int dEta = iEta1-iEta2;
   if(iEta1*iEta2<0) {//-ve to +ve transistion and no crystal at zero
@@ -215,10 +231,8 @@ int DetIdTools::dIEtaBarrel(int detId1,int detId2)
   return dEta;
 }
 
-int DetIdTools::dIPhiBarrel(int detId1,int detId2)
+int DetIdTools::dIPhiBarrel(int iPhi1,int iPhi2)
 {
-  int iPhi1 = iPhiBarrel(detId1);
-  int iPhi2 = iPhiBarrel(detId2);
 
   int dPhi = iPhi1-iPhi2;
 

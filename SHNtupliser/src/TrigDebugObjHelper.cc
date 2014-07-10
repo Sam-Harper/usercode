@@ -44,12 +44,12 @@ void TrigDebugObjHelper::fillDebugTrigObjs(const edm::Event& iEvent,SHTrigObjCon
   fillEcalCandEles(hltIsoEcalCandsHandle,hltIsoElesHandle,ecalCandElesIso);
   fillEcalCandEles(hltNonIsoEcalCandsHandle,hltNonIsoElesHandle,ecalCandElesNonIso);
 
-  fillDebugTrigObjs(iEvent,ecalCandElesIso,shTrigObjs);
-  fillDebugTrigObjs(iEvent,ecalCandElesNonIso,shTrigObjs);
+  fillDebugTrigObjs(iEvent,ecalCandElesIso,shTrigObjs,true);
+  fillDebugTrigObjs(iEvent,ecalCandElesNonIso,shTrigObjs,false);
 }
 
 
-void TrigDebugObjHelper::fillDebugTrigObjs(const edm::Event& event,std::vector<std::pair<reco::RecoEcalCandidateRef,reco::ElectronRef> > ecalCandEles, SHTrigObjContainer* shTrigObjs)const
+void TrigDebugObjHelper::fillDebugTrigObjs(const edm::Event& event,std::vector<std::pair<reco::RecoEcalCandidateRef,reco::ElectronRef> > ecalCandEles, SHTrigObjContainer* shTrigObjs,bool isIso)const
 {
   // std::cout <<"nr ecal cands "<<ecalCandEles.size()<<std::endl;
   for(size_t candNr=0;candNr<ecalCandEles.size();candNr++){
@@ -73,7 +73,7 @@ void TrigDebugObjHelper::fillDebugTrigObjs(const edm::Event& event,std::vector<s
     
     //  std::cout <<"cand nr "<<candNr<<" sc "<<sc.eta()<<" "<<sc.phi()<<" energy "<<sc.energy()<<std::endl;
 
-    SHTrigEcalCand ecalCand(p4,sc.energy(),sc.preshowerEnergy(),caloPos);
+    SHTrigEcalCand ecalCand(p4,sc.energy(),sc.preshowerEnergy(),caloPos,isIso);
     ecalCand.setVars(values);
 
     //   if(ecalCand.var("hadNrgy")<0) std::cout <<" bad candidate, event nr "<<event.id().run()<<" "<<event.id().event()<<std::endl;
@@ -140,29 +140,29 @@ void TrigDebugObjHelper::processInputVecOfProdNames(const std::vector<std::strin
   prodNames.clear();
  
   for(size_t entryNr=0;entryNr<input.size();entryNr++){
-  //   std::vector<std::string> splitEntry;
-//     boost::split(splitEntry,input[entryNr],boost::is_any_of(":"));
-//     if(splitEntry.size()==3){
-//       varNames.push_back(splitEntry[0]);
+    std::vector<std::string> splitEntry;
+    boost::split(splitEntry,input[entryNr],boost::is_any_of(":"));
+    if(splitEntry.size()==3){
+      varNames.push_back(splitEntry[0]);
       
-//       std::vector<std::string> splitE1;
-//       boost::split(splitE1,splitEntry[1],boost::is_any_of("@"));
-//       std::vector<std::string> splitE2;
-//       boost::split(splitE2,splitEntry[2],boost::is_any_of("@"));
-   
-//       std::string proc1;
-//       if(splitE1.size()==2) proc1=splitE1[1];
-//       std::string proc2;
-//       if(splitE2.size()==2) proc2=splitE2[1];
-//       edm::InputTag tag1(splitE1[0],proc1,hltTag);
-//       edm::InputTag tag2(splitE2[0],proc2,hltTag);
-//       // std::cout <<splitEntry[1]<<" "<<splitEntry[2]<<std::endl;
-//       prodNames.push_back(std::make_pair(tag1,tag2));
-//     }else{
-//       std::cout <<"EgHLTDebugger::makeVecOfProductNames_ Error entry "<<input[entryNr]<<" has "<<splitEntry.size()<<" fields, not 3 "<<std::endl;
-//       varNames.push_back(std::string(""));
-//       prodNames.push_back(std::make_pair(edm::InputTag(),edm::InputTag()));      
-//     }
+      std::vector<std::string> splitE1;
+      boost::split(splitE1,splitEntry[1],boost::is_any_of("@"));
+      std::vector<std::string> splitE2;
+      boost::split(splitE2,splitEntry[2],boost::is_any_of("@"));
+      
+      std::string proc1;
+      if(splitE1.size()==2) proc1=splitE1[1];
+      std::string proc2;
+      if(splitE2.size()==2) proc2=splitE2[1];
+      edm::InputTag tag1(splitE1[0],proc1,hltTag);
+      edm::InputTag tag2(splitE2[0],proc2,hltTag);
+      // std::cout <<splitEntry[1]<<" "<<splitEntry[2]<<std::endl;
+      prodNames.push_back(std::make_pair(tag1,tag2));
+    }else{
+      std::cout <<"TrigDebugObjHelper::makeVecOfProductNames_ Error entry "<<input[entryNr]<<" has "<<splitEntry.size()<<" fields, not 3 "<<std::endl;
+      varNames.push_back(std::string(""));
+      prodNames.push_back(std::make_pair(edm::InputTag(),edm::InputTag()));      
+    }
   }//end loop over input
   
   

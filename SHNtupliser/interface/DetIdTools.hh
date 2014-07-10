@@ -66,6 +66,9 @@ public:
     int getIdAtPos(int nrStepsEta,int nrStepsPhi)const;
     int curPos()const{return l1Navigator_ ? DetIdTools::makeL1CaloDetId(currEta_,currPhi_) : DetIdTools::makeCaloDetId(currEta_,currPhi_);}
  
+    static int offsetInEta(int startEta,int nrSteps);
+    static int offsetInL1Phi(int startPhi,int nrSteps);
+
   private:
     void initPosCoords_();
     int changedPhiSeg(int newEta,int oldEta)const{ return ( (abs(newEta)<=kIEtaPhiSegChange) != (abs(oldEta)<=kIEtaPhiSegChange) ) && !l1Navigator_;} //l1 towers dont change in phi seg (atleast in HB, HE
@@ -196,10 +199,10 @@ private:
   static int zSideBarrel(int detId){return positiveZBarrel(detId) ? 1 : -1;}
   
 
-  static int dIEtaBarrel(int detId1,int detId2);
-  static int dAbsIEtaBarrel(int detId1,int detId2){return abs(dIEtaBarrel(detId1,detId2));}
-  static int dIPhiBarrel(int detId1,int detId2);
-  static int dAbsIPhiBarrel(int detId1,int detId2){return abs(dIEtaBarrel(detId1,detId2));}
+  static int dIEtaBarrel(int iEta1,int iEta2);
+  static int dAbsIEtaBarrel(int iEta1,int iEta2){return abs(dIEtaBarrel(iEta1,iEta2));}
+  static int dIPhiBarrel(int iPhi1,int iPhi2);
+  static int dAbsIPhiBarrel(int iPhi1,int iPhi2){return abs(dIEtaBarrel(iPhi1,iPhi2));}
 
   //ECAL endcap tools
   static int iYEndcap(int detId){return detId&0x7f;}

@@ -43,6 +43,7 @@ class SHCaloHitContainer;
 class SHPFCandContainer;
 class TTree;
 class TFile;
+class SHPFClusterContainer;
 
 class TrigDebugObjHelper;
 class SHTrigObjContainer;
@@ -82,6 +83,7 @@ private:
   bool addIsolTrks_;
   bool addPFCands_;
   bool addPreShowerClusters_;
+  bool addPFClusters_;
   
   bool useHLTDebug_;
   bool compTwoMenus_;
@@ -98,7 +100,8 @@ private:
   bool writePDFInfo_;
   std::vector<double> pdfWeightsVec_;
   
-  SHPFCandContainer* shPFCands_;
+  SHPFCandContainer* shPFCands_; 
+  SHPFClusterContainer* shPFClusters_;
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;
   //disabling copy and assignment 

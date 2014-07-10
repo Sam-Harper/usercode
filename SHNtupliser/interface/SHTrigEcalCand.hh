@@ -25,8 +25,8 @@ private:
 public: 
   SHTrigEcalCand():
     p4_(),clusNrgy_(-999),preShowerNrgy_(-999),clusPos_(),isIso_(false){}
-  SHTrigEcalCand(const TLorentzVector& p4,float clusNrgy,float preNrgy,const TVector3& clusPos):
-    p4_(p4),clusNrgy_(clusNrgy),preShowerNrgy_(preNrgy),clusPos_(clusPos),isIso_(false){}
+  SHTrigEcalCand(const TLorentzVector& p4,float clusNrgy,float preNrgy,const TVector3& clusPos,bool isIso=false):
+    p4_(p4),clusNrgy_(clusNrgy),preShowerNrgy_(preNrgy),clusPos_(clusPos),isIso_(isIso){}
   ~SHTrigEcalCand(){}
 
   void setVars(std::vector<std::pair<std::string,float> >& inputVar);//note, modifies its arguments

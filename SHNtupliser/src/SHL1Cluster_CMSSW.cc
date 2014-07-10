@@ -1,7 +1,7 @@
 #include "SHarper/SHNtupliser/interface/SHL1Cluster.hh"
 
 //I detest resorting to this but its the easiest option
-#define SLHCBUILD 1
+#define SLHCBUILD 0
 #if SLHCBUILD
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 #include "DataFormats/L1TCalorimeter/interface/CaloCluster.h"
@@ -47,9 +47,14 @@ namespace l1t{
   class EGamma{};
 }
 
-SHL1Cluster::SHL1Cluster(const l1t::EGamma& clus)
+SHL1Cluster::SHL1Cluster(const l1t::EGamma& egamma,const l1t::CaloCluster& clus)
 {
   std::cout <<"Error, disabled for this build, clusters are not being filled"<<std::endl;
+}
+SHL1Cluster::SHL1Cluster(const l1t::EGamma& egamma)
+{
+ std::cout <<"Error, disabled for this build, clusters are not being filled"<<std::endl;
+
 }
 #endif
 

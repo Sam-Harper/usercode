@@ -68,10 +68,13 @@ public:
   int iPhi()const{return iPhi_;}
   int isolEmEtTS()const{return isolEmEtTS_;}
   int isolHadEtTS()const{return isolHadEtTS_;}
-
+  int hademTS()const{return hademTS_;}
   int iEtaMax()const;
   int iPhiMax()const;
-  
+  int clusterFlags()const{return clusterFlags_;}
+  int etSeedTS()const{return etSeedTS_;}
+  int quality()const{return quality_;}
+
   int trigScale()const{return trigScale_;}
   bool isIsolated()const{return isIsolated_;}
   int leadTower()const{return 0.;} // always zero, here for compat reasons
@@ -90,7 +93,7 @@ public:
   //  float etCalib()const{return p4().Et()*l1ClusCalibration(p4().Eta());}
   float etCalib()const{return p4().Et();}
   bool checkClusterFlag(int flag)const{return (clusterFlags_&(0x1<<flag))!=0;}
-
+  bool isStage1()const{return clusterFlags_==0;} //our current stage 1 check
   //void setClusterFlag(int flag);
 
   float eta()const;

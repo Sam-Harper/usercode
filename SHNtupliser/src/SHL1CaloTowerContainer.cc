@@ -39,7 +39,7 @@ void SHL1CaloTowerContainer::createTowerIndxTable_()const
   // and all initialised to -1
   std::vector<int> tempIndx(DetIdTools::kNrL1CaloTowers,-1);
   towerIndxTable_.swap(tempIndx);
-  
+
  
   for(int towerNr=0;towerNr<=caloTowerArray_.GetLast();towerNr++){
     const SHL1CaloTower& tower = getCaloTowerByIndx(towerNr);

@@ -24,11 +24,12 @@ SHL1Cluster::SHL1Cluster():
 
 int SHL1Cluster::iEtaMax()const
 {
-  return iEta_;
+  return iEta();
 }
+
 int SHL1Cluster::iPhiMax()const
 {
-  return iPhi_;
+  return iPhi();
 }
 
 

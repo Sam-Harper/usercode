@@ -71,6 +71,9 @@ namespace heep {
     edm::InputTag pfPhotonIsoValEleMapTag_; 
     edm::InputTag pfNeutralIsoValEleMapTag_;
 
+    edm::InputTag pfClustersECALTag_;
+    edm::InputTag pfClustersHCALTag_;
+
     //trigger matching parameters
     std::string hltProcName_;
     double maxDRTrigMatch_;
