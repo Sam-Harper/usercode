@@ -17,6 +17,15 @@ fi
 config=reco_710_POSTLS1
 
 datasetName=`echo $datasetPath | awk -F "/" '{print $2}'`
+
+if [ -e evtLists/${datasetName}_evts.list ]
+then
+cp evtLists/${datasetName}_evts.list data/evtList.list 
+else
+echo "no event list file evtLists/${datasetName}_evts.list found, aborting "
+exit
+fi
+
 puIndex=3;
 if [[ $datasetName == DYJetsToLL* ]]
 then
@@ -24,7 +33,7 @@ echo "DYJets detected"
 puIndex=2
 config=${config}_DYToEEFilter.py
 else
-config=${config}.py
+config=${config}_EvtFilter.py
 fi
 
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
@@ -87,13 +96,14 @@ sed 's|isCrabJob=False|isCrabJob=True|'   > cmssw_autoGen.py
 
 crab -create -cfg crab_autoGen.cfg
 
-exit
+#exit
 crab -c $workingDir -submit 1-500
 crab -c $workingDir -submit 501-1000
 crab -c $workingDir -submit 1001-1500
-crab -c $workingDir -submit 1501-2000
-crab -c $workingDir -submit 2001-2500
-crab -c $workingDir -submit 2501-3000
-crab -c $workingDir -submit 3001-3500
+
+#crab -c $workingDir -submit 1501-2000
+#crab -c $workingDir -submit 2001-2500
+#crab -c $workingDir -submit 2501-3000
+#crab -c $workingDir -submit 3001-3500
 
  
