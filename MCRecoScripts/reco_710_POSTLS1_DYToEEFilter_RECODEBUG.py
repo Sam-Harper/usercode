@@ -84,8 +84,10 @@ if not isCrabJob:
 
 # Other statements
 process.mix.playback = True
-process.mix.digitizers = cms.PSet()
-for a in process.aliases: delattr(process, a)
+#process.mix.digitizers = cms.PSet()
+#for a in process.aliases: delattr(process, a)
+process.mix.digitizers = cms.PSet(process.theDigitizersValid)
+process.mixing = cms.Path(process.mix)
 process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
 from Configuration.AlCa.GlobalTag import GlobalTag
 
@@ -152,7 +154,7 @@ process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
 
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.eventinterpretaion_step,process.endjob_step,process.RECOSIMoutput_step)
+process.schedule = cms.Schedule(process.mixing,process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.eventinterpretaion_step,process.endjob_step,process.RECOSIMoutput_step)
 
 # customisation of the process.
 
