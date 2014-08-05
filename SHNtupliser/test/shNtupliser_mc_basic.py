@@ -149,7 +149,7 @@ process.p = cms.Path(#process.primaryVertexFilter*
     #process.gsfElectronsHEEPCorr*process.eIdSequence*
    # process.egammaFilter*
  #   process.pfParticleSelectionSequence* process.eleIsoSequence*
-    process.kt6PFJets*
+#    process.kt6PFJets*
     process.shNtupliser)
         
 
