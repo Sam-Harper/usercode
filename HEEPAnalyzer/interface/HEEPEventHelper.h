@@ -70,7 +70,7 @@ namespace heep {
     edm::InputTag pfChargedIsoValEleMapTag_;
     edm::InputTag pfPhotonIsoValEleMapTag_; 
     edm::InputTag pfNeutralIsoValEleMapTag_;
-
+    edm::InputTag gsfEleToPFCandMapTag_;
     edm::InputTag pfClustersECALTag_;
     edm::InputTag pfClustersHCALTag_;
 

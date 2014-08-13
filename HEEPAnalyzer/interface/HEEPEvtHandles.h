@@ -21,6 +21,7 @@
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 #include "DataFormats/EgammaReco/interface/PreshowerCluster.h"
@@ -101,6 +102,8 @@ namespace heep {
 
     edm::Handle<std::vector<reco::PFCluster> > pfClustersHCAL;
     edm::Handle<std::vector<reco::PFCluster> > pfClustersECAL;
+
+    edm::Handle<edm::ValueMap<std::vector<reco::PFCandidateRef> > > gsfEleToPFCandMap;
 
     edm::ESHandle<MagneticField> bField;
     edm::ESHandle<TrackerGeometry> trackGeom;
