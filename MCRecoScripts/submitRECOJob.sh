@@ -17,29 +17,36 @@ fi
 config=reco_710_POSTLS1
 
 datasetName=`echo $datasetPath | awk -F "/" '{print $2}'`
-
-if [ -e evtLists/${datasetName}_evts.list ]
-then
-cp evtLists/${datasetName}_evts.list data/evtList.list 
-else
-echo "no event list file evtLists/${datasetName}_evts.list found, aborting "
-exit
-fi
-
 puIndex=3;
 if [[ $datasetName == DYJetsToLL* ]]
 then
 echo "DYJets detected"
 puIndex=2
-config=${config}_DYToEEFilter.py
+config=${config}_DYToEEFilter_RECODEBUG.py
+elif [[ $datasetName == RSGravToGG* ]]
+then 
+echo "RSGrav -> gamma gamma detected"
+puIndex=2
+config=${config}_FEVTSIM.py
 else
 config=${config}_EvtFilter.py
+fi
+
+if [[ $config == *_EvtFilter.py ]]
+then
+    if [ -e evtLists/${datasetName}_evts.list ]
+    then
+	cp evtLists/${datasetName}_evts.list data/evtList.list 
+    else
+	echo "no event list file evtLists/${datasetName}_evts.list found, aborting "
+    exit
+    fi
 fi
 
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
 timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
 reRECOVersion="EGM711${timing}"
-datasetTIER=AOD
+datasetTIER=RECODEBUG
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
 then 
@@ -95,8 +102,8 @@ sed 's|isCrabJob=False|isCrabJob=True|'   > cmssw_autoGen.py
 
 
 crab -create -cfg crab_autoGen.cfg
-
-#exit
+crab -c $workingDir -submit 
+exit
 crab -c $workingDir -submit 1-500
 crab -c $workingDir -submit 501-1000
 crab -c $workingDir -submit 1001-1500
