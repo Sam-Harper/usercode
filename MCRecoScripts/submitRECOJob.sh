@@ -17,20 +17,29 @@ fi
 config=reco_710_POSTLS1
 
 datasetName=`echo $datasetPath | awk -F "/" '{print $2}'`
-puIndex=3;
+puIndex=2;
 if [[ $datasetName == DYJetsToLL* ]]
 then
 echo "DYJets detected"
-puIndex=2
 config=${config}_DYToEEFilter_RECODEBUG.py
 elif [[ $datasetName == RSGravToGG* ]]
 then 
 echo "RSGrav -> gamma gamma detected"
-puIndex=2
 config=${config}_FEVTSIM.py
-else
+elif [[ $datasetName == QCD* ]]
+then
+echo "QCD detected, running event filtered"
 config=${config}_EvtFilter.py
+puIndex=3
+elif [[ $datasetName == ZprimeToEE* ]]
+then
+echo "Z'->ee detected"
+config=${config}.py
+else
+echo "dataset not detected, aborting"
+exit
 fi
+
 
 if [[ $config == *_EvtFilter.py ]]
 then
@@ -46,7 +55,7 @@ fi
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
 timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
 reRECOVersion="EGM711${timing}"
-datasetTIER=RECODEBUG
+datasetTIER=RECO
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
 then 
