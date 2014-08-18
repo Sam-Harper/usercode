@@ -12,8 +12,11 @@ heep::EleCutValues::EleCutValues():
   maxEta(0),
   //id variables
   maxDEtaIn(0),
+  dEtaInConstTerm(0),
+  dEtaInGradTerm(0),
   maxDPhiIn(0),
   maxHadem(0),
+  hademConstTerm(0),
   maxSigmaIEtaIEta(0),
   minE2x5Over5x5(0),
   minE1x5Over5x5(0),
@@ -52,8 +55,11 @@ heep::EleCutValues& heep::EleCutValues::operator=(const edm::ParameterSet& iConf
   maxEta = iConfig.getParameter<double>("maxEta");
 
   maxDEtaIn = iConfig.getParameter<double>("maxDEtaIn");
+  dEtaInConstTerm = iConfig.getParameter<double>("dEtaInConstTerm");
+  dEtaInGradTerm = iConfig.getParameter<double>("dEtaInGradTerm");
   maxDPhiIn = iConfig.getParameter<double>("maxDPhiIn");
   maxHadem = iConfig.getParameter<double>("maxHadem");
+  hademConstTerm = iConfig.getParameter<double>("hademConstTerm");
   maxSigmaIEtaIEta = iConfig.getParameter<double>("maxSigmaIEtaIEta");
   minE2x5Over5x5 =iConfig.getParameter<double>("minE2x5Over5x5");
   minE1x5Over5x5 =iConfig.getParameter<double>("minE1x5Over5x5");

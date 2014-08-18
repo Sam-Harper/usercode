@@ -8,8 +8,11 @@ heepBarrelCutsV41 = cms.PSet (
     minEta=cms.double(0.),
     maxEta=cms.double(1.442),
     maxDEtaIn=cms.double(0.005),
+    dEtaInConstTerm =cms.double(0),
+    dEtaInGradTerm =cms.double(0),
     maxDPhiIn=cms.double(0.06),
     maxHadem=cms.double(0.05),
+    hademConstTerm=cms.double(0),
     maxSigmaIEtaIEta=cms.double(999.), #not defined for barrel
     minE2x5Over5x5=cms.double(0.94),
     minE1x5Over5x5=cms.double(0.83),
@@ -35,8 +38,11 @@ heepEndcapCutsV41 = cms.PSet (
     minEta=cms.double(1.56),
     maxEta=cms.double(2.5),
     maxDEtaIn=cms.double(0.007),
+    dEtaInConstTerm =cms.double(0),
+    dEtaInGradTerm =cms.double(0),
     maxDPhiIn=cms.double(0.06),
     maxHadem=cms.double(0.05),
+    hademConstTerm=cms.double(0),
     maxSigmaIEtaIEta=cms.double(0.03),
     minE2x5Over5x5=cms.double(0.), #not defined for endcap
     minE1x5Over5x5=cms.double(0.), #not defined for endcap
@@ -56,9 +62,6 @@ heepEndcapCutsV41 = cms.PSet (
     maxDXY=cms.double(0.05)
 )
 
-heepBarrelCuts = heepBarrelCutsV41.clone()
-heepEndcapCuts = heepEndcapCutsV41.clone()
-
 heepBarrelCutsV40 = heepBarrelCutsV41.clone()
 heepBarrelCutsV40.maxNrMissHits=cms.int32(0)
 heepBarrelCutsV40.cuts =cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits")
@@ -67,7 +70,19 @@ heepEndcapCutsV40 = heepEndcapCutsV41.clone()
 heepEndcapCutsV40.maxNrMissHits=cms.int32(0)
 heepEndcapCutsV40.cuts =cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits")
 
+heepEndcapCutsV50 = heepEndcapCutsV41.clone()
+heepEndcapCutsV50.hademConstTerm = 12.5
+heepEndcapCutsV50.dEtaInConstTerm = 0.015
+heepEndcapCutsV50.dEtaInGradTerm = 8.5E-5
 
+heepBarrelCutsV50 = heepBarrelCutsV41.clone()
+heepBarrelCutsV50.hademConstTerm = 2
+heepBarrelCutsV50.dEtaInConstTerm = 0.016
+heepBarrelCutsV50.dEtaInGradTerm = 1E-4
+
+
+heepBarrelCuts = heepBarrelCutsV41.clone()
+heepEndcapCuts = heepEndcapCutsV41.clone()
 
 heepEffectiveAreas = cms.PSet (
     trackerBarrel = cms.double(0.),
@@ -84,8 +99,11 @@ heepBarrelCutsV31 = cms.PSet (
     minEta=cms.double(0.),
     maxEta=cms.double(1.442),
     maxDEtaIn=cms.double(0.005),
+    dEtaInConstTerm =cms.double(0),
+    dEtaInGradTerm =cms.double(0),
     maxDPhiIn=cms.double(0.09),
     maxHadem=cms.double(0.05),
+    hademConstTerm=cms.double(0),
     maxSigmaIEtaIEta=cms.double(999.), #not defined for barrel
     minE2x5Over5x5=cms.double(0.94),
     minE1x5Over5x5=cms.double(0.83),
@@ -111,8 +129,11 @@ heepEndcapCutsV31 = cms.PSet (
     minEta=cms.double(1.56),
     maxEta=cms.double(2.5),
     maxDEtaIn=cms.double(0.007),
+    dEtaInConstTerm =cms.double(0),
+    dEtaInGradTerm =cms.double(0),
     maxDPhiIn=cms.double(0.09),
     maxHadem=cms.double(0.05),
+    hademConstTerm=cms.double(0),
     maxSigmaIEtaIEta=cms.double(0.03),
     minE2x5Over5x5=cms.double(0.), #not defined for endcap
     minE1x5Over5x5=cms.double(0.), #not defined for endcap
