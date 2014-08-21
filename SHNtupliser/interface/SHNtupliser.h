@@ -118,6 +118,7 @@ private:
   virtual void beginJob() ;
   virtual void beginRun(const edm::Run& run,const edm::EventSetup& iSetup);
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
+  virtual void endRun(edm::Run const& iRun, edm::EventSetup const&);
   virtual void endJob() ;
 
 protected:

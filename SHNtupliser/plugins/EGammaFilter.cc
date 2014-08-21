@@ -7,6 +7,9 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
+#include "DataFormats/CaloTowers/interface/CaloTower.h"
+#include "RecoEgamma/EgammaIsolationAlgos/interface/EgammaTowerIsolation.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -25,6 +28,12 @@ private:
   float eleEtCut_;
   bool requireEcalDriven_;
 
+  int nrSCsRequired_;
+  float scEtCut_;
+
+  edm::InputTag superClusEBTag_;
+  edm::InputTag superClusEETag_;
+  edm::InputTag caloTowerTag_;
   int nrPass_;
   int nrTot_;
   
@@ -35,7 +44,8 @@ public:
   virtual bool filter(edm::Event& event,const edm::EventSetup& setup);
   virtual void endJob();
   bool passPho(edm::Event& event)const;
-  bool passEle(edm::Event& event)const;
+  bool passEle(edm::Event& event)const; 
+  bool passSC(edm::Event& event)const;
 };
 
 EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
@@ -43,17 +53,23 @@ EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
 {
   eleTag_=para.getParameter<edm::InputTag>("eleTag");
   phoTag_=para.getParameter<edm::InputTag>("phoTag");
+  superClusEBTag_=para.getParameter<edm::InputTag>("superClusEBTag");
+  superClusEETag_=para.getParameter<edm::InputTag>("superClusEETag"); 
+  caloTowerTag_=para.getParameter<edm::InputTag>("caloTowerTag");
   nrElesRequired_=para.getParameter<int>("nrElesRequired");
-  nrPhosRequired_=para.getParameter<int>("nrPhosRequired");
+  nrPhosRequired_=para.getParameter<int>("nrPhosRequired"); 
+  nrSCsRequired_=para.getParameter<int>("nrSCsRequired");
   phoEtCut_ = para.getParameter<double>("phoEtCut");
   eleEtCut_ = para.getParameter<double>("eleEtCut");
+  scEtCut_ = para.getParameter<double>("scEtCut");
   requireEcalDriven_ = para.getParameter<bool>("requireEcalDriven");
+
 }
 
 bool EGammaFilter::filter(edm::Event& event,const edm::EventSetup& setup)
 { 
   nrTot_++;
-  if(passPho(event) && passEle(event)){
+  if(passPho(event) && passEle(event) && passSC(event)){
     nrPass_++;
     return true;
   }else return false;
@@ -106,6 +122,38 @@ bool EGammaFilter::passEle(edm::Event& event)const
   return nrEles>=nrElesRequired_;
 }
 
+bool EGammaFilter::passSC(edm::Event& event)const
+{
+  if(nrSCsRequired_<=0) return true; //automatically passes
+  
+  edm::Handle<reco::SuperClusterCollection> scEBHandle;
+  event.getByLabel(superClusEBTag_,scEBHandle);
+  edm::Handle<reco::SuperClusterCollection> scEEHandle;
+  event.getByLabel(superClusEETag_,scEEHandle);
+  edm::Handle<CaloTowerCollection> caloTowerHandle;
+  event.getByLabel(caloTowerTag_,caloTowerHandle);
+
+  EgammaTowerIsolation hcalCalc(0.15,0.,0.,-1,caloTowerHandle.product()) ;
+
+
+  int nrSCs=0;
+  for(size_t scNr=0;scNr<scEBHandle->size();scNr++){
+    const reco::SuperCluster& superClus = (*scEBHandle)[scNr];
+
+    if(superClus.energy()*sin(superClus.position().theta()) > scEtCut_){    
+      float hOverE = hcalCalc.getTowerESum(&superClus)/superClus.energy();
+      if(hOverE<0.15) nrSCs++;
+    }
+  }
+
+  for(size_t scNr=0;scNr<scEEHandle->size();scNr++){
+    const reco::SuperCluster& superClus = (*scEEHandle)[scNr];
+    if(superClus.energy()*sin(superClus.position().theta()) > scEtCut_) nrSCs++;
+  }
+  return nrSCs > nrSCsRequired_;
+
+  
+}
 
 
 DEFINE_FWK_MODULE(EGammaFilter);

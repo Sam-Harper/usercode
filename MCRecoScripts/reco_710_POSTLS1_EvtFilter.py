@@ -75,6 +75,10 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM-RECO')
     )
 )
+process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterECAL_*_*")
+process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterHCAL_*_*")
+
+
 if not isCrabJob:
     process.RECOSIMoutput.fileName = cms.untracked.string(sys.argv[len(sys.argv)-1])
 

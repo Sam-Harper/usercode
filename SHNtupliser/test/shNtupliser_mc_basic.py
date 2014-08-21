@@ -52,10 +52,11 @@ process.shNtupliser.addMet = False
 process.shNtupliser.addJets = False
 process.shNtupliser.addMuons = False
 process.shNtupliser.applyMuonId = False
-process.shNtupliser.addCaloTowers = False
-process.shNtupliser.addCaloHits = False
-process.shNtupliser.addIsolTrks = False
-process.shNtupliser.addPFCands = False
+process.shNtupliser.addCaloTowers = True
+process.shNtupliser.addCaloHits = True
+process.shNtupliser.addIsolTrks = True
+process.shNtupliser.addPFCands = True
+process.shNtupliser.addPFClusters = True
 
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
@@ -74,7 +75,7 @@ process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-process.shNtupliser.nrGenPartToStore = cms.int32(20)
+process.shNtupliser.nrGenPartToStore = cms.int32(-1)
 #process.shNtupliser.eleRhoCorrTag = cms.InputTag("kt6PFJets","rho")
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -85,6 +86,8 @@ cmsswVersion = os.environ['CMSSW_VERSION']
 if "CMSSW_7" in cmsswVersion:
     process.shNtupliser.recoPhoTag = "gedPhotons"
     process.shNtupliser.gsfEleTag = "gedGsfElectrons"
+    process.shNtupliser.superClusterEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel")
+    process.shNtupliser.superClusterEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower")
 
 isCrabJob=False #script seds this if its a crab job
 
@@ -125,15 +128,7 @@ for i in range(2,len(sys.argv)-1):
     print filePrefex+sys.argv[i]
     process.source.fileNames.extend([filePrefex+sys.argv[i],])
 
-process.load("Configuration.EventContent.EventContent_cff")
-process.out = cms.OutputModule("PoolOutputModule",
-    process.FEVTEventContent,
-    dataset = cms.untracked.PSet(dataTier = cms.untracked.string('RECO')),
-     fileName = cms.untracked.string("ihateyoupatdevelopersIreallydo.root"),
-)
-#process.out.outputCommands = cms.untracked.vstring('drop *','keep *_MEtoEDMConverter_*_RelValTest')
-#
-#outPath = cms.EndPath(out)
+
 
 #process.load("CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff")
 from RecoJets.JetProducers.kt4PFJets_cfi import *

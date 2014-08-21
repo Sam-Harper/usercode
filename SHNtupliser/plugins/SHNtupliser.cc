@@ -407,6 +407,17 @@ bool passFilter(const edm::Event& iEvent,float detEta,float detPhi,std::string f
 
 
 
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
+void SHNtupliser::endRun(edm::Run const& iRun, edm::EventSetup const&)
+{
+  edm::Handle< GenRunInfoProduct > genInfoProduct;
+  iRun.getByLabel("generator", genInfoProduct );
+  if(genInfoProduct.isValid()) {
+    std::cout <<" cross-section "<<genInfoProduct->internalXSec().value()<<std::endl;
+  }
+  
+}
+
 
 void SHNtupliser::endJob()
 { 

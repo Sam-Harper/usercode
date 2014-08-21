@@ -30,6 +30,8 @@ elif [[ $datasetName == QCD* ]]
 then
 echo "QCD detected, running event filtered"
 config=${config}_EvtFilter.py
+#echo "QCD detected"
+#config=${config}.py
 puIndex=3
 elif [[ $datasetName == ZprimeToEE* ]]
 then
@@ -43,19 +45,19 @@ fi
 
 if [[ $config == *_EvtFilter.py ]]
 then
-    if [ -e evtLists/${datasetName}_evts.list ]
+    if [ -e evtLists/${datasetName}_evts_trackCuts.list ]
     then
-	cp evtLists/${datasetName}_evts.list data/evtList.list 
+	cp evtLists/${datasetName}_evts_trackCuts.list data/evtList.list 
     else
-	echo "no event list file evtLists/${datasetName}_evts.list found, aborting "
+	echo "no event list file evtLists/${datasetName}_evts_trackCuts.list found, aborting "
     exit
     fi
 fi
 
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
 timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
-reRECOVersion="EGM711${timing}"
-datasetTIER=RECO
+reRECOVersion="EGM711${timing}TrackCuts"
+datasetTIER=AOD
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
 then 
@@ -117,9 +119,9 @@ crab -c $workingDir -submit 1-500
 crab -c $workingDir -submit 501-1000
 crab -c $workingDir -submit 1001-1500
 
-#crab -c $workingDir -submit 1501-2000
-#crab -c $workingDir -submit 2001-2500
-#crab -c $workingDir -submit 2501-3000
+crab -c $workingDir -submit 1501-2000
+crab -c $workingDir -submit 2001-2500
+crab -c $workingDir -submit 2501-3000
 #crab -c $workingDir -submit 3001-3500
 
  
