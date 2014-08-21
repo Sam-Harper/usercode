@@ -3,19 +3,19 @@
 #include "SHarper/SHNtupliser/interface/SHL1Event.hh"
 
 //Will fix this really nasty hack with some proper branch setup once I've got this all sorted
-#define SLHCBUILD 1
+#define SLHCBUILD 0
 #if SLHCBUILD
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 #include "DataFormats/L1TCalorimeter/interface/CaloCluster.h"
 #include "DataFormats/L1TCalorimeter/interface/CaloTower.h"
-
+const l1t::CaloCluster* getEgammaCaloCluster(const l1t::EGamma& egamma,edm::Handle<l1t::CaloClusterBxCollection> l1CaloClusters);
 #endif
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 //little hacky naughty temp function
 void addL1Particles(const edm::InputTag& tag,const std::string& l1Name,const edm::Event& iEvent,SHEvent* shEvent);
-const l1t::CaloCluster* getEgammaCaloCluster(const l1t::EGamma& egamma,edm::Handle<l1t::CaloClusterBxCollection> l1CaloClusters);
+
 
 void SHL1Ntupliser::initSHEvent()
 {
@@ -85,6 +85,8 @@ void SHL1Ntupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSet
 
   fillTree();
 }
+
+#if SLHCBUILD
 const l1t::CaloCluster* getEgammaCaloCluster(const l1t::EGamma& egamma,edm::Handle<l1t::CaloClusterBxCollection> l1CaloClusters)
 {
   if(l1CaloClusters.isValid()){
@@ -96,7 +98,8 @@ const l1t::CaloCluster* getEgammaCaloCluster(const l1t::EGamma& egamma,edm::Hand
   }
   return 0;
 }
-       
+
+#endif
 
 void addL1Particles(const edm::InputTag& tag,const std::string& l1Name,const edm::Event& iEvent,SHEvent* shEvent)
 {

@@ -347,11 +347,18 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
   //shEvt_->addCaloTowers(outputTowers);
   
   // addInDeLaseredTriggerNrgys(heepEvt_,*shEvt_);
+  
+  edm::Handle<std::string> idStrHandle;
+  edm::InputTag idTag("egmGsfElectronIDs","heepElectronID-HEEPV50-CSA14-25ns"); 
+  iEvent.getByLabel(idTag,idStrHandle);
+  
+  std::cout <<*idStrHandle<<std::endl;
 
-  if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
-    shEvt_->getCaloHits().clear();
-    shEvt_->clearTrigs();
-  }  
+
+  //if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
+  // shEvt_->getCaloHits().clear();
+  // shEvt_->clearTrigs();
+  //}  
   passEle=true; //moved to a seperate filter run first
   if(passEle || !(shEvt_->datasetCode()>=120 && shEvt_->datasetCode()<700)){ //only for phoJet, qcdJet, actually sod it everything but Z
     nrPass_++;

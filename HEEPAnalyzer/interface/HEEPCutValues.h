@@ -20,8 +20,11 @@ namespace heep {
     double minEta;
     double maxEta;
     double maxDEtaIn;
+    double dEtaInConstTerm;
+    double dEtaInGradTerm;
     double maxDPhiIn;
     double maxHadem;
+    double hademConstTerm;
     double maxSigmaIEtaIEta;
     double minE2x5Over5x5;
     double minE1x5Over5x5;

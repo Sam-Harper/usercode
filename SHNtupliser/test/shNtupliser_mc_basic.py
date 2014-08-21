@@ -9,7 +9,7 @@ process = cms.Process("HEEP")
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(500),
+    reportEvery = cms.untracked.int32(1),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -30,7 +30,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(20)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -137,6 +137,8 @@ process.kt6PFJets = kt4PFJets.clone(
     doAreaFastjet = cms.bool(True),
     doRhoFastjet = cms.bool(True)
 ) 
+process.load('EgammaAnalysis.ElectronTools.egmGsfElectronIDs_cff')
+
 
 #from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 #process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons')
@@ -145,6 +147,7 @@ process.p = cms.Path(#process.primaryVertexFilter*
    # process.egammaFilter*
  #   process.pfParticleSelectionSequence* process.eleIsoSequence*
 #    process.kt6PFJets*
+ #   process.egmGsfElectronIDSequence*
     process.shNtupliser)
         
 
