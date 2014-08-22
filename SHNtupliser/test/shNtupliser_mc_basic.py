@@ -108,48 +108,62 @@ else:
 
 
 
-filePrefex="file:"
-if(sys.argv[2].find("/pnfs/")==0):
-    filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
+    filePrefex="file:"
+    if(sys.argv[2].find("/pnfs/")==0):
+        filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
 
-if(sys.argv[2].find("/store/")==0):
-    filePrefex=""
-if(sys.argv[2].find("/eos/")==0):
-    filePrefex="'root://eoscms/"
-
-
-
-process.source = cms.Source("PoolSource",
-                 #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
-                       #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
-                            fileNames = cms.untracked.vstring(),
-)
-for i in range(2,len(sys.argv)-1):
-    print filePrefex+sys.argv[i]
-    process.source.fileNames.extend([filePrefex+sys.argv[i],])
+    if(sys.argv[2].find("/store/")==0):
+        filePrefex=""
+    if(sys.argv[2].find("/eos/")==0):
+        filePrefex="'root://eoscms/"
 
 
 
-#process.load("CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff")
-from RecoJets.JetProducers.kt4PFJets_cfi import *
-process.kt6PFJets = kt4PFJets.clone(
-    rParam = cms.double(0.6),
-    doAreaFastjet = cms.bool(True),
-    doRhoFastjet = cms.bool(True)
-) 
-process.load('EgammaAnalysis.ElectronTools.egmGsfElectronIDs_cff')
+    process.source = cms.Source("PoolSource",
+                                #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
+                                #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
+                                fileNames = cms.untracked.vstring(),
+                                )
+    for i in range(2,len(sys.argv)-1):
+        print filePrefex+sys.argv[i]
+        process.source.fileNames.extend([filePrefex+sys.argv[i],])
 
+
+
+#process.load('EgammaAnalysis.ElectronTools.egmGsfElectronIDs_cff')
+
+process.egammaFilter = cms.EDFilter("EGammaFilter",
+                                    nrElesRequired=cms.int32(-1),
+                                    nrPhosRequired=cms.int32(-1),
+                                    nrSCsRequired=cms.int32(-1),
+                                    eleEtCut=cms.double(25),
+                                    phoEtCut=cms.double(25),
+                                    scEtCut=cms.double(-1),
+                                    eleTag=process.shNtupliser.gsfEleTag,
+                                    phoTag=process.shNtupliser.recoPhoTag,
+                                    superClusEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel"),
+                                    superClusEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower"),
+                                    caloTowerTag = cms.InputTag("towerMaker"),
+                                    requireEcalDriven=cms.bool(True)
+                                     )
+
+print "dataset code: ",process.shNtupliser.datasetCode.value()
+if process.shNtupliser.datasetCode.value()>=600 and process.shNtupliser.datasetCode.value()<620:
+    print "applying filter for 1 ele and disabling large collections"
+    process.egammaFilter.nrElesRequired=cms.int32(1)
+    process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
 #from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 #process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons')
 process.p = cms.Path(#process.primaryVertexFilter*
     #process.gsfElectronsHEEPCorr*process.eIdSequence*
-   # process.egammaFilter*
+   process.egammaFilter*
  #   process.pfParticleSelectionSequence* process.eleIsoSequence*
 #    process.kt6PFJets*
  #   process.egmGsfElectronIDSequence*
     process.shNtupliser)
         
+
 
 #from SHarper.HEEPAnalyzer.heepTools import *
 #swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")
