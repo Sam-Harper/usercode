@@ -13,6 +13,7 @@
 <use   name="DataFormats/EgammaReco"/>
 #<use   name="SimDataFormats/SLHC"/>
 <use   name="DataFormats/CaloTowers"/>
+<use   name="DataFormats/EcalDetId"/>
 <export>
   <lib   name="1"/>
 </export>
