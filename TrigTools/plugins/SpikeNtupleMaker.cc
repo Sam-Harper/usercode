@@ -88,7 +88,7 @@ SpikeNtupleMaker::SpikeNtupleMaker(const edm::ParameterSet& conf):ntupTree_(null
   recoEcalCandToken_ = consumes<reco::RecoEcalCandidateCollection>(conf.getParameter<edm::InputTag>("recoEcalCands"));
   ecalRecHitEBToken_ = consumes<EcalRecHitCollection>(conf.getParameter< edm::InputTag > ("ecalRecHitEB"));
   ecalRecHitEEToken_ = consumes<EcalRecHitCollection>(conf.getParameter< edm::InputTag > ("ecalRecHitEE"));
-  genParticleToken_ = consumes<std::vector<reco::GenParticle> > (edm::InputTag("genParticles"));
+  genParticleToken_ = consumes<std::vector<reco::GenParticle> > (conf.getParameter< edm::InputTag >("genParticles"));
 }
 
 SpikeNtupleMaker::~SpikeNtupleMaker(){}
