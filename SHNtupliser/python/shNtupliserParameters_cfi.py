@@ -58,4 +58,5 @@ shNtupPara = cms.PSet(
                              
                            
     noFracShowerShape=cms.bool(True),
+    eleIsolMVAWeightFile=cms.string("RecoEgamma/ElectronIdentification/data/TMVA_BDTSimpleCat_17Feb2011.weights.xml"),
     )

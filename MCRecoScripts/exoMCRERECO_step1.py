@@ -19,7 +19,7 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load('Configuration.StandardSequences.DigiToRaw_cff')
-process.load('HLTrigger.Configuration.HLT_7E33v2_cff')
+#process.load('HLTrigger.Configuration.HLT_7E33v2_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -79,6 +79,6 @@ process.RAWSIMoutput_step = cms.EndPath(process.RAWSIMoutput)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.digitisation_step,process.L1simulation_step,process.digi2raw_step)
-process.schedule.extend(process.HLTSchedule)
+#process.schedule.extend(process.HLTSchedule)
 process.schedule.extend([process.endjob_step,process.RAWSIMoutput_step])
 

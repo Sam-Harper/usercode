@@ -86,6 +86,8 @@ SHElectron::SHElectron():
   isolHadDepth2BC_(-999.),
   dxyErr_(-999.),
   dzErr_(-999.),
+  isolMVA_(-999.),
+  nonIsolMVA_(-999.),
   rhoCorr_(-999.),
   mEvent_(NULL)
 {
@@ -175,6 +177,8 @@ SHElectron::SHElectron(const SHElectron &rhs):
   isolHadDepth2BC_(rhs.isolHadDepth2BC_),
   dxyErr_(rhs.dxyErr_),
   dzErr_(rhs.dzErr_),
+  isolMVA_(rhs.isolMVA_),
+  nonIsolMVA_(rhs.nonIsolMVA_),
   rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {

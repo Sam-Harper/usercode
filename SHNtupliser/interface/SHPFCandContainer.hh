@@ -29,6 +29,10 @@ public:
   const SHPFCandidate* chargedHad(size_t nr)const{return &chargedHad_[nr];}
   const SHPFCandidate* neutralHad(size_t nr)const{return &neutralHad_[nr];}
 
+  const std::vector<SHPFCandidate>& photons()const{return photon_;}
+  const std::vector<SHPFCandidate>& chargedHad()const{return chargedHad_;}
+  const std::vector<SHPFCandidate>& neutralHad()const{return neutralHad_;}
+
   ClassDef(SHPFCandContainer,1)
 
 

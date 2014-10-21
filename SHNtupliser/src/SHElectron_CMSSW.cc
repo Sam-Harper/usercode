@@ -100,6 +100,8 @@ isolHadDepth1BC_(ele.dr03HcalDepth1TowerSumEtBc()),
 isolHadDepth2BC_(ele.dr03HcalDepth2TowerSumEtBc()),
 dxyErr_(ele.gsfTrack()->dxyError()),
 dzErr_(ele.gsfTrack()->dzError()),
+isolMVA_(-999.),
+nonIsolMVA_(ele.mva()),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -189,6 +191,8 @@ isolHadDepth1BC_(-999.),
 isolHadDepth2BC_(-999.),
 dxyErr_(-999.),
 dzErr_(-999.),
+isolMVA_(-999.),
+nonIsolMVA_(-999.),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {

@@ -51,8 +51,8 @@ void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
 void fillPFClustersECAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE);
 void fillPFClustersHCAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters);
 int getSCSeedCrysId(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters);
-reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle< reco::VertexCollection > verticesColl);
 
+int chargedHadronVertex(  const reco::PFCandidate& pfcand, const reco::VertexCollection& vertices );
 
 void dumpPFInfo(const edm::ValueMap<std::vector<reco::PFCandidateRef> >& isoMaps,const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle);
 
@@ -348,11 +348,11 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
   
   // addInDeLaseredTriggerNrgys(heepEvt_,*shEvt_);
   
-  edm::Handle<std::string> idStrHandle;
-  edm::InputTag idTag("egmGsfElectronIDs","heepElectronID-HEEPV50-CSA14-25ns"); 
-  iEvent.getByLabel(idTag,idStrHandle);
+//   edm::Handle<std::string> idStrHandle;
+//   edm::InputTag idTag("egmGsfElectronIDs","heepElectronID-HEEPV50-CSA14-25ns"); 
+//   iEvent.getByLabel(idTag,idStrHandle);
   
-  std::cout <<*idStrHandle<<std::endl;
+//   std::cout <<*idStrHandle<<std::endl;
 
 
   //if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
@@ -584,76 +584,65 @@ void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
       }
     }//end ele loop
     //std::cout <<"cand nr "<<candNr<<" / "<<pfCands.size()<<" accept "<<std::endl;
-
+   
+    const int pfParticleIDAbs=std::abs(pfParticle.pdgId());
+    //    std::cout <<"pfParticle id "<<pfParticle.pdgId()<<std::endl;
+    if(pfParticleIDAbs!=22 && pfParticleIDAbs!=130 && pfParticleIDAbs!=211){
+      std::cout <<"balls, id is "<<pfParticleIDAbs<<std::endl;
+    }
     if(accept){
-      if(pfParticle.pdgId()==22){   
+      if(pfParticleIDAbs==22){   
 	//hack
 	//const math::XYZPointF& posCal = pfParticle.positionAtECALEntrance();
 	//shPFCands.addPhoton(pfParticle.pt(),posCal.eta(),posCal.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
        	shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
-      }else if(abs(pfParticle.pdgId())==130){
+      }else if(pfParticleIDAbs==130 ||
+	       pfParticleIDAbs==111 ||
+	       pfParticleIDAbs==310 ||
+	       pfParticleIDAbs==2112){
 	shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
 	
-      }else if(abs(pfParticle.pdgId()) == 211){
-	reco::VertexRef pfCandVtx= chargedHadronVertex(pfParticle,vertices);
+      }else if(pfParticleIDAbs == 211 ||
+	       pfParticleIDAbs == 321 ||
+	       pfParticleIDAbs == 999211 ||
+	       pfParticleIDAbs == 2212){
+	int pfCandVtx= chargedHadronVertex(pfParticle,*vertices.product());
 
 	//	float dz = fabs(pfCandVtx->z()-mainVtx->z());
-	if(pfCandVtx==mainVtx){
+	if(pfCandVtx==-1 || pfCandVtx==0){
 	
 	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
-	  shPFCand.setVertex(pfCandVtx->x(),pfCandVtx->y(),pfCandVtx->z());
+	  shPFCand.setVertex(0,0,0);
+	  //shPFCand.setVertex(pfCandVtx->x(),pfCandVtx->y(),pfCandVtx->z());
 	}
       }
     }	 
   }
 }
 
-//stolen from EGamma/PFIsolationEstimator
-reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle< reco::VertexCollection > verticesColl)
-{
 
-  //code copied from Florian's PFNoPU class
-    
-  reco::TrackBaseRef trackBaseRef( pfcand.trackRef() );
+//stolen from PFPileUpAlgo.cc
+int chargedHadronVertex(  const reco::PFCandidate& pfcand, const reco::VertexCollection& vertices ) {
 
+  auto const & track = pfcand.trackRef();  
   size_t  iVertex = 0;
-  unsigned index=0;
-  unsigned nFoundVertex = 0;
-
+  unsigned int index=0;
+  unsigned int nFoundVertex = 0;
   float bestweight=0;
-  
-  const reco::VertexCollection& vertices = *(verticesColl.product());
-
-  for( reco::VertexCollection::const_iterator iv=vertices.begin(); iv!=vertices.end(); ++iv, ++index) {
-    
-    const reco::Vertex& vtx = *iv;
-    
-    // loop on tracks in vertices
-    for(reco::Vertex::trackRef_iterator iTrack=vtx.tracks_begin();iTrack!=vtx.tracks_end(); ++iTrack) {
-
-      const reco::TrackBaseRef& baseRef = *iTrack;
-
-      // one of the tracks in the vertex is the same as 
-      // the track considered in the function
-      if(baseRef == trackBaseRef ) {
-        float w = vtx.trackWeight(baseRef);
-        //select the vertex for which the track has the highest weight
-        if (w > bestweight){
-          bestweight=w;
-          iVertex=index;
-          nFoundVertex++;
-        }
-      }
-    }
-    
+  for( auto const & vtx : vertices) {
+      float w = vtx.trackWeight(track);
+     //select the vertex for which the track has the highest weight
+ 	if (w > bestweight){
+	  bestweight=w;
+	  iVertex=index;
+	  nFoundVertex++;
+	}
+     ++index;
   }
- 
- 
-  
+
   if (nFoundVertex>0){
-    //if (nFoundVertex!=1)
-      //  edm::LogWarning("TrackOnTwoVertex")<<"a track is shared by at least two verteces. Used to be an assert";
-    return  reco::VertexRef( verticesColl, iVertex);
+  
+    return iVertex;
   }
   // no vertex found with this track. 
 
@@ -661,26 +650,27 @@ reco::VertexRef chargedHadronVertex( const reco::PFCandidate& pfcand,edm::Handle
   bool checkClosestZVertex=true;
   if ( checkClosestZVertex ) {
 
-    double dzmin = 10000.;
+    double dzmin = 10000;
     double ztrack = pfcand.vertex().z();
     bool foundVertex = false;
     index = 0;
-    for( reco::VertexCollection::const_iterator  iv=vertices.begin(); iv!=vertices.end(); ++iv, ++index) {
+    for(auto iv=vertices.begin(); iv!=vertices.end(); ++iv, ++index) {
 
       double dz = fabs(ztrack - iv->z());
       if(dz<dzmin) {
-        dzmin = dz;
-        iVertex = index;
-        foundVertex = true;
+	dzmin = dz; 
+	iVertex = index;
+	foundVertex = true;
       }
     }
 
     if( foundVertex ) 
-      return  reco::VertexRef( verticesColl, iVertex);  
-  
+      return iVertex;  
+
   }
-   
-  return  reco::VertexRef( );
+
+
+  return -1 ;
 }
 
 
