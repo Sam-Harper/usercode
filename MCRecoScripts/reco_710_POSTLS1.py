@@ -162,12 +162,13 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.L1Reco_step = cms.Path(process.L1Reco)
 process.reconstruction_step = cms.Path(process.reconstruction)
-process.eventinterpretaion_step = cms.Path(process.egammaFilter*process.EIsequence)
+#process.eventinterpretaion_step = cms.Path(process.egammaFilter*process.EIsequence)
+process.eventinterpretaion_step = cms.Path(process.EIsequence)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
 
 #process.gedElectronPFIsoSequence.insert(process.gedElectronPFIsoSequence.index(process.gedGsfElectrons)+1,process.egammaFilter)
-process.caloTowersRec.insert(1,process.egammaFilter)
+#process.caloTowersRec.insert(1,process.egammaFilter)
 
 
 # Schedule definition

@@ -22,7 +22,7 @@ bool SHTrigInfo::passTrig(double eta,double phi)const
 
 TLorentzVector SHTrigInfo::getTrigObj(double eta,double phi)const
 {
-   double minDeltaR2=0.5*0.5;
+   double minDeltaR2=0.3*0.3;
   //  std::cout <<"here "<<std::endl;
   for(int objNr=0;objNr<nrPass();objNr++){
     //   std::cout <<"objNr "<<objNr<<" / "<<nrPass()<<std::endl;
