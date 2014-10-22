@@ -20,10 +20,11 @@ process.load('Configuration.StandardSequences.L1Reco_cff')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('CommonTools.ParticleFlow.EITopPAG_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(-1)
 )
 
 import sys
@@ -40,6 +41,7 @@ process.source = cms.Source("PoolSource",
                  #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                        #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
+              #              eventsToProcess = cms.untracked.VEventRange("1:16731-1:16731")
 )
 
 
@@ -88,12 +90,12 @@ process.mix.playback = True
 process.mix.digitizers = cms.PSet()
 for a in process.aliases: delattr(process, a)
 process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
-from Configuration.AlCa.GlobalTag import GlobalTag
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 
 if isCrabJob:
-    process.GlobalTag = GlobalTag(process.GlobalTag, 'TOSED:GLOBALTAG::All', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, 'TOSED:GLOBALTAG', '')
 else:
-    process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2]+"::All", '')  
+    process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2], '')  
 
 
 
@@ -104,7 +106,7 @@ process.mcFilter = cms.EDFilter("MCTruthFilter",
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
                                     nrPhosRequired=cms.int32(-1),
-                                    nrSCsRequired=cms.int32(1),
+                                    nrSCsRequired=cms.int32(-1),
                                     eleEtCut=cms.double(-1),
                                     phoEtCut=cms.double(-1),
                                     scEtCut=cms.double(30),
