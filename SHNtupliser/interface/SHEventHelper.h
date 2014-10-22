@@ -13,12 +13,13 @@
 #include "SHarper/SHNtupliser/interface/SHCaloHit.hh"
 #include "SHarper/SHNtupliser/interface/EleMaker.h"
 
+#include "RecoEgamma/ElectronIdentification/interface/ElectronMVAEstimator.h"
 
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 #include <vector>
-
+#include <memory>
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 #include "DataFormats/HLTReco/interface/TriggerEventWithRefs.h"
 
@@ -54,6 +55,7 @@ private:
 
   EleMaker tracklessEleMaker_;
 
+  std::unique_ptr<ElectronMVAEstimator> eleMVA_; //a temporary 71X thing, 72X has this in the electron
 
   //storage for SHCaloHits so we dont have to keep reallocating the memory 
   mutable std::vector<SHCaloHit> ecalHitVec_;

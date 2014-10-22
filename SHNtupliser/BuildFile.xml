@@ -21,6 +21,7 @@
 <use   name="CondFormats/L1TObjects"/>
 <use   name="DataFormats/L1Trigger"/>
 <use   name="DataFormats/L1TCalorimeter"/>
+<use   name="RecoEgamma/ElectronIdentification"/>
 #<use   name="SimDataFormats/SLHC"/>
 <export>
   <lib   name="1"/>

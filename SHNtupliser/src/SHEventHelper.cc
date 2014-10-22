@@ -70,6 +70,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   
   std::cout <<"warning, disabling use of HLT debug"<<std::endl;
   //useHLTDebug_=false;
+  eleMVA_.reset(new ElectronMVAEstimator(edm::FileInPath ( conf.getParameter<std::string>("eleIsolMVAWeightFile").c_str() ).fullPath()));
 
   tracklessEleMaker_.setup(conf);
 }
@@ -208,6 +209,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
+  shEle->setIsolMVA(eleMVA_->mva(gsfEle,heepEvent.handles().vertices->size()));
+  
   
   //grrr
   //const reco::Vertex& vtx = heepEvent.handles().vertices->front();

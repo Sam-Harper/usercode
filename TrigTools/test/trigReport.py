@@ -1,7 +1,7 @@
 import os
 import FWCore.ParameterSet.Config as cms
 import sys
-process = cms.Process( "USER2" )
+process = cms.Process( "HLTDUMP" )
 
 #load path from confdb (for data --data, for mc --mc)
 #I do the grep -v cms.EndPaths just to remove all the output modules

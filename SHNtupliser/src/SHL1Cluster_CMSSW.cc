@@ -45,7 +45,6 @@ SHL1Cluster::SHL1Cluster(const l1t::EGamma& egamma,const l1t::CaloCluster& clus)
 
 namespace l1t{
   class EGamma{};
-  class CaloCluster{};
 }
 
 SHL1Cluster::SHL1Cluster(const l1t::EGamma& egamma,const l1t::CaloCluster& clus)
