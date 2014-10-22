@@ -305,6 +305,9 @@ private:
   float isolNeutralHadron()const{return isolNeutralHadron_;}
   float isolPhoton()const{return isolPhoton_;}
 
+  float isolMVA()const{return isolMVA_;}
+  float nonIsolMVA()const{return nonIsolMVA_;}
+
   float rhoCorr()const{return rhoCorr_;}
   
   // const SHIsolSuperCluster& getIsolSuperClus()const;
