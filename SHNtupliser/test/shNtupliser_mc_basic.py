@@ -9,7 +9,7 @@ process = cms.Process("HEEP")
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(1),
+    reportEvery = cms.untracked.int32(1000),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -30,7 +30,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20)
+    input = cms.untracked.int32(-1)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -89,6 +89,13 @@ if "CMSSW_7" in cmsswVersion:
     process.shNtupliser.superClusterEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel")
     process.shNtupliser.superClusterEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower")
 
+
+process.source = cms.Source("PoolSource",
+                                #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
+                                #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
+                             fileNames = cms.untracked.vstring(),
+                             )
+
 isCrabJob=False #script seds this if its a crab job
 
 #if 1, its a crab job...
@@ -119,11 +126,7 @@ else:
 
 
 
-    process.source = cms.Source("PoolSource",
-                                #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
-                                #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
-                                fileNames = cms.untracked.vstring(),
-                                )
+  
     for i in range(2,len(sys.argv)-1):
         print filePrefex+sys.argv[i]
         process.source.fileNames.extend([filePrefex+sys.argv[i],])

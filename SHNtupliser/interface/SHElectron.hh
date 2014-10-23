@@ -141,6 +141,10 @@ class SHElectron : public TObject {
   //dxy error info
   float dxyErr_;
   float dzErr_;
+
+  //mva info
+  float isolMVA_;
+  float nonIsolMVA_;
   
   float rhoCorr_; //! set by the event each time we get it
 
@@ -173,7 +177,8 @@ private:
   void setPosTrackInnToSeed(const TVector3& pos){posTrackInnToSeed_=pos;}
   void setPosTrackOutToSeed(const TVector3& pos){posTrackOutToSeed_=pos;}
   void setD0(float d0){d0_=d0;}
-  
+
+  void setIsolMVA(float mva){isolMVA_=mva;}
   void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   void setPFIsol(float charged,float neutral,float photon);
   void fixTrkIsol();
@@ -300,6 +305,9 @@ private:
   float isolNeutralHadron()const{return isolNeutralHadron_;}
   float isolPhoton()const{return isolPhoton_;}
 
+  float isolMVA()const{return isolMVA_;}
+  float nonIsolMVA()const{return nonIsolMVA_;}
+
   float rhoCorr()const{return rhoCorr_;}
   
   // const SHIsolSuperCluster& getIsolSuperClus()const;
@@ -319,7 +327,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,20) 
+  ClassDef(SHElectron,21) 
 
 };
 

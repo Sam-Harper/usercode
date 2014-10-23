@@ -56,7 +56,7 @@ fi
 
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
 timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
-reRECOVersion="EGM711${timing}TrackCuts"
+reRECOVersion="EGM711${timing}"
 datasetTIER=AOD
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]

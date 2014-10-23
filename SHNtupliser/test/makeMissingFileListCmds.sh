@@ -17,8 +17,8 @@ dataset=`echo $dir | awk -F "." '{print $1}' | awk -F "_DATA_" '{print $2}'`
 if [ -z $dataset ];then
 dataset=`echo $dir | awk -F "." '{print $1}' | awk -F "_MC_" '{print $2}'`
 tag=`echo $dir | awk  -F "." '{print $2}' | awk -F "_${dataset}" '{print $1}' | awk -F "_AODSIM_" '{print $2}'`
-samsVersion=`echo $dir | awk  -F "." '{print $2}' | awk -F "_AODSIM_" '{print $1}' | sed 's|_|/|'`
-subDir=$samsVersion/AODSIM/$tag/$dataset
+samsVersion=`echo $dir | awk  -F "." '{print $2}' | awk -F "_AODSIM_" '{print $1}' | sed 's|_|/|' | sed 's|_USER_|/USER/|g'`
+subDir=$samsVersion/$tag/$dataset
 
 #echo tag $tag
 #echo dataset $dataset
@@ -28,7 +28,7 @@ subDir=`echo $dir | awk  -F "." '{print $2}' | awk -F "$dataset" '{print $1,$2}'
 fi
 
 
-echo ./missingFileFinder.sh $ralDir/$subDir $nrJobs
+echo ./missingFileFinder.sh $ralDir/$subDir $nrJobs $dir
 
 fi
 

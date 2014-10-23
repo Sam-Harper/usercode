@@ -20,10 +20,11 @@ process.load('Configuration.StandardSequences.L1Reco_cff')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('CommonTools.ParticleFlow.EITopPAG_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(-1)
 )
 
 import sys
@@ -40,6 +41,7 @@ process.source = cms.Source("PoolSource",
                  #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                        #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
+              #              eventsToProcess = cms.untracked.VEventRange("1:16731-1:16731")
 )
 
 
@@ -88,55 +90,14 @@ process.mix.playback = True
 process.mix.digitizers = cms.PSet()
 for a in process.aliases: delattr(process, a)
 process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
-from Configuration.AlCa.GlobalTag import GlobalTag
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 
 if isCrabJob:
-    process.GlobalTag = GlobalTag(process.GlobalTag, 'TOSED:GLOBALTAG::All', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, 'TOSED:GLOBALTAG', '')
 else:
-    process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2]+"::All", '')  
+    process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2], '')  
 
 
-from CondCore.DBCommon.CondDBSetup_cfi import *
-process.ecalES1 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                        connect = cms.string("frontier://FrontierProd/CMS_COND_31X_ECAL"),
-                                        toGet = cms.VPSet(
-                                            cms.PSet(record = cms.string("EcalChannelStatusRcd"),tag=cms.string("EcalChannelStatus_coll12_v1_mc")),
-                                            cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),tag=cms.string("EcalIntercalibConstants_2011_V3_Bon_start_mc")),
-                                            cms.PSet(record = cms.string("EcalLaserAlphasRcd"),tag=cms.string("EcalLaserAlphas_mc")),
-                                            cms.PSet(record = cms.string("EcalPedestalsRcd"),tag=cms.string("EcalPedestals_v02_mc")),
-                                            cms.PSet(record = cms.string("EcalLaserAPDPNRatiosRcd"),tag=cms.string("EcalLaserAPDPNRatios_p1p2p3_v2_mc")),
-                                                          )
-                                        )
-
-process.ecalES2 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                        connect = cms.string("frontier://FrontierProd/CMS_COND_34X_ECAL"),
-                                        toGet = cms.VPSet(
-                                          #  cms.PSet(record = cms.string("EcalSRSettingsRcd"),tag=cms.string("null")),
-                                            cms.PSet(record = cms.string("EcalTPGLinearizationConstRcd"),tag=cms.string("EcalTPGLinearizationConst_beamv5_startup_mc")),
-                                   )
-                               )
-
-
-process.ecalES4 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                        connect = cms.string("frontier://FrontierProd/CMS_COND_ECAL_000"),
-                                        toGet = cms.VPSet(
-                                             cms.PSet(record = cms.string("EcalLinearCorrectionsRcd"),tag=cms.string("EcalLinearCorrections_mc")),
-                                   )
-                               )
-
-
-process.ecalES5 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                        connect = cms.string("frontier://FrontierProd/CMS_COND_31X_PRESHOWER"),
-                                        toGet = cms.VPSet(
-                                            cms.PSet(record = cms.string("ESChannelStatusRcd"),tag=cms.string("ESChannelStatus_LG_V04_mc")),
-                                   )
-                               )
-
-process.es_prefer_ecal1 = cms.ESPrefer("PoolDBESSource","ecalES1")
-process.es_prefer_ecal2 = cms.ESPrefer("PoolDBESSource","ecalES2")
-#process.es_prefer_ecal3 = cms.ESPrefer("PoolDBESSource","ecalES3")
-process.es_prefer_ecal4 = cms.ESPrefer("PoolDBESSource","ecalES4")
-process.es_prefer_ecal5 = cms.ESPrefer("PoolDBESSource","ecalES5")
 
 process.mcFilter = cms.EDFilter("MCTruthFilter",
                                    genParticlesTag = cms.InputTag("genParticles"),
@@ -145,7 +106,7 @@ process.mcFilter = cms.EDFilter("MCTruthFilter",
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
                                     nrPhosRequired=cms.int32(-1),
-                                    nrSCsRequired=cms.int32(1),
+                                    nrSCsRequired=cms.int32(-1),
                                     eleEtCut=cms.double(-1),
                                     phoEtCut=cms.double(-1),
                                     scEtCut=cms.double(30),
@@ -162,13 +123,12 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.L1Reco_step = cms.Path(process.L1Reco)
 process.reconstruction_step = cms.Path(process.reconstruction)
-#process.eventinterpretaion_step = cms.Path(process.egammaFilter*process.EIsequence)
-process.eventinterpretaion_step = cms.Path(process.EIsequence)
+process.eventinterpretaion_step = cms.Path(process.egammaFilter*process.EIsequence)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
 
 #process.gedElectronPFIsoSequence.insert(process.gedElectronPFIsoSequence.index(process.gedGsfElectrons)+1,process.egammaFilter)
-#process.caloTowersRec.insert(1,process.egammaFilter)
+process.caloTowersRec.insert(1,process.egammaFilter)
 
 
 # Schedule definition
