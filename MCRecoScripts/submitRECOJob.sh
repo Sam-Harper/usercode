@@ -14,7 +14,7 @@ if [ -z "$version" ];then
 fi
 
 #these are the identifiers of the conditions and campaign
-config=reco_710_POSTLS1
+config=reco_720_POSTLS1
 
 datasetName=`echo $datasetPath | awk -F "/" '{print $2}'`
 puIndex=2;
@@ -56,15 +56,15 @@ fi
 
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
 timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
-reRECOVersion="EGM711${timing}"
-datasetTIER=AOD
+reRECOVersion="EGM720${timing}"
+datasetTIER=RECO
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
 then 
-globalTag=POSTLS171_V11
+globalTag=MCRUN2_72_V1A
 elif [[ $pileUp == *bx50 ]]
 then
-globalTag=POSTLS171_V12
+globalTag=NotReady
 else 
 echo "pile up senario $pileUp, not recognised, cant determin global tag"
 exit

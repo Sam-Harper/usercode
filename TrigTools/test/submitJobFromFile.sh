@@ -25,7 +25,7 @@ outputFile=${dataset}_${cmsswVersion}_HLT.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=720pre7/HLTReRun/${dataset}/${cmsswVersion}/${tag}/
+outputPath=720/MuEGCor/${dataset}/${cmsswVersion}/${tag}/
 #outputPath=612SLHC2/SHL1v1/NoTowerThres/${cmsswVersion}/${dataset}/
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 

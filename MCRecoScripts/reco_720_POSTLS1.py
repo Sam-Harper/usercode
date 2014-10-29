@@ -70,15 +70,15 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
                                          SelectEvents = cms.untracked.PSet(  SelectEvents = ( cms.vstring( 'reconstruction_step',))),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    outputCommands = process.AODSIMEventContent.outputCommands,
+    outputCommands = process.RECOSIMEventContent.outputCommands,
     fileName = cms.untracked.string('TOSED:OUTPUTFILE'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RECO')
     )
 )
-process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterECAL_*_*")
-process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterHCAL_*_*")
+#process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterECAL_*_*")
+#process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterHCAL_*_*")
 
 if not isCrabJob:
     process.RECOSIMoutput.fileName = cms.untracked.string(sys.argv[len(sys.argv)-1])
