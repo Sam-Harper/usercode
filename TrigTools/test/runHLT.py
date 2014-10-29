@@ -10,14 +10,14 @@ def isMCFile(filename):
         return False
         
 
-from SHarper.TrigTools.hltCustom import process
+from SHarper.TrigTools.hltCustomSusy import process
 #process.load("setup_cff")
 import FWCore.ParameterSet.Config as cms
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
-process.hltL1sL1SingleEG10.L1SeedsLogicalExpression = cms.string( "L1_SingleEG20" )
-process.hltL1sL1SingleEG35ORDoubleEG1510.L1SeedsLogicalExpression = cms.string( "L1_SingleEG20" )
+#process.hltL1sL1SingleEG10.L1SeedsLogicalExpression = cms.string( "L1_SingleEG20" )
+#process.hltL1sL1SingleEG35ORDoubleEG1510.L1SeedsLogicalExpression = cms.string( "L1_SingleEG20" )
 import sys
 
 isCrabJob=False
@@ -68,7 +68,7 @@ process.output = cms.OutputModule("PoolOutputModule",
 )
 
 process.load('L1Trigger.GlobalTriggerAnalyzer.l1GtTrigReport_cfi')
-process.l1GtTrigReport.L1GtRecordInputTag= cms.InputTag("hltGtDigis")
+process.l1GtTrigReport.L1GtRecordInputTag= cms.InputTag("simGtDigis")
 process.L1AnalyzerEndpath = cms.EndPath( process.l1GtTrigReport )
 
 if isCrabJob:
@@ -81,13 +81,14 @@ if isCrabJob:
 ##                                    fileName = cms.string(outputFilename)
 ## )
 
-from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag as customiseGlobalTag
 if isMC:
-    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'auto:run2_mc')
+    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'MCRUN2_72_V1A')
 else:
     process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'auto:run2_hlt_GRun')
     
-process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
+process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_CONDITIONS'
+#process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
 for pset in process.GlobalTag.toGet.value():
     pset.connect = pset.connect.value().replace('frontier://FrontierProd/', 'frontier://FrontierProd/')
@@ -99,49 +100,6 @@ process.maxEvents.input = cms.untracked.int32( -1 )
 
 process.MessageLogger.suppressWarning = cms.untracked.vstring("hltCtf3HitL1SeededWithMaterialTracksPF","hltL1SeededStartUpElectronPixelSeedsPF","hltCtf3HitActivityWithMaterialTracks","hltActivityStartUpElectronPixelSeeds","hltCtfL1SeededWithMaterialTracksPF","hltL1SeededElectronGsfTracks","hltEcalActivityEgammaRegionalCTFFinalFitWithMaterial","hltActivityElectronGsfTracks","hltEgammaGsfTracksUnseeded","hltEgammaGsfTracks","hltEgammaElectronPixelSeeds","hltEgammaElectronPixelSeedsUnseeded")
 
-if isMC:
-
-    from CondCore.DBCommon.CondDBSetup_cfi import *
-    process.ecalES1 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                   connect = cms.string("frontier://FrontierProd/CMS_COND_31X_ECAL"),
-                                   toGet = cms.VPSet(
-                                       cms.PSet(record = cms.string("EcalChannelStatusRcd"),tag=cms.string("EcalChannelStatus_coll12_v1_mc")),
-                                       cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),tag=cms.string("EcalIntercalibConstants_2011_V3_Bon_start_mc")),
-                                       cms.PSet(record = cms.string("EcalLaserAlphasRcd"),tag=cms.string("EcalLaserAlphas_mc")),
-                                       cms.PSet(record = cms.string("EcalPedestalsRcd"),tag=cms.string("EcalPedestals_v02_mc")),
-                                       cms.PSet(record = cms.string("EcalLaserAPDPNRatiosRcd"),tag=cms.string("EcalLaserAPDPNRatios_p1p2p3_v2_mc")),
-                                       )
-                                   )
-
-    process.ecalES2 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                   connect = cms.string("frontier://FrontierProd/CMS_COND_34X_ECAL"),
-                                   toGet = cms.VPSet(
-                                       #  cms.PSet(record = cms.string("EcalSRSettingsRcd"),tag=cms.string("null")),
-                                       cms.PSet(record = cms.string("EcalTPGLinearizationConstRcd"),tag=cms.string("EcalTPGLinearizationConst_beamv5_startup_mc")),
-                                       )
-                                   )
-
-
-    process.ecalES4 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                   connect = cms.string("frontier://FrontierProd/CMS_COND_ECAL_000"),
-                                   toGet = cms.VPSet(
-                                       cms.PSet(record = cms.string("EcalLinearCorrectionsRcd"),tag=cms.string("EcalLinearCorrections_mc")),
-                                       )
-                                   )
-
-
-    process.ecalES5 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                   connect = cms.string("frontier://FrontierProd/CMS_COND_31X_PRESHOWER"),
-                                   toGet = cms.VPSet(
-                                       cms.PSet(record = cms.string("ESChannelStatusRcd"),tag=cms.string("ESChannelStatus_LG_V04_mc")),
-                                       )
-                                   )
-
-    process.es_prefer_ecal1 = cms.ESPrefer("PoolDBESSource","ecalES1")
-    process.es_prefer_ecal2 = cms.ESPrefer("PoolDBESSource","ecalES2")
-    #process.es_prefer_ecal3 = cms.ESPrefer("PoolDBESSource","ecalES3")
-    process.es_prefer_ecal4 = cms.ESPrefer("PoolDBESSource","ecalES4")
-    process.es_prefer_ecal5 = cms.ESPrefer("PoolDBESSource","ecalES5")
 
 from SLHCUpgradeSimulations.Configuration.postLS1Customs import *
 process = customise_HLT( process )

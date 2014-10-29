@@ -17,8 +17,8 @@ workingDir=$9
 
 scheduler=glitecoll
 #workingDir=`echo $datasetPath | awk -F "/" '{print $2"_"$3}' `.`date +%y%m%d`_`date +%H%M%S`
-copyData=1
-returnData=0
+copyData=0
+returnData=1
 
 #nrEvents=10 
 #nrJobs=2
@@ -51,6 +51,6 @@ sed 's|DATASETCODE|'$datasetCode'|' > shNtupliser_autoGen_cfg.py
 
 
 crab -create -cfg crab_autoGen.cfg
-crab -c $workingDir -submit
+#crab -c $workingDir -submit
 
  
