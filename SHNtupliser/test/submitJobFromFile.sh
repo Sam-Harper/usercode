@@ -24,7 +24,7 @@ outputFile=${dataset}_ntuples_${cmsswVersion}_SHv25.root
 
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
-outputPath=711/v25/${dataFormat}/${cmsswVersion}/${dataset}
+outputPath=720/v25/${dataFormat}/${cmsswVersion}/${dataset}
 #outputPath=612SLHC2/SHL1v1/NoTowerThres/${cmsswVersion}/${dataset}/
 #the output directory /pnfs/pp.rl.ac.uk/data/cms/store/user/harper/$outputPath
 
