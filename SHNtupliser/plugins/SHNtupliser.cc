@@ -587,9 +587,9 @@ void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
    
     const int pfParticleIDAbs=std::abs(pfParticle.pdgId());
     //    std::cout <<"pfParticle id "<<pfParticle.pdgId()<<std::endl;
-    if(pfParticleIDAbs!=22 && pfParticleIDAbs!=130 && pfParticleIDAbs!=211){
-      std::cout <<"balls, id is "<<pfParticleIDAbs<<std::endl;
-    }
+    // if(pfParticleIDAbs!=22 && pfParticleIDAbs!=130 && pfParticleIDAbs!=211){
+    //  std::cout <<"balls, id is "<<pfParticleIDAbs<<std::endl;
+    // }
     if(accept){
       if(pfParticleIDAbs==22){   
 	//hack
