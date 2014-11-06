@@ -9,7 +9,12 @@ def isMCFile(filename):
     else:
         return False
         
+import sys
+if len(sys.argv)<4:
+    print "insufficient parameters, syntax cmsRun runHLT.py inputFile.root outputFile.root"
+    exit()
 
+    
 from SHarper.TrigTools.hlt import process
 #process.load("setup_cff")
 import FWCore.ParameterSet.Config as cms
@@ -20,7 +25,9 @@ process.hltEcalRecHit.cleaningConfig.cThreshold_endcap=cms.double(99999)
 process.hltEcalRecHit.cleaningConfig.cThreshold_double=cms.double(99999)
 #process.hltL1sL1SingleEG10.L1SeedsLogicalExpression = cms.string( "L1_SingleEG20" )
 #process.hltL1sL1SingleEG35ORDoubleEG1510.L1SeedsLogicalExpression = cms.string( "L1_SingleEG20" )
-import sys
+
+
+
 
 isCrabJob=False
 if isCrabJob==False:
