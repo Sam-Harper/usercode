@@ -155,3 +155,13 @@ if process.particleFlowClusterECAL.inputECAL.getModuleLabel()=="particleFlowClus
     print "3D Timing: ON 3DTiming"
 else:
     print "3D Timing: OFF"
+
+process.GlobalTag.toGet.append(
+    cms.PSet(
+        record  = cms.string( 'HcalRecoParamsRcd' ),
+        label   = cms.untracked.string( '' ),
+        connect = cms.untracked.string(
+'frontier://FrontierProd/CMS_COND_44X_HCAL' ),
+        tag     = cms.string( 'HcalRecoParams_v8.0_mc' )
+    )
+)
