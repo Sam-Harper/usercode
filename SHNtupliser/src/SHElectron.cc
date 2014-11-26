@@ -88,6 +88,9 @@ SHElectron::SHElectron():
   dzErr_(-999.),
   isolMVA_(-999.),
   nonIsolMVA_(-999.),
+  passCutPreSel_(false),
+  passMVAPreSel_(false),
+  passPFlowPreSel_(false),  
   rhoCorr_(-999.),
   mEvent_(NULL)
 {
@@ -178,23 +181,29 @@ SHElectron::SHElectron(const SHElectron &rhs):
   dxyErr_(rhs.dxyErr_),
   dzErr_(rhs.dzErr_),
   isolMVA_(rhs.isolMVA_),
-  nonIsolMVA_(rhs.nonIsolMVA_),
+  nonIsolMVA_(rhs.nonIsolMVA_), 
+  passCutPreSel_(rhs.passCutPreSel_),
+  passMVAPreSel_(rhs.passMVAPreSel_),
+  passPFlowPreSel_(rhs.passPFlowPreSel_),  
   rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
 
 }
 
-int SHElectron::region()const
+int SHElectron::region(float iDetEta)
 {
-  if(isBarrel()){//barrel
-    if(fabs(detEta())<1.442) return 0;
+  float detEtaAbs = fabs(iDetEta);
+  if(detEtaAbs<1.5){//barrel
+    if(detEtaAbs<1.442) return 0;
     else return 10;
   }else{//endcap
-    if(fabs(detEta())>1.56 && fabs(detEta())<2.5) return 1;
+    if(detEtaAbs>1.56 && detEtaAbs<2.5) return 1;
     else return 11;
   }
 }
+
+
 const SHSuperCluster* SHElectron::superClus()const
 {
   if(mEvent_==NULL ||  superClusIndx_>=mEvent_->nrSuperClus()) return NULL; //cant get super clus as have no mother event

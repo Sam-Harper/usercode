@@ -102,6 +102,9 @@ dxyErr_(ele.gsfTrack()->dxyError()),
 dzErr_(ele.gsfTrack()->dzError()),
 isolMVA_(ele.mvaOutput().mva_Isolated),
 nonIsolMVA_(ele.mvaOutput().mva_e_pi),
+passCutPreSel_(ele.passingCutBasedPreselection()),
+passMVAPreSel_(ele.passingMvaPreselection()),
+passPFlowPreSel_(ele.passingPflowPreselection()),  
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -192,7 +195,10 @@ isolHadDepth2BC_(-999.),
 dxyErr_(-999.),
 dzErr_(-999.),
 isolMVA_(-999.),
-nonIsolMVA_(-999.),
+nonIsolMVA_(-999.),  
+passCutPreSel_(false),
+passMVAPreSel_(false),
+passPFlowPreSel_(false),  
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -288,6 +294,9 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   isolHadDepth2BC_(-999.),
   dxyErr_(-999.),
   dzErr_(-999.),
+  passCutPreSel_(false),
+  passMVAPreSel_(false),
+  passPFlowPreSel_(false),  
   rhoCorr_(-999.),
   mEvent_(NULL)
 {
