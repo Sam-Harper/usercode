@@ -268,6 +268,7 @@ void SpikeData::fill(const reco::RecoEcalCandidate& cand,const EcalRecHitCollect
 
   e4e1 = SpikeFuncs::e4e1(seedDetId,recHits);
   e6e2 = SpikeFuncs::e6e2(seedDetId,recHits);
+  e1 = SpikeFuncs::recHitE(seedDetId, recHits);
   passL1 = l1Matched;
 
 }
