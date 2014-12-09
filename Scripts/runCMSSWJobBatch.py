@@ -105,8 +105,9 @@ print args.config
 
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
-baseOutputDir="/afs/cern.ch/work/s/sharper/data"
-batchJobBaseDir="/afs/cern.ch/work/s/sharper/cmsswBatchJobFiles/"
+baseDir="/opt/ppd/month/harper"
+baseOutputDir=baseDir+"/mc"
+batchJobBaseDir=baseDir+"/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
 
@@ -117,7 +118,7 @@ batchSubmitFile="qsub_autoGen.sh"
 print "config file ",args.config," base batch file ",batchSubmitBaseFile
     
 fullOutputDir=baseOutputDir+"/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
-fullLogDir="/afs/cern.ch/work/s/sharper/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
+fullLogDir=baseDir+"/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
 if os.path.exists(fullOutputDir):
     print "output directory ",fullOutputDir," exists, aborting "
     exit(1)
@@ -160,7 +161,7 @@ for jobNr in range(0,args.nrJobs):
 
     #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
     os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
-   # os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
+    os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
     #os.system("chmod +x "+batchSubmitFile);
     #cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
    ## print cmd

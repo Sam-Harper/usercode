@@ -70,6 +70,7 @@ bool EGammaFilter::filter(edm::Event& event,const edm::EventSetup& setup)
 { 
   nrTot_++;
   if(passPho(event) && passEle(event) && passSC(event)){
+    //   std::cout <<"passed "<<std::endl;
     nrPass_++;
     return true;
   }else return false;
@@ -135,22 +136,36 @@ bool EGammaFilter::passSC(edm::Event& event)const
 
   EgammaTowerIsolation hcalCalc(0.15,0.,0.,-1,caloTowerHandle.product()) ;
 
-
+  // std::cout <<"new event "<<std::endl;
   int nrSCs=0;
   for(size_t scNr=0;scNr<scEBHandle->size();scNr++){
     const reco::SuperCluster& superClus = (*scEBHandle)[scNr];
 
+    // std::cout <<"barrel sc et "<<superClus.energy()*sin(superClus.position().theta());
+
     if(superClus.energy()*sin(superClus.position().theta()) > scEtCut_){    
       float hOverE = hcalCalc.getTowerESum(&superClus)/superClus.energy();
       if(hOverE<0.15) nrSCs++;
+      //  std::cout <<" H/E "<<hOverE;
     }
+    //  std::cout <<std::endl;
   }
 
   for(size_t scNr=0;scNr<scEEHandle->size();scNr++){
-    const reco::SuperCluster& superClus = (*scEEHandle)[scNr];
-    if(superClus.energy()*sin(superClus.position().theta()) > scEtCut_) nrSCs++;
+    const reco::SuperCluster& superClus = (*scEEHandle)[scNr]; 
+    //std::cout <<"endcap sc et "<<superClus.energy()*sin(superClus.position().theta());
+
+  
+    if(superClus.energy()*sin(superClus.position().theta()) > scEtCut_){
+      float hOverE = hcalCalc.getTowerESum(&superClus)/superClus.energy();
+      if(hOverE<0.15) nrSCs++;  
+      //  std::cout <<" H/E "<<hOverE;
+    }
+    //  std::cout <<std::endl;
   }
-  return nrSCs > nrSCsRequired_;
+
+  //  std::cout <<"nr SC "<<nrSCs<<" eb "<<scEBHandle->size()<<" ee "<<scEEHandle->size()<<" nrSCRequired "<<nrSCsRequired_<<std::endl;
+  return nrSCs >= nrSCsRequired_;
 
   
 }

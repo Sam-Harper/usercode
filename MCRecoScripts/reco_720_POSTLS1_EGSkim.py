@@ -24,7 +24,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(100)
 )
 
 import sys
@@ -70,13 +70,14 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
                                          SelectEvents = cms.untracked.PSet(  SelectEvents = ( cms.vstring( 'reconstruction_step',))),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    outputCommands = process.RECOSIMEventContent.outputCommands,
+    outputCommands = process.AODSIMEventContent.outputCommands,
     fileName = cms.untracked.string('TOSED:OUTPUTFILE'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RECO')
     )
 )
+process.RECOSIMoutput.outputCommands.extend(cms.untracked.vstring("drop recoGenParticles_*_*_*","drop recoPFJets_*_*_*","drop triggerTriggerEvent_*_*_*","drop recoTrack*_*_*_*","drop recoCaloJets_*_*_*","drop *_generalTracks_*_*","drop recoJet*_*_*_*","drop *FwdPtrs*_*_*_*","drop recoGenJets*_*_*_*","drop ints_genParticles_*_*","drop recoPFTau*_*_*_*","drop recoDeDxData*_*_*_*","drop CastorRecHits*_*_*_*","drop recoCastorTowers_*_*_*","drop HFRecHitsSorted_*_*_*","drop TrackingRecHitsOwned_*_*_*","keep recoTracks_generalTracks_*_*","drop *_*ulti5x5*_*_*","drop recoJPTJets_*_*_*","drop *_*ybridSuperClusters_*_*","keep *_particleFlowClusterECAL_*_*","keep *_particleFlowClusterHCAL_*_*","drop *_muons_*_*","drop *_*onversions_*_*","drop recoRecoChargedRefCandidates_trackRefsForJets_*_*","drop recoPFRecHits_particleFlowRecHitHO_*_*","drop *_offlinePrimaryVerticesWithBS_*_*" ))
 #process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterECAL_*_*")
 #process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterHCAL_*_*")
 
@@ -98,6 +99,13 @@ else:
     process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2], '')  
 
 
+## process.ecalMultiFitUncalibRecHit== cms.EDProducer("EcalUncalibRecHitProducer",
+##     EBdigiCollection = cms.InputTag("ecalDigis","ebDigis"),
+##      EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
+##      EEdigiCollection = cms.InputTag("ecalDigis","eeDigis"),
+##      EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
+##      algo = cms.string("EcalUncalibRecHitWorkerWeights")
+##  )
 
 process.mcFilter = cms.EDFilter("MCTruthFilter",
                                    genParticlesTag = cms.InputTag("genParticles"),
@@ -106,10 +114,10 @@ process.mcFilter = cms.EDFilter("MCTruthFilter",
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
                                     nrPhosRequired=cms.int32(-1),
-                                    nrSCsRequired=cms.int32(-1),
+                                    nrSCsRequired=cms.int32(1),
                                     eleEtCut=cms.double(-1),
                                     phoEtCut=cms.double(-1),
-                                    scEtCut=cms.double(30),
+                                    scEtCut=cms.double(20),
                                     eleTag=cms.InputTag("gedGsfElectrons"),
                                     phoTag=cms.InputTag("gedPhotons"),
                                     superClusEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel"),
@@ -117,13 +125,26 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     caloTowerTag = cms.InputTag("towerMaker"),
                                     requireEcalDriven=cms.bool(False)
                                      )
-
+process.eleFilter = cms.EDFilter("EGammaFilter",
+                                 nrElesRequired=cms.int32(1),
+                                 nrPhosRequired=cms.int32(-1),
+                                 nrSCsRequired=cms.int32(-1),
+                                 eleEtCut=cms.double(20),
+                                 phoEtCut=cms.double(-1),
+                                 scEtCut=cms.double(-1),
+                                 eleTag=cms.InputTag("gedGsfElectrons"),
+                                 phoTag=cms.InputTag("gedPhotons"),
+                                 superClusEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel"),
+                                 superClusEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower"),
+                                 caloTowerTag = cms.InputTag("towerMaker"),
+                                 requireEcalDriven=cms.bool(True)
+                                 )
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.L1Reco_step = cms.Path(process.L1Reco)
-process.reconstruction_step = cms.Path(process.reconstruction)
-process.eventinterpretaion_step = cms.Path(process.egammaFilter*process.EIsequence)
+process.reconstruction_step = cms.Path(process.reconstruction*process.eleFilter)
+process.eventinterpretaion_step = cms.Path(process.egammaFilter*process.eleFilter*process.EIsequence)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
 
@@ -155,13 +176,3 @@ if process.particleFlowClusterECAL.inputECAL.getModuleLabel()=="particleFlowClus
     print "3D Timing: ON 3DTiming"
 else:
     print "3D Timing: OFF"
-
-process.GlobalTag.toGet.append(
-    cms.PSet(
-        record  = cms.string( 'HcalRecoParamsRcd' ),
-        label   = cms.untracked.string( '' ),
-        connect = cms.untracked.string(
-'frontier://FrontierProd/CMS_COND_44X_HCAL' ),
-        tag     = cms.string( 'HcalRecoParams_v8.0_mc' )
-    )
-)

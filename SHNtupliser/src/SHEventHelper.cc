@@ -44,7 +44,7 @@ SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
   datasetCode_(datasetCode),
   eventWeight_(eventWeight),
   isMC_(true),
-  nrGenPartToStore_(30)
+  nrGenPartToStore_(0)
 {
   initEcalHitVec_();
   initHcalHitVec_();
@@ -209,27 +209,13 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
+  //and here come the hacks, things that are not correctly filled yet....
   shEle->setIsolMVA(eleMVA_->mva(gsfEle,heepEvent.handles().vertices->size()));
+  shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
+  shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
+  //redoing shower shape variables (only necessary for photons now )
+  //  if(noFracShowerShape_) fixClusterShape(*(gsfEle.superCluster()->seed()),heepEvent,*shEle);
   
-  
-  //grrr
-  //const reco::Vertex& vtx = heepEvent.handles().vertices->front();
-  //  std::cout <<"x "<<gsfEle.TrackPositionAtVtx().X()<<" track x "<<gsfEle.gsfTrack()->vx()<<" vx "<<vtx.x()<<" y "<<gsfEle.TrackPositionAtVtx().Y()<<" trk y "<<gsfEle.gsfTrack()->vy()<<" y "<<vtx.y()<<" z "<<gsfEle.TrackPositionAtVtx().Z()<<" trk z "<<gsfEle.gsfTrack()->vz()<<" vz "<<vtx.z()<<std::endl;
-   //std::cout <<"x "<<gsfEle.trackMomentumAtVtx().X()<<" track x "<<gsfEle.gsfTrack()->px()<<" y "<<gsfEle.trackMomentumAtVtx().Y()<<" trk y "<<gsfEle.gsfTrack()->py()<<" z "<<gsfEle.trackMomentumAtVtx().Z()<<" trk z "<<gsfEle.gsfTrack()->pz()<<std::endl;
-  //   const reco::Vertex& vtx = heepEvent.handles().vertices->front();
-  //  std::cout <<"CMSSW dxy "<<gsfEle.gsfTrack()->dxy( math::XYZPoint(vtx.x(),vtx.y(),vtx.z()) )<<" my dxy "<<shEle->dxy()<<std::endl;
-  
-
-//   for(size_t i=0;i<heepEvent.handles().gsfEle->size();i++){
-//     if(&gsfEle==&(*heepEvent.handles().gsfEle)[i]){
-//       reco::GsfElectronRef eleRef(heepEvent.handles().gsfEle,i);
- 
-//       float pfChargedIso = heepEvent.handles().pfChargedIsoValEleMap.isValid() ? (*heepEvent.handles().pfChargedIsoValEleMap)[eleRef] : -999;
-//       float pfPhotonIso = heepEvent.handles().pfPhotonIsoValEleMap.isValid() ? (*heepEvent.handles().pfPhotonIsoValEleMap)[eleRef] : -999;
-//       float pfNeutralIso = heepEvent.handles().pfNeutralIsoValEleMap.isValid() ? (*heepEvent.handles().pfNeutralIsoValEleMap)[eleRef] : -999;
-//       shEle->setPFIsol(pfChargedIso,pfNeutralIso,pfPhotonIso);
-//     }
-//   }
 
   if(shEle->seedId()!=0 && false){
     
@@ -256,9 +242,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
     //  std::cout <<"set state"<<std::endl;
   }
 
-  //redoing shower shape variables
-  if(noFracShowerShape_) fixClusterShape(*(gsfEle.superCluster()->seed()),heepEvent,*shEle);
-  
+
   //std::cout <<"ele "<<gsfEle.et()<<" eta "<<gsfEle.eta()<<" miss hits "<<gsfEle.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()<<" covDist "<<gsfEle.convDist()<<" dcot "<<gsfEle.convDcot()<<" radius "<<gsfEle.convRadius()<<std::endl;
 
  //  double bField=0;
@@ -952,8 +936,8 @@ int SHEventHelper::getVertexNrClosestZ(const reco::TrackBase& track,const std::v
   return bestVertexNr;
 }
 //dummy function for releases without this function
-void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& heepEvent,SHElectron& ele){}
-/*
+//void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& heepEvent,SHElectron& ele){}
+
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
@@ -983,49 +967,55 @@ void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& hee
     const EcalRecHitCollection* recHits = detector==EcalBarrel ? ebHits : eeHits; 
     edm::ESHandle<CaloTopology> topology;
     edm::ESHandle<CaloGeometry> geom;
-    edm::ESHandle<EcalSeverityLevelAlgo> severityLevelAlgo;
-    heepEvent.eventSetup().get<CaloTopologyRecord>().get(topology);
-    heepEvent.eventSetup().get<EcalSeverityLevelAlgoRcd>().get(severityLevelAlgo);
-    heepEvent.eventSetup().get<CaloGeometryRecord>().get(geom);
-    std::vector<std::string> recHitFlagsToBeExcludedBarrelStr = {
-      "kFaultyHardware",
-      "kPoorCalib",
-      "kTowerRecovered",
-      "kDead"
-    };
-    std::vector<std::string> recHitSeverityToBeExcludedStr = {
-      "kWeird",
-      "kBad",
-      "kTime"
-    };
+//     edm::ESHandle<EcalSeverityLevelAlgo> severityLevelAlgo;
+//     heepEvent.eventSetup().get<CaloTopologyRecord>().get(topology);
+//     heepEvent.eventSetup().get<EcalSeverityLevelAlgoRcd>().get(severityLevelAlgo);
+//     heepEvent.eventSetup().get<CaloGeometryRecord>().get(geom);
+//     std::vector<std::string> recHitFlagsToBeExcludedBarrelStr = {
+//       "kFaultyHardware",
+//       "kPoorCalib",
+//       "kTowerRecovered",
+//       "kDead"
+//     };
+//     std::vector<std::string> recHitSeverityToBeExcludedStr = {
+//       "kWeird",
+//       "kBad",
+//       "kTime"
+//     };
     
-    std::vector<std::string> recHitFlagsToBeExcludedEndcapStr = {
-      "kFaultyHardware",
-      "kPoorCalib",
-      "kSaturated",
-      "kLeadingEdgeRecovered",
-      "kNeighboursRecovered",
-      "kTowerRecovered",
-      "kDead",
-      "kWeird"
-    };
-    std::vector<int> recHitSeverityToBeExcluded = StringToEnumValue<EcalSeverityLevel::SeverityLevel>(recHitSeverityToBeExcludedStr);
-    std::vector<int> recHitFlagsToBeExcludedBarrel= StringToEnumValue<EcalRecHit::Flags>(recHitFlagsToBeExcludedBarrelStr);  
-    std::vector<int> recHitFlagsToBeExcludedEndcap= StringToEnumValue<EcalRecHit::Flags>(recHitFlagsToBeExcludedEndcapStr);
-    std::vector<int>& recHitFlagsToBeExcluded = detector==EcalBarrel ? recHitFlagsToBeExcludedBarrel : recHitFlagsToBeExcludedEndcap;
+//     std::vector<std::string> recHitFlagsToBeExcludedEndcapStr = {
+//       "kFaultyHardware",
+//       "kPoorCalib",
+//       "kSaturated",
+//       "kLeadingEdgeRecovered",
+//       "kNeighboursRecovered",
+//       "kTowerRecovered",
+//       "kDead",
+//       "kWeird"
+//     };
+//     std::vector<int> recHitSeverityToBeExcluded = StringToEnumValue<EcalSeverityLevel::SeverityLevel>(recHitSeverityToBeExcludedStr);
+//     std::vector<int> recHitFlagsToBeExcludedBarrel= StringToEnumValue<EcalRecHit::Flags>(recHitFlagsToBeExcludedBarrelStr);  
+//     std::vector<int> recHitFlagsToBeExcludedEndcap= StringToEnumValue<EcalRecHit::Flags>(recHitFlagsToBeExcludedEndcapStr);
+//     std::vector<int>& recHitFlagsToBeExcluded = detector==EcalBarrel ? recHitFlagsToBeExcludedBarrel : recHitFlagsToBeExcludedEndcap;
      
-    std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster,recHits,topology.product(),geom.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
+    // std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster,recHits,topology.product(),geom.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
+    //   sigmaEtaEta = sqrt(covariances[0]) ;
+    // std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
+      std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster,recHits,topology.product(),geom.product()) ;
     sigmaEtaEta = sqrt(covariances[0]) ;
-    std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
-    
+    std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster,recHits,topology.product()) ;
+  
     sigmaIEtaIEta = sqrt(localCovariances[0]) ;
-    e1x5 = noZS::EcalClusterTools::e1x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
-    e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
-    e5x5 = noZS::EcalClusterTools::e5x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    //  e1x5 = noZS::EcalClusterTools::e1x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    //    e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    //  e5x5 = noZS::EcalClusterTools::e5x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    e1x5 = noZS::EcalClusterTools::e1x5(seedCluster,recHits,topology.product());
+    e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product());
+    e5x5 = noZS::EcalClusterTools::e5x5(seedCluster,recHits,topology.product());
   }
 
   ele.setShowerShape(sigmaEtaEta,sigmaIEtaIEta,e1x5,e2x5Max,e5x5);
   
 }
-*/
+
 

@@ -146,6 +146,10 @@ class SHElectron : public TObject {
   float isolMVA_;
   float nonIsolMVA_;
   
+  bool passCutPreSel_;
+  bool passMVAPreSel_;
+  bool passPFlowPreSel_;
+
   float rhoCorr_; //! set by the event each time we get it
 
   //backwards link to the mother event
@@ -167,13 +171,6 @@ private:
   	     const cmssw::IsolationVariables& isol04,int superClusNr);
   ~SHElectron(){}
 
-  //modifiers (as these arent members of PixelMatchGsfElectrons so are hacked in for now)
-  //these will disappear in the future
-  // void setIsolPtTrks(double isol){isolPtTrks_=isol;}
-  //void setIsolNrTrks(int nrTracks){isolNrTrks_=nrTracks;}
-  //void setIsolEm(double isol){isolEm_=isol;}
-  //void setIsolHad(double isol){isolHad_=isol;}
-  //void setPassStdSel(bool pass){passStdSel_=pass;}
   void setPosTrackInnToSeed(const TVector3& pos){posTrackInnToSeed_=pos;}
   void setPosTrackOutToSeed(const TVector3& pos){posTrackOutToSeed_=pos;}
   void setD0(float d0){d0_=d0;}
@@ -182,10 +179,12 @@ private:
   void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   void setPFIsol(float charged,float neutral,float photon);
   void fixTrkIsol();
-  //accessors
   void setIsConversion(float isCon){dCotTheta_=isCon;}
   void setConvInfo(float iDist,float iDcot){dCotTheta_=iDcot;dist_=iDist;}
   void setShowerShape(float sigmaEtaEta,float sigmaIEtaIEta,float e1x5,float e2x5Max,float e5x5);
+  void setPassPFlowPreSel(bool pass){passPFlowPreSel_=pass;}
+  void setPassMVAPreSel(bool pass){passMVAPreSel_=pass;}
+
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
   //have any seed/super clusters and want those calls to degrade gracefully
@@ -195,7 +194,8 @@ private:
 
   //classification variables
   int type()const{return type_;}
-  int region()const;
+  int region()const{return region(detEta());}
+  static int region(float iDetEta);
   bool isBarrel()const{return isEB();}//fabs(detEta_)<1.5;}
   //bool isEndcap()const{return !isBarrel();}
   bool isFid()const{return fabs(detEta_)<1.442 || (fabs(detEta_)>1.56 && fabs(detEta_)<2.5);}
@@ -283,6 +283,9 @@ private:
   float epCombNrgy()const{return epCombNrgy_;}
   bool isEcalDriven()const{return isEcalDriven_;}
   bool isTrackerDriven()const{return isTrackerDriven_;}
+  bool passCutPreSel()const{return passCutPreSel_;}
+  bool passMVAPreSel()const{return passMVAPreSel_;}
+  bool passPFlowPreSel()const{return passPFlowPreSel_;}
 
   //  int seedId()const{return seedId_;}
 
@@ -327,7 +330,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,21) 
+  ClassDef(SHElectron,22) 
 
 };
 
