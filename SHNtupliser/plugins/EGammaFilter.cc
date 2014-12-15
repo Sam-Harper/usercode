@@ -78,13 +78,15 @@ bool EGammaFilter::filter(edm::Event& event,const edm::EventSetup& setup)
 }
 void EGammaFilter::endJob()
 { 
-  // edm::Service<TFileService> fs;
-  //fs->file().cd();
-  //quick and dirty hack as writing ints directly isnt working
-  //TTree* tree = new TTree("preFilterEventCountTree","Event count");
-  //tree->Branch("nrPass",&nrPass_,"nrPass/I");
-  //tree->Branch("nrTot",&nrTot_,"nrTot/I");
-  // tree->Fill();
+  edm::Service<TFileService> fs;
+  if(fs.isAvailable()){
+    fs->file().cd();
+    //quick and dirty hack as writing ints directly isnt working
+    TTree* tree = new TTree("preFilterEventCountTree","Event count");
+    tree->Branch("nrPass",&nrPass_,"nrPass/I");
+    tree->Branch("nrTot",&nrTot_,"nrTot/I");
+    tree->Fill();
+  }
   
 }  
 bool EGammaFilter::passPho(edm::Event& event)const
