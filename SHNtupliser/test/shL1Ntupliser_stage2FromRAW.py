@@ -24,7 +24,7 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
     limit = cms.untracked.int32(1000)
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 import sys
 # Input source
@@ -73,7 +73,7 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
-process.GlobalTag = GlobalTag(process.GlobalTag, 'POSTLS162_V2::All', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_72_V3A::All', '')
 
 # to get input digis
 process.load('Configuration.StandardSequences.RawToDigi_cff')

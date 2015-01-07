@@ -3,7 +3,7 @@
 #include "SHarper/SHNtupliser/interface/SHL1Event.hh"
 
 //Will fix this really nasty hack with some proper branch setup once I've got this all sorted
-#define SLHCBUILD 0
+#define SLHCBUILD 1
 #if SLHCBUILD
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 #include "DataFormats/L1TCalorimeter/interface/CaloCluster.h"
