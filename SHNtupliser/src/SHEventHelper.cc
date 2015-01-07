@@ -268,10 +268,10 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 {
   //std::cout <<"adding photon"<<std::endl;
   shEvent.addElectron(photon,shEvent.getCaloHits());
-  if(noFracShowerShape_){
-    SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
-    fixClusterShape(*(photon.superCluster()->seed()),heepEvent,*shEle);
-  }
+  //if(noFracShowerShape_){
+  //  SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
+  //  fixClusterShape(*(photon.superCluster()->seed()),heepEvent,*shEle);
+  // }
 //   double bField=0;
 //   if(heepEvent.runnr()>100000){ //hack to id data
 //     edm::Handle<DcsStatusCollection> dcsHandle;
