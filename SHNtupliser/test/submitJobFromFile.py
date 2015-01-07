@@ -67,27 +67,29 @@ for line in datasetDefFile:
 
     import subprocess
     datasetQuery="--query \"file dataset="+datasetPath+"| sum(file.is_file_valid)\""
-   # print datasetQuery
+    #print datasetQuery
     fileCountRAW = subprocess.Popen(['das_client.py','--query','file dataset='+datasetPath+' | sum(file.is_file_valid)','--format','json'],stdout=subprocess.PIPE).communicate()[0]
     import json
     fileCountData = json.loads(fileCountRAW)
+
     #from pprint import pprint
-    # print fileCountData['u\'_id\'']
-    #    pprint(fileCountData)
-    #    print crabSubmitCmd
+    #print fileCountData['u\'_id\'']
+    #   pprint(fileCountData)
+    #   print crabSubmitCmd
     nrFiles=fileCountData["data"][0]["result"]["value"]
 
     
+    
     unitsPerJob=nrFiles/nrJobs
     if unitsPerJob<=0:
-        print "Error, dataset has "+str(nrFiles)+" but "+str(nrJobs)+" requested, reseting to 1 file to job"
-        unitsPerJob=1
+       print "Error, dataset has "+str(nrFiles)+" but "+str(nrJobs)+" requested, reseting to 1 file to job"
+       unitsPerJob=1
     crabSubmitCmd = "crab submit -c crab_base.py General.requestName="+workingDir+ \
-                    " General.transferOutput="+str(options.copyData)+ \
+                    " General.transferOutputs="+str(options.copyData)+ \
                     " Data.inputDataset="+datasetPath+ \
-                    " Data.dbsUrl="+options.dbsUrl+ \
+                    " Data.inputDBS="+options.dbsUrl+ \
                     " Data.unitsPerJob="+str(unitsPerJob)+ \
-                    " Data.outlfn="+outputPath+ \
+                    " Data.outLFN="+outputPath+ \
                     " Data.publishDataName="+publishDataname+ \
                     " JobType.psetName="+tempConfig
     print "will submit:"
