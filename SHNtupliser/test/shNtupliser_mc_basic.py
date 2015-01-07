@@ -151,7 +151,12 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                      )
 
 print "dataset code: ",process.shNtupliser.datasetCode.value()
-if process.shNtupliser.datasetCode.value()>=600 and process.shNtupliser.datasetCode.value()<620:
+if process.shNtupliser.datasetCode.value()>=600 and process.shNtupliser.datasetCode.value()<700:
+    print "applying filter for 1 ele and disabling large collections"
+    process.egammaFilter.nrElesRequired=cms.int32(1)
+    process.shNtupliser.nrGenPartToStore = cms.int32(0)
+
+if process.shNtupliser.datasetCode.value()>=310 and process.shNtupliser.datasetCode.value()<312:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
