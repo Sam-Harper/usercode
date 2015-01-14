@@ -42,10 +42,25 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
 
   // std::cout <<"eh"<<std::endl;
 
+  //  std::cout <<"nr eles "<<heepEvt_.heepEles().size()<<std::endl;
+  //  std::cout <<"nr pat "<<heepEvt_.patEles().size()<<std::endl;
+
+
+
   //do what ever you want
   //lets get the heep electrons and count the number that pass / fail cuts
   const std::vector<heep::Ele>& eles = heepEvt_.heepEles();
-  for(size_t eleNr=0;eleNr<eles.size();eleNr++){
+  for(size_t eleNr=0;eleNr<eles.size();eleNr++){     
+    bool passVid = (*heepEvt_.handles().heepIDVID)[eles[eleNr].gsfEleEDMPtr()];
+    bool passHeep = eles[eleNr].cutCode()==0x0;
+    edm::Handle<edm::ValueMap<unsigned> > howFarHandle;
+    iEvent.getByLabel(edm::InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51-miniAOD"),howFarHandle);
+    size_t howFar = (*howFarHandle)[eles[eleNr].gsfEleEDMPtr()];
+    const heep::Ele& ele = eles[eleNr];
+    if(passVid!=passHeep){
+      std::cout <<" disgreement vid "<<passVid<<" got to "<<howFar<< " heep "<<heep::CutCodes::getCodeName(ele.cutCode())<<" et "<<ele.et()<<" eta "<<ele.eta()<<" phi "<<ele.phi()<<" e2x5 "<<ele.e2x5MaxOver5x5Full5x5()<<" e1x5 "<<ele.e1x5Over5x5Full5x5()<<" hadem "<<ele.gsfEle().hadronicOverEm()<<" had "<<ele.gsfEle().hadronicOverEm()*ele.superCluster().energy()<<" had cut "<<2+0.05*ele.superCluster().energy()<<" "<<heepEvt_.runnr()<<" "<<heepEvt_.eventnr()<<std::endl;
+    }
+    // std::cout <<"eleNr "<<eleNr<< "pass "<<<<" passVID "<<passVid<<std::endl;
     if(eles[eleNr].cutCode()==0x0) nrPass_++;
     else nrFail_++;
   }
