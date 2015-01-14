@@ -151,7 +151,7 @@ namespace heep {
     float ptCalo()const{return gsfEle_->trackMomentumAtCalo().rho();}
      
     //abreviations of overly long GsfElectron methods, I'm sorry but if you cant figure out what hOverE() means, you shouldnt be using this class
-    float hOverE()const{return gsfEle_->hadronicOverEm()/p4_.E()*gsfEle_->caloEnergy();}
+    float hOverE()const{return gsfEle_->hadronicOverEm();}
     float dEtaIn()const{return gsfEle_->deltaEtaSuperClusterTrackAtVtx();}
     float dEtaInSeed()const{return dEtaInSeed(*gsfEle_);} //in 73X becomes part of the GsfElectron, will get rid of static functin then
     //a little temporary 72X fix untill 73X
