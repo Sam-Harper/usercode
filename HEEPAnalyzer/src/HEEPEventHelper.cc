@@ -63,6 +63,7 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
   maxDRTrigMatch_ = conf.getParameter<double>("maxDRTrigMatch");
   maxPtRelDiffTrigMatch_ = conf.getParameter<double>("maxPtRelDiffTrigMatch");
+  heepIDVIDTag_ =conf.getParameter<edm::InputTag>("heepIDVID");
  
   hltFiltersToCheck_ =conf.getParameter<std::vector<std::string> >("hltFiltersToCheck");
   //now get the trigger names, however we also need the number of objects each filter requires, which we read from the provenace
@@ -78,6 +79,7 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
 
   applyRhoCorrToEleIsol_ = conf.getParameter<bool>("applyRhoCorrToEleIsol");
   eleIsolEffectiveAreas_ = conf.getParameter<edm::ParameterSet>("eleIsolEffectiveAreas");
+  
 }
 
 void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const
@@ -132,6 +134,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(pfClustersECALTag_,handles.pfClustersECAL);
   event.getByLabel(pfClustersHCALTag_,handles.pfClustersHCAL);
   event.getByLabel(gsfEleToPFCandMapTag_,handles.gsfEleToPFCandMap);
+  event.getByLabel(heepIDVIDTag_,handles.heepIDVID);
   //event.getByType(handles.beamSpot);
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
@@ -146,10 +149,11 @@ void heep::EventHelper::fillHEEPElesFromPat(const heep::EvtHandles& handles,std:
 {
   heepEles.clear();
   if(!handles.electron.isValid()) return;
-  const edm::View<pat::Electron>& eles = *handles.electron;
-  for(edm::View<pat::Electron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
+  const edm::Handle<edm::View<pat::Electron> >& eles = handles.electron;
+  for(edm::View<pat::Electron>::const_iterator eleIt = eles->begin(); eleIt!=eles->end(); ++eleIt){ 
     if(!onlyAddEcalDriven_ || eleIt->ecalDrivenSeed()){
-      addHEEPEle_(*eleIt,handles,heepEles);
+      edm::Ptr<reco::GsfElectron> elePtr(eles,eleIt-eles->begin());
+      addHEEPEle_(elePtr,handles,heepEles);
     }
   }
   //the electrons are now filled, lets add trigger info
@@ -165,10 +169,11 @@ void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,
 
   heepEles.clear();
   if(!handles.gsfEle.isValid()) return;
-  const std::vector<reco::GsfElectron>& eles = *handles.gsfEle;
-  for(std::vector<reco::GsfElectron>::const_iterator eleIt = eles.begin(); eleIt!=eles.end(); ++eleIt){ 
+  const edm::Handle<std::vector<reco::GsfElectron> >& eles = handles.gsfEle;
+  for(std::vector<reco::GsfElectron>::const_iterator eleIt = eles->begin(); eleIt!=eles->end(); ++eleIt){ 
     if(!onlyAddEcalDriven_ || eleIt->ecalDrivenSeed()){
-      addHEEPEle_(*eleIt,handles,heepEles);
+      edm::Ptr<reco::GsfElectron> elePtr(eles,eleIt-eles->begin());
+      addHEEPEle_(elePtr,handles,heepEles);
     }
   }
   //the electrons are now filled, lets add trigger info
@@ -179,7 +184,7 @@ void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,
 }
 
 //this converts the pat::Electron / reco::GsfElectron into a heep::Electron
-void heep::EventHelper::addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
+void heep::EventHelper::addHEEPEle_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const
 {
   heepEles.push_back(heep::Ele(gsfEle));
   heep::Ele& ele =  heepEles.back();  
@@ -193,7 +198,6 @@ void heep::EventHelper::addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::
   if(handles.eleRhoCorr.isValid()) ele.setRhoForIsolCorr(*handles.eleRhoCorr);
   //now we would like to set the cut results, this has to come after setting isolation parameters
   ele.setCutCode(cuts_.getCutCode(ele)); 
-  
   //int cutCode = cuts_.getCutCode(*handles.eleRhoCorr,pvPos,gsfEle);
   //if(cutCode!=ele.cutCode()) std::cout <<" cutCode "<<ele.cutCode()<<" "<<cuts_.getCutCode(*handles.eleRhoCorr,pvPos,gsfEle)<<" rho "<<*handles.eleRhoCorr<<" pv z "<<pvPos.z()<<std::endl;
 }
