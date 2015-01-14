@@ -104,6 +104,9 @@ namespace heep {
     edm::Handle<std::vector<reco::PFCluster> > pfClustersECAL;
 
     edm::Handle<edm::ValueMap<std::vector<reco::PFCandidateRef> > > gsfEleToPFCandMap;
+    
+    edm::Handle<edm::ValueMap<bool> > heepIDVID;
+    
 
     edm::ESHandle<MagneticField> bField;
     edm::ESHandle<TrackerGeometry> trackGeom;
