@@ -81,7 +81,7 @@ heepBarrelCutsV50.dEtaInConstTerm = 0.016
 heepBarrelCutsV50.dEtaInGradTerm = 1E-4
 
 heepEndcapCutsV51 = heepEndcapCutsV50.clone()
-heepEndcapCutsV51.maxDEtaIn=cms.double(0.007)
+heepEndcapCutsV51.maxDEtaIn=cms.double(0.006)
 heepEndcapCutsV51.cuts=cms.string("et:detEta:ecalDriven:dEtaInSeed:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits:dxy")
 heepEndcapCutsV51.minEta=cms.double(1.566)
 heepEndcapCutsV51.maxEta=cms.double(2.5)
