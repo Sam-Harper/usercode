@@ -50,6 +50,8 @@ namespace heep {
                                       //remember that a pat::Electron inherits from a GsfElectron...
     const pat::Electron* patEle_; //the electron as a pat electron (note that the address is same as gsfEle_, we could have just done some nasty casting but its better this way). Note that if we do not orginally have a pat electron, it is NULL
     
+    const edm::Ptr<reco::GsfElectron> gsfEDMPtr_;//needed for accessing value maps
+
     //this is a bit-packed word telling me which cuts the electron fail of the heep selection (ie 0x0 is passed all cuts)
     int cutCode_;
     
@@ -70,12 +72,21 @@ namespace heep {
     
   public:
     
-    //this uses dynamic_casting to see if we really have a pat electron or not, patEle_ is null if its not
-    Ele(const reco::GsfElectron& ele):
-      gsfEle_(&ele),patEle_(dynamic_cast<const pat::Electron*>(&ele)),
+    Ele(const edm::Ptr<reco::GsfElectron>& ele):
+      gsfEle_(&*ele),patEle_((dynamic_cast<const pat::Electron*>(&*ele))),gsfEDMPtr_(ele),
       cutCode_(heep::CutCodes::INVALID),
       //p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()),  
-      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
+      p4_(ele->p4()),//*ele->caloEnergy()/ele->energy()),
+      rhoForIsolCorr_(0),
+      applyRhoIsolCorr_(false),
+      isolEffectAreas_()
+    {}
+    //this uses dynamic_casting to see if we really have a pat electron or not, patEle_ is null if its not
+    Ele(const reco::GsfElectron& ele):
+			     gsfEle_(&ele),patEle_(dynamic_cast<const pat::Electron*>(&ele)),gsfEDMPtr_(),
+      cutCode_(heep::CutCodes::INVALID),
+      //p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()),  
+      p4_(ele.p4()),//*ele.caloEnergy()/ele.energy()),
       rhoForIsolCorr_(0),
       applyRhoIsolCorr_(false),
       isolEffectAreas_()
@@ -83,10 +94,10 @@ namespace heep {
   
 
     Ele(const pat::Electron& ele):
-      gsfEle_(&ele),patEle_(&ele),
+      gsfEle_(&ele),patEle_(&ele),gsfEDMPtr_(),
       cutCode_(heep::CutCodes::INVALID),
       //    p4_(ele.p4()*ele.superCluster()->energy()/ele.energy()), 
-      p4_(ele.p4()*ele.caloEnergy()/ele.energy()),
+      p4_(ele.p4()),//*ele.caloEnergy()/ele.energy()),
       rhoForIsolCorr_(0),
       applyRhoIsolCorr_(false),
       isolEffectAreas_(){}
@@ -102,6 +113,7 @@ namespace heep {
 
     const reco::GsfElectron& gsfEle()const{return *gsfEle_;}
     const pat::Electron& patEle()const; //this function will throw an exception if its not a pat electron (check with isPatEle())
+    edm::Ptr<reco::GsfElectron> gsfEleEDMPtr()const{return gsfEDMPtr_;}
     const reco::SuperCluster& superCluster()const{return *(gsfEle_->superCluster());}
     bool isPatEle()const{return patEle_!=NULL;}
     //kinematic and geometric methods
@@ -141,6 +153,12 @@ namespace heep {
     //abreviations of overly long GsfElectron methods, I'm sorry but if you cant figure out what hOverE() means, you shouldnt be using this class
     float hOverE()const{return gsfEle_->hadronicOverEm()/p4_.E()*gsfEle_->caloEnergy();}
     float dEtaIn()const{return gsfEle_->deltaEtaSuperClusterTrackAtVtx();}
+    float dEtaInSeed()const{return dEtaInSeed(*gsfEle_);} //in 73X becomes part of the GsfElectron, will get rid of static functin then
+    //a little temporary 72X fix untill 73X
+    static float dEtaInSeed(const reco::GsfElectron& ele){
+      return ele.superCluster().isNonnull() && ele.superCluster()->seed().isNonnull() ? 
+	ele.deltaEtaSuperClusterTrackAtVtx() - ele.superCluster()->eta() + ele.superCluster()->seed()->eta() : std::numeric_limits<float>::max();
+    }
     float dPhiIn()const{return gsfEle_->deltaPhiSuperClusterTrackAtVtx();}
     float dPhiOut()const{return gsfEle_->deltaPhiSeedClusterTrackAtCalo();}
     float epIn()const{return gsfEle_->eSuperClusterOverP()*p4_.E()/gsfEle_->caloEnergy();}
@@ -150,28 +168,21 @@ namespace heep {
     float invEOverInvP()const{return gsfEle_->trackMomentumAtVtx().R()!=0. ? 1./gsfEle_->caloEnergy() - 1./gsfEle_->trackMomentumAtVtx().R() : std::numeric_limits<float>::max();}
 
     //shower shape variables
-    float sigmaEtaEta()const;
-    float sigmaEtaEtaUnCorr()const{return gsfEle_->sigmaEtaEta();}
-    float sigmaIEtaIEta()const{return gsfEle_->sigmaIetaIeta();}
-    float e1x5()const{return gsfEle_->e1x5();}
-    float e2x5Max()const{return gsfEle_->e2x5Max();}
-    float e5x5()const{return gsfEle_->e5x5();}
-    float e1x5Over5x5()const{return e5x5()!=0 ? e1x5()/e5x5() : 0.;}
-    float e2x5MaxOver5x5()const{return e5x5()!=0 ? e2x5Max()/e5x5() : 0.;}
+    //so I'm of the opinion that the non 5x5 were a mistake and they should have never been created and that they should be the default, because in 53X they were
+    //but not explicitly saying 5x5 in the name will confuse people
+    //so I have either the choice between breaking backwards compatiblitly by changing all shower shape varialbes to have 5x5 in the name or add confusion to the code
+    //so joy, I have to break backwards compatiblity
+    
+    float sigmaEtaEtaFull5x5()const;
+    float sigmaEtaEtaUnCorrFull5x5()const{return gsfEle_->full5x5_sigmaEtaEta();}
+    float sigmaIEtaIEtaFull5x5()const{return gsfEle_->full5x5_sigmaIetaIeta();}
+    float e1x5Full5x5()const{return gsfEle_->full5x5_e1x5();}
+    float e2x5MaxFull5x5()const{return gsfEle_->full5x5_e2x5Max();}
+    float e5x5Full5x5()const{return gsfEle_->full5x5_e5x5();}
+    float e1x5Over5x5Full5x5()const{return e5x5Full5x5()!=0 ? e1x5Full5x5()/e5x5Full5x5() : 0.;}
+    float e2x5MaxOver5x5Full5x5()const{return e5x5Full5x5()!=0 ? e2x5MaxFull5x5()/e5x5Full5x5() : 0.;}
   
-    
-    //for backwards compatiblity, GsfElectron had these naming schemes but dropped them, will go away in later releases
-    //in theory they are identical to the non sc versions but I dont just map them straight to my functions
-    //as I want to be sensitive to bugs in the gsf electron implimention
-    float scSigmaEtaEta()const;
-    float scSigmaEtaEtaUnCorr()const{return gsfEle_->scSigmaEtaEta();}
-    float scSigmaIEtaIEta()const{return gsfEle_->scSigmaIEtaIEta();}
-    float scE1x5()const{return gsfEle_->scE1x5();}
-    float scE2x5Max()const{return gsfEle_->scE2x5Max();}
-    float scE5x5()const{return gsfEle_->scE5x5();}
-    float scE1x5Over5x5()const{return scE5x5()!=0 ? scE1x5()/scE5x5() : 0.;}
-    float scE2x5MaxOver5x5()const{return scE5x5()!=0 ? scE2x5Max()/scE5x5() : 0.;}
-    
+  
     //isolation, we use cone of 0.3
     //first our rho correction funcs
     float rhoForIsolCorr()const{return rhoForIsolCorr_;}
@@ -201,6 +212,8 @@ namespace heep {
     std::string listCutsFailed()const{return heep::CutCodes::getCodeName(cutCode_);}
     //trigger info
     heep::TrigCodes::TrigBitSet trigBits()const{return trigBits_;}
+
+    
 
   private:
     //functions return 0 if applyRhoIsolCorr = false

@@ -2,6 +2,23 @@ import FWCore.ParameterSet.Config as cms
 
 from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
 
+def swapHEEPToMiniAOD(heepPara):
+    heepPara.electronTag = cms.untracked.InputTag("slimmedElectrons")
+    heepPara.tauTag = cms.untracked.InputTag("slimmedTaus")
+    heepPara.muonTag = cms.untracked.InputTag("slimmedMuons")
+    heepPara.jetTag = cms.untracked.InputTag("slimmedJets")
+    heepPara.photonTag = cms.untracked.InputTag("slimmedPhotons")
+    heepPara.metTag = cms.untracked.InputTag("slimmedMETs")
+    heepPara.reducedBarrelRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
+    heepPara.reducedEndcapRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
+    heepPara.superClusterEBTag = cms.InputTag("reducedEgamma","reducedSuperClusters")
+    heepPara.superClusterEETag = cms.InputTag("reducedEgamma","reducedSuperClsuters")
+    heepPara.preShowerClusterXTag = cms.InputTag("reducedEgamma","reducedESClusters")
+    heepPara.preShowerClusterYTag = cms.InputTag("reducedEgamma","reducedESClusters")
+    heepPara.heepIDVID = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51-miniAOD")
+    heepPara.heepEleSource = cms.int32(1)
+    heepPara.verticesTag = cms.InputTag("offlineSlimmedPrimaryVertices")
+    
 heepEventPara  = cms.PSet (
     electronTag = cms.untracked.InputTag("patElectrons"),
     tauTag = cms.untracked.InputTag("patTaus"),
@@ -50,7 +67,8 @@ heepEventPara  = cms.PSet (
     heepEleSource = cms.int32(0), #0 = GsfElectrons, 1 = pat::Electrons to make the heep electrons from
     pfClustersECALTag = cms.InputTag("particleFlowClusterECAL"),
     pfClustersHCALTag = cms.InputTag("particleFlowClusterHCAL"), 
-    gsfEleToPFCandMapTag = cms.InputTag("particleBasedIsolation","gedGsfElectrons")
+    gsfEleToPFCandMapTag = cms.InputTag("particleBasedIsolation","gedGsfElectrons"),
+    heepIDVID = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51")
 )
 
 
