@@ -109,12 +109,7 @@ else:
     print "using user specified filename"
     process.TFileService.fileName= sys.argv[len(sys.argv)-1]
     #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
-    process.shNtupliser.datasetCode = 11000
-    process.shNtupliser.sampleWeight = 1
-
-
-
-
+  
     filePrefex="file:"
     if(sys.argv[2].find("/pnfs/")==0):
         filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
@@ -123,14 +118,15 @@ else:
         filePrefex=""
     if(sys.argv[2].find("/eos/")==0):
         filePrefex="'root://eoscms/"
-
-
-
   
     for i in range(2,len(sys.argv)-1):
         print filePrefex+sys.argv[i]
         process.source.fileNames.extend([filePrefex+sys.argv[i],])
 
+    from SHarper.SHNtupliser.datasetCodes import getDatasetCode
+    process.shNtupliser.datasetCode = getDatasetCode(process.source.fileNames[0])
+    process.shNtupliser.sampleWeight = 1
+  #  print "datset code ",process.shNtupliser.datasetCode
 
 
 #process.load('EgammaAnalysis.ElectronTools.egmGsfElectronIDs_cff')
@@ -139,8 +135,8 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
                                     nrPhosRequired=cms.int32(-1),
                                     nrSCsRequired=cms.int32(-1),
-                                    eleEtCut=cms.double(25),
-                                    phoEtCut=cms.double(25),
+                                    eleEtCut=cms.double(20),
+                                    phoEtCut=cms.double(20),
                                     scEtCut=cms.double(-1),
                                     eleTag=process.shNtupliser.gsfEleTag,
                                     phoTag=process.shNtupliser.recoPhoTag,
