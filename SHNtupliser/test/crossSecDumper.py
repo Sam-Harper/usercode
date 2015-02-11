@@ -32,9 +32,21 @@ process.source = cms.Source("PoolSource",
                        #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
 )
-for i in range(2,len(sys.argv)):
-    print filePrefex+sys.argv[i]
-    process.source.fileNames.extend([filePrefex+sys.argv[i],])
+
+if sys.argv[2].find(".root")==-1:
+    print "doing dataset file look up ",sys.argv[2]
+    from SHarper.SHNtupliser.dasFileQuery import dasFileQuery
+    files = dasFileQuery(sys.argv[2])
+    for filename in files:
+        print filename
+        process.source.fileNames.extend([str(filename),])
+
+    
+    
+else:
+    for i in range(2,len(sys.argv)):
+        print filePrefex+sys.argv[i]
+        process.source.fileNames.extend([filePrefex+sys.argv[i],])
     
 process.crossSecDumper = cms.EDAnalyzer("CrossSecDumper",
                                   

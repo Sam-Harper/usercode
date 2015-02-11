@@ -28,10 +28,10 @@ echo "RSGrav -> gamma gamma detected"
 config=${config}_FEVTSIM.py
 elif [[ $datasetName == QCD* ]]
 then
-echo "QCD detected, running event filtered"
-config=${config}_EvtFilter.py
-#echo "QCD detected"
-#config=${config}.py
+#echo "QCD detected, running event filtered"
+#config=${config}_EvtFilter.py
+echo "QCD detected"
+config=${config}_EGSkim.py
 puIndex=3
 elif [[ $datasetName == ZprimeToEE* ]]
 then
@@ -56,7 +56,9 @@ fi
 
 pileUp=`echo $datasetPath | awk -F "/" '{print $3}' | awk -v puIndex="$puIndex" -F "_" '{print $puIndex}'`
 timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
-reRECOVersion="EGM720${timing}"
+#reRECOVersion="EGM720${timing}_EGIsolMapV1_Ele20Skim"
+reRECOVersion="EGM720${timing}_HCALFIX"
+
 datasetTIER=RECO
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 if [[ $pileUp == *bx25 ]]
@@ -113,8 +115,8 @@ sed 's|isCrabJob=False|isCrabJob=True|'   > cmssw_autoGen.py
 
 
 crab -create -cfg crab_autoGen.cfg
-crab -c $workingDir -submit 
-exit
+#crab -c $workingDir -submit 
+#exit
 crab -c $workingDir -submit 1-500
 crab -c $workingDir -submit 501-1000
 crab -c $workingDir -submit 1001-1500
@@ -122,6 +124,6 @@ crab -c $workingDir -submit 1001-1500
 crab -c $workingDir -submit 1501-2000
 crab -c $workingDir -submit 2001-2500
 crab -c $workingDir -submit 2501-3000
-#crab -c $workingDir -submit 3001-3500
-
+crab -c $workingDir -submit 3001-3500
+crab -c $workingDir -submit 3501-4000
  
