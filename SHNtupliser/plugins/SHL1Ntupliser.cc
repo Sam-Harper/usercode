@@ -66,10 +66,11 @@ void SHL1Ntupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSet
     typedef l1t::CaloTowerBxCollection::const_iterator ConstTowerIt;
     for(ConstTowerIt towerIt = l1CaloTowers->begin(0);towerIt!=l1CaloTowers->end(0);++towerIt){
 
-      //  std::cout <<"tower "<<towerIt->hwEta()<<" "<<towerIt->hwPhi()<<" "<<towerIt->hwEtEm()<<" "<<towerIt->hwEtHad()<<std::endl;
+      int fgVeto = (towerIt->hwQual() & (0x1<<2)) == 0x4;
+      //   if(fgVeto) std::cout <<"tower "<<towerIt->hwEta()<<" "<<towerIt->hwPhi()<<" "<<towerIt->hwEtEm()<<" "<<towerIt->hwEtHad()<<" fgVeto "<<fgVeto<<std::endl;
       if(towerIt->hwEtEm()+towerIt->hwEtHad()>0) towers.addTower(SHL1CaloTower(towerIt->hwEta(),towerIt->hwPhi(),
 									       towerIt->hwEtEm(),towerIt->hwEtHad(),
-									       0,0));
+									       fgVeto,towerIt->hwQual()));
     }
   }
   shL1Evt_->addL1CaloTowers(towers);
