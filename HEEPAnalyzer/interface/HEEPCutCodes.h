@@ -45,6 +45,7 @@ namespace heep {
       
       DXY             =0x10000,
       ECALDRIVEN      =0x20000,
+      DETAINSEED      =0x40000,
                    
 
       

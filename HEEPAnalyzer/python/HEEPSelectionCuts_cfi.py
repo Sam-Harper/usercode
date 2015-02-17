@@ -64,7 +64,7 @@ heepEndcapCutsV41 = cms.PSet (
 
 heepBarrelCutsV40 = heepBarrelCutsV41.clone()
 heepBarrelCutsV40.maxNrMissHits=cms.int32(0)
-heepBarrelCutsV40.cuts =cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits")
+heepBarrelCutsV40.cuts =cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks:nrMissHits")
 
 heepEndcapCutsV40 = heepEndcapCutsV41.clone()
 heepEndcapCutsV40.maxNrMissHits=cms.int32(0)
@@ -80,9 +80,21 @@ heepBarrelCutsV50.hademConstTerm = 2
 heepBarrelCutsV50.dEtaInConstTerm = 0.016
 heepBarrelCutsV50.dEtaInGradTerm = 1E-4
 
+heepEndcapCutsV51 = heepEndcapCutsV50.clone()
+heepEndcapCutsV51.maxDEtaIn=cms.double(0.006)
+heepEndcapCutsV51.cuts=cms.string("et:detEta:ecalDriven:dEtaInSeed:dPhiIn:hadem:sigmaIEtaIEta:isolEmHadDepth1:isolPtTrks:nrMissHits:dxy")
+heepEndcapCutsV51.minEta=cms.double(1.566)
+heepEndcapCutsV51.maxEta=cms.double(2.5)
 
-heepBarrelCuts = heepBarrelCutsV41.clone()
-heepEndcapCuts = heepEndcapCutsV41.clone()
+heepBarrelCutsV51 = heepBarrelCutsV50.clone()
+heepBarrelCutsV51.maxDEtaIn=cms.double(0.004)
+heepBarrelCutsV51.cuts=cms.string("et:detEta:ecalDriven:dEtaInSeed:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks:nrMissHits:dxy")
+heepBarrelCutsV51.minEta=cms.double(0.)
+heepBarrelCutsV51.maxEta=cms.double(1.4442)
+
+
+heepBarrelCuts = heepBarrelCutsV51.clone()
+heepEndcapCuts = heepEndcapCutsV51.clone()
 
 heepEffectiveAreas = cms.PSet (
     trackerBarrel = cms.double(0.),

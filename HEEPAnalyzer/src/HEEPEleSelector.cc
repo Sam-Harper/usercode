@@ -32,11 +32,12 @@ int heep::EleSelector::getCutCode(const heep::Ele& ele,const EleCutValues& cuts,
   if(ele.gsfEle().isEBEtaGap()) cutCode |= CutCodes::CRACK;
   if(!ele.isEcalDriven()) cutCode |= CutCodes::ECALDRIVEN;
   if(fabs(ele.dEtaIn()) > std::max(cuts.dEtaInConstTerm+cuts.dEtaInGradTerm*ele.et(),cuts.maxDEtaIn )) cutCode |=CutCodes::DETAIN;
+  if(fabs(ele.dEtaInSeed()) > cuts.maxDEtaIn)   cutCode |=CutCodes::DETAINSEED;
   if(fabs(ele.dPhiIn()) > cuts.maxDPhiIn ) cutCode |=CutCodes::DPHIIN;
   if(ele.hOverE()*ele.superCluster().energy()> cuts.hademConstTerm + cuts.maxHadem*ele.superCluster().energy()) cutCode |= CutCodes::HADEM;
-  if(ele.sigmaIEtaIEta()>cuts.maxSigmaIEtaIEta) cutCode |= CutCodes::SIGMAIETAIETA;
+  if(ele.sigmaIEtaIEtaFull5x5()>cuts.maxSigmaIEtaIEta) cutCode |= CutCodes::SIGMAIETAIETA;
   if(ele.isolEmHadDepth1()>( cuts.isolEmHadDepth1ConstTerm + cuts.isolEmHadDepth1GradTerm*(ele.et()<cuts.isolEmHadDepth1GradStart ? 0. : (ele.et()-cuts.isolEmHadDepth1GradStart)))) cutCode |=CutCodes::ISOLEMHADDEPTH1;
-  if(ele.e2x5MaxOver5x5()< cuts.minE2x5Over5x5 && ele.e1x5Over5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
+  if(ele.e2x5MaxOver5x5Full5x5()< cuts.minE2x5Over5x5 && ele.e1x5Over5x5Full5x5()<cuts.minE1x5Over5x5) cutCode |=CutCodes::E2X5OVER5X5;
   if(ele.isolHadDepth2()> (cuts.isolHadDepth2ConstTerm + cuts.isolHadDepth2GradTerm*(ele.et()<cuts.isolHadDepth2GradStart ? 0. : (ele.et()-cuts.isolHadDepth2GradStart)))) cutCode |=CutCodes::ISOLHADDEPTH2;
   if(ele.isolPtTrks() > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(ele.et()<cuts.isolPtTrksGradStart ? 0. : (ele.et()-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
   if(ele.isolPtTrksRel03() > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
@@ -63,6 +64,8 @@ int heep::EleSelector::getCutCode(const float rho,const std::vector<reco::Vertex
 
 }
 
+
+
 //if it fails a cut, set the bit    
 //use the enums for speed
 int heep::EleSelector::getCutCode(const float rho,const math::XYZPoint &vertex,const reco::GsfElectron& ele,const heep::EffectiveAreas& effectAreas,const EleCutValues& cuts,const int cutMask)
@@ -72,12 +75,14 @@ int heep::EleSelector::getCutCode(const float rho,const math::XYZPoint &vertex,c
   //as GsfElectron by default uses weighted combination of tracker+supercluster or in certain situations just tracker
   float et = ele.energy()!=0. ? ele.et()/ele.energy()*ele.caloEnergy() : 0.;
   float scEnergy = ele.superCluster()->energy();
-
+  et = ele.et();
+  
   if(et< cuts.minEt) cutCode |= CutCodes::ET;
   if(fabs(ele.superCluster()->eta())< cuts.minEta || fabs(ele.superCluster()->eta())>cuts.maxEta) cutCode |= CutCodes::DETETA;
   if(ele.isEBEtaGap()) cutCode |= CutCodes::CRACK;
   if(!ele.ecalDrivenSeed()) cutCode |= CutCodes::ECALDRIVEN;
   if(fabs(ele.deltaEtaSuperClusterTrackAtVtx()) > std::max(cuts.dEtaInConstTerm+cuts.dEtaInGradTerm*ele.et(),cuts.maxDEtaIn )) cutCode |=CutCodes::DETAIN;
+  if(fabs(heep::Ele::dEtaInSeed(ele)) > cuts.maxDEtaIn)   cutCode |=CutCodes::DETAINSEED;
   if(fabs(ele.deltaPhiSuperClusterTrackAtVtx()) > cuts.maxDPhiIn ) cutCode |=CutCodes::DPHIIN;
   if(ele.hadronicOverEm()*scEnergy > cuts.hademConstTerm + cuts.maxHadem*scEnergy) cutCode |= CutCodes::HADEM;
   if(ele.scSigmaIEtaIEta()>cuts.maxSigmaIEtaIEta) cutCode |= CutCodes::SIGMAIETAIETA;
