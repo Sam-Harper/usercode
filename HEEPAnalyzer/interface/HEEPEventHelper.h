@@ -73,6 +73,7 @@ namespace heep {
     edm::InputTag gsfEleToPFCandMapTag_;
     edm::InputTag pfClustersECALTag_;
     edm::InputTag pfClustersHCALTag_;
+    edm::InputTag heepIDVIDTag_;
 
     //trigger matching parameters
     std::string hltProcName_;
@@ -109,7 +110,7 @@ namespace heep {
     void fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const;
     
   private:
-    void addHEEPEle_(const reco::GsfElectron& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const;
+    void addHEEPEle_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::EvtHandles& handles,std::vector<heep::Ele>& heepEles)const;
    
   };
 }
