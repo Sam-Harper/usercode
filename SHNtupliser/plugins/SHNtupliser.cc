@@ -38,7 +38,7 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
 void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits);
@@ -354,6 +354,31 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
   
 //   std::cout <<*idStrHandle<<std::endl;
 
+  const auto& genInfo = *heepEvt_.handles().genEventInfo.product();
+  //std::cout <<"has bining values "<<genInfo.hasBinningValues()<<" size "<<genInfo.binningValues().size()<<std::endl;
+  for (auto value : genInfo.binningValues()){
+    std::cout <<"value "<<value<<std::endl;
+  }
+  //std::cout <<"scale pdf "<<genInfo.pdf()->scalePDF<<std::endl;
+  edm::Handle<LHEEventProduct> lheEventHandle;
+  iEvent.getByLabel("externalLHEProducer",lheEventHandle);
+  if(lheEventHandle.isValid()){
+    const lhef::HEPEUP& hepeup = lheEventHandle->hepeup();
+    float ht=0;
+    int nrParts  = hepeup.NUP;
+    for(int partNr=0;partNr<nrParts;partNr++){
+      //std::cout <<partNr<<" pid "<<hepeup.IDUP[partNr]<<" stats "<<hepeup.ISTUP[partNr]<<" px "<<hepeup.PUP[partNr][0]<<" "<<hepeup.PUP[partNr][1]<<" "<<hepeup.PUP[partNr][2]<<" "<<hepeup.PUP[partNr][3]<<std::endl;
+      if(hepeup.IDUP[partNr]==21 || abs(hepeup.IDUP[partNr])<=6){
+	if(hepeup.ISTUP[partNr]==1){
+	  ht+=sqrt(hepeup.PUP[partNr][0]*hepeup.PUP[partNr][0] +hepeup.PUP[partNr][1]*hepeup.PUP[partNr][1]);
+	}
+      }
+    }
+    shEvt_->setGenEventPtHat(ht); //oh so naughty, quick hack
+  }else shEvt_->setGenEventPtHat(-1);
+  //if(ht<200 || ht>400)  std::cout <<"ht "<<ht<<std::endl;
+      
+    
 
   //if(shEvt_->datasetCode()>130 && shEvt_->datasetCode()<700){ //for all non Z MC
   // shEvt_->getCaloHits().clear();
@@ -540,7 +565,7 @@ int getSeedCrysIdOfPFCandSC(const reco::PFCandidateRef pfCandRef,
     //  std::cout <<"nrCands "<<elePFCands.size()<<std::endl;
     //  std::cout <<*pfCandRef<<std::endl;
     for(size_t candNr=0;candNr<elePFCands.size();candNr++){
-      //  std::cout <<"ele cand "<<*(elePFCands[candNr])<<std::endl;
+      //std::cout <<"ele cand "<<*(elePFCands[candNr])<<std::endl;
       if(&(*pfCandRef)==&(*elePFCands[candNr])){
 	//	std::cout <<"pfCandRef "<<pfCandRef<<" eleRef "<<elePFCands[candNr]<<std::endl;
 	if(ele->superCluster().isNonnull()) return ele->superCluster()->seed()->seed().rawId();
@@ -551,6 +576,7 @@ int getSeedCrysIdOfPFCandSC(const reco::PFCandidateRef pfCandRef,
   return 0;
 
 }
+
 
 void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
 		 const edm::Handle<std::vector<reco::PFCandidate> >& pfCands,
