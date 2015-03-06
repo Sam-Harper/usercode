@@ -156,10 +156,11 @@ if process.shNtupliser.datasetCode.value()>=600 and process.shNtupliser.datasetC
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
-if process.shNtupliser.datasetCode.value()>=310 and process.shNtupliser.datasetCode.value()<312:
+if process.shNtupliser.datasetCode.value()>=310 and process.shNtupliser.datasetCode.value()<350:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
+
 
 #from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
 #process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons')

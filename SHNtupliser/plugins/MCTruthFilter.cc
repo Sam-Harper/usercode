@@ -10,7 +10,7 @@
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "TTree.h"
 
 
@@ -40,12 +40,21 @@ MCTruthFilter::MCTruthFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
 
 bool MCTruthFilter::filter(edm::Event& event,const edm::EventSetup& setup)
 {
-  edm::Handle<reco::GenParticleCollection> genParticles;
-  event.getByLabel(genParticlesTag_,genParticles);
   bool pass=false;
-  if(!genParticles.isValid()) pass=true;
-  else pass=genParticles->at(7).pdgId()==pid_;
-  
+
+  edm::Handle<LHEEventProduct> lheEventHandle;
+  event.getByLabel("externalLHEProducer",lheEventHandle);
+  if(!lheEventHandle.isValid()) pass=true;
+  else{
+    const lhef::HEPEUP& hepeup = lheEventHandle->hepeup();
+    int nrParts  = hepeup.NUP;
+    for(int partNr=0;partNr<nrParts;partNr++){
+      //  std::cout <<partNr<<" pid "<<hepeup.IDUP[partNr]<<" stats "<<hepeup.ISTUP[partNr]<<" px "<<hepeup.PUP[partNr][0]<<" "<<hepeup.PUP[partNr][1]<<" "<<hepeup.PUP[partNr][2]<<" "<<hepeup.PUP[partNr][3]<<std::endl;
+      if(abs(hepeup.IDUP[partNr])==pid_) pass=true;
+      
+    }
+  }
+  //  std::cout <<"pass "<<std::endl;
   nrTot_++;
   if(pass){
     nrPass_++;
