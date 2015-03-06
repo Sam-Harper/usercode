@@ -114,7 +114,7 @@ process.eventinterpretaion_step = cms.Path(process.EIsequence)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.AODSIMoutput_step = cms.EndPath(process.AODSIMoutput)
 
-applyEGFilter=True
+applyEGFilter=False
 if applyEGFilter:
     process.egammaFilter = cms.EDFilter("EGammaFilter",
                                         nrElesRequired=cms.int32(-1),
