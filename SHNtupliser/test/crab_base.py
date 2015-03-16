@@ -14,8 +14,9 @@ config.JobType.psetName = 'shNtupliser_autoGen_cfg.py'
 config.section_("Data")
 config.Data.inputDataset = 'TOSED:DATASETPATH'
 config.Data.inputDBS = 'global'
-config.Data.splitting = 'FileBased'
+config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 'TOSED:UNITSPERJOB'
+config.Data.totalUnits = 'TOSED:TOTALUNITS'
 config.Data.publication = False
 config.Data.publishDBS = 'phys03' 
 config.Data.publishDataName = 'TOSED:PUBLISHDATANAME'

@@ -35,7 +35,14 @@ for line in datasetDefFile:
     datasetId = datasetPath.split("/")[2]
     datasetId = datasetId[datasetId.find("-")+1:]
 
-    nrJobs=int(splitLine[6])
+    nrEvents = int(splitLine[1])
+    if nrEvents!=-1:
+        totalUnits = int(nrEvents/100)
+    else:
+        totalUnits = -1
+    
+    unitsPerJob = int(splitLine[6])
+#    nrJobs=int(splitLine[6])
     datasetCode=int(splitLine[5])
 
     outputFile=dataset+"_ntuples_"+datasetId+"_"+options.shNtupVersion+".root"
@@ -65,30 +72,32 @@ for line in datasetDefFile:
 
   
 
-    import subprocess
-    datasetQuery="--query \"file dataset="+datasetPath+"| sum(file.is_file_valid)\""
+#    import subprocess
+#    datasetQuery="--query \"file dataset="+datasetPath+"| sum(file.is_file_valid)\""
     #print datasetQuery
-    fileCountRAW = subprocess.Popen(['das_client.py','--query','file dataset='+datasetPath+' | sum(file.is_file_valid)','--format','json'],stdout=subprocess.PIPE).communicate()[0]
-    import json
-    fileCountData = json.loads(fileCountRAW)
+#    fileCountRAW = subprocess.Popen(['das_client.py','--query','file dataset='+datasetPath+' | sum(file.is_file_valid)','--format','json'],stdout=subprocess.PIPE).communicate()[0]
+#    import json
+#    fileCountData = json.loads(fileCountRAW)
 
     #from pprint import pprint
     #print fileCountData['u\'_id\'']
     #   pprint(fileCountData)
     #   print crabSubmitCmd
-    nrFiles=fileCountData["data"][0]["result"]["value"]
+ #   nrFiles=fileCountData["data"][0]["result"]["value"]
 
     
+  
+ #   if unitsPerJob<=0:
+ #      print "Error, dataset has "+str(nrFiles)+" but "+str(nrJobs)+" requested, reseting to 1 file to job"
+ #      unitsPerJob=1
+
     
-    unitsPerJob=nrFiles/nrJobs
-    if unitsPerJob<=0:
-       print "Error, dataset has "+str(nrFiles)+" but "+str(nrJobs)+" requested, reseting to 1 file to job"
-       unitsPerJob=1
     crabSubmitCmd = "crab submit -c crab_base.py General.requestName="+workingDir+ \
                     " General.transferOutputs="+str(options.copyData)+ \
                     " Data.inputDataset="+datasetPath+ \
                     " Data.inputDBS="+options.dbsUrl+ \
                     " Data.unitsPerJob="+str(unitsPerJob)+ \
+                    " Data.totalUnits="+str(totalUnits)+ \
                     " Data.outLFN="+outputPath+ \
                     " Data.publishDataName="+publishDataname+ \
                     " JobType.psetName="+tempConfig

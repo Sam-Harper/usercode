@@ -49,7 +49,10 @@ void CrossSecDumper::endRun(edm::Run const& iRun, edm::EventSetup const&)
    edm::Handle< GenRunInfoProduct > genInfoProduct;
   iRun.getByLabel("generator", genInfoProduct );
   if(genInfoProduct.isValid()) {
-    std::cout <<" cross-section "<<genInfoProduct->internalXSec().value()<<std::endl;
+    std::cout <<" cross-section int"<<genInfoProduct->internalXSec().value()<<std::endl;
+    std::cout <<" cross-section ext LO "<<genInfoProduct->externalXSecLO().value()<<std::endl;  
+    std::cout <<" cross-section ext NLO "<<genInfoProduct->externalXSecNLO().value()<<std::endl;
+
   }
   
 }  

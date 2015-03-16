@@ -154,6 +154,7 @@ for jobNr in range(0,args.nrJobs):
     for filename in inputFilesForEachJob[jobNr]:
         cmd+=" "+filename
     cmd+=" "+fullOutputDir+"/"+outputFilename
+    
    # cmd+=" $TMPDIR/"+outputFilename+"\n"
    # cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
     batchFile.write(cmd)
@@ -165,7 +166,7 @@ for jobNr in range(0,args.nrJobs):
     #os.system("chmod +x "+batchSubmitFile);
     #cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
    ## print cmd
-   ## os.system(cmd)
+   # os.system(cmd)
     #os.system("./"+batchSubmitFile+" > "+fullLogDir+"/job_"+str(jobNr)+".log &")
 
     #os.remove(batchSubmitFile)        

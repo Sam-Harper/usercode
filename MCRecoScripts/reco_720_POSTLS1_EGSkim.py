@@ -24,7 +24,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(200)
 )
 
 import sys
@@ -77,7 +77,7 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM-RECO')
     )
 )
-process.RECOSIMoutput.outputCommands.extend(cms.untracked.vstring("drop recoGenParticles_*_*_*","drop recoPFJets_*_*_*","drop triggerTriggerEvent_*_*_*","drop recoTrack*_*_*_*","drop recoCaloJets_*_*_*","drop *_generalTracks_*_*","drop recoJet*_*_*_*","drop *FwdPtrs*_*_*_*","drop recoGenJets*_*_*_*","drop ints_genParticles_*_*","drop recoPFTau*_*_*_*","drop recoDeDxData*_*_*_*","drop CastorRecHits*_*_*_*","drop recoCastorTowers_*_*_*","drop HFRecHitsSorted_*_*_*","drop TrackingRecHitsOwned_*_*_*","keep recoTracks_generalTracks_*_*","drop *_*ulti5x5*_*_*","drop recoJPTJets_*_*_*","drop *_*ybridSuperClusters_*_*","keep *_particleFlowClusterECAL_*_*","keep *_particleFlowClusterHCAL_*_*","drop *_muons_*_*","drop *_*onversions_*_*","drop recoRecoChargedRefCandidates_trackRefsForJets_*_*","drop recoPFRecHits_particleFlowRecHitHO_*_*","drop *_offlinePrimaryVerticesWithBS_*_*" ))
+process.RECOSIMoutput.outputCommands.extend(cms.untracked.vstring("drop recoGenParticles_*_*_*","drop recoPFJets_*_*_*","drop triggerTriggerEvent_*_*_*","drop recoTrack*_*_*_*","drop recoCaloJets_*_*_*","drop *_generalTracks_*_*","drop recoJet*_*_*_*","drop *FwdPtrs*_*_*_*","drop recoGenJets*_*_*_*","drop ints_genParticles_*_*","drop recoPFTau*_*_*_*","drop recoDeDxData*_*_*_*","drop CastorRecHits*_*_*_*","drop recoCastorTowers_*_*_*","drop HFRecHitsSorted_*_*_*","drop TrackingRecHitsOwned_*_*_*","keep recoTracks_generalTracks_*_*","drop *_*ulti5x5*_*_*","drop recoJPTJets_*_*_*","drop *_*ybridSuperClusters_*_*","keep *_particleFlowClusterECAL_*_*","keep *_particleFlowClusterHCAL_*_*","drop *_muons_*_*","drop *_*onversions_*_*","drop recoRecoChargedRefCandidates_trackRefsForJets_*_*","drop recoPFRecHits_particleFlowRecHitHO_*_*","drop *_offlinePrimaryVerticesWithBS_*_*","keep *_particleFlowBlock_*_*" ))
 #process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterECAL_*_*")
 #process.RECOSIMoutput.outputCommands.append("keep *_particleFlowClusterHCAL_*_*")
 
