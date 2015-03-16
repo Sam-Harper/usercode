@@ -8,6 +8,8 @@ def getDatasetCode(filename):
     if filename.find("QCD_Pt-470to600_")!=-1: return 609
     if filename.find("QCD_Pt-600to800_")!=-1: return 610
     if filename.find("QCD_Pt-800to1000_")!=-1: return 611
+    if filename.find("ZprimeToEE_M-5000")!=-1: return 1201
+
 
     return 110000
     

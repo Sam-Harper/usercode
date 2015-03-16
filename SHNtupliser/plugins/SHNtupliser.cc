@@ -55,7 +55,8 @@ int getSCSeedCrysId(uint pfSeedId,const std::vector<reco::SuperCluster>& superCl
 int chargedHadronVertex(  const reco::PFCandidate& pfcand, const reco::VertexCollection& vertices );
 
 void dumpPFInfo(const edm::ValueMap<std::vector<reco::PFCandidateRef> >& isoMaps,const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle);
-
+std::vector<reco::PFCandidateRef> cleanPFIsolMap(const std::vector<reco::PFCandidateRef> &elePFCands,
+						 const reco::GsfElectron& ele);
 
 void SHNtupliser::initSHEvent()
 {
@@ -240,7 +241,7 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
 
   if(addPFCands_) shPFCands_->clear();
   if(addPFClusters_) shPFClusters_->clear();
-  // std::cout <<"adding PF Cands "<<addPFCands_<<" is valid "<<heepEvt_.handles().pfCandidate.isValid()<<std::endl;
+  //std::cout <<"adding PF Cands "<<addPFCands_<<" is valid "<<heepEvt_.handles().gsfEleToPFCandMap.isValid()<<std::endl;
   if(heepEvt_.handles().vertices.isValid()){
     reco::VertexRef mainVtx(heepEvt_.handles().vertices,0);
     if(addPFCands_ && 
@@ -529,28 +530,169 @@ void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContain
 
 
 }
+//Charge hadrons : match only by the tracks available in the GED candidate
+//Photons : match only by the ref to the PF cluster used in that candidate *not* the elements in blocks
+//Neutral hadrons : by construction are not allowed to make a match (HCAL not used in EGM reco)
+#include <iomanip>
+#include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
+#include "DataFormats/ParticleFlowReco/interface/PFBlockElementCluster.h"
+#include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
+const reco::PFBlockElementCluster* getHighestEtECALCluster(const reco::PFCandidate& pfCand);
+
+std::vector<reco::PFCandidateRef> cleanPFIsolMap(const std::vector<reco::PFCandidateRef> &elePFCands,
+						 const reco::GsfElectron& ele)
+{
+  bool debug=false;
+  std::vector<reco::PFCandidateRef> elePFCandsClean;
+  elePFCandsClean.reserve(elePFCands.size());
+  //  std::cout <<"gsf ele "<<std::endl;
+  for(const auto& pfCand : elePFCands){
+    if(pfCand->particleId()==reco::PFCandidate::h){
+      elePFCandsClean.push_back(pfCand);
+      // bool isPartOfEle=false;
+     //  reco::TrackRef track = pfCand->trackRef();
+//       if(track ==ele.closestTrack()){ 
+// 	//		std::cout <<"matched ctf "<<std::endl;
+// 	isPartOfEle=true;
+//       }
+//       else{
+// 	for(auto& conv : ele.core()->conversions()){
+// 	  for(auto& convTrack : conv->tracks()){
+// 	    reco::TrackRef convTrackRef = convTrack.castTo<reco::TrackRef>();
+// 	    if(track==convTrackRef) isPartOfEle=true;	
+// 	  }
+// 	}
+// 	//	if(isPartOfEle) std::cout <<"matched conversion "<<std::endl;
+// 	for(auto& conv : ele.core()->conversionsOneLeg()){
+// 	  for(auto& convTrack : conv->tracks()){ 
+// 	    reco::TrackRef convTrackRef = convTrack.castTo<reco::TrackRef>();
+// 	    if(track==convTrackRef) isPartOfEle=true;	
+// 	  }
+// 	}
+// 	//	if(isPartOfEle) std::cout <<"matched conversion one leg"<<std::endl;
+//       }
+//       if(isPartOfEle) elePFCandsClean.push_back(pfCand);
+	
+
+    }else if(pfCand->particleId()==reco::PFCandidate::h0){
+      //do nothing
+      elePFCandsClean.push_back(pfCand);
+    }else if(pfCand->particleId()==reco::PFCandidate::gamma){
+      
+      if(pfCand->superClusterRef()==ele.superCluster()) elePFCandsClean.push_back(pfCand);
+      else{ //dR matching to all the sub clusters of super cluster
+        float pfCandPosEta = pfCand->positionAtECALEntrance().eta();
+	float pfCandPosPhi = pfCand->positionAtECALEntrance().phi(); 
+	if(debug) std::cout <<" ele "<<ele.et()<<" eta "<<ele.superCluster()->eta()<<" phi "<<ele.phi()<<" pass pf "<<ele.passingPflowPreselection()<<std::endl;
+	if(debug) std::cout <<"pf cand "<<*pfCand<<std::fixed<<std::endl;
+	const reco::PFCandidate::ElementsInBlocks& elementsInPFCand = pfCand->elementsInBlocks();
+	if(debug){
+	  for(auto& element : elementsInPFCand){
+	    const reco::PFBlockElement* elem = element.second<element.first->elements().size() ? &element.first->elements()[element.second] : nullptr;
+	    std::cout<<"element "<<elem->type();
+	    if(elem->type()==4 || elem->type()==5)std::cout<<" energy "<<elem->clusterRef()->energy()<<" eta "<<elem->clusterRef()->eta()<<" phi "<<elem->clusterRef()->phi()<<std::endl;
+	    else std::cout <<std::endl;
+	  }
+	}
+	 
+	bool partOfEle=false;
+	for(auto cluster : ele.superCluster()->clusters()){
+	
+	  if(debug) std::cout <<"pf "<<pfCand->et()<<" "<< "ecal e "<<pfCand->rawEcalEnergy()<<" eta "<<pfCandPosEta<<" phi "<<pfCandPosPhi<<" clus e "<<cluster->energy()<<" clus eta "<<cluster->eta()<<" clus phi "<<cluster->phi()<<std::endl;
+	  
+	  if(reco::deltaR2(cluster->eta(),cluster->phi(),pfCandPosEta,pfCandPosPhi)<0.00008){ //about half an ecal crystal in barrel
+	    elePFCandsClean.push_back(pfCand);
+	    partOfEle=true;
+	     if(debug) {
+	       std::cout <<"part of ele "<<std::endl;
+	       for(auto& element : elementsInPFCand){
+		 const reco::PFBlockElement* elem = element.second<element.first->elements().size() ? &element.first->elements()[element.second] : nullptr;
+		 std::cout <<"got ele "<<std::endl;
+		 std::cout<<"element "<<*elem<<std::fixed<<std::endl;
+	       }
+	     }
+	  }//end DR match
+	  else if(std::abs(pfCand->rawEcalEnergy()-cluster->energy())<0.001){
+	    partOfEle=true;
+	    if(debug) std::cout <<"e match "<<std::endl;
+	    elePFCandsClean.push_back(pfCand);
+	  }
+	  
+	}//end cluster loop
+	if(!partOfEle){
+	  const reco::PFBlockElementCluster* ecalClusWithMaxEt = getHighestEtECALCluster(*pfCand);
+	  if(ecalClusWithMaxEt){
+	    if(ecalClusWithMaxEt->superClusterRef()==ele.superCluster()) elePFCandsClean.push_back(pfCand);
+	    else{
+	      float clusEta = ecalClusWithMaxEt->clusterRef()->position().Eta();
+	      float clusPhi = ecalClusWithMaxEt->clusterRef()->position().Phi();
+	      for(auto cluster : ele.superCluster()->clusters()){
+		if(reco::deltaR2(cluster->eta(),cluster->phi(),clusEta,clusPhi)<0.00008){ //about half an ecal crystal in barrel
+		  if(debug) std::cout <<"second chance found! pfclus seed "<<ecalClusWithMaxEt->clusterRef()->seed().rawId()<<" clus seed "<<cluster->seed().rawId()<<std::endl;
+		  elePFCandsClean.push_back(pfCand);
+		}
+	      }
+	    }
+	  }
+	}
+
+      }//end sc alterative check
+      
+    }else if(pfCand->particleId()==reco::PFCandidate::e){
+      elePFCandsClean.push_back(pfCand);
+    }
+  }
+  return elePFCandsClean;
+}
+
+const reco::PFBlockElementCluster* getHighestEtECALCluster(const reco::PFCandidate& pfCand)
+{
+  float maxECALEt =-1;
+  const reco::PFBlockElement* maxEtECALCluster=nullptr;
+  const reco::PFCandidate::ElementsInBlocks& elementsInPFCand = pfCand.elementsInBlocks();
+  for(auto& elemIndx : elementsInPFCand){
+    const reco::PFBlockElement* elem = elemIndx.second<elemIndx.first->elements().size() ? &elemIndx.first->elements()[elemIndx.second] : nullptr;
+    if(elem && elem->type()==reco::PFBlockElement::ECAL && elem->clusterRef()->pt()>maxECALEt){
+      maxECALEt = elem->clusterRef()->pt();
+      maxEtECALCluster = elem;
+    }
+    
+  }
+  return dynamic_cast<const reco::PFBlockElementCluster*>(maxEtECALCluster);
+	
+}
+
+
 int getSeedCrysIdOfPFCandSC(const reco::PFCandidateRef pfCandRef,
 			    const edm::ValueMap<std::vector<reco::PFCandidateRef> > & gsfToPFMap,
 			    const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle)
 
 {
+  bool debug=false;
+  if(fabs(pfCandRef->et()-37.963)<0.1) debug=false;
   for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
     reco::GsfElectronRef ele(eleHandle,eleNr);
     const std::vector<reco::PFCandidateRef>& elePFCands =  gsfToPFMap[ele];
     //  std::cout <<"nrCands "<<elePFCands.size()<<std::endl;
     //  std::cout <<*pfCandRef<<std::endl;
+    // std::vector<reco::PFCandidateRef> elePFCandsClean = cleanPFIsolMap(elePFCands,*ele);
+    if(debug) std::cout <<"ele "<<ele->et()<<" eta "<<ele->eta()<<std::endl;
     for(size_t candNr=0;candNr<elePFCands.size();candNr++){
-      //  std::cout <<"ele cand "<<*(elePFCands[candNr])<<std::endl;
+      if(debug) std::cout <<"ele cand "<<*(elePFCands[candNr])<<std::endl;
       if(&(*pfCandRef)==&(*elePFCands[candNr])){
-	//	std::cout <<"pfCandRef "<<pfCandRef<<" eleRef "<<elePFCands[candNr]<<std::endl;
-	if(ele->superCluster().isNonnull()) return ele->superCluster()->seed()->seed().rawId();
-	return -1;
+	if(debug) std::cout <<"thing matched! "<< ele->superCluster()->seed()->seed().rawId()<<std::endl;
+	//std::cout <<"pfCandRef "<<pfCandRef<<" eleRef "<<elePFCands[candNr]<<std::endl;
+	//	if(ele->superCluster().isNonnull()) return ele->superCluster()->seed()->seed().rawId();
+	//	return -1;
       }
     }
   }
   return 0;
 
 }
+
+ 
+
 
 void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
 		 const edm::Handle<std::vector<reco::PFCandidate> >& pfCands,
@@ -559,6 +701,19 @@ void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
 		 const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle)
 {
   //  std::cout <<"filling candidates "<<std::endl;
+
+  edm::ValueMap<std::vector<reco::PFCandidateRef>> gsfToPFMapCleaned;
+  edm::ValueMap<std::vector<reco::PFCandidateRef>>::Filler mapFiller(gsfToPFMapCleaned);
+  std::vector<std::vector<reco::PFCandidateRef>> pfCandsFromEles;
+  for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
+    reco::GsfElectronRef ele(eleHandle,eleNr);
+    const std::vector<reco::PFCandidateRef>& elePFCands =  gsfToPFMap[ele];
+    pfCandsFromEles.push_back(cleanPFIsolMap(elePFCands,*ele));
+  }
+  mapFiller.insert(eleHandle,pfCandsFromEles.begin(),pfCandsFromEles.end());
+  mapFiller.fill();
+  
+  const auto& gsfToPFMapToUse =gsfToPFMapCleaned;
 
   const double maxDR2 = maxDR*maxDR;
   std::vector<std::pair<float,float> > eleEtaPhi;
@@ -572,7 +727,7 @@ void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
   for(size_t candNr=0;candNr<pfCands->size();candNr++){ 
     const reco::PFCandidateRef pfCandRef(pfCands,candNr);
     const reco::PFCandidate& pfParticle = *pfCandRef;
-    int scSeedCrysId=getSeedCrysIdOfPFCandSC(pfCandRef,gsfToPFMap,eleHandle);
+    int scSeedCrysId=getSeedCrysIdOfPFCandSC(pfCandRef,gsfToPFMapToUse,eleHandle);
     // if(pfParticle.superClusterRef().isNonnull()) scSeedCrysId=pfParticle.superClusterRef()->seed()->seed().rawId();
     // std::cout <<"scSeedCrysId "<<scSeedCrysId<<std::endl;
     bool accept =false;
