@@ -287,11 +287,7 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
   filterEcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);
   shEvt_->addCaloHits(outputHits);
     
- 
-  const auto& genInfo = *heepEvt_.handles().genEventInfo.product();
-  for (auto value : genInfo.binningValues()){
-    std::cout <<"value "<<value<<std::endl;
-  }
+
   //std::cout <<"scale pdf "<<genInfo.pdf()->scalePDF<<std::endl;
   edm::Handle<LHEEventProduct> lheEventHandle;
   iEvent.getByLabel("externalLHEProducer",lheEventHandle);
