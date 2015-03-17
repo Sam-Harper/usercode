@@ -12,13 +12,14 @@ private:
   float mvaNothingGamma_;
   int scSeedCrysId_;
   float vx_,vy_,vz_;
+  float hadNrgy_;
 
 
 public:
   SHPFCandidate():
     pt_(0.),eta_(0.),phi_(0.),mass_(0.),scSeedCrysId_(0){}
-  SHPFCandidate(float iPt,float iEta,float iPhi,float iMass,float iMVANothingGamma,int iSCSeedCrysId):
-    pt_(iPt),eta_(iEta),phi_(iPhi),mass_(iMass),mvaNothingGamma_(iMVANothingGamma),scSeedCrysId_(iSCSeedCrysId),vx_(0.),vy_(0.),vz_(0.){}
+  SHPFCandidate(float iPt,float iEta,float iPhi,float iMass,float iMVANothingGamma,int iSCSeedCrysId,float iHadNrgy=0):
+    pt_(iPt),eta_(iEta),phi_(iPhi),mass_(iMass),mvaNothingGamma_(iMVANothingGamma),scSeedCrysId_(iSCSeedCrysId),vx_(0.),vy_(0.),vz_(0.),hadNrgy_(iHadNrgy){}
   virtual ~SHPFCandidate(){}
   float pt()const{return pt_;}
   float eta()const{return eta_;}
@@ -26,6 +27,7 @@ public:
   float mass()const{return mass_;}
   float mvaNothingGamma()const{return mvaNothingGamma_;}
   int scSeedCrysId()const{return scSeedCrysId_;}
+  float hadNrgy()const{return hadNrgy_;}
   
   float py()const{return pt_*std::sin(phi_);}
   float px()const{return pt_*std::cos(phi_);}
@@ -36,7 +38,7 @@ public:
 
   void setVertex(float x,float y,float z){vx_=x;vy_=y;vz_=z;}
 
-  ClassDef(SHPFCandidate,1)
+  ClassDef(SHPFCandidate,2)
 };
 
 #endif
