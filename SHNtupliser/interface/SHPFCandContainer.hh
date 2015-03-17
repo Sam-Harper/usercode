@@ -15,9 +15,9 @@ public:
   SHPFCandContainer(){}
   virtual ~SHPFCandContainer(){}
 
-  SHPFCandidate& addChargedHad(float pt,float eta,float phi,float mass,float mvaNothingGamma,int scSeedCrysId){chargedHad_.push_back(SHPFCandidate(pt,eta,phi,mass,mvaNothingGamma,scSeedCrysId));return chargedHad_.back();}
-  SHPFCandidate& addNeutralHad(float pt,float eta,float phi,float mass,float mvaNothingGamma,int scSeedCrysId){neutralHad_.push_back(SHPFCandidate(pt,eta,phi,mass,mvaNothingGamma,scSeedCrysId));return neutralHad_.back();}
-  SHPFCandidate& addPhoton(float pt,float eta,float phi,float mass,float mvaNothingGamma,int scSeedCrysId){photon_.push_back(SHPFCandidate(pt,eta,phi,mass,mvaNothingGamma,scSeedCrysId));return photon_.back();}
+  SHPFCandidate& addChargedHad(float pt,float eta,float phi,float mass,float mvaNothingGamma,int scSeedCrysId,float hadNrgy=0){chargedHad_.push_back(SHPFCandidate(pt,eta,phi,mass,mvaNothingGamma,scSeedCrysId,hadNrgy));return chargedHad_.back();}
+  SHPFCandidate& addNeutralHad(float pt,float eta,float phi,float mass,float mvaNothingGamma,int scSeedCrysId,float hadNrgy=0){neutralHad_.push_back(SHPFCandidate(pt,eta,phi,mass,mvaNothingGamma,scSeedCrysId,hadNrgy));return neutralHad_.back();}
+  SHPFCandidate& addPhoton(float pt,float eta,float phi,float mass,float mvaNothingGamma,int scSeedCrysId,float hadNrgy=0){photon_.push_back(SHPFCandidate(pt,eta,phi,mass,mvaNothingGamma,scSeedCrysId,hadNrgy));return photon_.back();}
 
   void clear();
 
