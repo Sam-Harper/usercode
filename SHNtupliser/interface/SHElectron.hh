@@ -17,8 +17,8 @@
 
 #include "SHarper/SHNtupliser/interface/SHSuperCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHBasicCluster.hh"
-//#include "SHarper/SHNtupliser/interface/SHIsolSuperCluster.hh"
-//#include "SHarper/SHNtupliser/interface/SHIsolCluster.hh"
+//#include "SHEvent/SHIsolSuperCluster.hh"
+//#include "SHEvent/SHIsolCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 
 #include "TObject.h"

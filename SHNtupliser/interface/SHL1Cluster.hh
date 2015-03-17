@@ -31,6 +31,7 @@ public:
         TRIM_RIGHT          = 12,
         EXT_UP              = 13,
         EXT_DOWN            = 14,
+	JET2X3              = 30,
 	STAGE1              = 31
       };
 private:
@@ -58,10 +59,18 @@ private:
 
 public:
   SHL1Cluster();
+  SHL1Cluster(int iEtTS,int iEmEtOverTotEt,int iIEta,int iIPhi);
   SHL1Cluster(const l1t::EGamma& egamma);
   SHL1Cluster(const l1t::EGamma& egamma,const l1t::CaloCluster& clus);
   ~SHL1Cluster(){}
 
+  void setIsol(int em,int had){isolEmEtTS_=em;isolHadEtTS_=had;}
+  void setHademTS(int val){hademTS_=val;}
+  void setClusterFlags(int val){clusterFlags_=val;}
+  void setEtSeedTS(int val){etSeedTS_=val;}
+  void setP4(const TLorentzVector& val){p4_=val;}
+  void setQuality(int val){quality_=val;}
+  
   int etTS()const{return etTS_;}
   int emEtOverTotEt()const{return emEtOverTotEt_;}
   int iEta()const{return iEta_;}

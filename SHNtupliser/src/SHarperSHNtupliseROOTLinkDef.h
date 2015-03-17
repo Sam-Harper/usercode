@@ -31,6 +31,7 @@
 #include "SHarper/SHNtupliser/interface/SHL1CaloTower.hh"
 #include "SHarper/SHNtupliser/interface/SHPFCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHPFClusterContainer.hh"
+#include "SHarper/SHNtupliser/interface/AnaFuncs.hh"
 
 
 #ifdef __CINT__
@@ -76,4 +77,5 @@
 #pragma link C++ class SHL1CaloTowerContainer;
 #pragma link C++ class SHPFCluster+;
 #pragma link C++ class SHPFClusterContainer+;
+#pragma link C++ class AnaFuncs+;
 #endif

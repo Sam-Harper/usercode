@@ -22,6 +22,22 @@ SHL1Cluster::SHL1Cluster():
 
 }
 
+
+SHL1Cluster::SHL1Cluster(int iEtTS,int iEmEtOverTotEt,int iIEta,int iIPhi):
+  etTS_(iEtTS),
+  emEtOverTotEt_(iEmEtOverTotEt),
+  iEta_(iIEta),iPhi_(iIPhi),
+  isolEmEtTS_(0),isolHadEtTS_(0),
+  trigScale_(2),
+  isIsolated_(false),
+  p4_(),
+  hademTS_(0),
+  clusterFlags_(0),
+  etSeedTS_(0),
+  quality_(0)
+{
+
+}
 int SHL1Cluster::iEtaMax()const
 {
   return iEta();
@@ -63,8 +79,12 @@ float SHL1Cluster::eta()const
 float SHL1Cluster::phi()const
 {
   if(p4_.Et()>0.1) return p4_.Phi();
-  else return (iPhi()-0.5)*5/180*3.14;
-
+  else{
+    float phiVal = (iPhi()-0.5)*5/180*3.14;
+    while(phiVal>2*3.14) phiVal-=2*3.14;
+    while(phiVal<0) phiVal+=2*3.14;
+    return phiVal;
+  }
 }
 
 const TLorentzVector& SHL1Cluster::p4()const

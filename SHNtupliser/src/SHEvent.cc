@@ -1,6 +1,5 @@
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
 
-#include "SHarper/SHNtupliser/interface/SHBugFixFuncs.hh"
 #include "SHarper/SHNtupliser/interface/TempFuncs.hh"
 
 #include <iomanip>

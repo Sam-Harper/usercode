@@ -4,6 +4,9 @@
 #include "TObject.h"
 
 class SHL1CaloTower : public TObject {
+
+public:
+  enum ETTYPE{ECAL=0x1,HCAL=0x2,ECALHCAL=0x3};
   
 private:
   int iEta_;
@@ -25,6 +28,8 @@ public:
   int emEtTS()const{ return emEtTS_;}
   int hadEtTS()const{ return hadEtTS_;}
   int etTS()const{return emEtTS()+hadEtTS();}
+  int etTS(int etCode)const{return (etCode&ECAL)!=0 ? emEtTS() : 0 + (etCode&HCAL)!=0 ? hadEtTS() : 0;}
+
   bool ecalFG()const{ return ecalFG_;}
   bool hcalFG()const{ return hcalFG_;}
   int trigScale()const{ return trigScale_;}

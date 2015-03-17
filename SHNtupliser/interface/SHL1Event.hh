@@ -34,6 +34,7 @@ public:
   
   void copyEventPara(const SHL1Event& rhs);
   void copyEventPara(const SHEvent& rhs);
+  void clearL1Clusters(){l1ClusArray_.Delete();}
   void clear();
   void flushTempData()const;
 
