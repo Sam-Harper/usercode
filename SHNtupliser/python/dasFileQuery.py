@@ -1,4 +1,5 @@
 #stolen from HLTrigger/Configuration/python/Tools/dasFileQuery.py
+#also parts stolen  from edmPickEvents.py
 
 import sys
 import json
@@ -34,3 +35,46 @@ def dasFileQuery(dataset):
     # parse the results in JSON format, and extract the list of files
     files = sorted( f['file'][0]['name'] for f in jsondict['data'] )
     return files
+
+
+class Event (dict):
+
+    dataset = None
+    import re
+    splitRE = re.compile (r'[\s:,]+')
+    def __init__ (self, line, **kwargs):
+        pieces = Event.splitRE.split (line.strip())
+        try:
+            self['run']     = int( pieces[0] )
+            self['lumi']    = int( pieces[1] )
+            self['event']   = int( pieces[2] )
+            self['dataset'] =  Event.dataset
+        except:
+            raise RuntimeError, "Can not parse '%s' as Event object" \
+                  % line.strip()
+        if not self['dataset']:
+            print "No dataset is defined for '%s'.  Aborting." % line.strip()
+            raise RuntimeError, 'Missing dataset'
+
+    def __getattr__ (self, key):
+        return self[key]
+
+    def __str__ (self):
+        return "run = %(run)i, lumi = %(lumi)i, event = %(event)i, dataset = %(dataset)s"  % self
+
+
+  
+def getFileNames (event):
+  
+  query = "file dataset=%(dataset)s run=%(run)i lumi=%(lumi)i | grep file.name" % event
+  host    = 'https://cmsweb.cern.ch'      # default
+  idx     = 0                             # default
+  limit   = 0                             # unlimited
+  debug   = 0                             # default
+  thr     = 300                           # default
+  ckey    = ""                            # default
+  cert    = ""                            # default
+  jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
+  files = sorted( f['file'][0]['name'] for f in jsondict['data'] )
+  return files
+  
