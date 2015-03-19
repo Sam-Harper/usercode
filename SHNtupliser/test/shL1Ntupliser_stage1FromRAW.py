@@ -54,6 +54,7 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag as customiseGlobalTag
 process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'MCRUN2_72_V3A')
+#process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'PHYS14_25_V1')
 #process.GlobalTag = GlobalTag(process.GlobalTag, globaltag ='MCRUN2_72_V3A')
 
 process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
@@ -117,24 +118,27 @@ else:
         process.source.fileNames.extend([filePrefex+sys.argv[i],])
 
 
-process.stage1L1extraParticles = cms.EDProducer("L1ExtraParticlesProd",
-                                          muonSource = cms.InputTag("gcDigis"),
-                                          etTotalSource = cms.InputTag("caloStage1LegacyFormatDigis"),
-                                          nonIsolatedEmSource = cms.InputTag("caloStage1LegacyFormatDigis","nonIsoEm"),
-                                          etMissSource = cms.InputTag("caloStage1LegacyFormatDigis"),
-                                          htMissSource = cms.InputTag("caloStage1LegacyFormatDigis"),
-                                          produceMuonParticles = cms.bool(True),
-                                          forwardJetSource = cms.InputTag("caloStage1LegacyFormatDigis","forJets"),
-                                          centralJetSource = cms.InputTag("caloStage1LegacyFormatDigis","cenJets"),
-                                          produceCaloParticles = cms.bool(True),
-                                          tauJetSource = cms.InputTag("caloStage1LegacyFormatDigis","tauJets"),
-                                          isolatedEmSource = cms.InputTag("caloStage1LegacyFormatDigis","isoEm"),
-                                          etHadSource = cms.InputTag("caloStage1LegacyFormatDigis"),
-                                          hfRingEtSumsSource = cms.InputTag("caloStage1LegacyFormatDigis"),
-                                          hfRingBitCountsSource = cms.InputTag("caloStage1LegacyFormatDigis"),
-                                          centralBxOnly = cms.bool(True),
-                                          ignoreHtMiss = cms.bool(False)
-                                          )
+
+
+process.stage1L1extraParticles = cms.EDProducer( "L1ExtraParticlesProd",
+    tauJetSource = cms.InputTag( 'simCaloStage1LegacyFormatDigis','tauJets' ),
+    etHadSource = cms.InputTag( "simCaloStage1LegacyFormatDigis" ),
+    isoTauJetSource = cms.InputTag( 'simCaloStage1LegacyFormatDigis','isoTauJets' ),
+    etTotalSource = cms.InputTag( "simCaloStage1LegacyFormatDigis" ),
+    centralBxOnly = cms.bool( True ),
+    centralJetSource = cms.InputTag( 'simCaloStage1LegacyFormatDigis','cenJets' ),
+    etMissSource = cms.InputTag( "simCaloStage1LegacyFormatDigis" ),
+    hfRingEtSumsSource = cms.InputTag( "simCaloStage1LegacyFormatDigis" ),
+    produceMuonParticles = cms.bool( True ),
+    forwardJetSource = cms.InputTag( 'simCaloStage1LegacyFormatDigis','forJets' ),
+    ignoreHtMiss = cms.bool( False ),
+    htMissSource = cms.InputTag( "simCaloStage1LegacyFormatDigis" ),
+    produceCaloParticles = cms.bool( True ),
+    muonSource = cms.InputTag( "simGtDigis" ),
+    isolatedEmSource = cms.InputTag( 'simCaloStage1LegacyFormatDigis','isoEm' ),
+    nonIsolatedEmSource = cms.InputTag( 'simCaloStage1LegacyFormatDigis','nonIsoEm' ),
+    hfRingBitCountsSource = cms.InputTag( "simCaloStage1LegacyFormatDigis" )
+)
 
 
 process.mcFilter = cms.EDFilter("MCTruthFilter",
