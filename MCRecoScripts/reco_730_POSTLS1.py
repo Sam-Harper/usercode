@@ -23,19 +23,11 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(100)
 )
 
 
-import sys
-filePrefex="file:"
-if(sys.argv[3].find("/pnfs/")==0):
-    filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
 
-if(sys.argv[3].find("/store/")==0):
-    filePrefex=""
-if(sys.argv[3].find("/eos/")==0):
-    filePrefex="'root://eoscms/"
 
 process.source = cms.Source("PoolSource",
                  #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
@@ -47,7 +39,17 @@ process.source = cms.Source("PoolSource",
 
 isCrabJob=False #submiting script seds this to true
 
+import sys
 if not isCrabJob:
+    
+    filePrefex="file:"
+    if(sys.argv[3].find("/pnfs/")==0):
+        filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
+
+    if(sys.argv[3].find("/store/")==0):
+        filePrefex=""
+    if(sys.argv[3].find("/eos/")==0):
+        filePrefex="'root://eoscms/"
     for i in range(3,len(sys.argv)-1):
         print filePrefex+sys.argv[i]
         process.source.fileNames.extend([filePrefex+sys.argv[i],])
