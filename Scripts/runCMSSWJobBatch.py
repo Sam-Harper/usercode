@@ -139,6 +139,8 @@ os.system("cd "+batchJobBaseDir+"; scramv1 proj -n "+batchJobDir+" CMSSW "+cmssw
 #os.system("tar -zxvf "+batchJobDirAndPath+"/default.tgz")
 copyReleaseFiles(batchJobDirAndPath)
 
+runBatch=False
+
 for jobNr in range(0,args.nrJobs):
     print jobNr
     batchSubmitFile="qsub_batch2_"+str(jobNr)+".sh"
@@ -153,20 +155,23 @@ for jobNr in range(0,args.nrJobs):
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
         cmd+=" "+filename
-    cmd+=" "+fullOutputDir+"/"+outputFilename
-    
-   # cmd+=" $TMPDIR/"+outputFilename+"\n"
-   # cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
-    batchFile.write(cmd)
+    if runBatch:
+        cmd+=" $TMPDIR/"+outputFilename+"\n"
+        batchFile.write(cmd)
+        batchFile.write("mv $TMPDIR/"+outputFilename+" "+fullOutputDir)
+    else:
+        cmd+=" "+fullOutputDir+"/"+outputFilename
+        batchFile.write(cmd)
+
     batchFile.close()
-
-    #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
-    os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
-    os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
-    #os.system("chmod +x "+batchSubmitFile);
-    #cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
-   ## print cmd
-   # os.system(cmd)
-    #os.system("./"+batchSubmitFile+" > "+fullLogDir+"/job_"+str(jobNr)+".log &")
-
+    
+    if runBatch:
+        os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
+        os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
+    else:
+        os.system("chmod +x "+batchSubmitFile);
+        cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
+        print cmd
+        os.system(cmd)
+   
     #os.remove(batchSubmitFile)        
