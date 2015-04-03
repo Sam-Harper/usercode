@@ -6,15 +6,27 @@
 # Charles Plager     Sept  7, 2010
 # Volker Adler       Apr  16, 2014
 
-import argparse
 import os
 
-parser = argparse.ArgumentParser(description='lists the files which contain the run lumi sections given')
-parser.add_argument('pythonFile',help='python file')
-parser.add_argument('dataset',help='name of dataset')
-parser.add_argument('input',help='either input file name containing run/lumi/event or runnr:lumiSec:eventnr')
-parser.add_argument('output',help='actually skim the events and output in this file (None if no output)')
-args = parser.parse_args()
+class Args (dict):
+    def __init__ (self, args):
+        try:
+            self['dataset']     = args[2]
+            self['input']    = args[3]
+            self['output']   = args[4]
+
+        except:
+            raise RuntimeError, args ,"is invalid" 
+
+    def __getattr__ (self, key):
+        return self[key]
+
+    def __str__ (self):
+        return "dataset = %(dataset)s, input = %(input)s, output = %(output)s"  % self
+
+
+import sys
+args = Args(sys.argv)
 print args
 
 ##import sys
