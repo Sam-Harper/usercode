@@ -7,7 +7,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/Framework/interface/Run.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "TTree.h"
 

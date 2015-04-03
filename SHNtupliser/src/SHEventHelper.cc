@@ -1000,18 +1000,18 @@ void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& hee
      
     // std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster,recHits,topology.product(),geom.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
     //   sigmaEtaEta = sqrt(covariances[0]) ;
-    // std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
-      std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster,recHits,topology.product(),geom.product()) ;
+    // std::vector<float> localCovariances = EcalClusterTools::localCovariances(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product()) ;
+      std::vector<float> covariances = EcalClusterTools::covariances(seedCluster,recHits,topology.product(),geom.product()) ;
     sigmaEtaEta = sqrt(covariances[0]) ;
-    std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster,recHits,topology.product()) ;
+    std::vector<float> localCovariances = EcalClusterTools::localCovariances(seedCluster,recHits,topology.product()) ;
   
     sigmaIEtaIEta = sqrt(localCovariances[0]) ;
-    //  e1x5 = noZS::EcalClusterTools::e1x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
-    //    e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
-    //  e5x5 = noZS::EcalClusterTools::e5x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
-    e1x5 = noZS::EcalClusterTools::e1x5(seedCluster,recHits,topology.product());
-    e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product());
-    e5x5 = noZS::EcalClusterTools::e5x5(seedCluster,recHits,topology.product());
+    //  e1x5 = EcalClusterTools::e1x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    //    e2x5Max = EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    //  e5x5 = EcalClusterTools::e5x5(seedCluster,recHits,topology.product(),recHitFlagsToBeExcluded,recHitSeverityToBeExcluded,severityLevelAlgo.product());
+    e1x5 = EcalClusterTools::e1x5(seedCluster,recHits,topology.product());
+    e2x5Max = EcalClusterTools::e2x5Max(seedCluster,recHits,topology.product());
+    e5x5 = EcalClusterTools::e5x5(seedCluster,recHits,topology.product());
   }
 
   ele.setShowerShape(sigmaEtaEta,sigmaIEtaIEta,e1x5,e2x5Max,e5x5);

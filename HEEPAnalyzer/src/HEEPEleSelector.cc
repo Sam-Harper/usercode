@@ -92,8 +92,8 @@ int heep::EleSelector::getCutCode(const float rho,const math::XYZPoint &vertex,c
   if(ele.dr03TkSumPt() - rho*effectAreas.tracker(ele.superCluster()->eta()) > (cuts.isolPtTrksConstTerm + cuts.isolPtTrksGradTerm*(et<cuts.isolPtTrksGradStart ? 0. : (et-cuts.isolPtTrksGradStart))))cutCode |=CutCodes::ISOLPTTRKS;
   if((ele.dr03TkSumPt()- rho*effectAreas.tracker(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho() > cuts.maxIsolPtTrksRel03) cutCode |=CutCodes::ISOLPTTRKSREL03; 
   if((ele.dr03EcalRecHitSumEt()- rho*effectAreas.ecal(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho() > cuts.maxIsolEmRel03 ) cutCode |=CutCodes::ISOLEMREL03; 
-  if((ele.dr03HcalTowerSumEt()- rho*effectAreas.hcal(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho()  > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03;   
-  if(ele.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) > cuts.maxNrMissHits ) cutCode |=CutCodes::NRMISSHITS; 
+  if((ele.dr03HcalTowerSumEt()- rho*effectAreas.hcal(ele.superCluster()->eta()))/ele.trackMomentumAtVtx().rho()  > cuts.maxIsolHadRel03 ) cutCode |=CutCodes::ISOLHADREL03;    
+  if(ele.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() > cuts.maxNrMissHits ) cutCode |=CutCodes::NRMISSHITS; 
   if(fabs(ele.gsfTrack()->dxy(vertex))>cuts.maxDXY) cutCode |=CutCodes::DXY;
 
   return (cutCode & cuts.cutMask & cutMask) ;

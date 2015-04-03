@@ -25,19 +25,19 @@ bool PFFuncs::passesCleaning(const reco::PFCandidateRef& pfCand,const reco::GsfE
 
 bool PFFuncs::passesCleaningPhoton(const reco::PFCandidateRef& pfCand,const reco::GsfElectron& ele)
 {
-   
-  if(pfCand->superClusterRef()==ele.superCluster()) return false;
+  std::cout <<" PFFuncs::passesCleaningPhoton this function has been disabled in 5X "<<std::endl;
+//   if(pfCand->superClusterRef()==ele.superCluster()) return false;
   
-  const reco::PFBlockElementCluster* ecalClusWithMaxEt = getHighestEtECALCluster(*pfCand);
-  if(ecalClusWithMaxEt){
-    if(ecalClusWithMaxEt->superClusterRef()==ele.superCluster()) return false;
+//   const reco::PFBlockElementCluster* ecalClusWithMaxEt = getHighestEtECALCluster(*pfCand);
+//   if(ecalClusWithMaxEt){
+//     //    if(ecalClusWithMaxEt->superClusterRef()==ele.superCluster()) return false;
 
-    float clusEta = ecalClusWithMaxEt->clusterRef()->position().Eta();
-    float clusPhi = ecalClusWithMaxEt->clusterRef()->position().Phi();
-    for(auto cluster : ele.superCluster()->clusters()){
-      if(reco::deltaR2(cluster->eta(),cluster->phi(),clusEta,clusPhi)<0.00008) return false; //about half an ecal crystal in barrel
-    }
-  }
+//     float clusEta = ecalClusWithMaxEt->clusterRef()->position().Eta();
+//     float clusPhi = ecalClusWithMaxEt->clusterRef()->position().Phi();
+//     //for(auto cluster : ele.superCluster()->clusters()){
+//      // if(reco::deltaR2(cluster->eta(),cluster->phi(),clusEta,clusPhi)<0.00008) return false; //about half an ecal crystal in barrel
+//     //  }
+//   }
   return true;
 }
 

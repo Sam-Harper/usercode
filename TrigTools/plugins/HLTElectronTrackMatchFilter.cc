@@ -325,7 +325,7 @@ void HLTElectronTrackMatchFilter::EleDataStruct::fill(const reco::SuperCluster& 
   dPhi = iDPhi;
   dEta = iDEta;
 
-  nrMissHits =trk.hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
+  nrMissHits =trk.trackerExpectedHitsInner().numberOfLostHits();
   nrTracks = iNrTracks;
 }
 void HLTElectronTrackMatchFilter::EleDataStruct::fill(const reco::SuperCluster& superClus)
@@ -381,8 +381,8 @@ bool  HLTElectronTrackMatchFilter::isInnerMost::operator()
      elHitsIt2++, gsfHitCounter2++ )
    { if (((**elHitsIt2).isValid())) break ; }
 
-  uint32_t gsfHit1 = gsfHitPattern1.getHitPattern(reco::HitPattern::TRACK_HITS,gsfHitCounter1) ;
-  uint32_t gsfHit2 = gsfHitPattern2.getHitPattern(reco::HitPattern::TRACK_HITS,gsfHitCounter2) ;
+  uint32_t gsfHit1 = gsfHitPattern1.getHitPattern(gsfHitCounter1) ;
+  uint32_t gsfHit2 = gsfHitPattern2.getHitPattern(gsfHitCounter2) ;
   if (gsfHitPattern1.getSubStructure(gsfHit1)!=gsfHitPattern2.getSubStructure(gsfHit2))
    { return (gsfHitPattern1.getSubStructure(gsfHit1)<gsfHitPattern2.getSubStructure(gsfHit2)) ; }
   else if (gsfHitPattern1.getLayer(gsfHit1)!=gsfHitPattern2.getLayer(gsfHit2))

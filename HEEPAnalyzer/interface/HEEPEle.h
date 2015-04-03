@@ -172,13 +172,13 @@ namespace heep {
     //but not explicitly saying 5x5 in the name will confuse people
     //so I have either the choice between breaking backwards compatiblitly by changing all shower shape varialbes to have 5x5 in the name or add confusion to the code
     //so joy, I have to break backwards compatiblity
-    
+    //no for this, this is a back port to 53X which doesnt have this issue so I've removed 5x5 from the gsf names
     float sigmaEtaEtaFull5x5()const;
-    float sigmaEtaEtaUnCorrFull5x5()const{return gsfEle_->full5x5_sigmaEtaEta();}
-    float sigmaIEtaIEtaFull5x5()const{return gsfEle_->full5x5_sigmaIetaIeta();}
-    float e1x5Full5x5()const{return gsfEle_->full5x5_e1x5();}
-    float e2x5MaxFull5x5()const{return gsfEle_->full5x5_e2x5Max();}
-    float e5x5Full5x5()const{return gsfEle_->full5x5_e5x5();}
+    float sigmaEtaEtaUnCorrFull5x5()const{return gsfEle_->sigmaEtaEta();}
+    float sigmaIEtaIEtaFull5x5()const{return gsfEle_->sigmaIetaIeta();}
+    float e1x5Full5x5()const{return gsfEle_->e1x5();}
+    float e2x5MaxFull5x5()const{return gsfEle_->e2x5Max();}
+    float e5x5Full5x5()const{return gsfEle_->e5x5();}
     float e1x5Over5x5Full5x5()const{return e5x5Full5x5()!=0 ? e1x5Full5x5()/e5x5Full5x5() : 0.;}
     float e2x5MaxOver5x5Full5x5()const{return e5x5Full5x5()!=0 ? e2x5MaxFull5x5()/e5x5Full5x5() : 0.;}
   
@@ -202,7 +202,7 @@ namespace heep {
     float isolHadRel03()const{return et()!=0 ? isolHad()/et():0.;} //WP80
 
 
-    int nrMissHits()const{return gsfEle_->gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);}
+    int nrMissHits()const{return gsfEle_->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();}
     float dxy()const{return gsfEle_->gsfTrack()->dxy(evtPrimVertexPos_);}
 
     //selection cuts
