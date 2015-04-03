@@ -75,6 +75,20 @@ def getFileNames (event):
   ckey    = ""                            # default
   cert    = ""                            # default
   jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
-  files = sorted( f['file'][0]['name'] for f in jsondict['data'] )
+  count=1
+  while jsondict['status']!='ok' and count<=10:
+    jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
+    count=count+1
+
+  files=[]
+
+  if jsondict['status']!='ok':
+    print "das lookup of ",query," failed ",count," times"
+  else:
+    try:
+      files = sorted( f['file'][0]['name'] for f in jsondict['data'] )
+    except:
+      print "no files found for ",query
+      
   return files
   
