@@ -3,6 +3,7 @@
 <use   name="rootcore"/>
 <use   name="FWCore/Framework"/>
 <use   name="DataFormats/Common"/>
+<use   name="DataFormats/EcalRecHit"/>
 <use   name="DataFormats/METReco"/>
 <use   name="HLTrigger/HLTcore"/>
 <use   name="TrackingTools/GsfTools"/>
