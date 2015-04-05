@@ -139,7 +139,7 @@ os.system("cd "+batchJobBaseDir+"; scramv1 proj -n "+batchJobDir+" CMSSW "+cmssw
 #os.system("tar -zxvf "+batchJobDirAndPath+"/default.tgz")
 copyReleaseFiles(batchJobDirAndPath)
 
-runBatch=False
+runBatch=True
 
 for jobNr in range(0,args.nrJobs):
     print jobNr
