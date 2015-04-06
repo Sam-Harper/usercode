@@ -156,7 +156,7 @@ int AnaFuncs::getBinNr(int nrBins,double min,double max,double x)
 int AnaFuncs::getXBinNr(const TH2* theHist,double x)
 {
   //nasty logic but works perfectly
-  TAxis* xAxis = theHist->GetXaxis(); 
+  const TAxis* xAxis = theHist->GetXaxis(); 
   int binNr = 0;
   while(binNr<=xAxis->GetNbins() && x>=xAxis->GetBinLowEdge(binNr+1)){
     binNr++;
@@ -167,7 +167,7 @@ int AnaFuncs::getXBinNr(const TH2* theHist,double x)
 int AnaFuncs::getYBinNr(const TH2* theHist,double y)
 {
   //nasty logic but works perfectly
-  TAxis* yAxis = theHist->GetYaxis(); 
+  const TAxis* yAxis = theHist->GetYaxis(); 
   int binNr = 0;
   while(binNr<=yAxis->GetNbins() && y>=yAxis->GetBinLowEdge(binNr+1)){
     binNr++;

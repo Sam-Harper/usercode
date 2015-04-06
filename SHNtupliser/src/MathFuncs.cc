@@ -385,34 +385,19 @@ double MathFuncs::smearedDoublePeakUnBinnedLikelihood(double* x,double *para)
 //para[3] = bkg peak 1
 //para[4] = bkg peak 2
 //para[5] = bkg peak 1  error 
-double MathFuncs::calSmearedDoublePeakUnBinnedLikelihood(double* x,double *para)
+double MathFuncs::calSmearedDoublePeakUnBinnedLikelihood(double* ,double *)
 {
-  float minBkg = para[3]-3*para[5];
-  float maxBkg = para[3]+3*para[5];
-  
-  double paraToFunc[7];
-  paraToFunc[0] = para[0];
-  paraToFunc[1] = para[1];
-  paraToFunc[2] = *x;
-  paraToFunc[3] = *x*para[2];
-  paraToFunc[4] = para[3];
-  paraToFunc[5] = para[4];
-  paraToFunc[6] = para[5];
-  return smearedDoublePeakUnBinnedLikelihoodFunc_.Integral(minBkg,maxBkg,paraToFunc);
+ 
+  return 0;
+  //  return smearedDoublePeakUnBinnedLikelihoodFunc_.Integral(minBkg,maxBkg,paraToFunc);
 }
 
 double MathFuncs::cal95CLDoublePeakUnBinnedLikelihood(double nrObs1,double nrObs2,double nrBkg1,double nrBkg2,double ratioPeak2ToPeak1,double bkgErr)
 {
-  double para[6];
-  para[0] = nrObs1;
-  para[1] = nrObs2;
-  para[2] = ratioPeak2ToPeak1;
-  para[3] = nrBkg1;
-  para[4] = nrBkg2;
-  para[5] = bkgErr;
+ 
 
-  float totIntegral = doublePeakUnBinnedLikeFunc_.Integral(0,nrBkg1*10,para);
-  
+  //  float totIntegral = doublePeakUnBinnedLikeFunc_.Integral(0,nrBkg1*10,para);
+  float totIntegral=0;
   double conFidLvl = 0.95;
   double limit = 0;
   double stepSize = 1;
@@ -421,7 +406,7 @@ double MathFuncs::cal95CLDoublePeakUnBinnedLikelihood(double nrObs1,double nrObs
                                //this varible checks that there has been atleast one result below the 95% level, ie we're converging on the limit
   do{
    
-    double intResult = doublePeakUnBinnedLikeFunc_.Integral(0,limit,para);
+    double intResult = 0;// doublePeakUnBinnedLikeFunc_.Integral(0,limit,para);
     if(intResult>conFidLvl*totIntegral){
       limit -=stepSize;
       if(limit<0){
@@ -467,19 +452,15 @@ double MathFuncs::intPoissonProb(int minN,int maxN,double expect,double expectEr
 {
   if(expectErr==0) return intPoissonProb(minN,maxN,expect);
 
-  double para[4];
-  para[0] = minN;
-  para[1] = maxN;
-  para[2] = expect;
-  para[3] = expectErr;
+
   //para[3] =0;
   //need to work out the integration limits as roots too dumb to do it
   double minInt = expect-3*expectErr;
-  double maxInt = expect+3*expectErr;
+  //  double maxInt = expect+3*expectErr;
   if(minInt<0) minInt=0; //constain to being non-negative
   //std::cout << "gaus int "<<intGaus(expect,expectErr,minInt,maxInt)<<std::endl;
   // std::cout <<"start prob calc, expect "<<expect<<std::endl;
-  double prob =_probFunc.Integral(minInt,maxInt,para,1E-14)/0.997300203936739793; //intGaus(expect,expectErr,minInt,maxInt);
+  double prob =0;//_probFunc.Integral(minInt,maxInt,para,1E-14)/0.997300203936739793; //intGaus(expect,expectErr,minInt,maxInt);
  // std::cout <<"end prob calc "<<std::endl;
  return prob;
 }
@@ -646,10 +627,8 @@ double MathFuncs::intGaus(double mean,double sigma)
 
 double MathFuncs::intGaus(double mean,double sigma,double min,double max)
 {
-  double para[2];
-  para[0] = mean;
-  para[1] = sigma;
-  return _gausFunc.Integral(min,max,para);
+ 
+  return 0;// _gausFunc.Integral(min,max,para);
 }
 
 double MathFuncs::power(double x,int n)
