@@ -141,22 +141,16 @@ from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1
 #call to customisation function customisePostLS1 imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
 process = customisePostLS1(process)
 
-# Automatic addition of the customisation function from SimGeneral.MixingModule.fullMixCustomize_cff
-from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn 
-
-#call to customisation function setCrossingFrameOn imported from SimGeneral.MixingModule.fullMixCustomize_cff
-process = setCrossingFrameOn(process)
-
 # End of customisation functions
 
-from CondCore.DBCommon.CondDBSetup_cfi import *
-process.ecalES1 = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                        connect = cms.string("frontier://FrontierProd/CMS_COND_31X_ECAL"),
-                                        toGet = cms.VPSet(
-                                            cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),tag=cms.string("EcalIntercalib_2011_V3_Bon_mc_subModCor_smeared_1fb")),
+##from CondCore.DBCommon.CondDBSetup_cfi import *
+##process.ecalES1 = cms.ESSource("PoolDBESSource",CondDBSetup,
+##                                        connect = cms.string("frontier://FrontierProd/CMS_COND_31X_ECAL"),
+##                                        toGet = cms.VPSet(
+##                                            cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),tag=cms.string("EcalIntercalib_2011_V3_Bon_mc_subModCor_smeared_1fb")),
                                            
-                                            cms.PSet(record = cms.string("EcalPedestalsRcd"),tag=cms.string("EcalPedestals_208944_200_mc")),
-                                                          )
-                                        )
+##                                            cms.PSet(record = cms.string("EcalPedestalsRcd"),tag=cms.string("EcalPedestals_208944_200_mc")),
+##                                                          )
+##                                        )
 
-process.es_prefer_ecal1 = cms.ESPrefer("PoolDBESSource","ecalES1")
+##process.es_prefer_ecal1 = cms.ESPrefer("PoolDBESSource","ecalES1")
