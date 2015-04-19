@@ -20,10 +20,10 @@ if not options.dataset or not options.nrEvents or not options.nrEventsPerJob or 
     parser.error("dataset,nrEvents, nrEventsPerJob and outputStorageElement are manditory")
     sys.exit(0)
 
-cmsswVersion="730"
+cmsswVersion="740"
 
 #these are the identifiers of the conditions and campaign
-config="reco_730_POSTLS1"
+config="reco_740_POSTLS1"
 
 datasetName=options.dataset.split("/")[1]
 puIndex=2;
@@ -68,7 +68,7 @@ datasetTIER="RECO"
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 globalTag="Default"
 if pileUp.find("bx25")!=-1: 
-    globalTag="MCRUN2_73_V7"
+    globalTag="PHY1474_25V2"
 elif pileUp.find("bx50")!=-1:
     globalTag="NotReady"
 else:

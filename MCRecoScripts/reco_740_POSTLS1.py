@@ -69,9 +69,7 @@ process.configurationMetadata = cms.untracked.PSet(
 # Output definition
 
 process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-    compressionLevel = cms.untracked.int32(4),
-    compressionAlgorithm = cms.untracked.string('LZMA'),
-    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+    eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.AODSIMEventContent.outputCommands,
     fileName = cms.untracked.string('TOSED:OUTPUTFILE'),
     dataset = cms.untracked.PSet(
@@ -86,23 +84,37 @@ if not isCrabJob:
 # Additional output definition
 
 # Other statements
-from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+
+# Other statements
+process.mix.playback = True
+process.mix.digitizers = cms.PSet()
+for a in process.aliases: delattr(process, a)
+process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
+
+
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag as customiseGlobalTag
+
+extraRcds="+GBRForestD_ecalPFClusterCor_EB_pfSize1_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_mean_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize1_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_mean_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize1_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_sigma_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize1_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_sigma_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_mean_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_mean_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_sigma_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_sigma_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_mean_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_mean_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_sigma_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_sigma_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_mean_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_mean_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_sigma_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_sigma_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_mean_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_mean_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_sigma_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_sigma_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_mean_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_mean_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_sigma_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_sigma_50ns"
+
+extraRcds=extraRcds+"+MVAComputerContainer_74X_JetTags_v2_mc,BTauGenericMVAJetTagComputerRcd"
 
 if isCrabJob:
-    process.GlobalTag = GlobalTag(process.GlobalTag, 'TOSED:GLOBALTAG', '')
+  #  process.GlobalTag = customiseGlobalTag(process.GlobalTag,globaltag= 'TOSED:GLOBALTAG',conditions='TrackerAlignmentExtendedError_2011Realistic_v1_mc,TrackerAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonDTAPEObjectsExtended_v0_mc,DTAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonCSCAPEObjectsExtended_v0_mc,CSCAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalSamplesCorrelation_mc,EcalSamplesCorrelationRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseShapes_mc,EcalPulseShapesRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseCovariances_mc,EcalPulseCovariancesRcd,frontier://FrontierProd/CMS_CONDITIONS')
+    process.GlobalTag = customiseGlobalTag(process.GlobalTag,globaltag= 'TOSED:GLOBALTAG')
 else:
-    process.GlobalTag = GlobalTag(process.GlobalTag, sys.argv[2], '')  
+    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag=sys.argv[2])#, conditions='TrackerAlignmentExtendedError_2011Realistic_v1_mc,TrackerAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonDTAPEObjectsExtended_v0_mc,DTAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonCSCAPEObjectsExtended_v0_mc,CSCAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalSamplesCorrelation_mc,EcalSamplesCorrelationRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseShapes_mc,EcalPulseShapesRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseCovariances_mc,EcalPulseCovariancesRcd,frontier://FrontierProd/CMS_CONDITIONS'+extraRcds)
+  #process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'PHYS14_25_V1',conditions='TrackerAlignmentExtendedError_2011Realistic_v1_mc,TrackerAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonDTAPEObjectsExtended_v0_mc,DTAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonCSCAPEObjectsExtended_v0_mc,CSCAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalSamplesCorrelation_mc,EcalSamplesCorrelationRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseShapes_mc,EcalPulseShapesRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseCovariances_mc,EcalPulseCovariancesRcd,frontier://FrontierProd/CMS_CONDITIONS')
+
 
 
 #multi fit needs to know the bunch spacing
 #however the pileup info producer does not produce this in 72X
-#so if we are running 73X on 72X, we need to fake it
-process.addPileupInfo = cms.EDProducer("BXRecordProducer",
-                                       bunchSpacing=cms.int32(25) #this should probably be configable via script
-                                       )
+#so if we are running >=73X on 72X, we need to manual
+process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader=False
+process.particleFlowClusterECAL.energyCorrector.autoDetectBunchSpacing=False
+process.particleFlowClusterECAL.energyCorrector.bunchSpacing=cms.int32(25)
 
 # Path and EndPath definitions
-process.puInfo_step = cms.Path(process.addPileupInfo)
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.L1Reco_step = cms.Path(process.L1Reco)
 process.reconstruction_step = cms.Path(process.reconstruction)
@@ -131,7 +143,7 @@ if applyEGFilter:
     process.eventinterpretaion_step.insert(0,process.egammaFilter)
     
 # Schedule definition
-process.schedule = cms.Schedule(process.puInfo_step,process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.eventinterpretaion_step,process.endjob_step,process.AODSIMoutput_step)
+process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.eventinterpretaion_step,process.endjob_step,process.AODSIMoutput_step)
 
 # customisation of the process.
 
@@ -141,8 +153,20 @@ from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1
 #call to customisation function customisePostLS1 imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
 process = customisePostLS1(process)
 
+# Automatic addition of the customisation function from SimGeneral.MixingModule.fullMixCustomize_cff
+from SimGeneral.MixingModule.fullMixCustomize_cff import setCrossingFrameOn 
+
+#call to customisation function setCrossingFrameOn imported from SimGeneral.MixingModule.fullMixCustomize_cff
+process = setCrossingFrameOn(process)
+
 # End of customisation functions
 
+
+#process.MessageLogger.suppressWarning.append("caloStage1Digis")
+#process.MessageLogger.suppressInfo.append("caloStage1Digis")
+
+process.MessageLogger.suppressError=cms.untracked.vstring("caloStage1Digis",)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 ##from CondCore.DBCommon.CondDBSetup_cfi import *
 ##process.ecalES1 = cms.ESSource("PoolDBESSource",CondDBSetup,
 ##                                        connect = cms.string("frontier://FrontierProd/CMS_COND_31X_ECAL"),
