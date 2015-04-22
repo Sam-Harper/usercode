@@ -23,19 +23,10 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(100)
 )
 
 
-import sys
-filePrefex="file:"
-if(sys.argv[3].find("/pnfs/")==0):
-    filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
-
-if(sys.argv[3].find("/store/")==0):
-    filePrefex=""
-if(sys.argv[3].find("/eos/")==0):
-    filePrefex="'root://eoscms/"
 
 process.source = cms.Source("PoolSource",
                  #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
@@ -48,6 +39,16 @@ process.source = cms.Source("PoolSource",
 isCrabJob=False #submiting script seds this to true
 
 if not isCrabJob:
+    
+    import sys
+    filePrefex="file:"
+    if(sys.argv[3].find("/pnfs/")==0):
+        filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
+        
+    if(sys.argv[3].find("/store/")==0):
+        filePrefex=""
+    if(sys.argv[3].find("/eos/")==0):
+        filePrefex="'root://eoscms/"
     for i in range(3,len(sys.argv)-1):
         print filePrefex+sys.argv[i]
         process.source.fileNames.extend([filePrefex+sys.argv[i],])
@@ -70,13 +71,14 @@ process.configurationMetadata = cms.untracked.PSet(
 
 process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    outputCommands = process.AODSIMEventContent.outputCommands,
+    outputCommands = process.RECOSIMEventContent.outputCommands,
     fileName = cms.untracked.string('TOSED:OUTPUTFILE'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('AODSIM')
     )
 )
+#process.AODSIMoutput.outputCommands.extend(cms.untracked.vstring("drop recoGenParticles_*_*_*","drop recoPFJets_*_*_*","drop triggerTriggerEvent_*_*_*","drop recoTrack*_*_*_*","drop recoCaloJets_*_*_*","drop *_generalTracks_*_*","drop recoJet*_*_*_*","drop *FwdPtrs*_*_*_*","drop recoGenJets*_*_*_*","drop ints_genParticles_*_*","drop recoPFTau*_*_*_*","drop recoDeDxData*_*_*_*","drop CastorRecHits*_*_*_*","drop recoCastorTowers_*_*_*","drop HFRecHitsSorted_*_*_*","drop TrackingRecHitsOwned_*_*_*","keep recoTracks_generalTracks_*_*","drop *_*ulti5x5*_*_*","drop recoJPTJets_*_*_*","drop *_*ybridSuperClusters_*_*","keep *_particleFlowClusterECAL_*_*","keep *_particleFlowClusterHCAL_*_*","drop *_muons_*_*","drop *_*onversions_*_*","drop recoRecoChargedRefCandidates_trackRefsForJets_*_*","drop recoPFRecHits_particleFlowRecHitHO_*_*","drop *_offlinePrimaryVerticesWithBS_*_*","keep *_particleFlowBlock_*_*" ))
 
 if not isCrabJob:
     process.AODSIMoutput.fileName = cms.untracked.string(sys.argv[len(sys.argv)-1])
@@ -94,18 +96,13 @@ process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("ran
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag as customiseGlobalTag
 
-extraRcds="+GBRForestD_ecalPFClusterCor_EB_pfSize1_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_mean_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize1_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_mean_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize1_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_sigma_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize1_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize1_sigma_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_mean_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_mean_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_sigma_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize2_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize2_sigma_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_mean_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_mean_50ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_sigma_25ns+GBRForestD_ecalPFClusterCor_EB_pfSize3_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EB_pfSize3_sigma_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_mean_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_mean_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_sigma_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize1_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize1_sigma_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_mean_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_mean_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_sigma_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize2_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize2_sigma_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_mean_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_mean_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_mean_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_mean_50ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_sigma_25ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_sigma_25ns+GBRForestD_ecalPFClusterCor_EE_pfSize3_sigma_50ns,GBRDWrapperRcd,frontier://FrontierProd/CMS_COND_PAT_000,ecalPFClusterCor_EE_pfSize3_sigma_50ns"
 
-extraRcds=extraRcds+"+MVAComputerContainer_74X_JetTags_v2_mc,BTauGenericMVAJetTagComputerRcd"
 
 if isCrabJob:
-  #  process.GlobalTag = customiseGlobalTag(process.GlobalTag,globaltag= 'TOSED:GLOBALTAG',conditions='TrackerAlignmentExtendedError_2011Realistic_v1_mc,TrackerAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonDTAPEObjectsExtended_v0_mc,DTAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonCSCAPEObjectsExtended_v0_mc,CSCAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalSamplesCorrelation_mc,EcalSamplesCorrelationRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseShapes_mc,EcalPulseShapesRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseCovariances_mc,EcalPulseCovariancesRcd,frontier://FrontierProd/CMS_CONDITIONS')
+  
     process.GlobalTag = customiseGlobalTag(process.GlobalTag,globaltag= 'TOSED:GLOBALTAG')
 else:
-    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag=sys.argv[2])#, conditions='TrackerAlignmentExtendedError_2011Realistic_v1_mc,TrackerAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonDTAPEObjectsExtended_v0_mc,DTAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonCSCAPEObjectsExtended_v0_mc,CSCAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalSamplesCorrelation_mc,EcalSamplesCorrelationRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseShapes_mc,EcalPulseShapesRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseCovariances_mc,EcalPulseCovariancesRcd,frontier://FrontierProd/CMS_CONDITIONS'+extraRcds)
-  #process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'PHYS14_25_V1',conditions='TrackerAlignmentExtendedError_2011Realistic_v1_mc,TrackerAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonDTAPEObjectsExtended_v0_mc,DTAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+MuonCSCAPEObjectsExtended_v0_mc,CSCAlignmentErrorExtendedRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalSamplesCorrelation_mc,EcalSamplesCorrelationRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseShapes_mc,EcalPulseShapesRcd,frontier://FrontierProd/CMS_CONDITIONS+EcalPulseCovariances_mc,EcalPulseCovariancesRcd,frontier://FrontierProd/CMS_CONDITIONS')
-
-
+    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag=sys.argv[2])
 
 #multi fit needs to know the bunch spacing
 #however the pileup info producer does not produce this in 72X

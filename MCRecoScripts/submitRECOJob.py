@@ -15,6 +15,7 @@ parser.add_option('--outputStorageElement',help='output storage element eg T2_UK
 parser.add_option('--copyData',help="whether to stage out the data or not",default=True)
 parser.add_option('--dbsUrl',help="dbs url global,phys03 etc",default="global")
 parser.add_option('--dryRun',help="if true, is a dry run, do not actually submit crab jobs",default=True)
+parser.add_option('--publish',help="if true, publish the data, otherwise do not",default=False)
 options,args = parser.parse_args()
 if not options.dataset or not options.nrEvents or not options.nrEventsPerJob or not options.outputStorageElement:
     parser.error("dataset,nrEvents, nrEventsPerJob and outputStorageElement are manditory")
@@ -44,6 +45,14 @@ elif datasetName.find("ZprimeToEE")==0:
     print "Z'->ee detected"
     puIndex=0
     config=config+".py"
+elif datasetName.find("ZprimeToMuMu")==0:
+    print "Z'->mumu detected"
+    puIndex=0
+    config=config+".py"
+elif datasetName.find("DYToEE")==0:
+    print "DY->ee detected"
+    puIndex=0
+    config=config+".py"
 else:
     print ("dataset %s not detected, aborting" %datasetName)
     sys.exit(0)
@@ -63,11 +72,11 @@ if config.find("_EvtFilter.py")!=-1:
 pileUp=options.dataset.split("/")[2].split("_")[puIndex]
 #timing=`python $config dummy dummy dummy | grep "3D Timing" | awk '{if(NF>=4) print "_"$4}'`
 #reRECOVersion="EGM720${timing}_EGIsolMapV1_Ele20Skim"
-reRECOVersion="EGM730"
+reRECOVersion="EGM740"
 datasetTIER="RECO"
 #globalTag=`python $config input.root output.root | grep "globaltag" | awk '{print $3}' | awk -F ":" '{print $1}'`
 globalTag="Default"
-if pileUp.find("bx25")!=-1: 
+if pileUp.find("bx25")!=-1 or pileUp.find("BX25")!=-1: 
     globalTag="PHY1474_25V2"
 elif pileUp.find("bx50")!=-1:
     globalTag="NotReady"
@@ -83,7 +92,7 @@ print "config: reRECOVersion:  conditions: ",config,reRECOVersion,conditions
 
 
 outputFile=datasetName+"_"+reRECOVersion+"_"+conditions+"_"+datasetTIER+".root"
-outputPath="/store/user/sharper/"+cmsswVersion+"/RERECO/"+reRECOVersion+"/"+datasetTIER
+outputPath="/store/user/sharper/"+cmsswVersion+"/RERECO/"+reRECOVersion+"_"+globalTag+"/"+datasetTIER
 publishDataname=conditions
 
 
@@ -119,6 +128,7 @@ crabSubmitCmd = "crab submit -c crab_base.py General.requestName="+workingDir+ \
                 " Data.outLFN="+outputPath+ \
                 " Data.publishDataName="+publishDataname+ \
                 " Site.storageSite="+options.outputStorageElement+\
+                " Data.publication="+options.publish+\
                 " JobType.psetName="+tempConfig
    
 
