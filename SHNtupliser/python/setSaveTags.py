@@ -10,7 +10,8 @@ def setSaveTags(process,pathName,saveTagsValue):
            #     print filterName,"has no save tags field"
 
 def printSaveTagFilterNames(process,pathName):
-    print "PATH: ",pathName
+    print pathName,
+    hasSaveTags=False
     path = getattr(process,pathName)
     for filterName in path.moduleNames():
         filt = getattr(process,filterName)
@@ -18,5 +19,16 @@ def printSaveTagFilterNames(process,pathName):
             if filt.hasParameter("saveTags"):
                 param=filt.getParameter("saveTags")
                 if param.value()==True:
-                    print filterName
-                    #param.setValue(saveTagsValue)
+                    if hasSaveTags==False:
+                        print 
+                    hasSaveTags=True
+                    print "     ",filterName
+    if hasSaveTags==False:
+        print " has NO saved filters"
+            
+
+def printSaveTagFilterNamesAllPaths(process):
+    for pathName in process.pathNames().split():
+        printSaveTagFilterNames(process,pathName)
+        
+  

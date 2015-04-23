@@ -1,4 +1,12 @@
 import FWCore.ParameterSet.Config as cms
+
+def printPathsWithSingleEG(process):
+    for pathName in process.pathNames().split():
+        path = getattr(process,pathName)
+        for moduleName in path.moduleNames():
+            if moduleName.find("L1SingleEG")!=-1:
+                print pathName, moduleName
+
 def addJet200ToSingleEGFilters(process):
     print "turning on EG Jet Seeding"
     for filterName in process.filterNames().split():
