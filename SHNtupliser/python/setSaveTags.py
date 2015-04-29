@@ -27,7 +27,7 @@ def printSaveTagFilterNames(process,pathName):
         print " has NO saved filters"
 
 filtersNeverALastPath=["HLTPMMassFilter",]
-filtersToIgnoreIfTheyInclude="HLTPMMassFilter","HLT2MuonMuonDZ","HLT2PhotonPhotonDZ"]
+filtersToIgnoreIfTheyInclude=["HLTPMMassFilter","HLT2MuonMuonDZ","HLT2PhotonPhotonDZ"]
     
 def isLastFilterEG(process,path,filterNameToCheck):
     for filterName in path.moduleNames():
