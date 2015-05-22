@@ -8,18 +8,22 @@
 //         Created: Tues Sep 2 2008
 
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 class HEEPIdValueMapProducer : public edm::EDProducer {
 
 private:
   heep::EleSelector cuts_; //allows us to apply the heep selection
-  edm::InputTag eleLabel_;
-  edm::InputTag eleRhoCorrLabel_;
-  edm::InputTag verticesLabel_;
+  edm::EDGetTokenT<edm::View<reco::GsfElectron> >  eleToken_;
+  edm::EDGetTokenT<double>  eleRhoCorrToken_;
+  edm::EDGetTokenT<reco::VertexCollection> verticesToken_;
   bool applyRhoCorrToEleIsol_;
   bool writeIdAsInt_;
 
