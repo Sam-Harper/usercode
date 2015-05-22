@@ -33,33 +33,13 @@ void HEEPAnalyzer::beginJob()
 
 void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 { 
-  // heep::listAllProducts<trigger::TriggerEvent>(iEvent,"HEEPAnalyzer");
- 
   //make the heep event (see easy isnt it)
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
-
-  // std::cout <<"event pt hat "<<heepEvt_.genEventPtHat()<<std::endl;
-
-  // std::cout <<"eh"<<std::endl;
-
-  //  std::cout <<"nr eles "<<heepEvt_.heepEles().size()<<std::endl;
-  //  std::cout <<"nr pat "<<heepEvt_.patEles().size()<<std::endl;
-
-
 
   //do what ever you want
   //lets get the heep electrons and count the number that pass / fail cuts
   const std::vector<heep::Ele>& eles = heepEvt_.heepEles();
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){     
-    bool passVid = (*heepEvt_.handles().heepIDVID)[eles[eleNr].gsfEleEDMPtr()];
-    bool passHeep = eles[eleNr].cutCode()==0x0;
-    edm::Handle<edm::ValueMap<unsigned> > howFarHandle;
-    iEvent.getByLabel(edm::InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51-miniAOD"),howFarHandle);
-    size_t howFar = (*howFarHandle)[eles[eleNr].gsfEleEDMPtr()];
-    const heep::Ele& ele = eles[eleNr];
-    if(passVid!=passHeep){
-      std::cout <<" disgreement vid "<<passVid<<" got to "<<howFar<< " heep "<<heep::CutCodes::getCodeName(ele.cutCode())<<" et "<<ele.et()<<" eta "<<ele.eta()<<" phi "<<ele.phi()<<" e2x5 "<<ele.e2x5MaxOver5x5Full5x5()<<" e1x5 "<<ele.e1x5Over5x5Full5x5()<<" hadem "<<ele.gsfEle().hadronicOverEm()<<" had "<<ele.gsfEle().hadronicOverEm()*ele.superCluster().energy()<<" had cut "<<2+0.05*ele.superCluster().energy()<<" "<<heepEvt_.runnr()<<" "<<heepEvt_.eventnr()<<std::endl;
-    }
     // std::cout <<"eleNr "<<eleNr<< "pass "<<<<" passVID "<<passVid<<std::endl;
     if(eles[eleNr].cutCode()==0x0) nrPass_++;
     else nrFail_++;
@@ -71,10 +51,9 @@ void HEEPAnalyzer::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetu
     for(size_t ele2Nr=ele1Nr+1;ele2Nr<eles.size();ele2Nr++){
       const heep::Ele& ele1 = eles[ele1Nr];
       const heep::Ele& ele2 = eles[ele2Nr];  
-	//	std::cout <<"ele "<<ele1Nr<<" cutcode "<<std::hex<<ele1.cutCode()<<std::dec<<" ele "<<ele2Nr<<" cut code "<<std::hex<<ele2.cutCode()<<std::dec<<" ee "<<ele1.isEE()<<" 2nd ele "<<ele2.isEE()<<std::endl;
+
       
       if(ele1.cutCode()==0x0 && ele2.cutCode()==0x0 && !(ele1.isEE() && ele2.isEE())){ //EB-EB, EE-EE
-	//	std::cout <<"runnr "<<heepEvt_.runnr()<<" eventnr "<<heepEvt_.eventnr()<<std::endl;
 	float mass = (ele1.p4()+ele2.p4()).mag();
 	massHist_->Fill(mass);
       }

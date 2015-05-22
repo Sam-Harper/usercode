@@ -81,14 +81,6 @@ process.electronIDValueMapProducer.esReducedRecHitCollection=cms.InputTag("reduc
 process.electronIDValueMapProducer.src=cms.InputTag("slimmedElectrons")
 process.electronIDValueMapProducer.datasetFormat=cms.string("PAT")
 
-## process.load("Configuration.StandardSequences.MagneticField_cff")
-## process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
-## process.load("SHarper.SHNtupliser.shNtupliser_cfi")
-## process.shNtupliser.fillFromGsfEle=False
-## process.shNtupliser.electronTag = cms.untracked.InputTag("slimmedElectrons")
-## process.shNtupliser.superClusterEBTag =cms.InputTag("reducedEgamma","reducedSuperClusters")
-## process.shNtupliser.superClusterEETag =cms.InputTag("reducedEgamma","reducedSuperClusters")
-
 
 process.idDemo = cms.EDAnalyzer('IDTester',
      electrons = cms.InputTag("slimmedElectrons"),
