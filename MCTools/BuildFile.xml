@@ -1,0 +1,14 @@
+<use   name="FWCore/ServiceRegistry"/> 
+<use   name="FWCore/Services"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="root"/>
+<use   name="rootcore"/>
+<use   name="FWCore/Framework"/>
+<use   name="DataFormats/Common"/>
+<use   name="MagneticField/Records"/>
+<use   name="MagneticField/Engine"/>
+<use   name="Geometry/TrackerGeometryBuilder"/>
+<use   name="DataFormats/RecoCandidate"/>
+<use   name="SimDataFormats/GeneratorProducts"/>
+<use   name="CommonTools/UtilAlgos"/>
+<flags EDM_PLUGIN="1"/>
