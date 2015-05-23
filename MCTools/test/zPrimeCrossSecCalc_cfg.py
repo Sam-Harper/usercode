@@ -136,7 +136,7 @@ elif options.zPrimeModel=="zPrimePSI":
     uA=0.506809
     eV=0
     eA=0.506809
-    nuV=-0.253405
+    nuV=0.253405
     nuA=0.253405
 
 elif options.zPrimeModel=="zPrimeSSM":
