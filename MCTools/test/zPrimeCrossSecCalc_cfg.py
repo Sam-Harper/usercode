@@ -63,7 +63,7 @@ eV=0
 eA=0
 nuV=0
 nuA=0
-
+import math
 if options.zPrimeModel=="zPrimeChi":
     print "Z' chi "
     sinThetaW=math.sqrt(0.23)
