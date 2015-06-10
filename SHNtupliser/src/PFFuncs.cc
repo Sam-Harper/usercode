@@ -112,18 +112,18 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 {
  
 
-  edm::ValueMap<std::vector<reco::PFCandidateRef>> gsfToPFMapCleaned;
-  edm::ValueMap<std::vector<reco::PFCandidateRef>>::Filler mapFiller(gsfToPFMapCleaned);
-  std::vector<std::vector<reco::PFCandidateRef>> pfCandsFromEles;
-  for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
-    reco::GsfElectronRef ele(eleHandle,eleNr);
-    const std::vector<reco::PFCandidateRef>& elePFCands =  gsfToPFMap[ele];
-    pfCandsFromEles.push_back(cleanPFIsolMap(elePFCands,*ele));
-  }
-  mapFiller.insert(eleHandle,pfCandsFromEles.begin(),pfCandsFromEles.end());
-  mapFiller.fill();
+//   edm::ValueMap<std::vector<reco::PFCandidateRef>> gsfToPFMapCleaned;
+//   edm::ValueMap<std::vector<reco::PFCandidateRef>>::Filler mapFiller(gsfToPFMapCleaned);
+//   std::vector<std::vector<reco::PFCandidateRef>> pfCandsFromEles;
+//   for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
+//     reco::GsfElectronRef ele(eleHandle,eleNr);
+//     const std::vector<reco::PFCandidateRef>& elePFCands =  gsfToPFMap[ele];
+//     pfCandsFromEles.push_back(cleanPFIsolMap(elePFCands,*ele));
+//   }
+//   mapFiller.insert(eleHandle,pfCandsFromEles.begin(),pfCandsFromEles.end());
+//   mapFiller.fill();
   
-  const auto& gsfToPFMapToUse =gsfToPFMapCleaned;
+  const auto& gsfToPFMapToUse =gsfToPFMap;
 
   const double maxDR2 = maxDR*maxDR;
   std::vector<std::pair<float,float> > eleEtaPhi;

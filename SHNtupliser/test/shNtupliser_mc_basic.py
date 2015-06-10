@@ -16,8 +16,8 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Load geometry
-process.load("Configuration.Geometry.GeometryIdeal_cff")
-process.load("Configuration.Geometry.GeometryDB_cff")
+#process.load("Configuration.Geometry.GeometryIdeal_cff")
+process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 from Configuration.AlCa.autoCond import autoCond
