@@ -17,11 +17,12 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 
 # Load geometry
 process.load("Configuration.Geometry.GeometryIdeal_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.Geometry.GeometryDB_cff")
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 from Configuration.AlCa.autoCond import autoCond
 if isMC:
-    process.GlobalTag.globaltag = autoCond['startup'] 
+    process.GlobalTag.globaltag = cms.string('MCRUN2_74_V9A')
 else:
     process.GlobalTag.globaltag = autoCond['com10']
 
