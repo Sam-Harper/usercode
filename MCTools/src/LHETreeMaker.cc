@@ -143,7 +143,7 @@ public:
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
   virtual void endRun(edm::Run const&, edm::EventSetup const&);
   virtual void endJob();
-  static bool isEqualToAnyOf(int pid,const vector<int>& values);
+  static bool isEqualToAnyOf(int pid,const std::vector<int>& values);
  
 };
 
@@ -273,7 +273,7 @@ void LHETreeMaker::endJob()
 }  
 
 
-bool LHETreeMaker::isEqualToAnyOf(int pid,const vector<int>& values)
+bool LHETreeMaker::isEqualToAnyOf(int pid,const std::vector<int>& values)
 {
   for(auto& val : values){
     if(pid==val) return true;
