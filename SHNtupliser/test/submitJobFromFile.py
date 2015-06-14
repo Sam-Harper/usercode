@@ -99,7 +99,7 @@ for line in datasetDefFile:
                     " Data.inputDBS="+options.dbsUrl+ \
                     " Data.unitsPerJob="+str(unitsPerJob)+ \
                     " Data.totalUnits="+str(totalUnits)+ \
-                    " Data.outLFN="+outputPath+ \
+                    " Data.outLFNDirBase="+outputPath+ \
                     " Data.publishDataName="+publishDataname+ \
                     " JobType.psetName="+tempConfig+ \
                     " General.transferLogs="+str(options.transferLogFiles)
