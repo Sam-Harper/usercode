@@ -210,7 +210,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
   //and here come the hacks, things that are not correctly filled yet....
-  shEle->setIsolMVA(eleMVA_->mva(gsfEle,heepEvent.handles().vertices->size()));
+  //  shEle->setIsolMVA(eleMVA_->mva(gsfEle,heepEvent.handles().vertices->size()));
   shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   //redoing shower shape variables (only necessary for photons now )
