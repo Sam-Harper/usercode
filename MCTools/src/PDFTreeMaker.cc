@@ -141,10 +141,10 @@ void PDFTreeMaker::beginJob()
   tree_= new TTree("pdfTree","PDF Tree");
   tree_->Branch("evtId",&evtId_,EventId::contents().c_str());
   tree_->Branch("bosonP4",&bosonP4_,P4Struct::contents().c_str());
-  tree_->Branch("ele1P4",&ele1P4_,P4Struct::contents().c_str());
-  tree_->Branch("ele2P4",&ele2P4_,P4Struct::contents().c_str());
-  tree_->Branch("ele1PID",&ele1PID_,"ele1PID/I");
-  tree_->Branch("ele2PID",&ele2PID_,"ele2PID/I");
+  tree_->Branch("decay1P4",&ele1P4_,P4Struct::contents().c_str());
+  tree_->Branch("decay2P4",&ele2P4_,P4Struct::contents().c_str());
+  tree_->Branch("decay1PID",&ele1PID_,"decay1PID/I");
+  tree_->Branch("decay2PID",&ele2PID_,"decay2PID/I");
   tree_->Branch("bosonPID",&bosonId_,"bosonPID/I");
   tree_->Branch("pdfInfo",&pdfInfo_,PDFInfo::contents().c_str());
   // tree_->Branch("pdfWeights",&pdfWeights_);
