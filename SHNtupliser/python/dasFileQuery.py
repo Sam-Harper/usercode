@@ -74,7 +74,31 @@ def getFileNames (event):
   thr     = 300                           # default
   ckey    = ""                            # default
   cert    = ""                            # default
-  jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
-  files = sorted( f['file'][0]['name'] for f in jsondict['data'] )
+  print "getting file containing run %(run)i lumi %(lumi)i for %(dataset)s" % event
+  jsondict = [] #das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
+  attemptNr=1
+  while "data" not in jsondict and attemptNr<=3:
+    if attemptNr>1:
+      print "query failed (likely das error), retrying"
+    jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
+
+  
+  files=[]
+  if "data" not in jsondict:
+    print "tried ",attempNr," times, failed to reach das, skipping  run=%(run)i lumi=%(lumi)i" % event
+    return files
+
+
+  for f in jsondict['data']:
+    if len(f['file'])>0:
+      files.append(f['file'][0]['name'])
+    else:
+      print "run %(run)i lumi %(lumi)i in %(dataset)s not found in das" % event 
+         
   return files
+      
+                    
+#  files = sorted( f['file'][0]['name'] for f in jsondict['data'] )
+#  print files
+                   #return files
   

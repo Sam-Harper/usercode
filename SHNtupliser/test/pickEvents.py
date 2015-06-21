@@ -83,7 +83,7 @@ else:
         print filename
         process.source.fileNames.extend([str(filename),])
 
-    print "event list "
+    #print "event list "
     for event in eventList:
         runEventNr=str(event["run"])+":"+str(event["event"])
         process.source.eventsToProcess.extend([runEventNr+"-"+runEventNr,])
