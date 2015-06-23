@@ -12,14 +12,25 @@ private:
   float mvaNothingGamma_;
   int scSeedCrysId_;
   float vx_,vy_,vz_;
-  float hadNrgy_;
+  float hadNrgyRaw_;
+  float hadNrgyMap_;
+  float hadNrgyMapRaw_;
+  float hcalClusterNrgy_;
+  
 
 
 public:
   SHPFCandidate():
     pt_(0.),eta_(0.),phi_(0.),mass_(0.),scSeedCrysId_(0){}
-  SHPFCandidate(float iPt,float iEta,float iPhi,float iMass,float iMVANothingGamma,int iSCSeedCrysId,float iHadNrgy=0):
-    pt_(iPt),eta_(iEta),phi_(iPhi),mass_(iMass),mvaNothingGamma_(iMVANothingGamma),scSeedCrysId_(iSCSeedCrysId),vx_(0.),vy_(0.),vz_(0.),hadNrgy_(iHadNrgy){}
+  SHPFCandidate(float iPt,float iEta,float iPhi,float iMass,
+		float iMVANothingGamma,int iSCSeedCrysId,
+		float iHadNrgyRaw=0,float iHadNrgyMap=0,float iHadNrgyMapRaw=0,
+		float iHcalClusterNrgy=0):
+    pt_(iPt),eta_(iEta),phi_(iPhi),mass_(iMass),
+    mvaNothingGamma_(iMVANothingGamma),scSeedCrysId_(iSCSeedCrysId),
+    vx_(0.),vy_(0.),vz_(0.),
+    hadNrgyRaw_(iHadNrgyRaw),hadNrgyMap_(iHadNrgyMap),hadNrgyMapRaw_(iHadNrgyMapRaw),
+    hcalClusterNrgy_(iHcalClusterNrgy){}
   virtual ~SHPFCandidate(){}
   float pt()const{return pt_;}
   float eta()const{return eta_;}
@@ -27,8 +38,11 @@ public:
   float mass()const{return mass_;}
   float mvaNothingGamma()const{return mvaNothingGamma_;}
   int scSeedCrysId()const{return scSeedCrysId_;}
-  float hadNrgy()const{return hadNrgy_;}
-  
+  float hadNrgyRaw()const{return hadNrgyRaw_;}
+  float hadNrgyMap()const{return hadNrgyMap_;}
+  float hadNrgyMapRaw()const{return hadNrgyMapRaw_;}
+  float hcalClusterNrgy()const{return hcalClusterNrgy_;}
+
   float py()const{return pt_*std::sin(phi_);}
   float px()const{return pt_*std::cos(phi_);}
   float dxy(const TVector3& pos)const;
@@ -38,7 +52,7 @@ public:
 
   void setVertex(float x,float y,float z){vx_=x;vy_=y;vz_=z;}
 
-  ClassDef(SHPFCandidate,2)
+  ClassDef(SHPFCandidate,4)
 };
 
 #endif

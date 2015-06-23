@@ -41,6 +41,7 @@ class SHEvent;
 class SHCaloTowerContainer;
 class SHCaloHitContainer;
 class SHPFCandContainer;
+class SHGenInfo;
 class TTree;
 class TFile;
 class SHPFClusterContainer;
@@ -62,6 +63,7 @@ private:
   SHCaloHitContainer* shCaloHits_;
   TClonesArray* shIsolTrks_;
   TClonesArray* shPreShowerClusters_;
+  SHGenInfo* shGenInfo_; 
 
   TTree* evtTree_; //the outFile owns it
   TFile* outFile_; //we own it
@@ -84,6 +86,7 @@ private:
   bool addPFCands_;
   bool addPreShowerClusters_;
   bool addPFClusters_;
+  bool addGenInfo_;
   
   bool useHLTDebug_;
   bool compTwoMenus_;

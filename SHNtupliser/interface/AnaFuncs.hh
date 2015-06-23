@@ -19,7 +19,7 @@
 #include <sstream>
 
 
-//Author: Sam Harper (harper@fnal.gov)
+//Author: Sam Harper (sharper@cern.ch)
 
 //a misc set of common analysis functions that I use that dont really fit elsewhere
 //this class is not supposed to instantanced, ever.
@@ -188,7 +188,10 @@ public:
   static std::string makeStringOfBinsLowEdges(int nrBins,float xmin,float xmax);
   static void makeVecFromInputString(std::vector<int>& vec,const std::string& inputStr);
   static void makeVecFromInputString(std::vector<float>& vec,const std::string& inputStr);
-  static std::vector<float> makeVecFromInputString(const std::string& inputStr){std::vector<float> retVal;makeVecFromInputString(retVal,inputStr);return retVal;}
+  static void makeVecFromInputString(std::vector<double>& vec,const std::string& inputStr);  
+  
+  static std::vector<float> makeVecFromInputStringF(const std::string& inputStr){std::vector<float> retVal;makeVecFromInputString(retVal,inputStr);return retVal;} 
+  static std::vector<double> makeVecFromInputStringD(const std::string& inputStr){std::vector<double> retVal;makeVecFromInputString(retVal,inputStr);return retVal;}
   static void copyArrayToVec(const double* array,size_t nrEntries,std::vector<double>& vec);
 
   static void readFilelist(std::string fileListName,std::vector<std::string> &filenames,int nrJobs=1,int jobNr=1,int verbose=1);
@@ -209,6 +212,7 @@ public:
 
   static float getBinLowEdge(const std::vector<float>& binLowEdges,size_t binNr);
   static float getBinHighEdge(const std::vector<float>& binLowEdges,size_t binNr);
+  static float getBinLowEdge(const int nrBins,const float xmin,const float xmax,const int binNr){return nrBins!=0 ? (xmax-xmin)/nrBins*(binNr-1)+xmin : -999;}
 
   static bool hasNonZeroAND(int setOfBits1,int setOfBits2){return (setOfBits1&setOfBits2)!=0x0;}
 

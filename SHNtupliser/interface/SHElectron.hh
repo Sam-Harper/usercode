@@ -20,7 +20,7 @@
 //#include "SHEvent/SHIsolSuperCluster.hh"
 //#include "SHEvent/SHIsolCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
-
+#include "SHarper/SHNtupliser/interface/CaloTools.hh"
 #include "TObject.h"
 #include "TVector3.h"
 #include "TLorentzVector.h"
@@ -194,11 +194,11 @@ private:
 
   //classification variables
   int type()const{return type_;}
-  int region()const{return region(detEta());}
-  static int region(float iDetEta);
+  int region()const{return CaloTools::region(detEta());}
   bool isBarrel()const{return isEB();}//fabs(detEta_)<1.5;}
   //bool isEndcap()const{return !isBarrel();}
-  bool isFid()const{return fabs(detEta_)<1.442 || (fabs(detEta_)>1.56 && fabs(detEta_)<2.5);}
+
+  bool isFid()const{return region()<=2;}
 
   bool isEB()const{return isBarrel_;}
   bool isEBEEGap()const{return isEBEEGap_;}   
@@ -250,6 +250,8 @@ private:
   float hademDepth1()const{return hademDepth1_;}
   float hademDepth2()const{return hademDepth2_;}
   float dEtaIn()const{return dEtaIn_;}
+  float dEtaInSeed()const{return mEvent_ && dEtaIn_!=999 ? dEtaIn_-detEta_+superClus()->seedClus()->eta(): 999;}
+  float dEtaInSC()const{return dEtaIn_;}
   float dEtaOut()const{return dEtaOut_;}
   float dPhiIn()const{return dPhiIn_;}
   float dPhiOut()const{return dPhiOut_;}

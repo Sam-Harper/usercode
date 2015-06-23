@@ -191,19 +191,6 @@ SHElectron::SHElectron(const SHElectron &rhs):
 
 }
 
-int SHElectron::region(float iDetEta)
-{
-  float detEtaAbs = fabs(iDetEta);
-  if(detEtaAbs<1.5){//barrel
-    if(detEtaAbs<1.442) return 0;
-    else return 10;
-  }else{//endcap
-    if(detEtaAbs>1.56 && detEtaAbs<2.5) return 1;
-    else return 11;
-  }
-}
-
-
 const SHSuperCluster* SHElectron::superClus()const
 {
   if(mEvent_==NULL ||  superClusIndx_>=mEvent_->nrSuperClus()) return NULL; //cant get super clus as have no mother event

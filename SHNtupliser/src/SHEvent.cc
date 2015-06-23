@@ -115,6 +115,7 @@ void SHEvent::clear()
   nrPUInteractionsNeg_=-1; 
   nrPUInteractionsPos_=-1; 
   nrTruePUInteractions_=-1;
+  genInfo_.clear();
   // puSummary_.clear();
 }
 SHEvent::~SHEvent()

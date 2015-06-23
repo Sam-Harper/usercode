@@ -50,24 +50,36 @@ void SHCaloHitContainer::addHit(int detId,float nrgy,float time,uint32_t flag,ui
   }
 }
 
-const SHCaloHit& SHCaloHitContainer::getEcalBarrelHit(unsigned indx)const
-{
-  SHCaloHit *hit = (SHCaloHit*) ecalBarrelHitArray_[indx];
-  return *hit;
-}
+// const SHCaloHit& SHCaloHitContainer::getEcalBarrelHit(unsigned indx)const
+// {
+//   SHCaloHit *hit = (SHCaloHit*) ecalBarrelHitArray_[indx];
+//   return *hit;
+// }
 
-const SHCaloHit& SHCaloHitContainer::getEcalEndcapHit(unsigned indx)const
-{
-  SHCaloHit *hit = (SHCaloHit*) ecalEndcapHitArray_[indx];
-  return *hit;
-}
+// const SHCaloHit& SHCaloHitContainer::getEcalEndcapHit(unsigned indx)const
+// {
+//   SHCaloHit *hit = (SHCaloHit*) ecalEndcapHitArray_[indx];
+//   return *hit;
+// }
 
 void SHCaloHitContainer::addHit(const SHCaloHit& hit)
 {
   addHit(hit.detId(),hit.nrgy(),hit.time(),hit.flag(),hit.flagBits());
 }
 
-
+const SHCaloHit& SHCaloHitContainer::getHit(int detId)const
+{
+  if(DetIdTools::isEcalBarrel(detId) || DetIdTools::isEcalEndcap(detId)){
+    if(hitIndxTable_.empty()) createHitIndxTable_(); //if we havnt already filled our nice vector for fast lookup, fill it
+    int indx = hitIndxTable_[DetIdTools::getHashEcal(detId)];
+    if(indx!=-1) return DetIdTools::isEcalBarrel(detId) ? getEcalBarrelHitByIndx(indx) : getEcalEndcapHitByIndx(indx);
+  }else if(DetIdTools::isHcal(detId)){
+    if(hitIndxTable_.empty()) createHitIndxTable_(); //if we havnt already filled our nice vector for fast lookup, fill it
+    int indx = hitIndxTable_[DetIdTools::getHashEcal(detId)];
+    if(indx!=-1) return getHcalHitByIndx(indx);
+  }
+  return nullHit_; //no hit found, returns null hit
+}
 
 float SHCaloHitContainer::getHitNrgy(int detId)const
 {
@@ -82,12 +94,11 @@ float SHCaloHitContainer::getHitNrgyEcalBarrel(int detId)const
 {
   if(detId==0) return 0;
   if(DetIdTools::isEcalBarrel(detId)){
-    //if(hitIndxTable_.empty()) std::cout <<"oh shit"<<std::endl;
     if(hitIndxTable_.empty()) createHitIndxTable_(); //if we havnt already filled our nice vector for fast lookup, fill it
     int indx = hitIndxTable_[DetIdTools::getHashEcal(detId)];
     if(indx!=-1)  {
       // std::cout << "hash "<<EcalCrysPos::getArrayIndxBarrel(detId)<< " indx "<<indx<<" "<<" ecal barrel hit "<<&getEcalBarrelHit(indx)<<" size "<<ecalBarrelHitArray_.GetLast()+1<<std::endl;
-return getEcalBarrelHit(indx).nrgy();
+      return getEcalBarrelHitByIndx(indx).nrgy();
     }else return 0.;
   }else return 0.;
 }
@@ -100,15 +111,9 @@ float SHCaloHitContainer::getHitNrgyEcalEndcap(int detId)const
      if(hitIndxTable_.empty()) createHitIndxTable_(); //if we havnt already filled our nice vector for fast lookup, fill it
      int indx = hitIndxTable_[DetIdTools::getHashEcal(detId)];
      if(indx==-1){
-       // std::cout <<"det id "<<std::hex<<detId<<std::dec<<" hash indx "<<DetIdTools::getHashEcal(detId)<<std::endl;
-       // for(int i=0;i<=ecalEndcapHitArray_.GetLast();i++){
-       //if(getEcalEndcapHit(i).detId()==detId){
-	   //  std::cout <<"found hit at index "<<i<<" instead"<<std::endl;
-       // }//else std::cout <<" hit not found i= "<<i<<std::endl;
-       //}
        return 0.;
      }
-     return getEcalEndcapHit(indx).nrgy(); 
+     return getEcalEndcapHitByIndx(indx).nrgy(); 
      
    }else return 0.;
 }
@@ -155,13 +160,13 @@ void SHCaloHitContainer::createHitIndxTable_()const
   hitIndxTable_.swap(tempIndx);
   
   for(int hitNr=0;hitNr<=ecalBarrelHitArray_.GetLast();hitNr++){
-    const SHCaloHit& hit = getEcalBarrelHit(hitNr);
+    const SHCaloHit& hit = getEcalBarrelHitByIndx(hitNr);
     int hitIndex = DetIdTools::getHashEcal(hit.detId());
     hitIndxTable_[hitIndex] = hitNr;
   }
   
   for(int hitNr=0;hitNr<=ecalEndcapHitArray_.GetLast();hitNr++){
-    const SHCaloHit& hit = getEcalEndcapHit(hitNr);
+    const SHCaloHit& hit = getEcalEndcapHitByIndx(hitNr);
     int hitIndex = DetIdTools::getHashEcal(hit.detId());
     hitIndxTable_[hitIndex] = hitNr;
   }
