@@ -19,7 +19,7 @@
 #include <sstream>
 
 
-//Author: Sam Harper (sharper@cern.ch)
+//Author: Sam Harper (RAL)
 
 //a misc set of common analysis functions that I use that dont really fit elsewhere
 //this class is not supposed to instantanced, ever.
