@@ -1,4 +1,4 @@
-isMC=True
+isMC=False
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -136,7 +136,7 @@ else:
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.skimHLTFilter.HLTPaths = cms.vstring("HLT_L1SingleEG20_v*")
-
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
