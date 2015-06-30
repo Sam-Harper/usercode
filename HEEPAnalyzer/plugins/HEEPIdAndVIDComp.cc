@@ -44,8 +44,11 @@ void HEEPIdAndVIDComp::analyze(const edm::Event& iEvent,const edm::EventSetup& i
   iEvent.getByToken(eleToken_,eleHandle);
   iEvent.getByToken(heepIdToken_,heepId);
   iEvent.getByToken(vidToken_,vid);
-
+  
+  std::cout <<"running over all the electrons"<<std::endl;
   for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){  
+    std::cout<<"electron et "<<(*eleHandle)[eleNr].p4().px()<<std::endl;
+
     edm::Ptr<reco::GsfElectron> elePtr(eleHandle,eleNr);
     bool passVid=(*vid)[elePtr];
     int heepBits =(*heepId)[elePtr];
@@ -53,6 +56,10 @@ void HEEPIdAndVIDComp::analyze(const edm::Event& iEvent,const edm::EventSetup& i
     if(passVid!=passHEEP){
       std::cout <<"VID - HEEP disagreement, vid "<<passVid<<" heep "<<heep::CutCodes::getCodeName(heepBits)<<std::endl;
     }
+  }
+
+  for(auto& ele : *eleHandle){  
+    const_cast<math::XYZTLorentzVector&>(ele.p4()).SetPx(35.5);
   }
 }
 DEFINE_FWK_MODULE(HEEPIdAndVIDComp);
