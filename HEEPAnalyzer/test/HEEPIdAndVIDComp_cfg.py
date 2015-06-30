@@ -77,11 +77,7 @@ process.heepIdVIDComp = cms.EDAnalyzer("HEEPIdAndVIDComp",
                                        heepId=cms.InputTag("heepId"),
                                        vid=cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60")
                                        )
-process.heepIdVIDComp2 = cms.EDAnalyzer("HEEPIdAndVIDComp",
-                                       eleLabel=cms.InputTag("gedGsfElectrons"),
-                                       heepId=cms.InputTag("heepId"),
-                                       vid=cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60")
-                                       )
+
 
 if useAOD==False:
     process.heepId.verticesLabel=cms.InputTag("offlineSlimmedPrimaryVertices")
@@ -94,7 +90,6 @@ if useAOD==False:
 
 process.p = cms.Path(process.heepId* #makes the HEEPID value map
                      process.egmGsfElectronIDSequence* #makes the VID value maps
-                     process.heepIdVIDComp*
-                     process.heepIdVIDComp2
+                     process.heepIdVIDComp
                      )
 
