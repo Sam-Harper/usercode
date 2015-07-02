@@ -29,3 +29,32 @@
 /WprimeToENu_M-5600_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 1401 & 800 &
 /WprimeToENu_M-5800_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 1401 & 800 &
 
+/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM  & -1 & -1 & 1.0 & 1.0 & 101 & 800 &
+/QCD_Pt_10to15_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 600 & 8000 
+/QCD_Pt_15to30_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 601 & 8000 
+/QCD_Pt_30to50_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 602 & 8000 
+/QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 603 & 8000
+/QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 604 & 8000 
+/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 605 & 8000 
+/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 606 & 8000 
+/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 607 & 8000 
+/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 608 & 800 
+/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 609 & 800 
+/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 610 & 800 
+/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 611 & 800 
+/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 612 & 80 
+/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 613 & 80 
+/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 614 & 80 
+/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 615 & 80 
+
+
+/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM & -1 & -1 & 1.0 & 1.0 & 130 & 800 &
+/DYJetsToLL_M-100to200_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 131 & 800 &
+/DYJetsToLL_M-200to400_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 132 & 800 &
+/DYJetsToLL_M-400to500_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 133 & 800 &
+/DYJetsToLL_M-500to700_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 134 & 800 & 
+/DYJetsToLL_M-700to800_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 135 & 800 &
+/DYJetsToLL_M-800to1000_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25nsRaw_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 136 & 800 &
+/DYJetsToLL_M-1000to1500_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 137 & 800 &
+/DYJetsToLL_M-1500to2000_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 138 & 800 &
+/DYJetsToLL_M-2000to3000_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 139 & 800 &

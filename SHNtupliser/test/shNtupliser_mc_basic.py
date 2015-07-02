@@ -76,7 +76,7 @@ process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-process.shNtupliser.nrGenPartToStore = cms.int32(-1)
+process.shNtupliser.nrGenPartToStore = cms.int32(0)
 #process.shNtupliser.eleRhoCorrTag = cms.InputTag("kt6PFJets","rho")
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -127,7 +127,8 @@ else:
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     process.shNtupliser.datasetCode = getDatasetCode(process.source.fileNames[0])
     process.shNtupliser.sampleWeight = 1
-  #  print "datset code ",process.shNtupliser.datasetCode
+    process.shNtupliser.datasetCode=602
+    #print "datset code ",process.shNtupliser.datasetCode
 
 
 #process.load('EgammaAnalysis.ElectronTools.egmGsfElectronIDs_cff')
