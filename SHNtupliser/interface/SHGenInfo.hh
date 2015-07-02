@@ -15,6 +15,9 @@ private:
   mutable std::vector<size_t> mcPartIndxTbl_; //for fast lookup, probably unnecessary but maps particle position to position in mcParticle index
 
 public:
+  enum class PartStatus{INITIAL,PREFSR,FINAL};
+  
+
   SHGenInfo(){}
   virtual ~SHGenInfo(){}
 
@@ -31,7 +34,19 @@ public:
   const std::vector<const SHMCParticle*> getMothers(size_t index)const;
   const std::vector<const SHMCParticle*> getFirstDaughters(size_t index)const;//gets the first daughters that is not the particle itself
   const std::vector<const SHMCParticle*> getFinalDaughters(size_t index)const;//gets all the daughters of the particle that have no daughters themselves
- 
+  const std::vector<const SHMCParticle*> getFSRDaughters(size_t index)const;//gets all the daughters that are just FSR
+  
+  //there was some debate on whether thse two functions should live in MC tools or not
+  //decided that as they were selfcontained (ie solely dependent on GenInfo info) and general
+  //that they should live here
+  //gets the hard process particle (original particle has a status of 20-29)
+  const SHMCParticle* getHardProcessPart(int pid,PartStatus status,size_t requiredPartNr=0)const;
+  const SHMCParticle* getHardProcessPart(const std::vector<int>& pids,PartStatus status,size_t requiredPartNr=0)const;
+
+  const SHMCParticle* getLastCopyPreFSR(size_t index)const;
+  const SHMCParticle* getLastCopy(size_t index)const;
+  
+
   const std::vector<SHMCParticle> lheParts()const{return lheParticles_;}
   
   void printMCParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
@@ -40,8 +55,10 @@ public:
   void flushIndxTable()const{mcPartIndxTbl_.clear();}
 
 private:
+  const SHMCParticle* getHardProcessPart_(const std::vector<int>& pids,size_t requiredPartNr)const;
+  bool isFromPromptBoson_(size_t index)const;
   void getFinalDaughters_(size_t index,std::vector<const SHMCParticle*>& finalDaughters)const;
-
+  void getFSRDaughters_(size_t index,std::vector<const SHMCParticle*>& fsrDaughters)const;
   void createMCPartIndxTbl_()const;
 
   ClassDef(SHGenInfo,1)

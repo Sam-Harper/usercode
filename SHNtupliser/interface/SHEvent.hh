@@ -300,7 +300,7 @@ class SHEvent : public TObject {
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
   float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,24) 
+  ClassDef(SHEvent,25) 
 
 };
   

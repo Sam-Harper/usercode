@@ -401,6 +401,7 @@ void SHEvent::flushTempData()const
   nrTruePUInteractions_=-1;
   caloHits_.flushIndxTable();
   caloTowers_.flushIndxTable();
+  genInfo_.flushIndxTable();
 }
 
 
