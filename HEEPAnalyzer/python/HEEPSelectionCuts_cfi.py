@@ -93,8 +93,17 @@ heepBarrelCutsV51.minEta=cms.double(0.)
 heepBarrelCutsV51.maxEta=cms.double(1.4442)
 
 
-heepBarrelCuts = heepBarrelCutsV51.clone()
-heepEndcapCuts = heepEndcapCutsV51.clone()
+heepEndcapCutsV60 = heepEndcapCutsV51.clone()
+heepEndcapCutsV60.hademConstTerm = 5
+
+
+heepBarrelCutsV60 = heepBarrelCutsV51.clone()
+heepBarrelCutsV60.hademConstTerm = 1
+
+
+
+heepBarrelCuts = heepBarrelCutsV60.clone()
+heepEndcapCuts = heepEndcapCutsV60.clone()
 
 heepEffectiveAreas = cms.PSet (
     trackerBarrel = cms.double(0.),
