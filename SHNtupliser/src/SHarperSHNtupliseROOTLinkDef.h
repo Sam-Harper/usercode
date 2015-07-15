@@ -80,4 +80,5 @@
 #pragma link C++ class SHPFClusterContainer+;
 #pragma link C++ class SHGenInfo+;
 #pragma link C++ class AnaFuncs+;
+#pragma link C++ class SHPDFInfo+;
 #endif

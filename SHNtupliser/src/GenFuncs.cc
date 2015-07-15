@@ -5,6 +5,8 @@
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 SHMCParticle GenFuncs::makeMCParticle(const reco::GenParticle* genPart,const std::vector<reco::GenParticle>& particles)
 {
@@ -39,9 +41,75 @@ SHMCParticle GenFuncs::makeMCParticle(const reco::GenParticle* genPart,const std
 
 void GenFuncs::fillGenInfo(const heep::Event& heepEvt,SHGenInfo& genInfo)
 {
+
+  fillLHEParticles(heepEvt,genInfo);
+  fillMCParticles(heepEvt,genInfo);
+  fillPDFInfo(heepEvt,genInfo);
+
+}
+
+void GenFuncs::fillLHEParticles(const heep::Event& heepEvt,SHGenInfo& genInfo)
+{
+  edm::Handle<LHEEventProduct> lheEventHandle = heepEvt.handles().lheEvent;
+  if(!lheEventHandle.isValid()) return;
+
+  const lhef::HEPEUP& hepeup = lheEventHandle->hepeup();
+  int nrParts  = hepeup.NUP;
+  TVector3 pos(0,0,0); //all at zero 
+  for(int partNr=0;partNr<nrParts;partNr++){
+    
+    int mother1=hepeup.MOTHUP[partNr].first;
+    int mother2=hepeup.MOTHUP[partNr].second;
+    int nrMothers=mother2-mother1;
+    
+    std::pair<int,int> daughts=findDaughters(partNr,hepeup.MOTHUP);
+
+    int daught1=daughts.first;
+    int daught2=daughts.second;
+    int nrDaughts=daught2-daught1;
+
+    TLorentzVector p4;
+    p4.SetXYZT(hepeup.PUP[partNr][0],hepeup.PUP[partNr][1],hepeup.PUP[partNr][2],
+	       hepeup.PUP[partNr][3]);
+
+    SHMCParticle part(partNr,hepeup.ISTUP[partNr],hepeup.IDUP[partNr],
+		      mother1,mother2,nrMothers,
+		      daught1,daught2,nrDaughts,
+		      p4,pos);
+    genInfo.addLHEParticle(part);
+  }
+  
+}
+
+std::pair<int,int> GenFuncs::findDaughters(int partNr,const std::vector<std::pair<int,int> >& mothers)
+{
+  std::vector<size_t> daughters;
+
+  for(size_t mothPartNr=0;mothPartNr<mothers.size();mothPartNr++){
+    if(partNr>=mothers[mothPartNr].first && partNr<=mothers[mothPartNr].second){
+      daughters.push_back(mothPartNr);
+    }
+  }
+  std::sort(daughters.begin(),daughters.end());
+  if(daughters.empty()) return std::pair<int,int>(-1,-1);
+  else return std::pair<int,int>(daughters.front(),daughters.back());
+}
+
+void GenFuncs::fillPDFInfo(const heep::Event& heepEvt,SHGenInfo& genInfo)
+{
+  if(!heepEvt.handles().genEvtInfo.isValid()) return;
+  
+  const gen::PdfInfo* pdfInfo = heepEvt.handles().genEvtInfo->pdf();
+  
+  genInfo.addPDFInfo(SHPDFInfo(pdfInfo->id,pdfInfo->x,pdfInfo->xPDF,pdfInfo->scalePDF));
+
+}
+
+void GenFuncs::fillMCParticles(const heep::Event& heepEvt,SHGenInfo& genInfo)
+{
   if(!heepEvt.hasGenParticles()) return;
   const std::vector<reco::GenParticle>& particles = heepEvt.genParticles();
-
+  
 
   std::vector<const reco::Candidate*> partsToStore;
   for(const auto& mcPart : particles){

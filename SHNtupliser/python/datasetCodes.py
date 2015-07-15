@@ -11,6 +11,6 @@ def getDatasetCode(filename):
     if filename.find("ZprimeToEE_M-5000")!=-1: return 1201
 
 
-    return 110000
+    return 0
     
     

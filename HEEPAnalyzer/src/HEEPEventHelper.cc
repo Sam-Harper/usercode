@@ -64,6 +64,8 @@ void heep::EventHelper::setup(const edm::ParameterSet& conf)
   maxDRTrigMatch_ = conf.getParameter<double>("maxDRTrigMatch");
   maxPtRelDiffTrigMatch_ = conf.getParameter<double>("maxPtRelDiffTrigMatch");
   heepIDVIDTag_ =conf.getParameter<edm::InputTag>("heepIDVID");
+  lheEventTag_ =conf.getParameter<edm::InputTag>("lheEventTag"); 
+  genEvtInfoTag_ =conf.getParameter<edm::InputTag>("genEvtInfoTag"); 
  
   hltFiltersToCheck_ =conf.getParameter<std::vector<std::string> >("hltFiltersToCheck");
   //now get the trigger names, however we also need the number of objects each filter requires, which we read from the provenace
@@ -135,6 +137,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByLabel(pfClustersHCALTag_,handles.pfClustersHCAL);
   event.getByLabel(gsfEleToPFCandMapTag_,handles.gsfEleToPFCandMap);
   event.getByLabel(heepIDVIDTag_,handles.heepIDVID);
+  event.getByLabel(lheEventTag_,handles.lheEvent);
+  event.getByLabel(genEvtInfoTag_,handles.genEvtInfo);
   //event.getByType(handles.beamSpot);
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);

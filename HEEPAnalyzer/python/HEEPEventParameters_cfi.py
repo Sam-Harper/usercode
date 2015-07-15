@@ -68,7 +68,9 @@ heepEventPara  = cms.PSet (
     pfClustersECALTag = cms.InputTag("particleFlowClusterECAL"),
     pfClustersHCALTag = cms.InputTag("particleFlowClusterHCAL"), 
     gsfEleToPFCandMapTag = cms.InputTag("particleBasedIsolation","gedGsfElectrons"),
-    heepIDVID = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51")
+    heepIDVID = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51"),
+    lheEventTag=cms.InputTag("externalLHEProducer"),
+    genEvtInfoTag=cms.InputTag("generator")
 )
 
 

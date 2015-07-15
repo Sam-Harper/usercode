@@ -2,6 +2,7 @@
 #define SHEVENT_SHGENINFO_HH
 
 #include "SHarper/SHNtupliser/interface/SHMCParticle.hh"
+#include "SHarper/SHNtupliser/interface/SHPDFInfo.hh"
 
 #include <vector>
 
@@ -10,7 +11,8 @@ private:
   std::vector<SHMCParticle> mcParticles_; //they are sorted in order according to their index in the gen event info
   std::vector<SHMCParticle> lheParticles_;
 
-  //might add in some PDFInfo as well
+  SHPDFInfo pdfInfo_;
+  
   
   mutable std::vector<size_t> mcPartIndxTbl_; //for fast lookup, probably unnecessary but maps particle position to position in mcParticle index
 
@@ -27,8 +29,9 @@ public:
 
   void addMCParticle(const SHMCParticle& mcPart){mcParticles_.push_back(mcPart);}
   void addLHEParticle(const SHMCParticle& mcPart){lheParticles_.push_back(mcPart);}
+  void addPDFInfo(const SHPDFInfo& pdfInfo){pdfInfo_=pdfInfo;}
 
-  const std::vector<SHMCParticle> mcParts()const{return mcParticles_;}
+  const std::vector<SHMCParticle>& mcParts()const{return mcParticles_;}
   const SHMCParticle* getPart(size_t index)const; //note this is via index in event, not vector index
   const std::vector<const SHMCParticle*> getDaughters(size_t index)const;
   const std::vector<const SHMCParticle*> getMothers(size_t index)const;
@@ -47,8 +50,9 @@ public:
   const SHMCParticle* getLastCopy(size_t index)const;
   
 
-  const std::vector<SHMCParticle> lheParts()const{return lheParticles_;}
-  
+  const std::vector<SHMCParticle>& lheParts()const{return lheParticles_;}
+  const SHPDFInfo& pdfInfo()const{return pdfInfo_;}
+
   void printMCParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
 
   void clear(){mcParticles_.clear();lheParticles_.clear();}
@@ -61,7 +65,7 @@ private:
   void getFSRDaughters_(size_t index,std::vector<const SHMCParticle*>& fsrDaughters)const;
   void createMCPartIndxTbl_()const;
 
-  ClassDef(SHGenInfo,1)
+  ClassDef(SHGenInfo,2)
 };
 
 

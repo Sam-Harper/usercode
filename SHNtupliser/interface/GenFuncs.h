@@ -20,6 +20,10 @@ public:
 
   static void getAllDaughters(const reco::Candidate* part,
 			      std::vector<const reco::Candidate*>& daughters);
+  static std::pair<int,int> findDaughters(int partNr,const std::vector<std::pair<int,int> >& mothers);
+  static void fillPDFInfo(const heep::Event& heepEvt,SHGenInfo& genInfo);
+  static void fillMCParticles(const heep::Event& heepEvt,SHGenInfo& genInfo);
+  static void fillLHEParticles(const heep::Event& heepEvt,SHGenInfo& genInfo);
 };
 
 #endif

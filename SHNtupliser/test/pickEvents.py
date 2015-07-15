@@ -57,7 +57,10 @@ for event in eventList:
     files.extend( getFileNames (event) )
 
 if args.output=="None":
-    print files
+    for filename in files:
+        print filename
+#    print files
+    import FWCore.ParameterSet.Config as cms
     process = cms.Process("Skim")
     process.source = cms.Source("PoolSource",
                         
