@@ -5,8 +5,9 @@ import sys
 import json
 import das_client
 
-def dasFileQuery(dataset):
+def dasFileQuery(dataset,runnr):
   query   = 'dataset dataset=%s' % dataset
+  if runnr!=-1: query+=" run=%s" % runnr
   host    = 'https://cmsweb.cern.ch'      # default
   idx     = 0                             # default
   limit   = 0                             # unlimited
@@ -31,6 +32,7 @@ def dasFileQuery(dataset):
     # expand the dataset name
     dataset = jsondict['data'][0]['dataset'][0]['name']
     query = 'file dataset=%s' % dataset
+    if runnr!=-1: query+=" run=%s" % runnr
     jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
     # parse the results in JSON format, and extract the list of files
     files = sorted( f['file'][0]['name'] for f in jsondict['data'] )
@@ -63,7 +65,7 @@ class Event (dict):
         return "run = %(run)i, lumi = %(lumi)i, event = %(event)i, dataset = %(dataset)s"  % self
 
 
-  
+
 def getFileNames (event):
   
   query = "file dataset=%(dataset)s run=%(run)i lumi=%(lumi)i | grep file.name" % event
@@ -81,6 +83,7 @@ def getFileNames (event):
     if attemptNr>1:
       print "query failed (likely das error), retrying"
     jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
+    attemptNr+=1
 
   
   files=[]
@@ -102,3 +105,63 @@ def getFileNames (event):
 #  print files
                    #return files
   
+
+
+def getLumis(filename):
+ 
+  query = "lumi file=%s" % filename
+  host    = 'https://cmsweb.cern.ch'      # default
+  idx     = 0                             # default
+  limit   = 0                             # unlimited
+  debug   = 0                             # default
+  thr     = 300                           # default
+  ckey    = ""                            # default
+  cert    = ""                            # default
+#    print "getting file containing run %(run)i lumi %(lumi)i for %(dataset)s" % event
+  jsondict = [] #das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
+  attemptNr=1
+   # print query
+  while "data" not in jsondict and attemptNr<=3:
+    if attemptNr>1:
+      print "query failed (likely das error), retrying"
+    jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
+    attemptNr+=1
+
+  lumis=[]
+  for f in jsondict['data']:
+    if len(f['lumi'])>0:
+      #print f['lumi'][0]
+      for lumiPair in f['lumi'][0]['number']:
+        lumis.append(lumiPair)
+    else:
+      print "file not found ",filename
+  return lumis
+    
+def getFileNamesCache(event,fileCache):
+
+  
+  runnr = event['run']
+  lumi = event['lumi']
+  if runnr in fileCache:
+    runCache=fileCache[runnr]
+    if lumi in runCache:
+      return runCache[lumi]
+  else:
+    fileCache[runnr]={}
+    
+  files=getFileNames(event)
+  for filename in files:
+ #   print filename
+    lumis=getLumis(filename)
+ #   print lumis
+
+    runCache=fileCache[runnr]
+    for lumiPair in lumis:
+      for lumi in range(lumiPair[0],lumiPair[1]+1):
+        if lumi not in runCache:
+          runCache[lumi]=set()
+        runCache[lumi].add(filename)
+
+#  print runCache
+
+  return files
