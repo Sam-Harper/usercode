@@ -69,7 +69,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
   noFracShowerShape_ = conf.getParameter<bool>("noFracShowerShape");
   
   std::cout <<"warning, disabling use of HLT debug"<<std::endl;
-  //useHLTDebug_=false;
+  useHLTDebug_=false;
   eleMVA_.reset(new ElectronMVAEstimator(edm::FileInPath ( conf.getParameter<std::string>("eleIsolMVAWeightFile").c_str() ).fullPath()));
 
   tracklessEleMaker_.setup(conf);

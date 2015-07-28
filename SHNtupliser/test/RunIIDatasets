@@ -48,6 +48,21 @@
 /QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 615 & 80 
 
 
+/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v4/AODSIM  & -1 & -1 & 1.0 & 1.0 & 321 & 1600 & 
+/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 211 & 1600 & 
+/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 681 & 2000 & 
+/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 682 & 2000 & 
+
+/WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 261 & 8000 & yes
+/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 181 & 8000 & yes
+/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 191 & 8000 & yes
+/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 341 & 8000 & yes
+/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 342 & 8000 & yes
+/WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 261 & 8000 & 
+/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 181 & 8000 & 
+/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM & -1 & -1 & 1.0 & 1.0 & 191 & 8000 & 
+
+
 /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM & -1 & -1 & 1.0 & 1.0 & 130 & 800 &
 /DYJetsToLL_M-100to200_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 131 & 800 &
 /DYJetsToLL_M-200to400_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 132 & 800 &

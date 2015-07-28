@@ -60,10 +60,10 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 import sys
 
-#hltName="REDIGI311X"
+hltName="REDIGI311X"
 #do not remove this comment...
 #CRABHLTNAMEOVERWRITE
-hltName="HLT"
+hltName="HLTX"
 patCandID=""
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
@@ -83,7 +83,7 @@ process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
-process.shNtupliser.useHLTDebug = cms.bool(False)
+process.shNtupliser.useHLTDebug = cms.bool(True)
 process.shNtupliser.hltProcName = hltName
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
