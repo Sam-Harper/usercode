@@ -1,5 +1,6 @@
 #include "SHarper/SHNtupliser/interface/AnaFuncs.hh"
 #include "SHarper/SHNtupliser/interface/LogErr.hh"
+#include "SHarper/SHNtupliser/interface/TempFuncs.hh"
 
 #include <limits>
 #include <cstring>
@@ -588,16 +589,13 @@ void AnaFuncs::makeVecFromInputString(std::vector<int>& vec,const std::string& i
 }
 void AnaFuncs::makeVecFromInputString(std::vector<float>& vec,const std::string& inputStr)
 {
-  vec.clear();
-  std::vector<std::string> strVec;
-  splitStrings(inputStr.c_str(),strVec);
-  //  std::cout <<"strVec size "<<strVec.size()<<std::endl;
-  
-  for(size_t i=0;i<strVec.size();i++){
-    //    std::cout <<" i "<<i<< strVec[i]<<std::endl;
-    vec.push_back(atof(strVec[i].c_str()));
-  }
-  // std::cout <<"done "<<std::endl;
+  TempFuncs::makeVec(inputStr,vec);
+}
+ 
+
+void AnaFuncs::makeVecFromInputString(std::vector<double>& vec,const std::string& inputStr)
+{
+  TempFuncs::makeVec(inputStr,vec);
 }
   
 void AnaFuncs::copyArrayToVec(const double* array,size_t nrEntries,std::vector<double>& vec)
@@ -677,16 +675,15 @@ void AnaFuncs::setBranchAddress(TTree *tree,const char* branchName,void *address
 
 void AnaFuncs::readFilelist(std::string fileListName,std::vector<std::string> &filenames,int nrJobs,int jobNr,int verbose)
 {
-   
+  if(fileListName.find("*")!=std::string::npos || fileListName.find("?")!=std::string::npos  ){
+    system(("ls "+fileListName+" > tempAutoGen.list").c_str());
+    fileListName ="tempAutoGen.list";
+  }
   const char* extension = strstr(fileListName.c_str(),".root");
   if(extension!=NULL && strlen(extension)==5){ //file is a root file, process it
     filenames.push_back(fileListName);
   }else{
 
-    if(fileListName.find("*")!=std::string::npos || fileListName.find("?")!=std::string::npos  ){
-      system(("ls "+fileListName+" > tempAutoGen.list").c_str());
-      fileListName ="tempAutoGen.list";
-    }
 
     std::ifstream fileList(fileListName.c_str());
     char filename[512];

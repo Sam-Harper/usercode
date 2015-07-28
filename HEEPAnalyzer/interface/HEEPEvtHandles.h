@@ -52,8 +52,8 @@
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 
-
-
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 namespace heep {
   struct EvtHandles { 
   public:   
@@ -107,7 +107,8 @@ namespace heep {
     
     edm::Handle<edm::ValueMap<bool> > heepIDVID;
     
-
+    edm::Handle<LHEEventProduct> lheEvent;
+    edm::Handle<GenEventInfoProduct> genEvtInfo;
     edm::ESHandle<MagneticField> bField;
     edm::ESHandle<TrackerGeometry> trackGeom;
   };

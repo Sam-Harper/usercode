@@ -74,6 +74,8 @@ namespace heep {
     edm::InputTag pfClustersECALTag_;
     edm::InputTag pfClustersHCALTag_;
     edm::InputTag heepIDVIDTag_;
+    edm::InputTag lheEventTag_;
+    edm::InputTag genEvtInfoTag_;
 
     //trigger matching parameters
     std::string hltProcName_;

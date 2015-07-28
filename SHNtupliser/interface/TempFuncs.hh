@@ -9,8 +9,8 @@
 namespace TempFuncs {
   template<class T> std::string str(const T& val);
   template<class T> void copyTClonesArray(TClonesArray& lhs,const TClonesArray& rhs);
-  template<class T> bool convertStringToVec(const std::string& string,std::vector<T>& vec);
-
+  template<class T> bool makeVec(const std::string& string,std::vector<T>& vec);
+  template<class T> std::vector<T> convertStringToVec(const std::string& string){std::vector<T> vec;makeVec(string,vec); return vec;}
   template<class T,class Y,class CompType> struct PairComp : public std::binary_function<std::pair<T,Y>,std::pair<T,Y>,bool> {
     bool operator()(const std::pair<T,Y>& lhs,const std::pair<T,Y>& rhs,const CompType& compObj = CompType()){return compObj(lhs.first,rhs.first);} 
     bool operator()(const std::pair<T,Y>& lhs,const T& rhs,const CompType& compObj = CompType()){return compObj(lhs.first,rhs);}
@@ -70,7 +70,7 @@ template<class T> void TempFuncs::copyTClonesArray(TClonesArray& lhs,const TClon
   }
 }
 
-template<class T> bool TempFuncs::convertStringToVec(const std::string& string,std::vector<T>& vec)
+template<class T> bool TempFuncs::makeVec(const std::string& string,std::vector<T>& vec)
 {
   std::vector<std::string> splitValues;
   AnaFuncs::splitStrings(string.c_str(),splitValues,":");
@@ -87,7 +87,7 @@ template<class T> bool TempFuncs::convertStringToVec(const std::string& string,s
   }
   return true;
 
-}
+} 
 
 template<class T> std::string TempFuncs::str(const T& val)
 {

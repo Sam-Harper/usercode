@@ -9,6 +9,7 @@
 #include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
 
 #include "SHarper/SHNtupliser/interface/PFFuncs.h"
+#include "SHarper/SHNtupliser/interface/GenFuncs.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPDebug.h"
 
@@ -93,6 +94,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   addPFClusters_=iPara.getParameter<bool>("addPFClusters");
   addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
   addPreShowerClusters_ = false;
+  addGenInfo_ = true;
   writePDFInfo_ = iPara.getParameter<bool>("writePDFInfo");
   if(useHLTDebug_){
     trigDebugHelper_ = new TrigDebugObjHelper(iPara);
@@ -117,7 +119,7 @@ void SHNtupliser::beginJob()
   shCaloHits_= &(shEvt_->getCaloHits());
   shIsolTrks_= &(shEvt_->getIsolTrks());
   shPreShowerClusters_ = &(shEvt_->getPreShowerClusters());
- 
+  shGenInfo_ = &(shEvt_->getGenInfo());
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
   //  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   edm::Service<TFileService> fs;
@@ -146,7 +148,9 @@ void SHNtupliser::beginJob()
   if(addPreShowerClusters_){
     evtTree_->Branch("PreShowerClustersBranch","TClonesArray",&shPreShowerClusters_,32000,splitLevel);
   }
-  
+  if(addGenInfo_){
+    evtTree_->Branch("GenInfoBranch","SHGenInfo",&shGenInfo_,32000,splitLevel);
+  }
 
   if(addPFCands_){ 
     shPFCands_ = new SHPFCandContainer;
@@ -220,7 +224,9 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
  
   
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
-
+  if(addGenInfo_){
+    GenFuncs::fillGenInfo(heepEvt_,*shGenInfo_);
+  }
   if(addPFCands_) shPFCands_->clear();
   if(addPFClusters_) shPFClusters_->clear();
   //std::cout <<"adding PF Cands "<<addPFCands_<<" is valid "<<heepEvt_.handles().gsfEleToPFCandMap.isValid()<<std::endl;

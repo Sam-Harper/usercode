@@ -16,8 +16,8 @@ parser.add_option('--copyData',help="whether to stage out the data or not",defau
 parser.add_option('--dbsUrl',help="dbs url global,phys03 etc",default="global")
 parser.add_option('--transferLogFiles',help="whether to transfer log files or not",default=False)
 options,args = parser.parse_args()
-if not options.input or not options.pattern or not options.shNtupVersion or not options.cmsswVersion:
-    parser.error("input, pattern, shNtupVersion and cmsswVersion are manditory")
+if not options.input or not options.pattern or not options.shNtupVersion or not options.cmsswVersion or not options.config:
+    parser.error("input, pattern, shNtupVersion, config and cmsswVersion are manditory")
 print options.config
 
 
@@ -47,11 +47,11 @@ for line in datasetDefFile:
 
     outputFile=dataset+"_ntuples_"+datasetId+"_"+options.shNtupVersion+".root"
     outputPath="/store/user/sharper/"+options.cmsswVersion+"/"+options.shNtupVersion+"/"+datasetFormat
-    publishDataname=datasetId+"_"+datasetFormat+"_"+options.shNtupVersion
+    publishDataname=datasetId+"_"+datasetFormat+"_"+options.shNtupVersion+"_"+runRange
     # /store/user/<dir>[/<subdirs>]/<primary-dataset>/<publication-name>/<time-stamp>/<counter>/<file-name>
     import datetime
     currTime=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-    workingDir="Data_"+dataset+"_"+options.cmsswVersion+"_"+options.shNtupVersion+"_"+datasetFormat+"_"+datasetId+"_"+currTime
+    workingDir="Data_"+dataset+"_"+options.cmsswVersion+"_"+options.shNtupVersion+"_"+runRange+"_"+datasetFormat+"_"+datasetId+"_"+currTime
 
 
     #print datasetPath,nrJobs,datasetCode,dataset,datasetFormat

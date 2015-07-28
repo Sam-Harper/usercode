@@ -22,6 +22,7 @@
 #include "SHarper/SHNtupliser/interface/SHPFClusterContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 #include "SHarper/SHNtupliser/interface/SHVertex.hh"
+#include "SHarper/SHNtupliser/interface/SHGenInfo.hh"
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -109,6 +110,8 @@ class SHEvent : public TObject {
   SHPFCandContainer pfCands_; //! like calo towers, this is stored on a seperate branch
 
   SHPFClusterContainer pfClusters_; //! like pf cands stored on a seperate branch
+
+  SHGenInfo genInfo_;//! stored on a seperate branch
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -249,6 +252,8 @@ class SHEvent : public TObject {
   SHPFCandContainer& getPFCands(){return pfCands_;} 
   const SHPFClusterContainer& getPFClusters()const{return pfClusters_;}
   SHPFClusterContainer& getPFClusters(){return pfClusters_;}
+  const SHGenInfo& getGenInfo()const{return genInfo_;}
+  SHGenInfo& getGenInfo(){return genInfo_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   TClonesArray& getPreShowerClusters(){return preShowerClusArray_;}
   double genEventPtHat()const{return genEventPtHat_;}
@@ -295,7 +300,7 @@ class SHEvent : public TObject {
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
   float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,24) 
+  ClassDef(SHEvent,25) 
 
 };
   

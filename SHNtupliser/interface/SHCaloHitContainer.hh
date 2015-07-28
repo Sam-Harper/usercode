@@ -31,7 +31,7 @@ class SHCaloHitContainer : public TObject {
 
   mutable std::vector<int> hitIndxTable_; //! transient allows fast indexing to the hits
  
-
+  SHCaloHit nullHit_; //! returning when hit isnt found
   //SHEcalHit nullEcalHit_; //! returned when the ecal hit isnt found
   //SHHcalHit nullHcalHit_; //! returned when the hcal hit isnt found
 
@@ -49,9 +49,9 @@ class SHCaloHitContainer : public TObject {
   void addHit(int detId,float nrgy,float time=-999,uint32_t flag=0,uint32_t flagBits=0);
   void addHit(const SHCaloHit& hit);
   
-
-  const SHCaloHit& getEcalBarrelHit(unsigned indx)const;
-  const SHCaloHit& getEcalEndcapHit(unsigned indx)const;
+  const SHCaloHit& getHit(int detId)const;
+  // const SHCaloHit& getEcalBarrelHit(unsigned indx)const;
+  // const SHCaloHit& getEcalEndcapHit(unsigned indx)const;
   // const SHHcalHit& getHcalhit(unsigned indx)const;
 
   float getHitNrgy(int detId)const;

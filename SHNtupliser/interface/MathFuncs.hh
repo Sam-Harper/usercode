@@ -99,6 +99,8 @@ public:
   static int getCoordQuadrant(double xCoord,double yCoord); //returns the quadrant the point is in from 1 (0-pi/2) to 4 (3/2pi-2*pi)
   static double calDeltaR(const TLorentzVector& a, const TLorentzVector& b){return sqrt(calDeltaR2(a.Eta(),a.Phi(),b.Eta(),b.Phi()));}
   static double calDeltaR(const TVector3& a, const TVector3& b){return sqrt(calDeltaR2(a.Eta(),a.Phi(),b.Eta(),b.Phi()));}
+  static double calDeltaR2(const TLorentzVector& a, const TLorentzVector& b){return calDeltaR2(a.Eta(),a.Phi(),b.Eta(),b.Phi());}
+  static double calDeltaR2(const TVector3& a, const TVector3& b){return calDeltaR2(a.Eta(),a.Phi(),b.Eta(),b.Phi());}
   static double calDeltaR2(double eta1,double phi1, const TLorentzVector& p4){return calDeltaR2(eta1,phi1,p4.Eta(),p4.Phi());}
   static double calDeltaR2(double eta1,double phi1, const TVector3& p3){return calDeltaR2(eta1,phi1,p3.Eta(),p3.Phi());}
   static double calDeltaR2(double eta1,double phi1, double eta2,double phi2){

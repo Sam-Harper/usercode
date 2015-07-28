@@ -1,10 +1,30 @@
-isMC=False
+isCrabJob=False #script seds this if its a crab job
+
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
 # set up process
 process = cms.Process("HEEP")
+
+process.source = cms.Source("PoolSource",
+                                #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
+                                #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
+                            fileNames = cms.untracked.vstring(),
+                             )
+if isCrabJob:
+    datasetCode=DATASETCODE
+else:
+    import sys
+    from SHarper.SHNtupliser.addInputFiles import addInputFiles
+    addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
+    from SHarper.SHNtupliser.datasetCodes import getDatasetCode
+    datasetCode=getDatasetCode(process.source.fileNames[0])
+
+if datasetCode==0: isMC=False
+else: isMC=True
+
+print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -40,7 +60,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 import sys
 
-hltName="REDIGI311X"
+#hltName="REDIGI311X"
 #do not remove this comment...
 #CRABHLTNAMEOVERWRITE
 hltName="HLT"
@@ -91,41 +111,18 @@ if "CMSSW_7" in cmsswVersion:
     process.shNtupliser.superClusterEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower")
 
 
-process.source = cms.Source("PoolSource",
-                                #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
-                                #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
-                             fileNames = cms.untracked.vstring(),
-                             )
-
-isCrabJob=False #script seds this if its a crab job
-
 #if 1, its a crab job...
 if isCrabJob:
     print "using crab specified filename"
     process.TFileService.fileName= "OUTPUTFILE"
     #process.shNtupliser.outputFilename= "OUTPUTFILE"
-    process.shNtupliser.datasetCode = DATASETCODE
+    process.shNtupliser.datasetCode = datasetCode
     process.shNtupliser.sampleWeight = SAMPLEWEIGHT
 else:
     print "using user specified filename"
     process.TFileService.fileName= sys.argv[len(sys.argv)-1]
     #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
-  
-    filePrefex="file:"
-    if(sys.argv[2].find("/pnfs/")==0):
-        filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
-
-    if(sys.argv[2].find("/store/")==0):
-        filePrefex=""
-    if(sys.argv[2].find("/eos/")==0):
-        filePrefex="'root://eoscms/"
-  
-    for i in range(2,len(sys.argv)-1):
-        print filePrefex+sys.argv[i]
-        process.source.fileNames.extend([filePrefex+sys.argv[i],])
-
-    from SHarper.SHNtupliser.datasetCodes import getDatasetCode
-    process.shNtupliser.datasetCode = getDatasetCode(process.source.fileNames[0])
+    process.shNtupliser.datasetCode = datasetCode
     process.shNtupliser.sampleWeight = 1
   #  print "datset code ",process.shNtupliser.datasetCode
 
@@ -135,7 +132,7 @@ else:
 # Additional output definition
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_L1SingleEG20_v*")
+process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 
 process.egammaFilter = cms.EDFilter("EGammaFilter",

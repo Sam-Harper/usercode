@@ -36,6 +36,7 @@ public:
   // std::ostream &print()const ;
   int index()const{return index_;}
   int stdhep()const{return stdhep_;}
+  int status()const{return stdhep_;}
   int idhep()const{return idhep_;}
   int pid()const{return idhep_;}
   int jmo1()const{return jmo1_;}

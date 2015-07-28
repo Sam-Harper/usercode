@@ -40,6 +40,9 @@ public:
   float et()const{return nrgy()*sin(pos().Theta());}
   const TVector3& pos()const{return pos_;}
 
+  std::ostream& print(std::ostream& out)const{out<<" et "<<et()<<" nrgy "<<nrgy()<<" eta "<<pos().Eta()<<" phi "<<pos().Phi()<<" caloId "<<caloId()<<" seedId "<<seedId()<<" flags "<<flags()<<" sc id "<<superClusId();return out;}
+  friend std::ostream& operator<<(std::ostream& out,const SHPFCluster& clus){return clus.print(out);}
+
   ClassDef(SHPFCluster,1);
 
 };
