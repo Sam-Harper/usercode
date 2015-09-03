@@ -312,7 +312,9 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
     shEvt_->setGenEventPtHat(ht); //oh so naughty, quick hack
   }else shEvt_->setGenEventPtHat(-1);
   //if(ht<200 || ht>400)  std::cout <<"ht "<<ht<<std::endl;
-      
+  if(heepEvt_.handles().genEvtInfo.isValid()){
+    shEvt_->setWeight(heepEvt_.handles().genEvtInfo->weight());
+  }
     
   return true;
 

@@ -38,7 +38,7 @@ process.GlobalTag.globaltag = 'POSTLS161_V12::All'
 
 filePrefex="file:"
 if(sys.argv[2].find("/pnfs/")==0):
-    filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
+    filePrefex="root://dcap.pp.rl.ac.uk:1094"
 
 if(sys.argv[2].find("/store/")==0):
     filePrefex=""
