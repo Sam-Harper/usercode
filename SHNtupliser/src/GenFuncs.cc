@@ -45,7 +45,8 @@ void GenFuncs::fillGenInfo(const heep::Event& heepEvt,SHGenInfo& genInfo)
   fillLHEParticles(heepEvt,genInfo);
   fillMCParticles(heepEvt,genInfo);
   fillPDFInfo(heepEvt,genInfo);
-
+  if(heepEvt.handles().genEvtInfo.isValid()) genInfo.setWeight(heepEvt.handles().genEvtInfo->weight());
+  else genInfo.setWeight(1);
 }
 
 void GenFuncs::fillLHEParticles(const heep::Event& heepEvt,SHGenInfo& genInfo)
