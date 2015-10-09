@@ -10,7 +10,7 @@ def addInputFiles(source,files):
     
     filePrefex="file:"
     if(files[0].find("/pnfs/")==0):
-        filePrefex="dcap://heplnx209.pp.rl.ac.uk:22125"
+        filePrefex="root://dcap.pp.rl.ac.uk:1094"
     if(files[0].find("/store/")==0):
         filePrefex=""
     if(files[0].find("/eos/")==0):
@@ -18,8 +18,8 @@ def addInputFiles(source,files):
 
  
     for i in range(0,len(files)):
-        print filePrefex+files[i]
-        source.fileNames.extend([filePrefex+files[i],])
+        print filePrefex+files[i].rstrip()
+        source.fileNames.extend([filePrefex+files[i].rstrip(),])
     
         
     

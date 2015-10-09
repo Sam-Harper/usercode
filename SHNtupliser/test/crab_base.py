@@ -10,6 +10,8 @@ config.General.transferOutputs = True
 config.section_("JobType")
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'shNtupliser_autoGen_cfg.py'
+#config.JobType.inputFiles=[TOSED:INPUTFILES]
+#TOSED:EXTRAJOBTYPEINFO
 
 config.section_("Data")
 config.Data.inputDataset = 'TOSED:DATASETPATH'

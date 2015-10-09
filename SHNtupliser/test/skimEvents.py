@@ -2,7 +2,7 @@
 import FWCore.ParameterSet.Config as cms
 
 # set up process
-process = cms.Process("Skim")
+process = cms.Process("SkimEle")
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -29,6 +29,7 @@ process.source = cms.Source("PoolSource",
                         #  fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                        #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
+                            eventsToProcess = cms.untracked.VEventRange("254833:1268846022-254833:1268846022")
 )
 for i in range(2,len(sys.argv)-1):
     print filePrefex+sys.argv[i]
@@ -54,13 +55,18 @@ process.maxEvents = cms.untracked.PSet(
 ##                                        pfBlockBasedIsolationSetUp=cms.PSet(pfBlockBasedIsolation)                                 
 ##                                        )
 ##process.p = cms.Path(process.particleBasedIsolation)
-    
+
+process.gedGsfElectrons= cms.EDProducer("EleFilter",
+                                        eleTag=cms.InputTag("gedGsfElectrons"),
+)
+
+process.p = cms.Path(process.gedGsfElectrons)    
 process.load('Configuration/EventContent/EventContent_cff')
 process.output = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
 #  outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
-  outputCommands = process.AODSIMEventContent.outputCommands,
-   # outputCommands = cms.untracked.vstring("keep *"),
+ # outputCommands = process.AODSIMEventContent.outputCommands,
+    outputCommands = cms.untracked.vstring("keep *"),
   fileName = cms.untracked.string("dummy.root"),
 #  SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('skimP')),
     dataset = cms.untracked.PSet(
@@ -71,7 +77,7 @@ process.output = cms.OutputModule("PoolOutputModule",
     )
 )
 
-process.output.outputCommands.extend(cms.untracked.vstring("drop recoGenParticles_*_*_*","drop recoPFJets_*_*_*","drop triggerTriggerEvent_*_*_*","drop recoTrack*_*_*_*","drop recoCaloJets_*_*_*","drop *_generalTracks_*_*","drop recoJet*_*_*_*","drop *FwdPtrs*_*_*_*","drop recoGenJets*_*_*_*","drop ints_genParticles_*_*","drop recoPFTau*_*_*_*","drop recoDeDxData*_*_*_*","drop CastorRecHits*_*_*_*","drop recoCastorTowers_*_*_*","drop HFRecHitsSorted_*_*_*","drop TrackingRecHitsOwned_*_*_*","keep recoTracks_generalTracks_*_*","drop *_*ulti5x5*_*_*","drop recoJPTJets_*_*_*","drop *_*ybridSuperClusters_*_*","keep *_particleFlowClusterECAL_*_*","keep *_particleFlowClusterHCAL_*_*","drop *_muons_*_*","drop *_*onversions_*_*","drop recoRecoChargedRefCandidates_trackRefsForJets_*_*","drop recoPFRecHits_particleFlowRecHitHO_*_*","drop *_offlinePrimaryVerticesWithBS_*_*","keep *_particleFlowEGamma_*_*","keep *_gedGsfElectrons*_*_*","keep *_gedPhotons*_*_*","keep *_particleFlowBlock_*_*",))
+#process.output.outputCommands.extend(cms.untracked.vstring("drop recoGenParticles_*_*_*","drop recoPFJets_*_*_*","drop triggerTriggerEvent_*_*_*","drop recoTrack*_*_*_*","drop recoCaloJets_*_*_*","drop *_generalTracks_*_*","drop recoJet*_*_*_*","drop *FwdPtrs*_*_*_*","drop recoGenJets*_*_*_*","drop ints_genParticles_*_*","drop recoPFTau*_*_*_*","drop recoDeDxData*_*_*_*","drop CastorRecHits*_*_*_*","drop recoCastorTowers_*_*_*","drop HFRecHitsSorted_*_*_*","drop TrackingRecHitsOwned_*_*_*","keep recoTracks_generalTracks_*_*","drop *_*ulti5x5*_*_*","drop recoJPTJets_*_*_*","drop *_*ybridSuperClusters_*_*","keep *_particleFlowClusterECAL_*_*","keep *_particleFlowClusterHCAL_*_*","drop *_muons_*_*","drop *_*onversions_*_*","drop recoRecoChargedRefCandidates_trackRefsForJets_*_*","drop recoPFRecHits_particleFlowRecHitHO_*_*","drop *_offlinePrimaryVerticesWithBS_*_*","keep *_particleFlowEGamma_*_*","keep *_gedGsfElectrons*_*_*","keep *_gedPhotons*_*_*","keep *_particleFlowBlock_*_*",))
 
 isCrabJob=False
 
