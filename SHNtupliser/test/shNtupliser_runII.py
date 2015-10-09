@@ -147,29 +147,24 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     superClusEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel"),
                                     superClusEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower"),
                                     caloTowerTag = cms.InputTag("towerMaker"),
+                                    genEvtInfoTag=cms.InputTag("generator"),
                                     requireEcalDriven=cms.bool(True)
                                      )
 
 print "dataset code: ",process.shNtupliser.datasetCode.value()
-if process.shNtupliser.datasetCode.value()>=600 and process.shNtupliser.datasetCode.value()<700:
+if process.shNtupliser.datasetCode.value()>=800 and process.shNtupliser.datasetCode.value()<700:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
-if process.shNtupliser.datasetCode.value()>=310 and process.shNtupliser.datasetCode.value()<350:
+if process.shNtupliser.datasetCode.value()>=120 and process.shNtupliser.datasetCode.value()<1000:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
 
-#from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso
-#process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons')
 process.p = cms.Path(#process.primaryVertexFilter*
-    #process.gsfElectronsHEEPCorr*process.eIdSequence*
-   process.egammaFilter*
- #   process.pfParticleSelectionSequence* process.eleIsoSequence*
-#    process.kt6PFJets*
- #   process.egmGsfElectronIDSequence*
+    process.egammaFilter*
     process.shNtupliser)
         
 if not isMC:
