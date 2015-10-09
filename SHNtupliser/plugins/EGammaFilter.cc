@@ -13,7 +13,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "TTree.h"
 
 
@@ -24,6 +24,7 @@ private:
   int nrPhosRequired_;
   float phoEtCut_;
   edm::InputTag eleTag_;
+  edm::InputTag genEvtInfoTag_;
   int nrElesRequired_;
   float eleEtCut_;
   bool requireEcalDriven_;
@@ -36,6 +37,9 @@ private:
   edm::InputTag caloTowerTag_;
   int nrPass_;
   int nrTot_;
+
+  std::pair<float,float> nrPassWeights_;
+  std::pair<float,float> nrTotWeights_;
   
 public:
   explicit EGammaFilter(const edm::ParameterSet& para);
@@ -56,6 +60,7 @@ EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
   superClusEBTag_=para.getParameter<edm::InputTag>("superClusEBTag");
   superClusEETag_=para.getParameter<edm::InputTag>("superClusEETag"); 
   caloTowerTag_=para.getParameter<edm::InputTag>("caloTowerTag");
+  genEvtInfoTag_=para.getParameter<edm::InputTag>("genEvtInfoTag");
   nrElesRequired_=para.getParameter<int>("nrElesRequired");
   nrPhosRequired_=para.getParameter<int>("nrPhosRequired"); 
   nrSCsRequired_=para.getParameter<int>("nrSCsRequired");
@@ -67,11 +72,22 @@ EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
 }
 
 bool EGammaFilter::filter(edm::Event& event,const edm::EventSetup& setup)
-{ 
+{   
+  edm::Handle<GenEventInfoProduct> genEvtInfo;
+  event.getByLabel(genEvtInfoTag_,genEvtInfo);
+  
+  float weight = 1;
+  if(genEvtInfo.isValid()) weight=genEvtInfo->weight();
   nrTot_++;
+
+  nrTotWeights_.first+=weight;
+  nrTotWeights_.second+=weight*weight;
+
   if(passPho(event) && passEle(event) && passSC(event)){
     //   std::cout <<"passed "<<std::endl;
     nrPass_++;
+    nrPassWeights_.first+=weight;
+    nrPassWeights_.second+=weight*weight;
     return true;
   }else return false;
   
@@ -85,6 +101,11 @@ void EGammaFilter::endJob()
     TTree* tree = new TTree("preFilterEventCountTree","Event count");
     tree->Branch("nrPass",&nrPass_,"nrPass/I");
     tree->Branch("nrTot",&nrTot_,"nrTot/I");
+    tree->Branch("nrTotWeights",&nrTotWeights_.first,"nrTotWeights/F");
+    tree->Branch("nrTotWeightsSQ",&nrTotWeights_.second,"nrTotWeightsSQ/F");
+    tree->Branch("nrPassWeights",&nrPassWeights_.first,"nrPassWeights/F");
+    tree->Branch("nrPassWeightsSQ",&nrPassWeights_.second,"nrPassWeightsSQ/F");
+    
     tree->Fill();
   }
   
