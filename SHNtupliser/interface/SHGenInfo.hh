@@ -12,7 +12,7 @@ private:
   std::vector<SHMCParticle> lheParticles_;
 
   SHPDFInfo pdfInfo_;
-  
+  float weight_; //the generator weight (ie for madgraph)
   
   mutable std::vector<size_t> mcPartIndxTbl_; //for fast lookup, probably unnecessary but maps particle position to position in mcParticle index
 
@@ -20,7 +20,7 @@ public:
   enum class PartStatus{INITIAL,PREFSR,FINAL};
   
 
-  SHGenInfo(){}
+  SHGenInfo():weight_(0){}
   virtual ~SHGenInfo(){}
 
   SHGenInfo(const SHGenInfo& rhs)=delete;
@@ -30,6 +30,7 @@ public:
   void addMCParticle(const SHMCParticle& mcPart){mcParticles_.push_back(mcPart);}
   void addLHEParticle(const SHMCParticle& mcPart){lheParticles_.push_back(mcPart);}
   void addPDFInfo(const SHPDFInfo& pdfInfo){pdfInfo_=pdfInfo;}
+  void setWeight(float iWeight){weight_=iWeight;}
 
   const std::vector<SHMCParticle>& mcParts()const{return mcParticles_;}
   const SHMCParticle* getPart(size_t index)const; //note this is via index in event, not vector index
@@ -52,6 +53,7 @@ public:
 
   const std::vector<SHMCParticle>& lheParts()const{return lheParticles_;}
   const SHPDFInfo& pdfInfo()const{return pdfInfo_;}
+  float weight()const{return weight_;}
 
   void printMCParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
 
@@ -65,7 +67,7 @@ private:
   void getFSRDaughters_(size_t index,std::vector<const SHMCParticle*>& fsrDaughters)const;
   void createMCPartIndxTbl_()const;
 
-  ClassDef(SHGenInfo,2)
+  ClassDef(SHGenInfo,3)
 };
 
 
