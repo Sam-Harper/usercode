@@ -15,6 +15,7 @@ parser.add_option('--cmsswVersion',help='cmssw version')
 parser.add_option('--copyData',help="whether to stage out the data or not",default=True)
 parser.add_option('--dbsUrl',help="dbs url global,phys03 etc",default="global")
 parser.add_option('--transferLogFiles',help="whether to transfer log files or not",default=False)
+parser.add_option('--ignoreLocality',help="whether to ignore locality",default=False)
 options,args = parser.parse_args()
 if not options.input or not options.pattern or not options.shNtupVersion or not options.cmsswVersion or not options.config:
     parser.error("input, pattern, shNtupVersion, config and cmsswVersion are manditory")
@@ -82,6 +83,7 @@ for line in datasetDefFile:
                     " Data.unitsPerJob="+str(unitsPerJob)+ \
                     " Data.totalUnits="+str(totalUnits)+ \
                     " Data.outLFNDirBase="+outputPath+ \
+                    " Data.ignoreLocality="+str(options.ignoreLocality)+ \
                     " Data.publishDataName="+publishDataname+ \
                     " Data.runRange="+runRange+ \
                     " JobType.psetName="+tempConfig+ \
