@@ -106,7 +106,7 @@ print args.config
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
 baseDir="/opt/ppd/month/harper"
-baseOutputDir=baseDir+"/mc"
+baseOutputDir=baseDir+"/data"
 batchJobBaseDir=baseDir+"/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
