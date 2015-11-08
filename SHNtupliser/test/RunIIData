@@ -71,13 +71,13 @@
 /SingleElectron/Run2015D-PromptReco-v3/AOD & 256870 & 257599 & 80
 /SinglePhoton/Run2015D-PromptReco-v3/AOD & 256870 & 257599 & 80
 
-/DoubleEG/Run2015D-PromptReco-v3/AOD & 257600 & 258158 & 80
-/SingleElectron/Run2015D-PromptReco-v3/AOD & 257600 & 258158 & 80
-/SinglePhoton/Run2015D-PromptReco-v3/AOD & 257600 & 258158 & 80
+/DoubleEG/Run2015D-PromptReco-v3/AOD & 257600 & 258158 & 80 & do234
+/SingleElectron/Run2015D-PromptReco-v3/AOD & 257600 & 258158 & 80 & do234
+/SinglePhoton/Run2015D-PromptReco-v3/AOD & 257600 & 258158 & 80 & do234
 
-/DoubleEG/Run2015D-PromptReco-v4/AOD & 258159 & 258159 & 80
-/SingleElectron/Run2015D-PromptReco-v4/AOD & 258159 & 258159 & 80
-/SinglePhoton/Run2015D-PromptReco-v4/AOD & 258159 & 258159 & 80
+/DoubleEG/Run2015D-PromptReco-v4/AOD & 258159 & 258159 & 80 & do234
+/SingleElectron/Run2015D-PromptReco-v4/AOD & 258159 & 258159 & 80 & do234
+/SinglePhoton/Run2015D-PromptReco-v4/AOD & 258159 & 258159 & 80 & do234
 
 
 

@@ -93,7 +93,7 @@ for line in datasetDefFile:
  #      unitsPerJob=1
 
     
-    crabSubmitCmd = "crab submit -c crab_base.py General.requestName="+workingDir+ \
+    crabSubmitCmd = "crab submit -c crab_base.py --wait General.requestName="+workingDir+ \
                     " General.transferOutputs="+str(options.copyData)+ \
                     " Data.inputDataset="+datasetPath+ \
                     " Data.inputDBS="+options.dbsUrl+ \

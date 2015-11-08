@@ -157,7 +157,7 @@ if process.shNtupliser.datasetCode.value()>=800 and process.shNtupliser.datasetC
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
-if process.shNtupliser.datasetCode.value()>=120 and process.shNtupliser.datasetCode.value()<1000:
+if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCode.value()<1000:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
