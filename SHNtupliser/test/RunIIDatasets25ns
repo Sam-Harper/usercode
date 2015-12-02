@@ -14,7 +14,7 @@
 
 
 /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9_ext3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 321 & 1600 & 
-/WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 261 & 8000 & ttlike
+/WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 261 & 800 & ttlike
 /WWTo2L2Nu_13TeV-powheg/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 262 & 1600 & 
 /WWTo4Q_13TeV-powheg/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM & -1 & -1 & 1.0 & 1.0 & 263 & 1600 & 
 /WWToLNuQQ_13TeV-powheg/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 264 & 1600 & 
