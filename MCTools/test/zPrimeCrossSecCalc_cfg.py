@@ -169,6 +169,7 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
                         'ParticleDecays:tauMax = 10',
                         'Tune:pp 5',
                         'Tune:ee 3',
+                       'PDF:pSet 13',
 
                         'NewGaugeBoson:ffbar2gmZZPrime = on',
                         'Zprime:gmZmode = '+str(options.interferenceMode),

@@ -100,7 +100,7 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
                         'ParticleDecays:tauMax = 10',
                         'Tune:pp 5',
                         'Tune:ee 3',
-
+                        'PDF:pSet 13',
                         'ExtraDimensionsG*:all = on',
                         'ExtraDimensionsG*:kappaMG = '+str(5.4*options.kMpl),
                         '5100039:m0 = '+str(options.mass),
