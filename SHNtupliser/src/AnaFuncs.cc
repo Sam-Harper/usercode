@@ -708,12 +708,13 @@ void AnaFuncs::readFilelist(std::string fileListName,std::vector<std::string> &f
   std::cout <<"nr files: "<<filenames.size()<<std::endl; 
 }
 
-void AnaFuncs::splitFilelist(int nrJobs,int jobNr,std::vector<std::string>& filenames)
+void AnaFuncs::splitFilelistConsecutive(int nrJobs,int jobNr,std::vector<std::string>& filenames)
 {
   if(jobNr>nrJobs || nrJobs<1){
     std::vector<std::string>().swap(filenames);
     return;
   }
+  if(jobNr==0) jobNr=nrJobs; //setting 0th job to be the same as last job
 
   int nrFiles = filenames.size();
   //last job is the remaining files
@@ -728,6 +729,29 @@ void AnaFuncs::splitFilelist(int nrJobs,int jobNr,std::vector<std::string>& file
   std::vector<std::string> jobFilenames(start,end);
   filenames.swap(jobFilenames);
 }
+
+void AnaFuncs::splitFilelist(int nrJobs,int jobNr,std::vector<std::string>& filenames)
+{
+  splitFilelistMixed(nrJobs,jobNr,filenames);
+}
+
+void AnaFuncs::splitFilelistMixed(int nrJobs,int jobNr,std::vector<std::string>& filenames)
+{
+  if(jobNr>nrJobs || nrJobs<1){
+    std::vector<std::string>().swap(filenames);
+    return;
+  }
+  
+  std::vector<std::string> outFilenamesTmp;
+  for(size_t fileNr=0;fileNr<filenames.size();fileNr++){
+    if( (fileNr+jobNr)%nrJobs==0){
+      outFilenamesTmp.push_back(filenames[fileNr]);
+    }
+  }
+  filenames.swap(outFilenamesTmp);
+}
+   
+ 
 
 int AnaFuncs::nrFilesInJob(int nrFiles,int nrJobs,int jobNr)
 {

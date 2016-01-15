@@ -118,6 +118,23 @@ const SHMCParticle* SHGenInfo::getLastCopy(size_t index)const
   return part;
 }
 
+float SHGenInfo::lheHT()const
+{
+  float ht=0;
+  //std::cout <<"start "<<std::endl;
+  for(const auto& part : lheParticles_){
+    //    std::cout <<part<<std::endl;
+    if(part.pid()==21 || std::abs(part.pid())<=6){
+       if(part.status()==1){
+	 ht+=part.p4().Pt();
+	 //std::cout <<" pt "<<part.p4().Pt()<<" ht "<<ht<<std::endl;
+       }
+     }
+  }
+  //  std::cout <<"ht "<<ht<<std::endl;
+  return ht;
+}
+
 void SHGenInfo::printMCParts(size_t nrLines)const
 {
   if(!mcParticles_.empty()){
@@ -127,6 +144,20 @@ void SHGenInfo::printMCParts(size_t nrLines)const
 	      << std::setw(10) << "Pt" <<std::setw(15)<< "Mass" << "\n";
     for(size_t i=0;i<mcParticles_.size() && i<nrLines;i++){
       const SHMCParticle& mcPart = mcParticles_[i];
+      std::cout << mcPart <<std::endl;
+    }
+  }
+}
+
+void SHGenInfo::printLHEParts(size_t nrLines)const
+{
+  if(!lheParticles_.empty()){
+    std::cout << std::setw(2)<<" "<< std::setw(6) << "indx" << std::setw(8) << "stdhep" << std::setw(6) << "idhep" 
+	      << std::setw(6) << "jmo1" << std::setw(6) << "jmo2" << std::setw(6) << "jda1" << std::setw(6) << "jda2" 
+	      << std::setw(6) << "Px" << std::setw(10) << "Py" << std::setw(10) << "Pz" << std::setw(10) <<"E" 
+	      << std::setw(10) << "Pt" <<std::setw(15)<< "Mass" << "\n";
+    for(size_t i=0;i<lheParticles_.size() && i<nrLines;i++){
+      const SHMCParticle& mcPart = lheParticles_[i];
       std::cout << mcPart <<std::endl;
     }
   }

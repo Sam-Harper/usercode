@@ -72,8 +72,8 @@ int DetIdTools::EcalNavigator::getIdAtPos(int nrStepsEast,int nrStepsNorth)const
 {
   int posEtaOrX = currEtaOrX_+nrStepsEast;
   if(isBarrel_ && posEtaOrX*currEtaOrX_<=0){ //little fix for barrel having no crystal at 0, going directly from -1 to 1
-    if(nrStepsNorth>0) posEtaOrX++;
-    else if(nrStepsNorth<0) posEtaOrX--;
+    if(nrStepsEast>0) posEtaOrX++;
+    else if(nrStepsEast<0) posEtaOrX--;
   }
   int posPhiOrY = currPhiOrY_+nrStepsNorth;
   while(isBarrel_ && posPhiOrY>360) posPhiOrY-=360;
