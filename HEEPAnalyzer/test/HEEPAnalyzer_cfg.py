@@ -17,16 +17,16 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Load geometry
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.Geometry.GeometryRecoDB_cff")
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.autoCond import autoCond
 if isMC:
-    process.GlobalTag.globaltag = autoCond['startup'] 
+    process.GlobalTag.globaltag = autoCond['run2_mc'] 
 else:
-    process.GlobalTag.globaltag = autoCond['com10']
+    process.GlobalTag.globaltag = autoCond['run2_data']
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
-
+process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # this defines the input files
 import sys
