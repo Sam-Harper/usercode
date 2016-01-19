@@ -28,7 +28,7 @@ private:
 
 public:
   explicit HEEPFilter(const edm::ParameterSet& iPara):evtHelper_(),heepEvt_(){
-    evtHelper_.setup(iPara);
+    evtHelper_.setup(iPara,consumesCollector(),*this);
   }
   virtual ~HEEPFilter(){}
   

@@ -17,11 +17,8 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h" 
 
 HEEPAnalyzer::HEEPAnalyzer(const edm::ParameterSet& iPara):
-  evtHelper_(),heepEvt_(),nrPass_(0),nrFail_(0)
+  evtHelper_(iPara,consumesCollector(),*this),heepEvt_(),nrPass_(0),nrFail_(0)
 {
-  //we now have to set up the heep event
-  evtHelper_.setup(iPara);
-
 
 }
 

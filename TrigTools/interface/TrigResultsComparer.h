@@ -2,7 +2,7 @@
 #define SHARPER_TRIGTOOLS_TRIGRESULTSCOMPARER
 
 #include "HLTrigger/HLTcore/interface/HLTFilter.h"
-#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
 
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
@@ -76,16 +76,15 @@ private:
   //therefore this currently can not handle the case where the menu changes between runs
   std::vector<TrigCompData> pathCompData_; //this vector is unsorted 
   
-  HLTConfigProvider prevHLTConfig_; 
-  HLTConfigProvider newHLTConfig_; 
+  HLTPrescaleProvider prevHLTConfig_; 
+  HLTPrescaleProvider newHLTConfig_; 
   
 
 public:
   explicit TrigResultsComparer(const edm::ParameterSet& iPara);
   ~TrigResultsComparer(){}
-private:
-  TrigResultsComparer(const TrigResultsComparer& rhs){}
-  TrigResultsComparer& operator=(const TrigResultsComparer& rhs){return *this;}
+  TrigResultsComparer(const TrigResultsComparer& rhs)=delete;
+  TrigResultsComparer& operator=(const TrigResultsComparer& rhs)=delete;
 
  private:
   virtual void beginJob(){}

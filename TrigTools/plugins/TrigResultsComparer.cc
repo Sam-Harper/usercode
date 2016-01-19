@@ -21,7 +21,9 @@ bool checkAllBits(int word,int bitsToCheck)
   return (word&bitsToCheck)==bitsToCheck;
 }
 
-TrigResultsComparer::TrigResultsComparer(const edm::ParameterSet& iPara)
+TrigResultsComparer::TrigResultsComparer(const edm::ParameterSet& iPara):
+  prevHLTConfig_(iPara,consumesCollector(),*this),
+  newHLTConfig_(iPara,consumesCollector(),*this)
 {
   prevTrigResultsTag_ = iPara.getParameter<edm::InputTag>("prevTrigResultsTag");
   newTrigResultsTag_ =  iPara.getParameter<edm::InputTag>("newTrigResultsTag");
@@ -32,14 +34,14 @@ void TrigResultsComparer::beginRun(const edm::Run& run,const edm::EventSetup& se
 {
   bool changed=false;
   prevHLTConfig_.init(run,setup,prevTrigResultsTag_.process(),changed); 
-  std::cout <<"prev table name "<<prevHLTConfig_.tableName()<<" process "<<prevTrigResultsTag_.process()<<std::endl;
+  std::cout <<"prev table name "<<prevHLTConfig_.hltConfigProvider().tableName()<<" process "<<prevTrigResultsTag_.process()<<std::endl;
   
   if(changed && !pathCompData_.empty()){ 
     std::cout <<"TrigResultsComparer::beginRun warning prev HLT menu has changed, results are undefined "<<std::endl;
   }
 
   newHLTConfig_.init(run,setup,newTrigResultsTag_.process(),changed); 
-  std::cout <<"new table name "<<newHLTConfig_.tableName()<<" process "<<newTrigResultsTag_.process()<<std::endl;
+  std::cout <<"new table name "<<newHLTConfig_.hltConfigProvider().tableName()<<" process "<<newTrigResultsTag_.process()<<std::endl;
   
   if(changed && !pathCompData_.empty()){ 
     std::cout <<"TrigResultsComparer::beginRun warning new HLT menu has changed, results are undefined "<<std::endl;
@@ -50,8 +52,8 @@ void TrigResultsComparer::beginRun(const edm::Run& run,const edm::EventSetup& se
   //then we loop over the prev menu path names and see which are also present in the new menu, adding them accordingly
   //then we repeat for the new menu path names, adding any which are just in that meun
   if(pathCompData_.empty()){ //initialising hlt paths names
-    std::vector<std::string> prevPathNames = prevHLTConfig_.triggerNames();
-    std::vector<std::string> newPathNames = newHLTConfig_.triggerNames();
+    std::vector<std::string> prevPathNames = prevHLTConfig_.hltConfigProvider().triggerNames();
+    std::vector<std::string> newPathNames = newHLTConfig_.hltConfigProvider().triggerNames();
     std::sort(prevPathNames.begin(),prevPathNames.end());
     std::sort(newPathNames.begin(),newPathNames.end());
     pathCompData_.reserve(std::max(prevPathNames.size(),newPathNames.size()));
@@ -90,8 +92,8 @@ void TrigResultsComparer::analyze(const edm::Event& iEvent, const edm::EventSetu
   //so we ignore triggers for the lumi sections in which either are prescaled
   for(size_t pathNr=0;pathNr<pathCompData_.size();pathNr++){
   
-    int prevTrigCode = getTrigCode(pathCompData_[pathNr],*prevTrigResultsHandle,prevTrigNames,prevHLTConfig_);
-    int newTrigCode = getTrigCode(pathCompData_[pathNr],*newTrigResultsHandle,newTrigNames,newHLTConfig_);
+    int prevTrigCode = getTrigCode(pathCompData_[pathNr],*prevTrigResultsHandle,prevTrigNames,prevHLTConfig_.hltConfigProvider());
+    int newTrigCode = getTrigCode(pathCompData_[pathNr],*newTrigResultsHandle,newTrigNames,newHLTConfig_.hltConfigProvider());
     if(checkAllBits(prevTrigCode,kPassed) && checkAllBits(newTrigCode,kPassed)) pathCompData_[pathNr].nrBothPass++;
     else if(!checkAllBits(prevTrigCode,kFailedPreScale) && !checkAllBits(prevTrigCode,kFailedPreScale)){
       if(checkAllBits(prevTrigCode,kPassed)) pathCompData_[pathNr].nrPrevOnlyPass++;

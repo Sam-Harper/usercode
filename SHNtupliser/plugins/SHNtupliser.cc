@@ -66,7 +66,7 @@ void SHNtupliser::fillTree()
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL),shPFClusters_(NULL)
 {
-  evtHelper_.setup(iPara);
+  evtHelper_.setup(iPara,consumesCollector(),*this);
   shEvtHelper_.setup(iPara);
 
   outputFilename_ = iPara.getParameter<std::string>("outputFilename");

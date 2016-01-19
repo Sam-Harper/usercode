@@ -24,7 +24,7 @@
 #include "DataFormats/Common/interface/View.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
 #include <vector>
 
 namespace heep{
@@ -35,7 +35,13 @@ namespace heep{
     const edm::Event* edmEvent_;
     const edm::EventSetup* edmEventSetup_;
     heep::EvtHandles handles_;  
-    HLTConfigProvider hltConfig_;
+    //in 76X, hltConfig needs to be initialised with the modulename + consumes collectors
+    //at construction time
+    //I've decided to delgate this to the heep event helper class, hence why hltConfig is 
+    //now a (smart) pointer
+    //because HLTPrecaleProvider cant be copied and I didnt want to destroy the heep::EventHelpers copy, I've made it shared with the heep::EventHelper, I dont like this design and may
+    //change it in the future
+    std::shared_ptr<HLTPrescaleProvider> hltPSProvider_;
     //I cant make a View (comments say its dangerous) so we will have to have a vector instead
     //although a View is a basically a wrapper around a vector
     std::vector<heep::Ele> heepEles_;
@@ -55,8 +61,7 @@ namespace heep{
     const heep::TrigCodes::TrigBitSet& trigBits()const{return trigBits_;}
     bool passAllTrigs(heep::TrigCodes::TrigBitSet& bitsToCheck){return (bitsToCheck&trigBits_)==bitsToCheck;}
     bool passAnyTrig(heep::TrigCodes::TrigBitSet& bitsToCheck){return (bitsToCheck&trigBits_)!=0x0;}
-    
-
+   
     const edm::View<pat::Muon>& muons()const{return *handles_.muon;}
     const edm::View<pat::Jet>& jets()const{return *handles_.jet;}
     const edm::View<pat::Electron>& patEles()const{return *handles_.electron;} 
@@ -77,8 +82,8 @@ namespace heep{
 
     const edm::Event& event()const{return *edmEvent_;}
     const edm::EventSetup& eventSetup()const{return *edmEventSetup_;}
-    int hltPreScale(const std::string& hltPath)const{return hltConfig_.inited() ? hltConfig_.prescaleValue(event(),eventSetup(),hltPath) : -1;}
-    int preScaleColumn()const{return hltConfig_.inited() ? hltConfig_.prescaleSet(event(),eventSetup()) : -1;}
+    int hltPreScale(const std::string& hltPath)const{return hltPSProvider_ && hltPSProvider_->hltConfigProvider().inited() ? hltPSProvider_->prescaleValue(event(),eventSetup(),hltPath) : -1;}
+    int preScaleColumn()const{return hltPSProvider_ && hltPSProvider_->hltConfigProvider().inited() ? hltPSProvider_->prescaleSet(event(),eventSetup()) : -1;}
     double eleRhoCorr()const{return *handles_.eleRhoCorr;}
     double eleRhoCorr2012()const{return *handles_.eleRhoCorr2012;}
     double eleRhoCorr2011()const{return *handles_.eleRhoCorr;}
@@ -95,12 +100,16 @@ namespace heep{
     const std::vector<reco::PFCluster>& pfClustersECAL()const{return *handles_.pfClustersECAL;}
     const std::vector<reco::PFCluster>& pfClustersHCAL()const{return *handles_.pfClustersHCAL;}
     
-
-      //our three set methods
+    //really for heep::EventHelper to make the HLTPSProvider object
+    bool validHLTPSProvider()const{return hltPSProvider_!=nullptr;}
+     //our four set methods
     void setEvent(const edm::Event& event){edmEvent_ = &event;}
     void setEventSetup(const edm::EventSetup& setup){edmEventSetup_=&setup;}
     void setTrigBits(heep::TrigCodes::TrigBitSet& bits){trigBits_=bits;}
-    bool initHLTConfig(const edm::Run& run,const edm::EventSetup& setup,const std::string& hltProcess){ bool changed=false;hltConfig_.init(run,setup,hltProcess,changed);return changed;}
+    void setHLTPSProvider(const std::shared_ptr<HLTPrescaleProvider>& psProv){hltPSProvider_=psProv;}
+
+    
+    bool initHLTConfig(const edm::Run& run,const edm::EventSetup& setup,const std::string& hltProcess){ bool changed=false;if(hltPSProvider_) hltPSProvider_->init(run,setup,hltProcess,changed);return changed;}
     
   };
 

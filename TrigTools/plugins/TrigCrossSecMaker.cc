@@ -15,7 +15,8 @@
 
 const float TrigCrossSecMaker::TrigCrossSecData::LumiSecData::kLumiSecLength(23.3);
 
-TrigCrossSecMaker::TrigCrossSecMaker(const edm::ParameterSet& iPara)
+TrigCrossSecMaker::TrigCrossSecMaker(const edm::ParameterSet& iPara):
+  hltConfig_(iPara,consumesCollector(),*this)
 {
   trigResultsTag_ = iPara.getParameter<edm::InputTag>("trigResultsTag");
   pathName_ = iPara.getParameter<std::string>("pathName");
@@ -31,7 +32,7 @@ void TrigCrossSecMaker::beginRun(const edm::Run& run,const edm::EventSetup& setu
 {
   bool changed=false;
   hltConfig_.init(run,setup,"HLT",changed); //as we need the orginal HLT config...
-  std::cout <<"table name "<<hltConfig_.tableName()<<std::endl;
+  std::cout <<"table name "<<hltConfig_.hltConfigProvider().tableName()<<std::endl;
  
 }
 

@@ -5,7 +5,7 @@
 //this is a simple class which simulates another trigger based on the already calculated trigger object P4s and filters on that
 
 #include "HLTrigger/HLTcore/interface/HLTFilter.h"
-#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
 
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
@@ -89,7 +89,7 @@ private:
   std::string pathName_;
   std::string selectingPathName_; //as this is designed for when we re-run the trigger we need the orginal path which selected these events for prescales
   std::string outputFilename_;
-  HLTConfigProvider hltConfig_; //to translate path names to filter names
+  HLTPrescaleProvider hltConfig_; //to translate path names to filter names
  
   TrigCrossSecData trigCrossSecData_;
 
