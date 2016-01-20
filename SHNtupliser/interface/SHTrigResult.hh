@@ -10,11 +10,12 @@ public:
 private: 
   size_t bitNr_;
   Status result_;
-  int preScale_;
+  int hltPreScale_;
+  std::vector<std::pair<size_t,int>> l1PreScales_;
 
 public:
-  SHTrigResult():bitNr_(std::numeric_limits<size_t>::max()),result_(Status::UNDEFINED),preScale_(-1){}
-  SHTrigResult(int iBitNr,Status iResult,int iPreScale):bitNr_(iBitNr),result_(iResult),preScale_(iPreScale){}
+  SHTrigResult():bitNr_(std::numeric_limits<size_t>::max()),result_(Status::UNDEFINED),hltPreScale_(-1){}
+  SHTrigResult(int iBitNr,Status iResult,int iHLTPreScale,const std::vector<std::pair<size_t,int>>& iL1PreScales):bitNr_(iBitNr),result_(iResult),hltPreScale_(iHLTPreScale),l1PreScales_(iL1PreScales){}
   virtual ~SHTrigResult(){}
   
   bool accept()const{return result_==Status::PASS;}
@@ -22,7 +23,8 @@ public:
   bool error()const{return result_==Status::EXCEPTION;}
   bool valid()const{return result_!=Status::UNDEFINED;}
   size_t bitNr()const{return bitNr_;}
-  int preScale()const{return preScale_;}
+  int hltPreScale()const{return hltPreScale_;}
+  int preScale()const{return hltPreScale_;}
   
   bool operator<(const SHTrigResult& rhs)const{return bitNr_<rhs.bitNr_;}
 

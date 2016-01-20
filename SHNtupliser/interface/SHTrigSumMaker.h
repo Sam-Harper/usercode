@@ -2,6 +2,7 @@
 #define SHARPER_SHNTUPLISER_SHTRIGSUMMAKER_H
 
 #include <string>
+#include <vector>
 
 namespace edm{
   class Event;
@@ -56,10 +57,21 @@ private:
 				 const edm::Event& edmEvent,
 				 const edm::EventSetup& edmEventSetup,
 				 SHTrigSummary& shTrigSum);
+
   
   static void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum);
-  
 
+
+  static void fillSHL1Results_(const HLTConfigProvider& hltConfig,const edm::Event& edmEvent,
+			       SHTrigSummary& shTrigSum);  
+
+  
+  static std::vector<std::pair<size_t,int>> 
+  getPathL1Prescales_(const std::string& pathName,
+		      const HLTConfigProvider& hltConfig,
+		      const edm::Event& edmEvent,
+		      const edm::EventSetup& edmEventSetup,
+		      SHTrigSummary& shTrigSum);
 };
   
 

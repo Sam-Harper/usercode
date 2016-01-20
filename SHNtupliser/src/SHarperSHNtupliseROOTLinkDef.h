@@ -90,5 +90,6 @@
 #pragma link C++ class SHTrigObj+;
 #pragma link C++ class SHTrigResult+;
 #pragma link C++ class SHBitsDef+;
+#pragma link C++ class SHL1Result+;
 
 #endif

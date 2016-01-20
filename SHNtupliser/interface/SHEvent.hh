@@ -292,7 +292,7 @@ class SHEvent : public TObject {
 
   void printTruth(int nrLines=-1)const;
 
-protected:
+  //protected:
   bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());} 
   const SHTrigInfo* getTrig(const std::string& trigName)const;
   bool passL1Trig(const std::string& trigName,double eta,double phi)const;
