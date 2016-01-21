@@ -33,7 +33,7 @@ private:
       if(lhs.type()!=rhs.type()) return lhs.type()<rhs.type();
       else if(lhs.pt()!=rhs.pt()) return lhs.pt()>rhs.pt(); //sorting by increasing pt inside a type
       else if(lhs.eta()!=rhs.eta()) return lhs.eta()<rhs.eta();
-      else return lhs.eta()<rhs.phi();	   
+      else return lhs.phi()<rhs.phi();	   
     }
   };
 

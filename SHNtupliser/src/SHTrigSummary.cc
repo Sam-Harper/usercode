@@ -106,7 +106,6 @@ void SHTrigSummary::addL1Result(const SHL1Result& result)
   if(l1Results_.size()!=l1Names_.size() && !l1Names_.empty()){
     l1Results_.resize(l1Names_.size());
   }
-  //  std::cout  <<" adding result "<<result.valid()<<" result bit "<<result.bitNr()<<std::endl;
   if(result.valid() && 
      result.bitNr()<l1Results_.size()) l1Results_[result.bitNr()]=result;
 }

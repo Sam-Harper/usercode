@@ -85,7 +85,8 @@ class SHElectron : public TObject {
   float dPhiOut_; 
   float sigmaEtaEta_;
   float sigmaIEtaIEta_;
-
+  float sigmaIPhiIPhi_;
+  
   //links to tracks, superclusters
   int superClusIndx_; //this is not copied by copy constructor
 
@@ -257,8 +258,10 @@ private:
   float dPhiOut()const{return dPhiOut_;}
 
   float sigmaEtaEta()const{return sigmaEtaEta_;}
-  
   float sigmaIEtaIEta()const{return sigmaIEtaIEta_;}
+
+
+  float sigmaIPhiIPhi()const{return sigmaIPhiIPhi_;}
 
   float invEinvP()const{return 1/nrgy() - 1/trkPt();}
   float bremFrac()const{return (p3TrackVtx().Mag() - p3TrackOut().Mag())/p3TrackVtx().Mag();}
@@ -332,7 +335,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,22) 
+  ClassDef(SHElectron,23) 
 
 };
 

@@ -31,7 +31,7 @@ print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(1),
+    reportEvery = cms.untracked.int32(1000),
     limit = cms.untracked.int32(10000000)
 )
 
