@@ -11,6 +11,8 @@ process.source = cms.Source("PoolSource",
                                 #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                                 #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
+                        #    eventsToProcess = cms.untracked.VEventRange("1:1484800-1:1484810"),
+                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
                              )
 if isCrabJob:
     datasetCode=DATASETCODE
@@ -29,7 +31,7 @@ print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(1000),
+    reportEvery = cms.untracked.int32(1),
     limit = cms.untracked.int32(10000000)
 )
 

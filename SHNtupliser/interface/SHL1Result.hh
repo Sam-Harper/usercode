@@ -21,7 +21,7 @@ public:
   bool masked()const{return masked_;}
   size_t bitNr()const{return bitNr_;}
   int preScale()const{return preScale_;}
-  bool valid()const{return bitNr_==std::numeric_limits<size_t>::max();}
+  bool valid()const{return bitNr_!=std::numeric_limits<size_t>::max();}
   
   ClassDef(SHL1Result,1)
 

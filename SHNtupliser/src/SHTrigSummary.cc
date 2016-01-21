@@ -103,11 +103,12 @@ void SHTrigSummary::clearMenu()
 
 void SHTrigSummary::addL1Result(const SHL1Result& result)
 {
-  if(result.bitNr()>=l1Results_.size()){
-    l1Results_.resize(result.bitNr());
+  if(l1Results_.size()!=l1Names_.size() && !l1Names_.empty()){
+    l1Results_.resize(l1Names_.size());
   }
-  l1Results_[result.bitNr()]=result;
-
+  //  std::cout  <<" adding result "<<result.valid()<<" result bit "<<result.bitNr()<<std::endl;
+  if(result.valid() && 
+     result.bitNr()<l1Results_.size()) l1Results_[result.bitNr()]=result;
 }
 
 void SHTrigSummary::sort()

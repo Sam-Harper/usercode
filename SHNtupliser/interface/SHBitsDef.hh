@@ -46,13 +46,13 @@ public:
     return getBitNames(bitNrs);
   }
   
-  std::vector<std::string> getBitNames(const std::vector<size_t> bitNrs)const{
+  std::vector<std::string> getBitNames(const std::vector<size_t>& bitNrs)const{
     std::vector<std::string> names;
     for(size_t bitNr : bitNrs) names.push_back(getBitName(bitNr));
     return names;
   }
       
-
+  const std::vector<std::pair<std::string,size_t> >& data()const{return strToBitNr_;}
   void setBitsDef(const std::set<std::string>& bitNames);
   void clear(){strToBitNr_.clear();bitNrToStr_.clear();}
 

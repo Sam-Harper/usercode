@@ -15,8 +15,11 @@ void SHTrigSumMaker::makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& s
     const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
     const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
  
+    //  std::cout <<*heepEvent.handles().l1Record<<std::endl;
+
     makeSHTrigSum(trigEvt,trigResults,trigNames,
 		  heepEvent.hltConfig(),heepEvent.event(),heepEvent.eventSetup(),
+		  //  heepEvent.l1Decision(),
 		  shTrigSum);
   }
 }
@@ -28,6 +31,7 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
 				   const HLTConfigProvider& hltConfig,
 				   const edm::Event& edmEvent,
 				   const edm::EventSetup& edmEventSetup,
+				   // const std::vector<bool>& l1Decision,
 				   SHTrigSummary& shTrigSum)
 				
 {
@@ -49,6 +53,8 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
 			      
   fillSHTrigResults_(trigResults,trigNames,hltConfig,edmEvent,edmEventSetup,shTrigSum);
   fillSHTrigObjs_(trigEvt,shTrigSum);
+  //fillSHL1Results_(hltConfig,edmEvent,shTrigSum);
+
   shTrigSum.sort();
 }
 
@@ -81,7 +87,8 @@ void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
     std::string trigName,trigAlias;
     for(int bitNr=0;bitNr<=127;bitNr++){  //should fix this
       l1Util->l1TriggerNameFromBit(bitNr,L1GtUtils::AlgorithmTrigger,trigAlias,trigName);
-      l1Names.push_back(trigName);
+      //if(trigAlias!=trigName) std::cout <<"name" <<trigName<<" alias "<<trigAlias<<std::endl;
+      l1Names.push_back(trigAlias);
     }
   }
   shTrigSum.setL1Names(l1Names);
@@ -178,19 +185,23 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
 
 void SHTrigSumMaker::fillSHL1Results_(const HLTConfigProvider& hltConfig,
 				      const edm::Event& edmEvent,
+				      //			      const std::vector<bool>& l1Decision,
 				      SHTrigSummary& shTrigSum)
 {
   const L1GtUtils* l1Util = hltConfig.l1GtUtils();
-  
   int errorCode;
+  // std::cout <<"fill start"<<" bits "<<l1Decision.size()<<std::endl;
   for(size_t bitNr=0;bitNr<shTrigSum.l1Names().size();bitNr++){
     if(l1Util){
       const std::string& l1Name = shTrigSum.l1Names()[bitNr];
       bool pass = l1Util->decision(edmEvent,l1Name,errorCode);
+      //bool passDecision = l1Decision[bitNr];
+      //  if(l1Name.find("L1_SingleEG")==0) std::cout <<l1Name<<" pass "<<pass<<" passDec "<<passDecision<<" err "<<errorCode<<std::endl;
       int mask = l1Util->triggerMask(l1Name,errorCode);
       int prescale = l1Util->prescaleFactor(edmEvent,l1Name,errorCode);
       shTrigSum.addL1Result(SHL1Result(bitNr,pass,mask,prescale));
-    }else shTrigSum.addL1Result(SHL1Result());
+      
+    }else shTrigSum.addL1Result(SHL1Result(bitNr,false,false,-1));
   }
   
 }
@@ -209,6 +220,14 @@ SHTrigSumMaker::getPathL1Prescales_(const std::string& pathName,
   const std::vector<std::string>& l1Names = shTrigSum.l1Names();
   for(auto& prescale : prescales.first){
     size_t bitNr=std::distance(l1Names.begin(),std::find(l1Names.begin(),l1Names.end(),prescale.first));
+    //if(bitNr>=l1Names.size()){ 
+      // std::cout <<"path "<<pathName<<" l1 name "<<prescale.first<<" not found "<<std::endl;
+      // for(auto l1Name : l1Names){
+      // 	std::cout <<"      "<<l1Name<<std::endl;
+      // }
+    //}
+      
+    
     retVal.push_back(std::pair<size_t,int>(bitNr,prescale.second));
   }
   return retVal;
