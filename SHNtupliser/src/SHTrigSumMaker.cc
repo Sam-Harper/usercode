@@ -53,7 +53,7 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
 			      
   fillSHTrigResults_(trigResults,trigNames,hltConfig,edmEvent,edmEventSetup,shTrigSum);
   fillSHTrigObjs_(trigEvt,shTrigSum);
-  //fillSHL1Results_(hltConfig,edmEvent,shTrigSum);
+  fillSHL1Results_(hltConfig,edmEvent,shTrigSum);
 
   shTrigSum.sort();
 }
