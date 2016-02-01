@@ -21,6 +21,8 @@ if not options.input or not options.pattern or not options.shNtupVersion or not 
 print options.config
 
 
+crabProjDir='crab_projects'
+
 datasetDefFile =open(options.input)
 for line in datasetDefFile:
     if line.find(options.pattern)==-1 or line.find(options.antipattern)!=-1:
@@ -53,11 +55,7 @@ for line in datasetDefFile:
     import datetime
     currTime=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     workingDir="MC_"+dataset+"_"+options.cmsswVersion+"_"+options.shNtupVersion+"_"+datasetFormat+"_"+datasetId+"_"+currTime
-
-
-    #print datasetPath,nrJobs,datasetCode,dataset,datasetFormat
-    #print publishDataname
-    #print outputFile,outputPath
+    workingDirTmp="MC_"+dataset+currTime
 
     with open(options.config,"r") as configFile:
         configLines = configFile.readlines()
@@ -72,28 +70,8 @@ for line in datasetDefFile:
             tempConfigFile.write(line)
 
   
-
-#    import subprocess
-#    datasetQuery="--query \"file dataset="+datasetPath+"| sum(file.is_file_valid)\""
-    #print datasetQuery
-#    fileCountRAW = subprocess.Popen(['das_client.py','--query','file dataset='+datasetPath+' | sum(file.is_file_valid)','--format','json'],stdout=subprocess.PIPE).communicate()[0]
-#    import json
-#    fileCountData = json.loads(fileCountRAW)
-
-    #from pprint import pprint
-    #print fileCountData['u\'_id\'']
-    #   pprint(fileCountData)
-    #   print crabSubmitCmd
- #   nrFiles=fileCountData["data"][0]["result"]["value"]
-
     
-  
- #   if unitsPerJob<=0:
- #      print "Error, dataset has "+str(nrFiles)+" but "+str(nrJobs)+" requested, reseting to 1 file to job"
- #      unitsPerJob=1
-
-    
-    crabSubmitCmd = "crab submit -c crab_base.py --wait General.requestName="+workingDir+ \
+    crabSubmitCmd = "crab submit -c crab_base.py --wait General.requestName="+workingDirTmp+ \
                     " General.transferOutputs="+str(options.copyData)+ \
                     " Data.inputDataset="+datasetPath+ \
                     " Data.inputDBS="+options.dbsUrl+ \
@@ -102,6 +80,7 @@ for line in datasetDefFile:
                     " Data.outLFNDirBase="+outputPath+ \
                     " Data.publishDataName="+publishDataname+ \
                     " JobType.psetName="+tempConfig+ \
+                    " General.workArea ="+crabProjDir+ \
                     " General.transferLogs="+str(options.transferLogFiles)
     print "will submit:"
     print crabSubmitCmd
@@ -113,5 +92,7 @@ for line in datasetDefFile:
         time.sleep(5)
         import os
         os.system(crabSubmitCmd)
+        import shutil
+        shutil.move(crabProjDir+"/"+workingDirTmp,crabProjDir+"/"+workingDir)
 
 print "All done"

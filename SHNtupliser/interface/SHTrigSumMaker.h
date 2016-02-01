@@ -2,6 +2,7 @@
 #define SHARPER_SHNTUPLISER_SHTRIGSUMMAKER_H
 
 #include <string>
+#include <vector>
 
 namespace edm{
   class Event;
@@ -17,6 +18,10 @@ namespace heep{
 }
 class HLTConfigProvider;
 class SHTrigSummary;
+
+//known bugs:
+//L1 pass info appears not to be correctly filled and its a bit of a mystery why
+//as l1GtUtils and L1GlobalTriggerReadoutRecord appear to agree wrongly
 
 
 class SHTrigSumMaker {
@@ -34,13 +39,14 @@ public:
   
   static void makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
   
-  
+  //having to pass in l1decision as gt utilis was giving me odd results.
   static void makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
 			    const edm::TriggerResults& trigResults,
 			    const edm::TriggerNames& trigNames,
 			    const HLTConfigProvider& hltConfig,
 			    const edm::Event& edmEvent,
 			    const edm::EventSetup& edmEventSetup,
+			    //			    const std::vector<bool>& l1Decision,
 			    SHTrigSummary& shTrigSum);
   
   
@@ -54,12 +60,24 @@ private:
 				 const edm::TriggerNames& trigNames,
 				 const HLTConfigProvider& hltConfig,
 				 const edm::Event& edmEvent,
-				 const edm::EventSetup& edmEventSetup,
+				 const edm::EventSetup& edmEventSetup,	
 				 SHTrigSummary& shTrigSum);
+
   
   static void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum);
-  
 
+
+  static void fillSHL1Results_(const HLTConfigProvider& hltConfig,const edm::Event& edmEvent,
+			       // const std::vector<bool>& l1TrigRecord,
+			       SHTrigSummary& shTrigSum);  
+
+  
+  static std::vector<std::pair<size_t,int>> 
+  getPathL1Prescales_(const std::string& pathName,
+		      const HLTConfigProvider& hltConfig,
+		      const edm::Event& edmEvent,
+		      const edm::EventSetup& edmEventSetup,
+		      SHTrigSummary& shTrigSum);
 };
   
 

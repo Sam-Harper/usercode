@@ -31,10 +31,28 @@ public:
   TBits getBits(const std::string& bitNames)const;
   TBits getBits(const std::vector<std::string>& bitNames)const;
   std::string getBitName(size_t bitNr)const{//toying with a reference or not, problem is that it'll go out of scope on the next change and you might keep the name around
-    if(cacheOutOfDate_()) buildBitNrToStrMap_();
-    return bitNr<bitNrToStr_.size() ? bitNrToStr_[bitNr] : "";
+    for(auto& bitDef : strToBitNr_){
+      if(bitDef.second==bitNr) return bitDef.first;
+    }
+    return "";
+    //if(cacheOutOfDate_()) buildBitNrToStrMap_();
+    //return bitNr<bitNrToStr_.size() ? bitNrToStr_[bitNr] : "";
   }
- 
+  std::vector<std::string> getBitNames(const TBits& bits)const{
+    std::vector<size_t> bitNrs;
+    for(size_t bitNr=bits.FirstSetBit();bitNr<=bits.LastSetBit();bitNr++){
+      if(bits.TestBitNumber(bitNr)) bitNrs.push_back(bitNr);
+    }
+    return getBitNames(bitNrs);
+  }
+  
+  std::vector<std::string> getBitNames(const std::vector<size_t>& bitNrs)const{
+    std::vector<std::string> names;
+    for(size_t bitNr : bitNrs) names.push_back(getBitName(bitNr));
+    return names;
+  }
+      
+  const std::vector<std::pair<std::string,size_t> >& data()const{return strToBitNr_;}
   void setBitsDef(const std::set<std::string>& bitNames);
   void clear(){strToBitNr_.clear();bitNrToStr_.clear();}
 

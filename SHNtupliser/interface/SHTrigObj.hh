@@ -57,6 +57,7 @@ public:
     return deltaR2(rhsEta,rhsPhi)<=maxDR2;
   }
   
+  bool passL1CMSSWMatch(float rhsEta,float rhsPhi)const;
 private:
   float deltaR2L1_(float rhsEta,float rhsPhi)const;
 

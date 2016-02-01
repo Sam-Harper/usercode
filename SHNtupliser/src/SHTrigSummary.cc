@@ -62,12 +62,33 @@ std::vector<const SHTrigObj*> SHTrigSummary::getTrigObjs(float eta,float phi,int
   return matchedObjs;
 }
 
+
+void SHTrigSummary::print()
+{
+  std::cout <<"Menu "<<menuName()<<" process "<<processName()<<" gt "<<globalTag()<<std::endl;
+  std::cout <<"nr trigs "<<trigResults().size()<<std::endl;
+  std::cout <<"nr objs "<<trigObjs().size()<<std::endl;
+  for(auto& trig : trigResults()){
+    std::string trigName = pathBitsDef().getBitName(trig.bitNr());
+    std::cout <<"trig "<<trig.bitNr()<<" "<<trigName<<" pass: "<<trig.accept()<<" run: "<<trig.wasRun()<<" ps: "<<trig.preScale()<<std::endl;
+  }
+  
+  for(auto& trig : trigObjs()){
+    std::cout <<"trig "<<std::hex<<trig.type()<<std::dec<<" "<<trig.pt()<<" "<<trig.eta()<<" "<<trig.phi()<<" "<<trig.mass();
+    const std::vector<std::string> names = filterBitsDef().getBitNames(trig.filtersPassed());
+    for(auto& name : names) std::cout <<" "<<name;
+    std::cout <<std::endl;
+  }
+  
+
+}
+
 void SHTrigSummary::clearEvent()
 {
   preScaleColumn_=-1;
   trigObjs_.clear();
   trigResults_.clear();
-
+  l1Results_.clear();
 }
 
 void SHTrigSummary::clearMenu()
@@ -77,6 +98,16 @@ void SHTrigSummary::clearMenu()
   globalTag_="";
   pathBitsDef_.clear();
   filterBitsDef_.clear();
+  l1Names_.clear();
+}
+
+void SHTrigSummary::addL1Result(const SHL1Result& result)
+{
+  if(l1Results_.size()!=l1Names_.size() && !l1Names_.empty()){
+    l1Results_.resize(l1Names_.size());
+  }
+  if(result.valid() && 
+     result.bitNr()<l1Results_.size()) l1Results_[result.bitNr()]=result;
 }
 
 void SHTrigSummary::sort()
