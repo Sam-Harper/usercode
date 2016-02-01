@@ -46,7 +46,6 @@ public:
 			    const HLTConfigProvider& hltConfig,
 			    const edm::Event& edmEvent,
 			    const edm::EventSetup& edmEventSetup,
-			    //			    const std::vector<bool>& l1Decision,
 			    SHTrigSummary& shTrigSum);
   
   
@@ -68,7 +67,6 @@ private:
 
 
   static void fillSHL1Results_(const HLTConfigProvider& hltConfig,const edm::Event& edmEvent,
-			       // const std::vector<bool>& l1TrigRecord,
 			       SHTrigSummary& shTrigSum);  
 
   

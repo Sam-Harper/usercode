@@ -14,12 +14,9 @@ void SHTrigSumMaker::makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& s
     
     const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
     const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
- 
-    //  std::cout <<*heepEvent.handles().l1Record<<std::endl;
 
     makeSHTrigSum(trigEvt,trigResults,trigNames,
 		  heepEvent.hltConfig(),heepEvent.event(),heepEvent.eventSetup(),
-		  //  heepEvent.l1Decision(),
 		  shTrigSum);
   }
 }
@@ -31,7 +28,6 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
 				   const HLTConfigProvider& hltConfig,
 				   const edm::Event& edmEvent,
 				   const edm::EventSetup& edmEventSetup,
-				   // const std::vector<bool>& l1Decision,
 				   SHTrigSummary& shTrigSum)
 				
 {
@@ -46,7 +42,6 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
     fillMenu_(shTrigSum,hltConfig);
   }
   shTrigSum.setProcessName(hltConfig.processName()); //in theory this could change without chaning menu name and its fine
-  //  std::cout <<"menu "<<shTrigSum.menuName()<<std::endl;
   shTrigSum.clearEvent();
  
   shTrigSum.setPreScaleColumn(hltConfig.prescaleSet(edmEvent,edmEventSetup));
@@ -118,7 +113,6 @@ void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
     const std::string& pathName = trigNames.triggerName(pathNr);
     const std::string  pathNameWOVersion=rmTrigVersionFromName(pathName);
     size_t bitNr=shTrigSum.pathBitsDef().getBitNr(pathNameWOVersion);
-    //    std::cout <<"bitNr "<<bitNr<<" "<<pathNameWOVersion<<std::endl;
     int prescale=hltConfig.inited() ? hltConfig.prescaleValue(edmEvent,edmEventSetup,pathName) : -1;
     auto l1Prescales = getPathL1Prescales_(pathName,hltConfig,edmEvent,edmEventSetup,shTrigSum);
 
@@ -160,7 +154,7 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
 
 
     size_t bitNr=shTrigSum.filterBitsDef().getBitNr(trigEvt.filterTag(filterNr).label());
-    //std::cout <<"bit Nr "<<bitNr<<" "<< trigEvt.filterTag(filterNr).label()<<" nr pass "<<trigKeys.size()<<std::endl;
+   
     for(size_t objNr=0;objNr<trigKeys.size();objNr++){
       auto key = trigKeys[objNr];
       auto id = convertToSHTrigType(trigIds[objNr]);
@@ -185,18 +179,14 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
 
 void SHTrigSumMaker::fillSHL1Results_(const HLTConfigProvider& hltConfig,
 				      const edm::Event& edmEvent,
-				      //			      const std::vector<bool>& l1Decision,
 				      SHTrigSummary& shTrigSum)
 {
   const L1GtUtils* l1Util = hltConfig.l1GtUtils();
   int errorCode;
-  // std::cout <<"fill start"<<" bits "<<l1Decision.size()<<std::endl;
   for(size_t bitNr=0;bitNr<shTrigSum.l1Names().size();bitNr++){
     if(l1Util){
       const std::string& l1Name = shTrigSum.l1Names()[bitNr];
       bool pass = l1Util->decision(edmEvent,l1Name,errorCode);
-      //bool passDecision = l1Decision[bitNr];
-      //  if(l1Name.find("L1_SingleEG")==0) std::cout <<l1Name<<" pass "<<pass<<" passDec "<<passDecision<<" err "<<errorCode<<std::endl;
       int mask = l1Util->triggerMask(l1Name,errorCode);
       int prescale = l1Util->prescaleFactor(edmEvent,l1Name,errorCode);
       shTrigSum.addL1Result(SHL1Result(bitNr,pass,mask,prescale));
@@ -220,14 +210,6 @@ SHTrigSumMaker::getPathL1Prescales_(const std::string& pathName,
   const std::vector<std::string>& l1Names = shTrigSum.l1Names();
   for(auto& prescale : prescales.first){
     size_t bitNr=std::distance(l1Names.begin(),std::find(l1Names.begin(),l1Names.end(),prescale.first));
-    //if(bitNr>=l1Names.size()){ 
-      // std::cout <<"path "<<pathName<<" l1 name "<<prescale.first<<" not found "<<std::endl;
-      // for(auto l1Name : l1Names){
-      // 	std::cout <<"      "<<l1Name<<std::endl;
-      // }
-    //}
-      
-    
     retVal.push_back(std::pair<size_t,int>(bitNr,prescale.second));
   }
   return retVal;
