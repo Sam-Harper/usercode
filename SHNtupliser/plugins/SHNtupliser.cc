@@ -201,9 +201,10 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
     GeomFuncs::loadCaloGeom(ecalGeom,hcalGeom);
     initGeom_=true;
   }
+  evtHelper_.makeHeepEvent(run,iSetup,heepEvt_);
   std::cout <<"end begin run "<<std::endl;
-  
-  heepEvt_.initHLTConfig(run,iSetup,hltTag_);
+
+
 }
 
 void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)

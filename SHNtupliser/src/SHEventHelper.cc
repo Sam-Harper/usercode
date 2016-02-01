@@ -108,7 +108,6 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
     if(debug) std::cout <<"adding triggers"<<std::endl;
     addTrigDebugInfo(heepEvent,shEvent,*trigEventWithRefs,hltDebugFiltersToSave_,hltTag_);
   }
-  // addL1Info(heepEvent,shEvent); //due to a bug l1 info is not stored in summer 09 samples
   if(debug)std::cout <<"adding jets"<<std::endl;
   if(addJets_) addJets(heepEvent,shEvent);
   if(debug) std::cout <<"adding met "<<std::endl;
@@ -122,20 +121,11 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
 {
-  // std::cout <<"atart"<<std::endl;
-  //std::cout <<" adding event "<<&(heepEvent.event())<<std::endl;
-  //std::cout <<"run nr "<< heepEvent.runnr()<<std::endl;
-  //std::cout <<"getting run nr "<<std::endl;
   shEvent.setRunnr(heepEvent.runnr());
-  //std::cout <<"eventnr "<<std::endl;
   shEvent.setEventnr(heepEvent.eventnr());
-  //std::cout <<"mv "<<std::endl;
   shEvent.setIsMC(isMC_);
-  //std::cout <<"dataset "<<std::endl;
   shEvent.setDatasetCode(datasetCode_);
-  //std::cout <<"weight "<<std::endl;
   shEvent.setWeight(eventWeight_);
-  //std::cout <<"gen pt hat "<<std::endl;
   shEvent.setGenEventPtHat(heepEvent.genEventPtHat());
   shEvent.setBX(heepEvent.bx());
   shEvent.setLumiSec(heepEvent.lumiSec());
@@ -170,16 +160,7 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
    if(heepEvent.passEcalLaserFilter()) shEvent.setFlags(1);
    else shEvent.setFlags(0);
 
-     // std::cout <<" rho "<<heepEvent.eleRhoCorr()<<std::endl;
-     // edm::Handle<double> pfHand;
-     // edm::InputTag pfTag("kt6PFJetsPFlow","rho");
-     // heepEvent.event().getByLabel(pfTag,pfHand);
-     //  std::cout <<" pf rho "<<*pfHand<<std::endl;
-     //std::cout <<" i "<<i<<"/"<<heepEvent.eleRhoCorr().size()<<" rho "<<heepEvent.eleRhoCorr()[i]<<std::endl;
-       
-   // }
- 
-  //std::cout <<"done "<<std::endl;
+    
 }
 
 //this now handles the sc promotion via photons
@@ -208,15 +189,10 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 {
   MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
-  SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
-  //and here come the hacks, things that are not correctly filled yet....
-  //  shEle->setIsolMVA(eleMVA_->mva(gsfEle,heepEvent.handles().vertices->size()));
+  SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
   shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
-  //redoing shower shape variables (only necessary for photons now )
-  //  if(noFracShowerShape_) fixClusterShape(*(gsfEle.superCluster()->seed()),heepEvent,*shEle);
-  
-
+ 
   if(shEle->seedId()!=0 && false){
     
     const TVector3& seedPos = GeomFuncs::getCell(shEle->seedId()).pos();
@@ -239,54 +215,14 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
       TVector3 innToSeedPos(innToSeedTSOS.globalPosition().x(),innToSeedTSOS.globalPosition().y(),innToSeedTSOS.globalPosition().z());
       shEle->setPosTrackInnToSeed(innToSeedPos);  
     }else shEle->setPosTrackInnToSeed(dummy);
-    //  std::cout <<"set state"<<std::endl;
+   
   }
-
-
-  //std::cout <<"ele "<<gsfEle.et()<<" eta "<<gsfEle.eta()<<" miss hits "<<gsfEle.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()<<" covDist "<<gsfEle.convDist()<<" dcot "<<gsfEle.convDcot()<<" radius "<<gsfEle.convRadius()<<std::endl;
-
- //  double bField=0;
-//   if(heepEvent.runnr()>100000){ //hack to id data
-//     edm::Handle<DcsStatusCollection> dcsHandle;
-//     heepEvent.event().getByLabel("scalersRawToDigi",dcsHandle);
-//     float currentToBFieldScaleFactor = 2.09237036221512717e-04;
-//     float current = (*dcsHandle)[0].magnetCurrent();
-//     bField = current*currentToBFieldScaleFactor;
-//   }else{
-//     bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
-//   }
-      
-//   ConversionFinder conFind;
-//   ConversionInfo convInfo = conFind.getConversionInfo(gsfEle,heepEvent.handles().ctfTrack,bField);
-//   shEle->setConvInfo(convInfo.dist(),convInfo.dcot());
-  
-
 }
 
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const
 {
-  //std::cout <<"adding photon"<<std::endl;
   shEvent.addElectron(photon,shEvent.getCaloHits());
-  //if(noFracShowerShape_){
-  //  SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);
-  //  fixClusterShape(*(photon.superCluster()->seed()),heepEvent,*shEle);
-  // }
-//   double bField=0;
-//   if(heepEvent.runnr()>100000){ //hack to id data
-//     edm::Handle<DcsStatusCollection> dcsHandle;
-//     heepEvent.event().getByLabel("scalersRawToDigi",dcsHandle);
-//     float currentToBFieldScaleFactor = 2.09237036221512717e-04;
-//     float current = (*dcsHandle)[0].magnetCurrent();
-//     bField = current*currentToBFieldScaleFactor;
-//   }else{
-//     bField = heepEvent.handles().bField->inTesla(GlobalPoint(0,0,0)).z();
-//   }
-      
-//   ConversionFinder conFind;
-//   ConversionInfo convInfo = conFind.getConversionInfo(photon,heepEvent.handles().ctfTrack,bField);
-//   shEle->setConvInfo(convInfo.dist(),convInfo.dcot());
-
 }
 
 
@@ -335,34 +271,9 @@ bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEve
 
 size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const
 {
-  //  std::cout <<"photon sc "<<superClus<<std::endl;
- 
-  //  std::cout <<"start "<<std::endl;
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr];
-    
-    //std::cout <<"eleNr "<<eleNr<<std::endl;//" "<<(*ele.superCluster())<<std::endl;
-    //if(math::deltaR2(ele.superCluster->eta(),ele.superCluster->phi(),superClus.eta(),superClus.phi())<0.05*0.05) return eleNr;
-
     if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
-  //   const reco::SuperClusterRef sc = ele.superCluster();
-//     //std::cout <<"nr basic clusters "<<sc->clustersSize()<<std::endl;
-//     for(auto it=sc->clustersBegin();it!=sc->clustersEnd();++it){
-//       const std::vector< std::pair<DetId, float> > & hits = (*it)->hitsAndFractions();
-//       //std::cout <<"clus energy "<<(*it)->energy()<<" nr hits"<<hits.size()<<std::endl;
-//       for(size_t hitNr=0;hitNr<hits.size();hitNr++){
-// 	if(hits[hitNr].first.subdetId()==1){
-// 	  EBDetId ebDetId(hits[hitNr].first);
-// 	  std::cout <<"iEta "<<ebDetId.ieta()<<" iPhi "<<ebDetId.iphi()<<" frac "<<hits[hitNr].second<<std::endl;
-// 	}else{
-// 	  EEDetId eeDetId(hits[hitNr].first);
-// 	  std::cout <<"ix "<<eeDetId.ix()<<" iy "<<eeDetId.iy()<<" frac "<<hits[hitNr].second<<std::endl;
-// 	}
-//       }
-//     }
-
-//   }
-//   std::cout <<"end "<<std::endl;
   }
   return eles.size();
 }

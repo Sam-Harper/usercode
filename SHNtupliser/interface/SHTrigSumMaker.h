@@ -17,6 +17,8 @@ namespace heep{
   class Event;
 }
 class HLTConfigProvider;
+class HLTPrescaleProvider;
+class L1GtUtils;
 class SHTrigSummary;
 
 //known bugs:
@@ -43,7 +45,7 @@ public:
   static void makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
 			    const edm::TriggerResults& trigResults,
 			    const edm::TriggerNames& trigNames,
-			    const HLTConfigProvider& hltConfig,
+			    HLTPrescaleProvider& hltPSProv,
 			    const edm::Event& edmEvent,
 			    const edm::EventSetup& edmEventSetup,
 			    SHTrigSummary& shTrigSum);
@@ -54,10 +56,11 @@ public:
 
   
 private:
-  static void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig);
+  static void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig,
+			const L1GtUtils& l1GtUtils);
   static void fillSHTrigResults_(const edm::TriggerResults& trigResults,
 				 const edm::TriggerNames& trigNames,
-				 const HLTConfigProvider& hltConfig,
+				 HLTPrescaleProvider& hltPSProv,
 				 const edm::Event& edmEvent,
 				 const edm::EventSetup& edmEventSetup,	
 				 SHTrigSummary& shTrigSum);
@@ -66,13 +69,13 @@ private:
   static void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum);
 
 
-  static void fillSHL1Results_(const HLTConfigProvider& hltConfig,const edm::Event& edmEvent,
+  static void fillSHL1Results_(const L1GtUtils& l1Util,const edm::Event& edmEvent,
 			       SHTrigSummary& shTrigSum);  
 
   
   static std::vector<std::pair<size_t,int>> 
   getPathL1Prescales_(const std::string& pathName,
-		      const HLTConfigProvider& hltConfig,
+		      HLTPrescaleProvider& hltPSProv,
 		      const edm::Event& edmEvent,
 		      const edm::EventSetup& edmEventSetup,
 		      SHTrigSummary& shTrigSum);

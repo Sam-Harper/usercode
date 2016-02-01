@@ -117,9 +117,10 @@ namespace heep {
       setup_(conf,cc);
     }
     
+    
     //this function just calles setHandles and then fillHEEPElesFromPat but it allows us to make the HEEPEvent in one function
     void makeHeepEvent(const edm::Event& edmEvent,const edm::EventSetup& setup,heep::Event& heepEvent)const;
-    
+    void makeHeepEvent(const edm::Run& run,const edm::EventSetup& setup,heep::Event& heepEvent)const;
 
     //the remaining functions are all called by makeHeepEvent 
     void setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles)const;
