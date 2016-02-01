@@ -7,7 +7,7 @@
 #include "SHarper/SHNtupliser/interface/TrigDebugObjHelper.h"
 #include "SHarper/SHNtupliser/interface/SHTrigObjContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
-
+#include "SHarper/SHNtupliser/interface/SHTrigSumMaker.h"
 #include "SHarper/SHNtupliser/interface/PFFuncs.h"
 #include "SHarper/SHNtupliser/interface/GenFuncs.h"
 
@@ -120,6 +120,7 @@ void SHNtupliser::beginJob()
   shIsolTrks_= &(shEvt_->getIsolTrks());
   shPreShowerClusters_ = &(shEvt_->getPreShowerClusters());
   shGenInfo_ = &(shEvt_->getGenInfo());
+  shTrigSum_ = &(shEvt_->getTrigSum());
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
   //  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
   edm::Service<TFileService> fs;
@@ -131,7 +132,7 @@ void SHNtupliser::beginJob()
   evtTree_->SetCacheSize(1024*1024*100);
 					       
   evtTree_->Branch("EventBranch",shEvt_->GetName(),&shEvt_,32000,splitLevel);
-  
+  evtTree_->Branch("TrigSummaryBranch","SHTrigSummary",&shTrigSum_,32000,splitLevel);
   if(writePUInfo_) {
     puSummary_ = new SHPileUpSummary;
     evtTree_->Branch("PUInfoBranch","SHPileUpSummary",&puSummary_,32000,splitLevel);
@@ -224,6 +225,7 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
  
   
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
+  SHTrigSumMaker::makeSHTrigSum(heepEvt_,*shTrigSum_);
   if(addGenInfo_){
     GenFuncs::fillGenInfo(heepEvt_,*shGenInfo_);
   }

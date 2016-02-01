@@ -45,6 +45,7 @@ class SHGenInfo;
 class TTree;
 class TFile;
 class SHPFClusterContainer;
+class SHTrigSummary;
 
 class TrigDebugObjHelper;
 class SHTrigObjContainer;
@@ -64,6 +65,7 @@ private:
   TClonesArray* shIsolTrks_;
   TClonesArray* shPreShowerClusters_;
   SHGenInfo* shGenInfo_; 
+  SHTrigSummary* shTrigSum_;
 
   TTree* evtTree_; //the outFile owns it
   TFile* outFile_; //we own it

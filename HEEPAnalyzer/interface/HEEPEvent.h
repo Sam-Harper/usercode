@@ -102,7 +102,8 @@ namespace heep{
     
     //really for heep::EventHelper to make the HLTPSProvider object
     bool validHLTPSProvider()const{return hltPSProvider_!=nullptr;}
-     //our four set methods
+    
+     //our four set methods   
     void setEvent(const edm::Event& event){edmEvent_ = &event;}
     void setEventSetup(const edm::EventSetup& setup){edmEventSetup_=&setup;}
     void setTrigBits(heep::TrigCodes::TrigBitSet& bits){trigBits_=bits;}

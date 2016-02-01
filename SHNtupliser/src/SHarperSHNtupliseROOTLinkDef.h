@@ -33,6 +33,11 @@
 #include "SHarper/SHNtupliser/interface/SHPFClusterContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHGenInfo.hh"
 #include "SHarper/SHNtupliser/interface/AnaFuncs.hh"
+#include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
+#include "SHarper/SHNtupliser/interface/SHTrigResult.hh"
+#include "SHarper/SHNtupliser/interface/SHTrigObj.hh"
+#include "SHarper/SHNtupliser/interface/SHBitsDef.hh"
+
 
 
 #ifdef __CINT__
@@ -81,4 +86,9 @@
 #pragma link C++ class SHGenInfo+;
 #pragma link C++ class AnaFuncs+;
 #pragma link C++ class SHPDFInfo+;
+#pragma link C++ class SHTrigSummary+;
+#pragma link C++ class SHTrigObj+;
+#pragma link C++ class SHTrigResult+;
+#pragma link C++ class SHBitsDef+;
+
 #endif
