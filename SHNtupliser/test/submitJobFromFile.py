@@ -78,9 +78,9 @@ for line in datasetDefFile:
                     " Data.unitsPerJob="+str(unitsPerJob)+ \
                     " Data.totalUnits="+str(totalUnits)+ \
                     " Data.outLFNDirBase="+outputPath+ \
-                    " Data.publishDataName="+publishDataname+ \
+                    " Data.outputDatasetTag="+publishDataname+ \
                     " JobType.psetName="+tempConfig+ \
-                    " General.workArea ="+crabProjDir+ \
+                    " General.workArea="+crabProjDir+ \
                     " General.transferLogs="+str(options.transferLogFiles)
     print "will submit:"
     print crabSubmitCmd
@@ -93,6 +93,7 @@ for line in datasetDefFile:
         import os
         os.system(crabSubmitCmd)
         import shutil
-        shutil.move(crabProjDir+"/"+workingDirTmp,crabProjDir+"/"+workingDir)
+        if os.path.isdir(crabProjDir+"/crab_"+workingDirTmp):
+            shutil.move(crabProjDir+"/crab_"+workingDirTmp,crabProjDir+"/"+workingDir)
 
 print "All done"
