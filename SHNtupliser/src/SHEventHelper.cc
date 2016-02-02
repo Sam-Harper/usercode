@@ -100,20 +100,13 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   if(addMuons_) addMuons(heepEvent,shEvent); 
  
   
-  if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
-  else if(addTrigs_){
-    edm::Handle<trigger::TriggerEventWithRefs> trigEventWithRefs;
-    edm::InputTag trigTag("hltTriggerSummaryRAW","",hltTag_);
-    heepEvent.event().getByLabel(trigTag,trigEventWithRefs);
-    if(debug) std::cout <<"adding triggers"<<std::endl;
-    addTrigDebugInfo(heepEvent,shEvent,*trigEventWithRefs,hltDebugFiltersToSave_,hltTag_);
-  }
+  // if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
   if(debug)std::cout <<"adding jets"<<std::endl;
   if(addJets_) addJets(heepEvent,shEvent);
   if(debug) std::cout <<"adding met "<<std::endl;
   if(addMet_) addMet(heepEvent,shEvent);
-  if(debug) std::cout <<"adding mc particles "<<std::endl;
-  addMCParticles(heepEvent,shEvent);  
+  // if(debug) std::cout <<"adding mc particles "<<std::endl;
+  // addMCParticles(heepEvent,shEvent);  
   if(debug) std::cout <<"adding isol tracks"<<std::endl;
   if(addIsolTrks_) addIsolTrks(heepEvent,shEvent);
   if(debug) std::cout <<"made event "<<std::endl;

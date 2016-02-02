@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 #include <set>
-
+#include <limits>
 /* Class Description:    
 **  maps std::strings to bit numbers
 **  useful for HLT work (what it was orginally designed for)
@@ -26,6 +26,8 @@ private:
 public:
   SHBitsDef(){}
   virtual ~SHBitsDef(){}
+
+  static constexpr size_t npos = std::numeric_limits<size_t>::max();
 
   size_t getBitNr(const std::string& bitName)const; //if not found, returns max value (this may change to max-value -1)
   TBits getBits(const std::string& bitNames)const;

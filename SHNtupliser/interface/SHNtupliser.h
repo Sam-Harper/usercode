@@ -47,7 +47,6 @@ class TFile;
 class SHPFClusterContainer;
 class SHTrigSummary;
 
-class TrigDebugObjHelper;
 class SHTrigObjContainer;
 
 class SHNtupliser : public edm::EDAnalyzer {
@@ -93,17 +92,10 @@ private:
   bool useHLTDebug_;
   bool compTwoMenus_;
   std::string hltTag_;
-  std::string secondHLTTag_;
-  TrigDebugObjHelper* trigDebugHelper_;
-  SHTrigObjContainer* shTrigObjs_;
-  SHTrigObjContainer* shTrigObjs2ndTrig_;
-  SHEvent* shEvt2ndTrig_;
 
   SHPileUpSummary* puSummary_;
   bool writePUInfo_;
-  
-  bool writePDFInfo_;
-  std::vector<double> pdfWeightsVec_;
+ 
   
   SHPFCandContainer* shPFCands_; 
   SHPFClusterContainer* shPFClusters_;

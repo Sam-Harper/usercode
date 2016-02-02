@@ -22,6 +22,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
+    datasetCode=101
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -44,9 +45,9 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 #process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 from Configuration.AlCa.autoCond import autoCond
 if isMC:
-    process.GlobalTag.globaltag = cms.string('MCRUN2_74_V9A')
+    process.GlobalTag.globaltag = autoCond['run2_mc'] 
 else:
-    process.GlobalTag.globaltag = cms.string('GR_P_V56')
+    process.GlobalTag.globaltag = autoCond['run2_data']
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -62,7 +63,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 import sys
 
-#hltName="REDIGI311X"
+#hltName="REDIGI311X
 #do not remove this comment...
 #CRABHLTNAMEOVERWRITE
 hltName="HLT"

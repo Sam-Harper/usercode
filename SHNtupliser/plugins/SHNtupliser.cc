@@ -64,7 +64,7 @@ void SHNtupliser::fillTree()
 }
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
-  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),trigDebugHelper_(NULL),shTrigObjs_(NULL),shTrigObjs2ndTrig_(NULL),shEvt2ndTrig_(NULL),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL),shPFClusters_(NULL)
+  evtHelper_(),heepEvt_(),shEvtHelper_(),shEvt_(NULL),evtTree_(NULL),outFile_(NULL),nrTot_(0),nrPass_(0),initGeom_(false),puSummary_(NULL),writePUInfo_(true),shPFCands_(NULL),shPFClusters_(NULL)
 {
   evtHelper_.setup(iPara,consumesCollector(),*this);
   shEvtHelper_.setup(iPara);
@@ -84,10 +84,8 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   shEvtHelper_.setDatasetCode(datasetCode);
   shEvtHelper_.setEventWeight(eventWeight);
  
-  useHLTDebug_ = iPara.getParameter<bool>("useHLTDebug");
-  compTwoMenus_ = iPara.getParameter<bool>("compTwoMenus");
+ 
   hltTag_ = iPara.getParameter<std::string>("hltProcName");
-  secondHLTTag_ = iPara.getParameter<std::string>("secondHLTTag");
   addCaloTowers_ = iPara.getParameter<bool>("addCaloTowers");
   addCaloHits_ = iPara.getParameter<bool>("addCaloHits");
   addPFCands_=iPara.getParameter<bool>("addPFCands"); 
@@ -95,18 +93,13 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   addIsolTrks_ = iPara.getParameter<bool>("addIsolTrks");
   addPreShowerClusters_ = false;
   addGenInfo_ = true;
-  writePDFInfo_ = iPara.getParameter<bool>("writePDFInfo");
-  if(useHLTDebug_){
-    trigDebugHelper_ = new TrigDebugObjHelper(iPara);
-  }
+  writePUInfo_ = iPara.getParameter<bool>("writePUInfo");
+
 }
 
 SHNtupliser::~SHNtupliser()
 {
   if(shEvt_) delete shEvt_;
-  //if(outFile_) delete outFile_;
-  if(trigDebugHelper_) delete trigDebugHelper_;
-  if(shTrigObjs_) delete shTrigObjs_;
   if(puSummary_) delete puSummary_;
   if(shPFCands_) delete shPFCands_;
   if(shPFClusters_) delete shPFClusters_;
@@ -122,7 +115,7 @@ void SHNtupliser::beginJob()
   shGenInfo_ = &(shEvt_->getGenInfo());
   shTrigSum_ = &(shEvt_->getTrigSum());
   std::cout <<"opening file "<<outputFilename_.c_str()<<std::endl;
-  //  outFile_ = new TFile(outputFilename_.c_str(),"RECREATE");
+
   edm::Service<TFileService> fs;
   outFile_ = &fs->file();
   outFile_->cd();
@@ -161,24 +154,6 @@ void SHNtupliser::beginJob()
     shPFClusters_= new SHPFClusterContainer;
     evtTree_->Branch("PFClustersBranch","SHPFClusterContainer",&shPFClusters_,32000,splitLevel);
   }
-  if(compTwoMenus_){
-    shEvt2ndTrig_ = new SHEvent;
-    evtTree_->Branch("Event2ndTrig","SHEvent",&shEvt2ndTrig_,32000,splitLevel);
-  }
-  if(useHLTDebug_) {
-    shTrigObjs_ = new SHTrigObjContainer;
-    evtTree_->Branch("HLTDebugObjs","SHTrigObjContainer",&shTrigObjs_,32000,splitLevel); 
-    
-    if(compTwoMenus_){
-      shTrigObjs2ndTrig_ = new SHTrigObjContainer;
-      evtTree_->Branch("HLTDebugObjs2","SHTrigObjContainer",&shTrigObjs2ndTrig_,32000,splitLevel);
-    }
-
-  }
-
-  if(writePDFInfo_){
-    evtTree_->Branch("PDFWeights",&pdfWeightsVec_);
-  } 
  
 } 
 
@@ -220,19 +195,16 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
  
   //even easier to convert from heep to shEvt
   //std::cout <<"converting eventing" <<std::endl;
-  pdfWeightsVec_.clear();
   
   nrTot_++;
  
   
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
   SHTrigSumMaker::makeSHTrigSum(heepEvt_,*shTrigSum_);
-  if(addGenInfo_){
-    GenFuncs::fillGenInfo(heepEvt_,*shGenInfo_);
-  }
+  if(addGenInfo_) GenFuncs::fillGenInfo(heepEvt_,*shGenInfo_);
+
   if(addPFCands_) shPFCands_->clear();
   if(addPFClusters_) shPFClusters_->clear();
-  //std::cout <<"adding PF Cands "<<addPFCands_<<" is valid "<<heepEvt_.handles().gsfEleToPFCandMap.isValid()<<std::endl;
   if(heepEvt_.handles().vertices.isValid()){
     reco::VertexRef mainVtx(heepEvt_.handles().vertices,0);
     if(addPFCands_ && 
@@ -252,72 +224,20 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
     fillPFClustersHCAL(shEvt_,0.5,*shPFClusters_,heepEvt_.pfClustersHCAL());
   }
 
-  // std::cout <<"made even "<<std::endl;
-  if(useHLTDebug_) trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs_);
-  if(compTwoMenus_){ //ugly hack alert...
-    shEvt2ndTrig_->clear();
-    if(useHLTDebug_){
-      trigDebugHelper_->setHLTTag(secondHLTTag_);
-      trigDebugHelper_->fillDebugTrigObjs(iEvent,shTrigObjs2ndTrig_);
-      trigDebugHelper_->setHLTTag(hltTag_);
-    }
-    shEvtHelper_.addEventPara(heepEvt_,*shEvt2ndTrig_);
-    edm::Handle<trigger::TriggerEvent> trigEvt2nd;
-    edm::Handle<edm::TriggerResults> trigResults2nd;
-    iEvent.getByLabel(edm::InputTag("hltTriggerSummaryAOD","",secondHLTTag_),trigEvt2nd);
-    iEvent.getByLabel(edm::InputTag("TriggerResults","",secondHLTTag_),trigResults2nd);
-    const edm::TriggerNames& trigNames2nd = iEvent.triggerNames(*trigResults2nd);
-    shEvtHelper_.addTrigInfo(*trigEvt2nd,*trigResults2nd,trigNames2nd,*shEvt2ndTrig_);
-  }
 
   if(writePUInfo_){ //naughty but its almost 1am...
     puSummary_->clear();
-    edm::InputTag PileupSrc_("addPileupInfo");
-    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-    iEvent.getByLabel(PileupSrc_, PupInfo);
-    if(PupInfo.isValid()){
-      std::vector<PileupSummaryInfo>::const_iterator PVI;
-      // (then, for example, you can do)
-      for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
-	puSummary_->addPUInfo( PVI->getBunchCrossing(),PVI->getPU_NumInteractions(),PVI->getTrueNumInteractions());
+    if(heepEvt_.handles().pileUpMCInfo.isValid()){
+      for(auto& puInfo : *heepEvt_.handles().pileUpMCInfo){
+	puSummary_->addPUInfo( puInfo.getBunchCrossing(),puInfo.getPU_NumInteractions(),puInfo.getTrueNumInteractions());
       }
     }
   }
   
-  if(writePDFInfo_){
-    edm::Handle<std::vector<double> > pdfWeightsHandle;
-    edm::InputTag pdfTag("pdfWeights:cteq66");
-    iEvent.getByLabel(pdfTag,pdfWeightsHandle);
-    if(pdfWeightsHandle.isValid()) pdfWeightsVec_ = *pdfWeightsHandle;
-  }
-
   SHCaloHitContainer outputHits;
   filterHcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);  
   filterEcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);
   shEvt_->addCaloHits(outputHits);
-    
-
-  //std::cout <<"scale pdf "<<genInfo.pdf()->scalePDF<<std::endl;
-  edm::Handle<LHEEventProduct> lheEventHandle;
-  iEvent.getByLabel("externalLHEProducer",lheEventHandle);
-  if(lheEventHandle.isValid()){
-    const lhef::HEPEUP& hepeup = lheEventHandle->hepeup();
-    float ht=0;
-    int nrParts  = hepeup.NUP;
-    for(int partNr=0;partNr<nrParts;partNr++){
-      //std::cout <<partNr<<" pid "<<hepeup.IDUP[partNr]<<" stats "<<hepeup.ISTUP[partNr]<<" px "<<hepeup.PUP[partNr][0]<<" "<<hepeup.PUP[partNr][1]<<" "<<hepeup.PUP[partNr][2]<<" "<<hepeup.PUP[partNr][3]<<std::endl;
-      if(hepeup.IDUP[partNr]==21 || abs(hepeup.IDUP[partNr])<=6){
-	if(hepeup.ISTUP[partNr]==1){
-	  ht+=sqrt(hepeup.PUP[partNr][0]*hepeup.PUP[partNr][0] +hepeup.PUP[partNr][1]*hepeup.PUP[partNr][1]);
-	}
-      }
-    }
-    shEvt_->setGenEventPtHat(ht); //oh so naughty, quick hack
-  }else shEvt_->setGenEventPtHat(-1);
-  //if(ht<200 || ht>400)  std::cout <<"ht "<<ht<<std::endl;
-  if(heepEvt_.handles().genEvtInfo.isValid()){
-    shEvt_->setWeight(heepEvt_.handles().genEvtInfo->weight());
-  }
     
   return true;
 
@@ -343,11 +263,11 @@ void dumpPFInfo(const edm::ValueMap<std::vector<reco::PFCandidateRef> > & isoMap
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 void SHNtupliser::endRun(edm::Run const& iRun, edm::EventSetup const&)
 {
-  edm::Handle< GenRunInfoProduct > genInfoProduct;
-  iRun.getByLabel("generator", genInfoProduct );
-  if(genInfoProduct.isValid()) {
-    std::cout <<" cross-section "<<genInfoProduct->internalXSec().value()<<std::endl;
-  }
+  // edm::Handle< GenRunInfoProduct > genInfoProduct;
+  // iRun.getByLabel("generator", genInfoProduct );
+  // if(genInfoProduct.isValid()) {
+  //   std::cout <<" cross-section "<<genInfoProduct->internalXSec().value()<<std::endl;
+  // }
   
 }
 

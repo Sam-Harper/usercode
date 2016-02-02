@@ -49,7 +49,12 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
   }
   shTrigSum.setProcessName(hltConfig.processName()); //in theory this could change without chaning menu name and its fine
   shTrigSum.clearEvent();
- 
+
+  //little hack, we're only going to store filters passed, not all filters for space reasons
+  std::set<std::string> filterNames;
+  for(size_t filterNr=0;filterNr<trigEvt.sizeFilters();filterNr++) filterNames.insert(trigEvt.filterTag(filterNr).label());
+  shTrigSum.setFilterBitsDef(filterNames);
+
   shTrigSum.setPreScaleColumn(hltPSProv.prescaleSet(edmEvent,edmEventSetup));
   fillSHTrigResults_(trigResults,trigNames,hltPSProv,edmEvent,edmEventSetup,shTrigSum);
   fillSHTrigObjs_(trigEvt,shTrigSum);
@@ -156,6 +161,7 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
 
 
     size_t bitNr=shTrigSum.filterBitsDef().getBitNr(trigEvt.filterTag(filterNr).label());
+    if(bitNr==SHBitsDef::npos) LogErr <<"filter tag "<<trigEvt.filterTag(filterNr).label()<<" not found"<<std::endl;
     for(size_t objNr=0;objNr<trigKeys.size();objNr++){
       auto key = trigKeys[objNr];
       auto id = convertToSHTrigType(trigIds[objNr]);

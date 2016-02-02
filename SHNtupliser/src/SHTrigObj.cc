@@ -13,6 +13,9 @@ SHTrigObj::SHTrigObj(float iPt,float iEta,float iPhi,float iMass,
 {
 }
 
+
+
+
 bool SHTrigObj::pass(const TBits& bits)const
 {
   //so we will allow miss-matching number of bits padding the smaller one with effectively zero
@@ -22,6 +25,28 @@ bool SHTrigObj::pass(const TBits& bits)const
     if(bits.TestBitNumber(bitNr) && filtersPassed_.TestBitNumber(bitNr)) return true;
   }
   return false;
+}
+
+float SHTrigObj::var(const std::string& varName)const
+{
+  if(varName=="pt") return pt();
+  else if(varName=="eta") return eta();  
+  else if(varName=="etaAbs") return fabs(eta());
+  else if(varName=="phi") return phi();
+  //  else if(varName=="nrgy") return nrgy();
+
+  auto result =  std::equal_range(vars_.begin(),vars_.end(),varName,VarSorter());
+  
+  if(result.second-result.first==1){
+    return result.first->second;
+  }else if(result.second-result.first==0){
+
+    LogErr <<" Warning, var "<<varName<<" not found "<<std::endl;
+    return -999;
+  }else{
+    LogErr << " Error,  "<<result.second-result.first<<" keys match "<<varName<<std::endl;
+    return -999;
+  }  
 }
 
 float SHTrigObj::deltaR2(float rhsEta,float rhsPhi)const

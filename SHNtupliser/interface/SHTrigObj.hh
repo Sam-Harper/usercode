@@ -1,8 +1,11 @@
 #ifndef SHEVENT_SHTRIGOBJ_HH
 #define SHEVENT_SHTRIGOBJ_HH
 
+#include "SHarper/SHNtupliser/interface/TempFuncs.hh"
+
 #include "TBits.h"
 #include "TLorentzVector.h"
+
 class SHTrigObj {
 public:
  
@@ -28,8 +31,9 @@ private:
   int type_; 
   
   TBits filtersPassed_;
-
-  //  std::vector<std::string> filtersPassed_;
+  std::vector<std::pair<std::string,float> > vars_; //a sorted vector containing all the extra debug variables
+  
+  using VarSorter = TempFuncs::PairComp<std::string,float,std::less<std::string> >;
 
 public:
   SHTrigObj():pt_(-1),eta_(-999),phi_(-999),mass_(0.),type_(0){}
@@ -51,18 +55,23 @@ public:
   bool pass(const TBits& bits)const;//{ bits&=filtersPassed_; return bits.CountBits()!=0;} //intentionally copying TBits
   bool valid()const{return type_!=UNDEFINED;}
 
+  float var(const std::string& varName)const; 
+  template<typename T> void setVars(T&& inputVars){
+    vars_=std::forward<T>(inputVars);
+    std::sort(vars_.begin(),vars_.end(),VarSorter());
+  }
+
   float deltaR2(float rhsEta,float rhsPhi)const;
 
   bool matches(float rhsEta,float rhsPhi,float maxDR2=kStdMaxDR2)const{
     return deltaR2(rhsEta,rhsPhi)<=maxDR2;
   }
-  
   bool passL1CMSSWMatch(float rhsEta,float rhsPhi)const;
 private:
   float deltaR2L1_(float rhsEta,float rhsPhi)const;
 
 
-  ClassDef(SHTrigObj,1)
+  ClassDef(SHTrigObj,2)
 };
 
 
