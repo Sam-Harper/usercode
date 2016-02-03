@@ -21,6 +21,7 @@
 
 
 #include "SHarper/SHNtupliser/interface/SHEventHelper.h"
+#include "SHarper/SHNtupliser/interface/SHEventTreeData.h"
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
@@ -66,7 +67,8 @@ private:
   SHGenInfo* shGenInfo_; 
   SHTrigSummary* shTrigSum_;
 
-  TTree* evtTree_; //the outFile owns it
+  SHEventTreeData shEvtTree_;
+
   TFile* outFile_; //we own it
 
   std::string outputFilename_;
@@ -103,9 +105,8 @@ private:
   //TTree* scTree_;
   //disabling copy and assignment 
   //I cant think of a reason why I would want to copy this class and its complicated to do right due to TTree
-private:
-  SHNtupliser(const SHNtupliser& rhs){}
-  SHNtupliser& operator=(const SHNtupliser& rhs){return *this;}
+  SHNtupliser(const SHNtupliser& rhs)=delete;
+  SHNtupliser& operator=(const SHNtupliser& rhs)=delete;
 
 public:
   explicit SHNtupliser(const edm::ParameterSet& iPara);

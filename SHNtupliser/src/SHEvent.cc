@@ -38,12 +38,8 @@ SHEvent::SHEvent():
   vertexArray_("SHVertex",70),
   rhoCorr_(-999.),
   flags_(0),
-  caloTowers_(),
-  nrPUInteractions_(-1),
-  nrPUInteractionsNeg_(-1),
-  nrPUInteractionsPos_(-1),
-  nrTruePUInteractions_(-1)
-  // puSummary_()
+  caloTowers_()
+
 {
  
 }
@@ -66,13 +62,10 @@ void SHEvent::copyEventPara(const SHEvent& rhs)
   beamSpot_ = rhs.beamSpot_;
   pfMet_ = rhs.pfMet_;
   preScaleCol_ =rhs.preScaleCol_;  
-  nrPUInteractions_ = rhs.nrPUInteractions_;
-  nrPUInteractionsPos_ = rhs.nrPUInteractionsPos_;
-  nrPUInteractionsNeg_ = rhs.nrPUInteractionsNeg_;
-  nrTruePUInteractions_ = rhs.nrTruePUInteractions_;
   eleRhoCorr_ = rhs.eleRhoCorr_;
   rhoCorr_=rhs.rhoCorr_;
   flags_=rhs.flags_;
+  puSum_=rhs.puSum_;
   // puSummary_ =rhs.puSummary_;
 }
 
@@ -111,12 +104,10 @@ void SHEvent::clear()
   rhoCorr_ = -999.;
   flags_=0;
   caloTowers_.clear();
-  nrPUInteractions_=-1; 
-  nrPUInteractionsNeg_=-1; 
-  nrPUInteractionsPos_=-1; 
-  nrTruePUInteractions_=-1;
   genInfo_.clear();
-  // puSummary_.clear();
+  puSum_.clear();
+  pfCands_.clear();
+  pfClusters_.clear();
 }
 SHEvent::~SHEvent()
 {
@@ -395,10 +386,6 @@ void SHEvent::dropTrackerOnlyEles()
 
 void SHEvent::flushTempData()const
 {
-  nrPUInteractions_=-1; 
-  nrPUInteractionsNeg_=-1; 
-  nrPUInteractionsPos_=-1; 
-  nrTruePUInteractions_=-1;
   caloHits_.flushIndxTable();
   caloTowers_.flushIndxTable();
   genInfo_.flushIndxTable();

@@ -1,13 +1,12 @@
 #include "SHarper/SHNtupliser/interface/SHEventHelper.h"
-
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
-
 #include "SHarper/SHNtupliser/interface/HackedFuncs.h"
-
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
-
 #include "SHarper/SHNtupliser/interface/GeomFuncs.hh"
+#include "SHarper/SHNtupliser/interface/SHTrigSumMaker.h"
+#include "SHarper/SHNtupliser/interface/PFFuncs.h"
+#include "SHarper/SHNtupliser/interface/GenFuncs.h"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
@@ -43,36 +42,23 @@ void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& hee
 SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
   datasetCode_(datasetCode),
   eventWeight_(eventWeight),
-  isMC_(true),
-  nrGenPartToStore_(0)
+  isMC_(datasetCode!=0),
+  minEtToPromoteSC_(20),
+  fillFromGsfEle_(true),
+  applyMuonId_(true)
 {
   initEcalHitVec_();
   initHcalHitVec_();
 }
+
 void SHEventHelper::setup(const edm::ParameterSet& conf)
 { 
   minEtToPromoteSC_ = conf.getParameter<double>("minEtToPromoteSC");
-  addMet_ = conf.getParameter<bool>("addMet");
-  addJets_ = conf.getParameter<bool>("addJets");
-  addMuons_ = conf.getParameter<bool>("addMuons");
+  eventWeight_ = conf.getParameter<double>("sampleWeight");
+  datasetCode_ = conf.getParameter<int>("datasetCode");    
   applyMuonId_ = conf.getParameter<bool>("applyMuonId");
-  addTrigs_ = conf.getParameter<bool>("addTrigs");
-  addCaloTowers_ = conf.getParameter<bool>("addCaloTowers");
-  addIsolTrks_ = conf.getParameter<bool>("addIsolTrks");
   fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
- 
-  hltDebugFiltersToSave_ = conf.getParameter<std::vector<std::string> >("hltDebugFiltersToSave");
-  useHLTDebug_ = conf.getParameter<bool>("useHLTDebug");  
-  hltTag_ = conf.getParameter<std::string>("hltProcName");
-  
-  nrGenPartToStore_ = conf.getParameter<int>("nrGenPartToStore");
-  noFracShowerShape_ = conf.getParameter<bool>("noFracShowerShape");
-  
-  std::cout <<"warning, disabling use of HLT debug"<<std::endl;
-  useHLTDebug_=false;
-  // eleMVA_.reset(new ElectronMVAEstimator(edm::FileInPath ( conf.getParameter<std::string>("eleIsolMVAWeightFile").c_str() ).fullPath()));
-
-  tracklessEleMaker_.setup(conf);
+  branches_.setup(conf);
 }
 
 
@@ -80,36 +66,25 @@ void SHEventHelper::setup(const edm::ParameterSet& conf)
 void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)const
 
 {   
-  const bool debug=false;
-  if(debug) std::cout <<"making event "<<std::endl;
-  shEvent.clear(); //reseting the event 
-  //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
-  if(debug) std::cout <<"adding calo hits"<<std::endl;
-  addCaloHits(heepEvent,shEvent);
-  if(debug) std::cout <<"adding calo towers "<<addCaloTowers_<<std::endl;
-  if(addCaloTowers_) addCaloTowers(heepEvent,shEvent);
-  if(debug) std::cout <<"adding event para "<<std::endl;
-  addEventPara(heepEvent,shEvent); //this must be filled second (ele + mu need beam spot info)
-  if(debug) std::cout <<"adding superclusters"<<std::endl;
-  addSuperClusters(heepEvent,shEvent);
-  if(debug) std::cout <<"adding electrons "<<std::endl;
-  addElectrons(heepEvent,shEvent);
-  if(debug) std::cout <<"adding preshower "<<std::endl; 
-  // addPreShowerClusters(heepEvent,shEvent);
-  if(debug) std::cout <<"adding muons "<<std::endl;
-  if(addMuons_) addMuons(heepEvent,shEvent); 
  
+  shEvent.clear(); //reseting the event 
   
-  // if(addTrigs_ && !useHLTDebug_) addTrigInfo(heepEvent,shEvent);
-  if(debug)std::cout <<"adding jets"<<std::endl;
-  if(addJets_) addJets(heepEvent,shEvent);
-  if(debug) std::cout <<"adding met "<<std::endl;
-  if(addMet_) addMet(heepEvent,shEvent);
-  // if(debug) std::cout <<"adding mc particles "<<std::endl;
-  // addMCParticles(heepEvent,shEvent);  
-  if(debug) std::cout <<"adding isol tracks"<<std::endl;
-  if(addIsolTrks_) addIsolTrks(heepEvent,shEvent);
-  if(debug) std::cout <<"made event "<<std::endl;
+  addEventPara(heepEvent,shEvent); //this must be filled before (ele + mu need beam spot info)
+  //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
+  if(branches_.addCaloHits) addCaloHits(heepEvent,shEvent);
+  if(branches_.addCaloTowers) addCaloTowers(heepEvent,shEvent);
+  if(branches_.addSuperClus) addSuperClusters(heepEvent,shEvent);
+  if(branches_.addEles) addElectrons(heepEvent,shEvent);
+  if(branches_.addPreShowerClusters) addPreShowerClusters(heepEvent,shEvent);
+  if(branches_.addMuons) addMuons(heepEvent,shEvent); 
+  if(branches_.addTrigSum) addTrigInfo(heepEvent,shEvent);
+  if(branches_.addJets) addJets(heepEvent,shEvent);
+  if(branches_.addMet) addMet(heepEvent,shEvent);
+  if(branches_.addIsolTrks) addIsolTrks(heepEvent,shEvent);
+  if(branches_.addGenInfo) addGenInfo(heepEvent,shEvent);
+  if(branches_.addPUInfo) addPUInfo(heepEvent,shEvent);
+  if(branches_.addPFCands) addPFCands(heepEvent,shEvent);
+  if(branches_.addPFClusters) addPFClusters(heepEvent,shEvent);
 }
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -218,19 +193,6 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   shEvent.addElectron(photon,shEvent.getCaloHits());
 }
 
-
-void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const
-{
-
-  cmssw::IsolationVariables isol03 = tracklessEleMaker_.getIsol(superClus,heepEvent,0.3);
-  cmssw::IsolationVariables isol04 = tracklessEleMaker_.getIsol(superClus,heepEvent,0.4);
-  cmssw::FiducialFlags fid = tracklessEleMaker_.getFid(superClus,heepEvent);
-  cmssw::ShowerShape shape = tracklessEleMaker_.getShowerShape(superClus,heepEvent,fid.isEB); 
-  TLorentzVector p4 = tracklessEleMaker_.getP4(superClus,heepEvent);
-  
-  shEvent.addElectron(p4,superClus,fid,shape,isol03,isol04,shEvent.getCaloHits());
-  
-}
 
 void SHEventHelper::addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
@@ -398,164 +360,49 @@ void SHEventHelper::addCaloTowers(const heep::Event& heepEvent, SHEvent& shEvent
 
 }
 
+void SHEventHelper::addGenInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  GenFuncs::fillGenInfo(heepEvent,shEvent.getGenInfo());
+}
+
+void SHEventHelper::addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  if(heepEvent.handles().vertices.isValid()){
+    reco::VertexRef mainVtx(heepEvent.handles().vertices,0); 
+    if(heepEvent.handles().pfCandidate.isValid() &&
+       heepEvent.handles().gsfEle.isValid() && 
+       heepEvent.handles().gsfEleToPFCandMap.isValid()){
+      PFFuncs::fillPFCands(&shEvent,0.5,shEvent.getPFCands(),heepEvent.handles().pfCandidate,
+			   mainVtx,heepEvent.handles().vertices,
+			   *(heepEvent.handles().gsfEleToPFCandMap.product()),
+			   heepEvent.handles().gsfEle);
+    }
+  }
+}
+
+void SHEventHelper::addPFClusters(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  if(heepEvent.handles().pfClustersECAL.isValid() && heepEvent.handles().pfClustersHCAL.isValid() &&
+     heepEvent.handles().superClusEB.isValid() && heepEvent.handles().superClusEE.isValid()){
+
+    fillPFClustersECAL_(&shEvent,0.5,shEvent.getPFClusters(),heepEvent.pfClustersECAL(),heepEvent.superClustersEB(),heepEvent.superClustersEE());
+    fillPFClustersHCAL_(&shEvent,0.5,shEvent.getPFClusters(),heepEvent.pfClustersHCAL());
+  }
+}
+
+void SHEventHelper::addPUInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  if(heepEvent.handles().pileUpMCInfo.isValid()){
+    for(auto& puInfo : *heepEvent.handles().pileUpMCInfo){
+      shEvent.getPUSum().addPUInfo( puInfo.getBunchCrossing(),puInfo.getPU_NumInteractions(),puInfo.getTrueNumInteractions());
+    }
+  }
+}
+
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  if(heepEvent.handles().trigEvent.isValid()){
-    const trigger::TriggerEvent& trigEvt = heepEvent.triggerEvent();
-    
-    const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
-    const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
-    addTrigInfo(trigEvt,trigResults,trigNames,shEvent,&heepEvent);
-  }
+  SHTrigSumMaker::makeSHTrigSum(heepEvent,shEvent.getTrigSum());
 }
-
-void SHEventHelper::addTrigInfo(const trigger::TriggerEvent& trigEvt,
-				const edm::TriggerResults& trigResults,
-				const edm::TriggerNames& trigNames,SHEvent& shEvent,const heep::Event* heepEvent)const //heepEvent may be null...
-{
- 
-  //  const trigger::TriggerObjectCollection& trigObjs = heepEvent.trigObjColl();
-  for(size_t filterNr=0;filterNr<trigEvt.sizeFilters();filterNr++){
-    SHTrigInfo trigInfo;
-    trigInfo.setTrigId(-1);
-    trigInfo.setTrigName(trigEvt.filterTag(filterNr).label());
-    const trigger::Keys& trigKeys = trigEvt.filterKeys(filterNr);  //trigger::Keys is actually a vector<uint16_t> holding the position of trigger objects in the trigger collection passing the filter
-    const trigger::TriggerObjectCollection & trigObjColl(trigEvt.getObjects());
-    for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){
-      const trigger::TriggerObject& obj = trigObjColl[*keyIt];
-      //std::cout <<" filter "<<trigEvt.filterTag(filterNr).label()<<" obj id "<<obj.id()<<std::endl;
-      //for(auto id : trigEvt.filterIds(filterNr)){
-	//	std::cout <<"id "<<id<<std::endl;
-      //}
-
-      TLorentzVector p4;
-      //note I call this function as its probably the fastest way to get info out of  TriggerObject in 22X (look at how it calculates et, its impressive, it might be possible to do it slower but I doubt it)
-      // if(trigEvt.filterTag(filterNr).process()=="HLT" && trigEvt.filterTag(filterNr).label()=="hltSingleMu15L3Filtered15") std::cout <<"filter: "<<trigEvt.filterTag(filterNr).label()<<" prod "<<trigEvt.filterTag(filterNr).process()<<" obj.pt "<<obj.pt()<<std::endl;
-      p4.SetPtEtaPhiM(obj.pt(),obj.eta(),obj.phi(),obj.mass());
-      trigInfo.addObj(p4);
-    }
-    if(!trigKeys.empty()) shEvent.addTrigInfo(trigInfo); //only adding triggers which actually have objects passing
-  } 
-  
-  for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
-    SHTrigInfo trigInfo;
-    trigInfo.setTrigId(1);
-    if(pathNr<trigNames.size()){
-      const std::string& pathName = trigNames.triggerName(pathNr);
-      trigInfo.setTrigName(pathName);
-      trigInfo.setPreScale(heepEvent ? heepEvent->hltPreScale(pathName) : -1);
-      trigInfo.setPass(trigResults.accept(pathNr));
-    }else{
-      trigInfo.setTrigName("NullName");
-      trigInfo.setPass(false);
-      trigInfo.setPreScale(-1);
-    } 
-   
-    shEvent.addTrigInfo(trigInfo);
-  }
-
-
-}
-
-
-void SHEventHelper::addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const
-{
-  //const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
-  // const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);
-  
-  
-//   for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
-//     SHTrigInfo trigInfo;
-//     trigInfo.setTrigId(1);
-//     if(pathNr<trigNames.size()){
-//        trigInfo.setTrigName(trigNames.triggerName(pathNr));
-//     }else trigInfo.setTrigName("NullName");
-//     trigInfo.setPass(trigResults.accept(pathNr)); 
-//     shEvent.addTrigInfo(trigInfo);
-//   }
-  
- 
-  for(size_t filterNr=0;filterNr<filterNames.size();filterNr++){ 
-    SHTrigInfo trigInfo;
-    trigInfo.setTrigId(2);
-    trigInfo.setTrigName(filterNames[filterNr]);
-    
-    std::vector<reco::RecoEcalCandidateRef> ecalTrigObjs;
-    std::vector<reco::ElectronRef> eleTrigObjs;
-    std::vector<l1extra::L1EmParticleRef> l1IsoTrigObjs; 
-    std::vector<l1extra::L1EmParticleRef> l1NonIsoTrigObjs;
-    int filterNrInEvt = trigEvt.filterIndex(edm::InputTag(filterNames[filterNr],"",hltTag).encode());
-    if(filterNrInEvt<trigEvt.size()){
-      trigEvt.getObjects(filterNrInEvt,trigger::TriggerCluster,ecalTrigObjs);
-      trigEvt.getObjects(filterNrInEvt,trigger::TriggerElectron,eleTrigObjs);
-      trigEvt.getObjects(filterNrInEvt,trigger::TriggerL1IsoEG,l1IsoTrigObjs) ;
-      trigEvt.getObjects(filterNrInEvt,trigger::TriggerL1NoIsoEG,l1NonIsoTrigObjs);
-      //  std::cout <<"filter "<<filterNames[filterNr]<<" nr pass "<<ecalTrigObjs.size()<<" "<<l1IsoTrigObjs.size()<<" "<<l1NonIsoTrigObjs.size()<<std::endl;
-      for(size_t candNr=0;candNr<ecalTrigObjs.size();candNr++){
-	TLorentzVector p4;
-	reco::RecoEcalCandidateRef& obj = ecalTrigObjs[candNr];
-	
-	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
-	trigInfo.addObj(p4);
-
-      }
-      for(size_t candNr=0;candNr<eleTrigObjs.size();candNr++){
-	TLorentzVector p4;
-	reco::ElectronRef& obj = eleTrigObjs[candNr];
-	
-	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
-	trigInfo.addObj(p4);
-
-      }
-      for(size_t candNr=0;candNr<l1IsoTrigObjs.size();candNr++){
-	TLorentzVector p4;
-	l1extra::L1EmParticleRef& obj = l1IsoTrigObjs[candNr];
-	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
-	trigInfo.addObj(p4);
-
-      }
-      for(size_t candNr=0;candNr<l1NonIsoTrigObjs.size();candNr++){
-	TLorentzVector p4;
-	l1extra::L1EmParticleRef& obj = l1NonIsoTrigObjs[candNr];
-	p4.SetPtEtaPhiM(obj->pt(),obj->eta(),obj->phi(),obj->mass());
-	trigInfo.addObj(p4);
-
-      }
-
-    }//end filter present check
-    //   std::cout <<"trig info "<<trigInfo.nrPass()<<std::endl;
-
-    if(trigInfo.nrPass()>0) trigInfo.setPass(true);
-
-    shEvent.addTrigInfo(trigInfo);
-  }//end filter loop
- 
-}
-
-
-// void SHEventHelper::addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const
-// {
- 
-//   const std::vector<bool>& l1Word = heepEvent.l1Decision(); 
-//   TBits myL1Bits(l1Word.size()); 
-//   for(size_t bitNr=0;bitNr<l1Word.size();bitNr++){
-//     if(l1Word[bitNr]) myL1Bits.SetBitNumber(bitNr);
-//   }
-//   shEvent.setL1Bits(myL1Bits);
-//   for(size_t candNr=0;candNr<heepEvent.l1EmNonIso().size();candNr++){
-//     const l1extra::L1EmParticle& cand = heepEvent.l1EmNonIso()[candNr];
-//     TLorentzVector p4;
-//     p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
-//     shEvent.addL1Cand(p4,cand.type());
-//   }
-//   for(size_t candNr=0;candNr<heepEvent.l1EmIso().size();candNr++){
-//     const l1extra::L1EmParticle& cand = heepEvent.l1EmIso()[candNr];
-//     TLorentzVector p4;
-//     p4.SetPxPyPzE(cand.px(),cand.py(),cand.pz(),cand.energy());
-//     shEvent.addL1Cand(p4,cand.type());
-//   }
-// }
-  
 
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
@@ -620,56 +467,6 @@ void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 
 }  
 
-void SHEventHelper::addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const
-{
-  if(!heepEvent.hasGenParticles()) return;
-  const std::vector<reco::GenParticle>& particles = heepEvent.genParticles();
-  int nrPartsToStore = nrGenPartToStore_;
-  if(nrPartsToStore==-1) nrPartsToStore = particles.size();
-
-  //okay its really just easier if I make a vector of pointers and call it a day
-  //this probably could be more efficient 
-  std::vector<const reco::Candidate*> candPointers(particles.size(),0x0);
-  for(size_t partNr=0;partNr<particles.size();partNr++){
-    candPointers[partNr]=&particles[partNr];
-  }
-  
-  for(size_t partIndx=0;partIndx<candPointers.size() && partIndx<static_cast<unsigned>(nrPartsToStore);partIndx++){
-    
-    //first get all the easy quantities
-    const reco::Candidate* genPart = candPointers[partIndx];
-    int index = partIndx;
-    int pid = genPart->pdgId();
-    int status = genPart->status(); //note this is not accessible in CMSSW_1_3_5
-    //int status = -1;
-    int nrMo = genPart->numberOfMothers();
-    int nrDa = genPart->numberOfDaughters();
-    TLorentzVector p4(genPart->px(),genPart->py(),genPart->pz(),genPart->energy());
-    TVector3 pos(genPart->vx(),genPart->vy(),genPart->vz());
-    
-    
-    //now sort out the mother and daughter links
-    int jmo1 = -1;
-    int jmo2 = -1;
-    int jda1 = -1;
-    int jda2 = -1;
-    std::vector<const reco::Candidate*>::const_iterator vecIt;
-    vecIt = std::find(candPointers.begin(),candPointers.end(),genPart->mother(0));
-    if(vecIt!=candPointers.end()) jmo1 = vecIt - candPointers.begin();
-    vecIt = std::find(candPointers.begin(),candPointers.end(),genPart->mother(nrMo-1));
-    if(vecIt!=candPointers.end()) jmo2 = vecIt - candPointers.begin();
-    vecIt = std::find(candPointers.begin(),candPointers.end(),genPart->daughter(0));
-    if(vecIt!=candPointers.end()) jda1 = vecIt - candPointers.begin();
-    vecIt = std::find(candPointers.begin(),candPointers.end(),genPart->daughter(nrDa-1));
-    
-    if(vecIt!=candPointers.end()) jda2 = vecIt - candPointers.begin();
-
-    //yay, we have everything we need
-    shEvent.addMCParticle(index,status,pid,jmo1,jmo2,nrMo,jda1,jda2,nrDa,p4,pos);
-    
-  }//end loop over all mc particles
-
-}
 
 int SHEventHelper::ecalHitHash_(const DetId detId)const
 {
@@ -927,3 +724,84 @@ void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& hee
 }
 
 
+void SHEventHelper::fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,
+		    const std::vector<reco::PFCluster>& pfClusters,
+		    const std::vector<reco::SuperCluster>& superClustersEB,const std::vector<reco::SuperCluster>& superClustersEE)const
+{
+  //  std::cout <<"filling candidates "<<std::endl;
+
+  const double maxDR2 = maxDR*maxDR;
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    if(ele->et()>20){
+      eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+    }
+  }
+
+  for(size_t clusNr=0;clusNr<pfClusters.size();clusNr++){
+    const reco::PFCluster& pfCluster = pfClusters[clusNr];
+   
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       pfCluster.eta(),pfCluster.phi())<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+
+    if(accept){
+      const std::vector<reco::SuperCluster>& superClusters = pfCluster.caloID().detector(reco::CaloID::DET_ECAL_BARREL) ? superClustersEB : superClustersEE;
+      //std::cout <<" pf clus E "<<pfCluster.energy()<<" eta "<<pfCluster.eta()<<" phi "<<pfCluster.phi()<<" seed "<<pfCluster.seed().rawId()<<" address "<<&pfCluster<<std::endl;
+      //int scSeedCrysId=0;
+      int scSeedCrysId=getSCSeedCrysId_(pfCluster.seed().rawId(),superClusters);
+      shPFClusters.addECALCluster(SHPFCluster(pfCluster,scSeedCrysId));
+    } 
+  }
+}
+
+void SHEventHelper::fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const
+{
+  //  std::cout <<"filling candidates "<<std::endl;
+
+  const double maxDR2 = maxDR*maxDR;
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    if(ele->et()>20){
+      eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+    }
+  }
+
+  for(size_t clusNr=0;clusNr<pfClusters.size();clusNr++){
+    const reco::PFCluster& pfCluster = pfClusters[clusNr];
+
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       pfCluster.eta(),pfCluster.phi())<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+
+    if(accept){
+      shPFClusters.addHCALCluster(SHPFCluster(pfCluster,0));
+    } 
+  }
+}
+
+int SHEventHelper::getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const
+{
+  // std::cout <<"getting sc seed id "<<std::endl;
+  for(size_t scNr=0;scNr<superClusters.size();scNr++){
+    // std::cout <<"super clust "<<scNr<<" / "<<superClusters.size()<<std::endl;
+    const reco::SuperCluster& sc = superClusters[scNr];
+    for(reco::CaloCluster_iterator clusIt  = sc.clustersBegin();clusIt!=sc.clustersEnd();++clusIt){
+      //  std::cout <<"clus seed E "<<(*clusIt)->energy()<<" eta "<<(*clusIt)->eta()<<" phi "<<(*clusIt)->phi()<<" "<<(*clusIt)->seed().rawId()<<" pf seed "<<pfSeedId<<" address "<<(&**clusIt)<<std::endl;
+      if((*clusIt)->seed().rawId()==pfSeedId) return sc.seed()->seed().rawId();
+    }
+  }
+  return 0;
+}

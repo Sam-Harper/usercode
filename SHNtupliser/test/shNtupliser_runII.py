@@ -64,7 +64,7 @@ patCandID=""
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
-process.shNtupliser.gsfEleTag = "gsfElectrons"
+
 process.shNtupliser.addMet = False
 process.shNtupliser.addJets = False
 process.shNtupliser.addMuons = False
@@ -74,17 +74,12 @@ process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
-
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
-process.shNtupliser.useHLTDebug = cms.bool(False)
-process.shNtupliser.hltProcName = hltName
-process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
-process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
-process.shNtupliser.compTwoMenus = cms.bool(False)
-process.shNtupliser.secondHLTTag = cms.string("")
+
+process.shNtupliser.gsfEleTag = "gsfElectrons"
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
 process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
@@ -92,8 +87,6 @@ process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-process.shNtupliser.nrGenPartToStore = cms.int32(-1)
-#process.shNtupliser.eleRhoCorrTag = cms.InputTag("kt6PFJets","rho")
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )

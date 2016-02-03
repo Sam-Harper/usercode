@@ -24,6 +24,7 @@
 #include "SHarper/SHNtupliser/interface/SHVertex.hh"
 #include "SHarper/SHNtupliser/interface/SHGenInfo.hh"
 #include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
+#include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -102,19 +103,13 @@ class SHEvent : public TObject {
   
   SHCaloTowerContainer caloTowers_; //! so this is a new experimental design, I store this on another branch and give it this memory location
   
-  //naughty naughty, a temporary PU fix
-  mutable int nrPUInteractions_; //!
-  mutable int nrPUInteractionsNeg_; //!
-  mutable int nrPUInteractionsPos_; //!
-  mutable int nrTruePUInteractions_; //!
-
   SHPFCandContainer pfCands_; //! like calo towers, this is stored on a seperate branch
 
   SHPFClusterContainer pfClusters_; //! like pf cands stored on a seperate branch
 
   SHGenInfo genInfo_;//! stored on a seperate branch
   SHTrigSummary trigSum_;//! stored on a seperate branch
-
+  SHPileUpSummary puSum_;//! stored on a seperate branch 
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -169,14 +164,11 @@ class SHEvent : public TObject {
   
   void addPreShowerCluster(const SHPreShowerCluster& clus);
 
-  // void addPUInfo(int iBx,int iNrInteractions,int iNrTrueInteractions){puSummary_.addPUInfo(iBx,iNrInteractions,iNrTrueInteractions);}
-
-  int nrPUInteractions()const{return nrPUInteractions_;}
-  int nrPUInteractionsNeg()const{return nrPUInteractionsNeg_;}
-  int nrPUInteractionsPos()const{return nrPUInteractionsPos_;}
-  int nrTruePUInteractions()const{return nrTruePUInteractions_;}
-  void setNrPUInteractions(int iNrPU){nrPUInteractions_=iNrPU;}
-  void setNrPUInteractions(int iNrPUNeg,int iNrPU,int iNrPUPos,int iNrTruePU){nrPUInteractions_=iNrPU;nrPUInteractionsNeg_=iNrPUNeg;nrPUInteractionsPos_=iNrPUPos;nrTruePUInteractions_=iNrTruePU;}
+ 
+  int nrPUInteractions()const{return getPUSum().nrInteractionsByBx(0);}
+  int nrPUInteractionsNeg()const{return getPUSum().nrInteractionsByBx(-1);}
+  int nrPUInteractionsPos()const{return getPUSum().nrInteractionsByBx(1);}
+  int nrTruePUInteractions()const{return getPUSum().nrTrueInteractions();}
   void setRunnr(int iRunnr){runnr_=iRunnr;}
   void setEventnr(int iEventnr){eventnr_=iEventnr;}
   void setIsMC(bool iIsMC){isMC_=iIsMC;}
@@ -259,6 +251,8 @@ class SHEvent : public TObject {
   SHGenInfo& getGenInfo(){return genInfo_;}
   const SHTrigSummary& getTrigSum()const{return trigSum_;}
   SHTrigSummary& getTrigSum(){return trigSum_;}
+  const SHPileUpSummary& getPUSum()const{return puSum_;}
+  SHPileUpSummary& getPUSum(){return puSum_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   TClonesArray& getPreShowerClusters(){return preShowerClusArray_;}
   double genEventPtHat()const{return genEventPtHat_;}
