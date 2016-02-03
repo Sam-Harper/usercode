@@ -99,6 +99,11 @@ void heep::EventHelper::makeHeepEvent(const edm::Event& edmEvent,const edm::Even
   heepEvent.setTrigBits(bits);
 }
 
+void heep::EventHelper::makeHeepEvent(const edm::Run& run,const edm::EventSetup& setup,heep::Event& heepEvent)const
+{
+  heepEvent.setHLTPSProvider(hltPSProvider_);
+  heepEvent.initHLTConfig(run,setup,hltProcName_);
+}
 
 void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup& setup,heep::EvtHandles& handles)const
 { 

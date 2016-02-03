@@ -11,22 +11,29 @@
 //note: as of 16/09/08, we dont have full functionality, some functions are empty
 
 #include "SHarper/SHNtupliser/interface/SHCaloHit.hh"
-#include "SHarper/SHNtupliser/interface/EleMaker.h"
-
-#include "RecoEgamma/ElectronIdentification/interface/ElectronMVAEstimator.h"
+#include "SHarper/SHNtupliser/interface/SHEventTreeData.h"
 
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
+
+
 #include <vector>
 #include <memory>
-#include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
-#include "DataFormats/HLTReco/interface/TriggerEventWithRefs.h"
-
 namespace heep{
   class Event;
 }
+namespace edm{
+  class ParameterSet;
+  class Run;
+  class EventSetup;
+}
 
+namespace reco{
+  class TrackBase;
+  class EcalRecHit;
+}
+class EcalRecHit;
 class SHEvent;
 
 class SHEventHelper {
@@ -35,27 +42,12 @@ private:
   int datasetCode_; //an internal code to my ntuples which only means something to me
   float eventWeight_; //the weight of the event, again only really means something to me
   bool isMC_;// if we are running on mc or not
-  int nrGenPartToStore_;
   
   float minEtToPromoteSC_;
-  bool addCaloTowers_;
-  bool addIsolTrks_;
-  bool addMet_;
-  bool addJets_;
-  bool addTrigs_;
-  bool addMuons_;
-  bool applyMuonId_;
   bool fillFromGsfEle_;
-  bool noFracShowerShape_;
+  bool applyMuonId_;
 
-  //temp variables for hlt debug hack
-  std::string hltTag_;
-  bool useHLTDebug_;
-  std::vector<std::string> hltDebugFiltersToSave_;
-
-  EleMaker tracklessEleMaker_;
-
-  std::unique_ptr<ElectronMVAEstimator> eleMVA_; //a temporary 71X thing, 72X has this in the electron
+  SHEventTreeData::BranchData branches_;
 
   //storage for SHCaloHits so we dont have to keep reallocating the memory 
   mutable std::vector<SHCaloHit> ecalHitVec_;
@@ -81,7 +73,6 @@ public:
  
   void addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const;
-  void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::SuperCluster& superClus)const;
   void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const;
   void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const;
   void addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const;
@@ -90,18 +81,16 @@ public:
   void addCaloTowers(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addEcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addHcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
-  void addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
-  void addTrigInfo(const trigger::TriggerEvent& trigEvt,
-		   const edm::TriggerResults& trigResults,
-		   const edm::TriggerNames& trigNames,SHEvent& shEvent,const heep::Event* heepEvent=NULL)const; //horrible hack fix this
-  void addTrigDebugInfo(const heep::Event& heepEvent,SHEvent& shEvent,const trigger::TriggerEventWithRefs& trigEvt,const std::vector<std::string>& filterNames,const std::string& hltTag)const;
   void addJets(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const;
-  // void addIsolClus(const heep::Event& heepEvent,SHEvent& shEvent)const{}
   void addMet(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addMCParticles(const heep::Event& heepEvent,SHEvent& shEvent)const;
-  //void addL1Info(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addPUInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addGenInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addPFClusters(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const;
   size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const;
@@ -120,6 +109,10 @@ private:
   void initHcalHitVec_()const;
   
   static uint32_t getEcalFlagBits_(const EcalRecHit& hit);//because a simple accessor to the bit was too much to ask
+
+  void fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE)const;
+  void fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const;
+  int getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const;
 
 };
 

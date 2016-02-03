@@ -38,4 +38,11 @@ int SHPileUpSummary::nrInteractionsByBx(int bx)const
   return -1;
 }
 					    
-  
+int SHPileUpSummary::nrTrueInteractions()const
+{
+  for(size_t bxNr=0;bxNr<nrPUInfos();bxNr++){
+    if(getPUInfo(bxNr)->bx()==0) return getPUInfo(bxNr)->nrTrueInteractions();
+  }
+  return 0;
+
+}  

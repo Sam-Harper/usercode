@@ -46,6 +46,7 @@ SHElectron::SHElectron():
   dPhiOut_(999.),
   sigmaEtaEta_(0.),
   sigmaIEtaIEta_(0.),
+  sigmaIPhiIPhi_(0.),
 //links to tracks, superClusters
   superClusIndx_(-1),
   //new isolation variables
@@ -138,6 +139,7 @@ SHElectron::SHElectron(const SHElectron &rhs):
   dPhiOut_(rhs.dPhiOut_),
   sigmaEtaEta_(rhs.sigmaEtaEta_),
   sigmaIEtaIEta_(rhs.sigmaIEtaIEta_),
+  sigmaIPhiIPhi_(rhs.sigmaIPhiIPhi_),
   //links to tracks, superClusters
   superClusIndx_(-1), //we do not copy the index as its likely no longer correct
   //new isolation variables

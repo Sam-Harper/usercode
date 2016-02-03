@@ -1,6 +1,5 @@
 isCrabJob=False #script seds this if its a crab job
 
-
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -8,9 +7,9 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
-                                #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
-                                #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
+                        #    eventsToProcess = cms.untracked.VEventRange("1:1484800-1:1484810"),
+#                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
                              )
 if isCrabJob:
     datasetCode=DATASETCODE
@@ -20,6 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
+#    datasetCode=101
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -29,22 +29,20 @@ print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(1000),
+    reportEvery = cms.untracked.int32(10000),
     limit = cms.untracked.int32(10000000)
 )
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
-# Load geometry
-#process.load("Configuration.Geometry.GeometryIdeal_cff")
+#Load geometry
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-#process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
 from Configuration.AlCa.autoCond import autoCond
 if isMC:
-    process.GlobalTag.globaltag = cms.string('MCRUN2_74_V9A')
+    process.GlobalTag.globaltag = autoCond['run2_mc'] 
 else:
-    process.GlobalTag.globaltag = cms.string('GR_P_V56')
+    process.GlobalTag.globaltag = autoCond['run2_data']
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -60,15 +58,13 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 import sys
 
-#hltName="REDIGI311X"
-#do not remove this comment...
 #CRABHLTNAMEOVERWRITE
 hltName="HLT"
 patCandID=""
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
-process.shNtupliser.gsfEleTag = "gsfElectrons"
+
 process.shNtupliser.addMet = False
 process.shNtupliser.addJets = False
 process.shNtupliser.addMuons = False
@@ -78,17 +74,12 @@ process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
-
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
-process.shNtupliser.useHLTDebug = cms.bool(False)
-process.shNtupliser.hltProcName = hltName
-process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
-process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
-process.shNtupliser.compTwoMenus = cms.bool(False)
-process.shNtupliser.secondHLTTag = cms.string("")
+
+process.shNtupliser.gsfEleTag = "gsfElectrons"
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
 process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
@@ -96,8 +87,6 @@ process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
 process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
 process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-process.shNtupliser.nrGenPartToStore = cms.int32(-1)
-#process.shNtupliser.eleRhoCorrTag = cms.InputTag("kt6PFJets","rho")
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
@@ -125,9 +114,6 @@ else:
     process.shNtupliser.datasetCode = datasetCode
     process.shNtupliser.sampleWeight = 1
   #  print "datset code ",process.shNtupliser.datasetCode
-
-
-#process.load('EgammaAnalysis.ElectronTools.egmGsfElectronIDs_cff')
 
 # Additional output definition
 import HLTrigger.HLTfilters.hltHighLevel_cfi

@@ -21,6 +21,7 @@
 
 
 #include "SHarper/SHNtupliser/interface/SHEventHelper.h"
+#include "SHarper/SHNtupliser/interface/SHEventTreeData.h"
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
@@ -45,8 +46,8 @@ class SHGenInfo;
 class TTree;
 class TFile;
 class SHPFClusterContainer;
+class SHTrigSummary;
 
-class TrigDebugObjHelper;
 class SHTrigObjContainer;
 
 class SHNtupliser : public edm::EDAnalyzer {
@@ -64,8 +65,10 @@ private:
   TClonesArray* shIsolTrks_;
   TClonesArray* shPreShowerClusters_;
   SHGenInfo* shGenInfo_; 
+  SHTrigSummary* shTrigSum_;
 
-  TTree* evtTree_; //the outFile owns it
+  SHEventTreeData shEvtTree_;
+
   TFile* outFile_; //we own it
 
   std::string outputFilename_;
@@ -91,17 +94,10 @@ private:
   bool useHLTDebug_;
   bool compTwoMenus_;
   std::string hltTag_;
-  std::string secondHLTTag_;
-  TrigDebugObjHelper* trigDebugHelper_;
-  SHTrigObjContainer* shTrigObjs_;
-  SHTrigObjContainer* shTrigObjs2ndTrig_;
-  SHEvent* shEvt2ndTrig_;
 
   SHPileUpSummary* puSummary_;
   bool writePUInfo_;
-  
-  bool writePDFInfo_;
-  std::vector<double> pdfWeightsVec_;
+ 
   
   SHPFCandContainer* shPFCands_; 
   SHPFClusterContainer* shPFClusters_;
@@ -109,9 +105,8 @@ private:
   //TTree* scTree_;
   //disabling copy and assignment 
   //I cant think of a reason why I would want to copy this class and its complicated to do right due to TTree
-private:
-  SHNtupliser(const SHNtupliser& rhs){}
-  SHNtupliser& operator=(const SHNtupliser& rhs){return *this;}
+  SHNtupliser(const SHNtupliser& rhs)=delete;
+  SHNtupliser& operator=(const SHNtupliser& rhs)=delete;
 
 public:
   explicit SHNtupliser(const edm::ParameterSet& iPara);

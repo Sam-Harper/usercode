@@ -2,29 +2,30 @@
 #include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "RecoEgamma/EgammaIsolationAlgos/interface/EgammaTowerIsolation.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
-#include "RecoEgamma/EgammaIsolationAlgos/interface/EgammaTowerIsolation.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "TTree.h"
 
 
 class EGammaFilter : public edm::EDFilter {
 
 private:
-  edm::InputTag phoTag_;
+  edm::EDGetTokenT<reco::PhotonCollection> phoTag_;
   int nrPhosRequired_;
   float phoEtCut_;
-  edm::InputTag eleTag_;
-  edm::InputTag genEvtInfoTag_;
+  edm::EDGetTokenT<reco::GsfElectronCollection> eleTag_;
+  edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoTag_;
   int nrElesRequired_;
   float eleEtCut_;
   bool requireEcalDriven_;
@@ -32,9 +33,9 @@ private:
   int nrSCsRequired_;
   float scEtCut_;
 
-  edm::InputTag superClusEBTag_;
-  edm::InputTag superClusEETag_;
-  edm::InputTag caloTowerTag_;
+  edm::EDGetTokenT<reco::SuperClusterCollection> superClusEBTag_;
+  edm::EDGetTokenT<reco::SuperClusterCollection> superClusEETag_;
+  edm::EDGetTokenT<CaloTowerCollection> caloTowerTag_;
   int nrPass_;
   int nrTot_;
 
@@ -55,12 +56,12 @@ public:
 EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
 
 {
-  eleTag_=para.getParameter<edm::InputTag>("eleTag");
-  phoTag_=para.getParameter<edm::InputTag>("phoTag");
-  superClusEBTag_=para.getParameter<edm::InputTag>("superClusEBTag");
-  superClusEETag_=para.getParameter<edm::InputTag>("superClusEETag"); 
-  caloTowerTag_=para.getParameter<edm::InputTag>("caloTowerTag");
-  genEvtInfoTag_=para.getParameter<edm::InputTag>("genEvtInfoTag");
+  eleTag_=consumes<reco::GsfElectronCollection>(para.getParameter<edm::InputTag>("eleTag"));
+  phoTag_=consumes<reco::PhotonCollection>(para.getParameter<edm::InputTag>("phoTag"));
+  superClusEBTag_=consumes<reco::SuperClusterCollection>(para.getParameter<edm::InputTag>("superClusEBTag"));
+  superClusEETag_=consumes<reco::SuperClusterCollection>(para.getParameter<edm::InputTag>("superClusEETag"));
+  caloTowerTag_=consumes<CaloTowerCollection>(para.getParameter<edm::InputTag>("caloTowerTag"));
+  genEvtInfoTag_=consumes<GenEventInfoProduct>(para.getParameter<edm::InputTag>("genEvtInfoTag"));
   nrElesRequired_=para.getParameter<int>("nrElesRequired");
   nrPhosRequired_=para.getParameter<int>("nrPhosRequired"); 
   nrSCsRequired_=para.getParameter<int>("nrSCsRequired");
@@ -74,7 +75,7 @@ EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
 bool EGammaFilter::filter(edm::Event& event,const edm::EventSetup& setup)
 {   
   edm::Handle<GenEventInfoProduct> genEvtInfo;
-  event.getByLabel(genEvtInfoTag_,genEvtInfo);
+  event.getByToken(genEvtInfoTag_,genEvtInfo);
   
   float weight = 1;
   if(genEvtInfo.isValid()) weight=genEvtInfo->weight();
@@ -115,7 +116,7 @@ bool EGammaFilter::passPho(edm::Event& event)const
   if(nrPhosRequired_<=0) return true; //automatically passes
   
   edm::Handle<reco::PhotonCollection> phoHandle;
-  event.getByLabel(phoTag_,phoHandle);
+  event.getByToken(phoTag_,phoHandle);
   
   int nrPhos=0;
   for(size_t phoNr=0;phoNr<phoHandle->size();phoNr++){
@@ -131,7 +132,7 @@ bool EGammaFilter::passEle(edm::Event& event)const
   if(nrElesRequired_<=0) return true; //automatically passes
   
   edm::Handle<reco::GsfElectronCollection> eleHandle;
-  event.getByLabel(eleTag_,eleHandle);
+  event.getByToken(eleTag_,eleHandle);
   
   int nrEles=0;
   for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
@@ -151,11 +152,11 @@ bool EGammaFilter::passSC(edm::Event& event)const
   if(nrSCsRequired_<=0) return true; //automatically passes
   
   edm::Handle<reco::SuperClusterCollection> scEBHandle;
-  event.getByLabel(superClusEBTag_,scEBHandle);
+  event.getByToken(superClusEBTag_,scEBHandle);
   edm::Handle<reco::SuperClusterCollection> scEEHandle;
-  event.getByLabel(superClusEETag_,scEEHandle);
+  event.getByToken(superClusEETag_,scEEHandle);
   edm::Handle<CaloTowerCollection> caloTowerHandle;
-  event.getByLabel(caloTowerTag_,caloTowerHandle);
+  event.getByToken(caloTowerTag_,caloTowerHandle);
 
   EgammaTowerIsolation hcalCalc(0.15,0.,0.,-1,caloTowerHandle.product()) ;
 

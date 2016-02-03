@@ -1,5 +1,6 @@
 def getDatasetCode(filename):
-  
+    
+    if filename.find("DYToEE")!=-1: return 101
     if filename.find("ZprimeToEE_M-5000")!=-1: return 1201;
     if filename.find("WJetsToLNu")!=-1: return 211;
     if filename.find("DYToLL_M_1")!=-1: return 101;

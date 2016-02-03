@@ -25,7 +25,7 @@ SHGeomFiller::SHGeomFiller(const edm::EventSetup& setup)
   edm::ESHandle<CaloGeometry> calGeometryHandle;
   edm::ESHandle<CaloTowerConstituentsMap> calTowersConstitsHandle;
   setup.get<CaloGeometryRecord>().get(calGeometryHandle);
-  setup.get<IdealGeometryRecord>().get(calTowersConstitsHandle);
+  setup.get<CaloGeometryRecord>().get(calTowersConstitsHandle);
   
   calGeometry_=calGeometryHandle.product();
   calTowersConstits_=calTowersConstitsHandle.product();

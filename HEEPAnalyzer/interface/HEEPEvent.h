@@ -102,14 +102,21 @@ namespace heep{
     
     //really for heep::EventHelper to make the HLTPSProvider object
     bool validHLTPSProvider()const{return hltPSProvider_!=nullptr;}
-     //our four set methods
+    HLTPrescaleProvider* hltPSProv()const{return hltPSProvider_.get();}
+
+     //our four set methods   
     void setEvent(const edm::Event& event){edmEvent_ = &event;}
     void setEventSetup(const edm::EventSetup& setup){edmEventSetup_=&setup;}
     void setTrigBits(heep::TrigCodes::TrigBitSet& bits){trigBits_=bits;}
     void setHLTPSProvider(const std::shared_ptr<HLTPrescaleProvider>& psProv){hltPSProvider_=psProv;}
 
     
-    bool initHLTConfig(const edm::Run& run,const edm::EventSetup& setup,const std::string& hltProcess){ bool changed=false;if(hltPSProvider_) hltPSProvider_->init(run,setup,hltProcess,changed);return changed;}
+    std::pair<bool,bool> initHLTConfig(const edm::Run& run,const edm::EventSetup& setup,const std::string& hltProcess){
+      bool changed=false;
+      bool res=false;
+      if(hltPSProvider_)  res = hltPSProvider_->init(run,setup,hltProcess,changed);
+      return {res,changed};
+    }
     
   };
 
