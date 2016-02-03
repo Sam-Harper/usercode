@@ -55,7 +55,11 @@ public:
   const SHPDFInfo& pdfInfo()const{return pdfInfo_;}
   float weight()const{return weight_;}
 
+  float lheHT()const;
   void printMCParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
+  void printLHEParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
+  
+
 
   void clear(){mcParticles_.clear();lheParticles_.clear();}
   void flushIndxTable()const{mcPartIndxTbl_.clear();}

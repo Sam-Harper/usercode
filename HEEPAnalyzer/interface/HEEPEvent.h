@@ -94,7 +94,7 @@ namespace heep{
     const std::vector<l1extra::L1EmParticle>& l1EmIso()const{return *handles_.l1EmIso;}
     const std::vector<reco::PFCluster>& pfClustersECAL()const{return *handles_.pfClustersECAL;}
     const std::vector<reco::PFCluster>& pfClustersHCAL()const{return *handles_.pfClustersHCAL;}
-    
+    const HLTConfigProvider& hltConfig()const{return hltConfig_;}
 
       //our three set methods
     void setEvent(const edm::Event& event){edmEvent_ = &event;}

@@ -11,6 +11,8 @@ process.source = cms.Source("PoolSource",
                                 #         fileNames = cms.untracked.vstring(filePrefex+sys.argv[2]),
                                 #     inputCommands = cms.untracked.vstring("drop *","keep *_source_*_*"),
                             fileNames = cms.untracked.vstring(),
+                        #    eventsToProcess = cms.untracked.VEventRange("1:1484800-1:1484810"),
+                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
                              )
 if isCrabJob:
     datasetCode=DATASETCODE

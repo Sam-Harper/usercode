@@ -9,7 +9,7 @@ bool SHTrigInfo::passTrig(double eta,double phi)const
 {
   // if(!pass_) return false; //can never pass if trigger didnt accept
 
-  double minDeltaR2=0.5*0.5;
+  double minDeltaR2=0.3*0.3;
   //  std::cout <<"here "<<std::endl;
   for(int objNr=0;objNr<nrPass();objNr++){
     //   std::cout <<"objNr "<<objNr<<" / "<<nrPass()<<std::endl;
@@ -52,7 +52,11 @@ float SHTrigInfo::maxEtObj()const
 bool SHTrigInfo::passL1Trig(double eta,double phi,TLorentzVector& matchedP4)const
 {
   // if(!pass_) return false; //can never pass if trigger didnt accept
+
+  matchedP4.SetPtEtaPhiM(0.1,-999,0,0);
   
+  bool passed=false;
+
   const double barrelEnd=1.4791;
   // const double endcapEnd=2.65;
   const double regionEtaSizeEB=0.522;
@@ -81,13 +85,12 @@ bool SHTrigInfo::passL1Trig(double eta,double phi,TLorentzVector& matchedP4)cons
     
     if(eta < etaBinHigh && eta > etaBinLow &&
        deltaPhi <regionPhiSize/2. )  {
-      matchedP4 = getObjP4(objNr);
-      return true;
+      if(!passed || getObjP4(objNr).Et()>matchedP4.Et()){ //we match to highest pt object, first time we always set it
+	matchedP4 = getObjP4(objNr);
+      }
+      passed=true;
     }
     
   }
- 
-  //didnt find an object well matched in dR, input object failed
-  matchedP4.SetPtEtaPhiM(0.1,-999,0,0);
-  return false;
+  return passed;
 }

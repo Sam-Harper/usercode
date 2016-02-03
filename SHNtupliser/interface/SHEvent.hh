@@ -23,6 +23,7 @@
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 #include "SHarper/SHNtupliser/interface/SHVertex.hh"
 #include "SHarper/SHNtupliser/interface/SHGenInfo.hh"
+#include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -112,6 +113,8 @@ class SHEvent : public TObject {
   SHPFClusterContainer pfClusters_; //! like pf cands stored on a seperate branch
 
   SHGenInfo genInfo_;//! stored on a seperate branch
+  SHTrigSummary trigSum_;//! stored on a seperate branch
+
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -254,6 +257,8 @@ class SHEvent : public TObject {
   SHPFClusterContainer& getPFClusters(){return pfClusters_;}
   const SHGenInfo& getGenInfo()const{return genInfo_;}
   SHGenInfo& getGenInfo(){return genInfo_;}
+  const SHTrigSummary& getTrigSum()const{return trigSum_;}
+  SHTrigSummary& getTrigSum(){return trigSum_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   TClonesArray& getPreShowerClusters(){return preShowerClusArray_;}
   double genEventPtHat()const{return genEventPtHat_;}
@@ -272,15 +277,7 @@ class SHEvent : public TObject {
   // int getTrigCode()const;
   // int getTrigCode(const TLorentzVector& p4)const{return getTrigCode(p4.Eta(),p4.Phi(),p4.Eta(),p4.Phi());}
   // int getTrigCode(double detEta,double detPhi,double eta,double phi)const; 
-  bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());} 
-  const SHTrigInfo* getTrig(const std::string& trigName)const;
-  bool passL1Trig(const std::string& trigName,double eta,double phi)const;
-  bool passTrig(const std::string& trigName,double eta,double phi)const; 
-  TLorentzVector getTrigObj(const std::string& trigName,double eta,double phi)const; 
-  bool passTrig(const std::string& trigName)const;
-  // bool passTrig(const std::string& trigName);
-  void printTrigs()const;
-  void printTrigsPassed()const;
+
   //some objects have a temporary transisent data cache which root doesnt
   //override when it fills them
   //so it needs to be manually cleared (very annoying)
@@ -295,12 +292,24 @@ class SHEvent : public TObject {
 
   void printTruth(int nrLines=-1)const;
 
+  //protected:
+  bool passTrig(const std::string& trigName,const TLorentzVector& p4)const{return passTrig(trigName,p4.Eta(),p4.Phi());} 
+  const SHTrigInfo* getTrig(const std::string& trigName)const;
+  bool passL1Trig(const std::string& trigName,double eta,double phi)const;
+  bool passTrig(const std::string& trigName,double eta,double phi)const; 
+  TLorentzVector getTrigObj(const std::string& trigName,double eta,double phi)const; 
+  bool passTrig(const std::string& trigName)const;
+  // bool passTrig(const std::string& trigName);
+  void printTrigs()const;
+  void printTrigsPassed()const;
+
  private:
-  
+ 
+
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
   float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,25) 
+  ClassDef(SHEvent,26) 
 
 };
   

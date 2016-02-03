@@ -21,7 +21,7 @@ config.Data.unitsPerJob = 'TOSED:UNITSPERJOB'
 config.Data.totalUnits = 'TOSED:TOTALUNITS'
 config.Data.publication = False
 config.Data.publishDBS = 'phys03' 
-config.Data.publishDataName = 'TOSED:PUBLISHDATANAME'
+config.Data.outputDatasetTag = 'TOSED:PUBLISHDATANAME'
 config.Data.outLFNDirBase = 'TOSED:OUTPUTDIR'
  
 config.section_("Site")
