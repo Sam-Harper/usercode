@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-#    datasetCode=101
+    datasetCode=101
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -79,6 +79,7 @@ process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
 
+process.shNtupliser.hltProcName = cms.string("HLT")
 process.shNtupliser.gsfEleTag = "gsfElectrons"
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
