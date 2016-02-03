@@ -111,10 +111,11 @@ namespace heep{
     void setHLTPSProvider(const std::shared_ptr<HLTPrescaleProvider>& psProv){hltPSProvider_=psProv;}
 
     
-    bool initHLTConfig(const edm::Run& run,const edm::EventSetup& setup,const std::string& hltProcess){
+    std::pair<bool,bool> initHLTConfig(const edm::Run& run,const edm::EventSetup& setup,const std::string& hltProcess){
       bool changed=false;
-      if(hltPSProvider_) hltPSProvider_->init(run,setup,hltProcess,changed);
-      return changed;
+      bool res=false;
+      if(hltPSProvider_)  res = hltPSProvider_->init(run,setup,hltProcess,changed);
+      return {res,changed};
     }
     
   };
