@@ -20,6 +20,7 @@ shNtupPara = cms.PSet(
     addPreShowerClusters =cms.bool(False),
     addGenInfo = cms.bool(True),
     addTrigSum = cms.bool(True),
+    addHLTDebug = cms.bool(False),
     fillFromGsfEle = cms.bool(True),
     minEtToPromoteSC = cms.double(-1.),
     outputGeom = cms.bool(True),                  
