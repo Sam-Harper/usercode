@@ -27,6 +27,7 @@ namespace edm{
   class ParameterSet;
   class Run;
   class EventSetup;
+  class ConsumesCollector;
 }
 
 namespace reco{
@@ -58,9 +59,9 @@ private:
   static const int kNrHcalEndcapCrys_=1296*2;
   
 public:
-  explicit SHEventHelper(int datasetCode=0,float eventWeight=1.0);
+  SHEventHelper();
   
-  void setup(const edm::ParameterSet& conf);
+  void setup(const edm::ParameterSet& conf,edm::ConsumesCollector && cc);
 
   void setupRun(const edm::Run& run,const edm::EventSetup& setup);
 

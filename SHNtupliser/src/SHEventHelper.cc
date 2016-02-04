@@ -34,15 +34,14 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
 
 //horrible hack of a function to fix annoying things
 void fixClusterShape(const reco::CaloCluster& seedCluster,const heep::Event& heepEvent,SHElectron& ele);
 
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
-SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
-  datasetCode_(datasetCode),
-  eventWeight_(eventWeight),
-  isMC_(datasetCode!=0),
+SHEventHelper::SHEventHelper():
+  isMC_(false),
   minEtToPromoteSC_(20),
   fillFromGsfEle_(true),
   applyMuonId_(true)
@@ -51,14 +50,19 @@ SHEventHelper::SHEventHelper(int datasetCode,float eventWeight):
   initHcalHitVec_();
 }
 
-void SHEventHelper::setup(const edm::ParameterSet& conf)
+void SHEventHelper::setup(const edm::ParameterSet& conf,edm::ConsumesCollector && cc)
 { 
   minEtToPromoteSC_ = conf.getParameter<double>("minEtToPromoteSC");
   eventWeight_ = conf.getParameter<double>("sampleWeight");
   datasetCode_ = conf.getParameter<int>("datasetCode");    
   applyMuonId_ = conf.getParameter<bool>("applyMuonId");
   fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
+
+
+  isMC_=datasetCode_!=0;
   branches_.setup(conf);
+  if(branches_.addHLTDebug) cc.consumesMany<reco::RecoEcalCandidateIsolationMap>();
+  
 }
 
 
@@ -402,6 +406,7 @@ void SHEventHelper::addPUInfo(const heep::Event& heepEvent,SHEvent& shEvent)cons
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   SHTrigSumMaker::makeSHTrigSum(heepEvent,shEvent.getTrigSum());
+  
 }
 
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const

@@ -6,7 +6,7 @@
 
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Common/interface/TriggerNames.h"
-
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
 void SHTrigSumMaker::makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
 {
   if(heepEvent.handles().trigEvent.isValid()){
@@ -264,6 +264,44 @@ std::string SHTrigSumMaker::rmTrigVersionFromName(std::string pathName)
   
   if(versionIndex!=std::string::npos) pathName.erase(versionIndex+2);
   return pathName;
+}
+
+void SHTrigSumMaker::associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
+{
+  
+  if(heepEvent.handles().egHLTCands.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCands,shTrigSum);
+  if(heepEvent.handles().egHLTCandsUnseeded.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCandsUnseeded,shTrigSum);
+
+}
+
+void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum)
+{
+  for(auto& ecalCand : *ecalCands){
+    reco::RecoEcalCandidateRef ecalCandRef(ecalCands,&ecalCand -&(*ecalCands)[0]);
+    std::vector<SHTrigObj*> matchedObjs = shTrigSum.getTrigObjs(ecalCand.eta(),ecalCand.phi(),SHTrigObj::HLT,0.001);
+    if(!matchedObjs.empty()) associateEgHLTDebug(edmEvent,ecalCandRef,matchedObjs);
+  }
+}
+
+void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs)
+{
+  //first we need to retrieve all the value maps and get their names in a nice little format
+  std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> > valueMapHandles;
+  edmEvent.getManyByType(valueMapHandles);
+  std::vector<std::pair<std::string,float>> values;
+  for(auto& valueMapHandle : valueMapHandles){
+    auto mapIt = valueMapHandle->find(ecalCand);
+    if(mapIt!=valueMapHandle->end()){
+      std::string name=valueMapHandle.provenance()->moduleLabel()+valueMapHandle.provenance()->productInstanceName();
+      values.push_back(std::pair<std::string,float>(name,mapIt->val));
+    }
+  }
+  
+  for(auto trigObj : trigObjs){
+    trigObj->setVars(values);
+  }
+  
+  
 }
 
 

@@ -26,6 +26,7 @@
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 #include "DataFormats/EgammaReco/interface/PreshowerCluster.h"
 #include "DataFormats/EgammaReco/interface/PreshowerClusterFwd.h"
+
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
@@ -51,7 +52,8 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
-
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateFwd.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 namespace heep {
@@ -106,6 +108,8 @@ namespace heep {
     edm::Handle<edm::ValueMap<std::vector<reco::PFCandidateRef> > > gsfEleToPFCandMap;
     
     edm::Handle<edm::ValueMap<bool> > heepIDVID;
+    edm::Handle<reco::RecoEcalCandidateCollection>  egHLTCands;
+    edm::Handle<reco::RecoEcalCandidateCollection>  egHLTCandsUnseeded;
     
     edm::Handle<LHEEventProduct> lheEvent;
     edm::Handle<GenEventInfoProduct> genEvtInfo;

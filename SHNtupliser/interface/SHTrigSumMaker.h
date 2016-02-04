@@ -4,6 +4,10 @@
 #include <string>
 #include <vector>
 
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateFwd.h"
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
+#include "FWCore/Framework/interface/GenericHandle.h"
+
 namespace edm{
   class Event;
   class EventSetup;
@@ -20,7 +24,7 @@ class HLTConfigProvider;
 class HLTPrescaleProvider;
 class L1GtUtils;
 class SHTrigSummary;
-
+class SHTrigObj;
 //known bugs:
 //L1 pass info appears not to be correctly filled and its a bit of a mystery why
 //as l1GtUtils and L1GlobalTriggerReadoutRecord appear to agree wrongly
@@ -54,6 +58,9 @@ public:
   static int convertToSHTrigType(int cmsswTrigType);
   static std::string rmTrigVersionFromName(std::string trigname);
 
+  static void associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
+  static void associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum);
+  static void associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs);
   
 private:
   static void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig,

@@ -68,6 +68,8 @@ public:
   virtual ~SHTrigSummary(){}
  
   const std::vector<SHTrigObj>& trigObjs()const{return trigObjs_;}
+  //this function is mainly to be able to add in trigf objs debug  info, may go
+  std::vector<SHTrigObj>& trigObjs(){return trigObjs_;}
   const std::vector<SHTrigResult>& trigResults()const{return trigResults_;}
   const std::vector<SHL1Result>& l1Results()const{return l1Results_;}
 
@@ -86,7 +88,8 @@ public:
   }
   //returns a list of objects with dR<maxDR ordered by dR
   std::vector<const SHTrigObj*> getTrigObjs(float eta,float phi,int type,float maxDR=SHTrigObj::kStdMaxDR)const;
-
+  //this function is mainly to be able to add in the trigger objects debug info, may go
+  std::vector<SHTrigObj*> getTrigObjs(float eta,float phi,int type,float maxDR=SHTrigObj::kStdMaxDR);
 
   const SHBitsDef& pathBitsDef()const{return pathBitsDef_;}
   const SHBitsDef& filterBitsDef()const{return filterBitsDef_;}

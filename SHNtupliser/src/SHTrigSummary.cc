@@ -62,6 +62,19 @@ std::vector<const SHTrigObj*> SHTrigSummary::getTrigObjs(float eta,float phi,int
   return matchedObjs;
 }
 
+std::vector<SHTrigObj*> SHTrigSummary::getTrigObjs(float eta,float phi,int type,float maxDR)
+{
+  const float maxDR2 = maxDR*maxDR;
+  std::vector<SHTrigObj*> matchedObjs;
+  for(SHTrigObj& trigObj : trigObjs()){
+    if( (trigObj.type()&type)!=0 &&
+	trigObj.deltaR2(eta,phi)<maxDR2 ){
+      matchedObjs.push_back(&trigObj);
+    }
+  } 
+  return matchedObjs;
+}
+
 
 void SHTrigSummary::print()
 {
