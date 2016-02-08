@@ -406,6 +406,7 @@ void SHEventHelper::addPUInfo(const heep::Event& heepEvent,SHEvent& shEvent)cons
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   SHTrigSumMaker::makeSHTrigSum(heepEvent,shEvent.getTrigSum());
+  if(branches_.addHLTDebug) SHTrigSumMaker::associateEgHLTDebug(heepEvent,shEvent.getTrigSum());
   
 }
 
