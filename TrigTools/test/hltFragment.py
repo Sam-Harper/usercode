@@ -1,12 +1,13 @@
 #>>>From hltFragment <<<#
 from SHarper.TrigTools.hltConfigTools import *
-process.maxEvents=-1
+process.maxEvents.input=-1
 rmAllEndPathsWithOutput(process)
 rmPaths(process,["HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v3","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v3"])
 setSaveTags(process,"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v3",True)
 setSaveTags(process,"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v3",True)
 addOutputMod(process)
 
+import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing ('analysis')
 options.parseArguments()
 
