@@ -268,10 +268,8 @@ std::string SHTrigSumMaker::rmTrigVersionFromName(std::string pathName)
 
 void SHTrigSumMaker::associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
 {
-  
   if(heepEvent.handles().egHLTCands.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCands,shTrigSum);
   if(heepEvent.handles().egHLTCandsUnseeded.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCandsUnseeded,shTrigSum);
-
 }
 
 void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum)
@@ -298,7 +296,7 @@ void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const reco::
   }
   
   for(auto trigObj : trigObjs){
-    trigObj->setVars(values);
+    trigObj->addVars(values);
   }
   
   

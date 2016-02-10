@@ -49,6 +49,7 @@ public:
   bool isL1()const{return (type_&L1)!=0;}
   bool isL1S1()const{return (type_&L1S1)!=0;}
   TLorentzVector p4()const{TLorentzVector vec;vec.SetPtEtaPhiM(pt(),eta(),phi(),0.);return vec;}
+  bool hasDebug()const{return !vars_.empty();}
 
   const TBits& filtersPassed()const{return filtersPassed_;}
   bool pass(size_t bitNr)const{return filtersPassed_.TestBitNumber(bitNr);}
@@ -56,10 +57,18 @@ public:
   bool valid()const{return type_!=UNDEFINED;}
 
   float var(const std::string& varName)const; 
+  void clearVars(){vars_.clear();}
+  void addVars(const std::vector<std::pair<std::string,float> >& vars);
+  void addVars(std::vector<std::pair<std::string,float> > &&vars);
   template<typename T> void setVars(T&& inputVars){
     vars_=std::forward<T>(inputVars);
-    std::sort(vars_.begin(),vars_.end(),VarSorter());
+    sort_();
   }
+
+	       
+  
+  std::ostream& print(std::ostream&)const;
+ 
 
   float deltaR2(float rhsEta,float rhsPhi)const;
 
@@ -69,7 +78,8 @@ public:
   bool passL1CMSSWMatch(float rhsEta,float rhsPhi)const;
 private:
   float deltaR2L1_(float rhsEta,float rhsPhi)const;
-
+  //private for now as the vector should always be sorted
+  void sort_(){std::sort(vars_.begin(),vars_.end(),VarSorter());}
 
   ClassDef(SHTrigObj,2)
 };

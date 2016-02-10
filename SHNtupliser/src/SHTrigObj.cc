@@ -29,11 +29,13 @@ bool SHTrigObj::pass(const TBits& bits)const
 
 float SHTrigObj::var(const std::string& varName)const
 {
-  if(varName=="pt") return pt();
-  else if(varName=="eta") return eta();  
-  else if(varName=="etaAbs") return fabs(eta());
-  else if(varName=="phi") return phi();
-  //  else if(varName=="nrgy") return nrgy();
+  // if(varName=="pt") return pt();
+  // else if(varName=="eta") return eta();  
+  // else if(varName=="etaAbs") return fabs(eta());
+  // else if(varName=="phi") return phi();
+  // else if(varName=="nrgy") return p4().E();
+  // else if(varName=="et") return p4().Et();
+  if(vars_.empty()) return -999;
 
   auto result =  std::equal_range(vars_.begin(),vars_.end(),varName,VarSorter());
   
@@ -47,6 +49,27 @@ float SHTrigObj::var(const std::string& varName)const
     LogErr << " Error,  "<<result.second-result.first<<" keys match "<<varName<<std::endl;
     return -999;
   }  
+}
+
+void SHTrigObj::addVars(const std::vector<std::pair<std::string,float> >& vars)
+{
+  vars_.insert(vars_.end(),vars.begin(),vars.end());
+  sort_();
+}
+
+void SHTrigObj::addVars(std::vector<std::pair<std::string,float> >&& vars)
+{
+  vars_.insert(vars_.end(),std::make_move_iterator(vars.begin()),std::make_move_iterator(vars.end()));
+  sort_();
+}
+
+std::ostream& SHTrigObj::print(std::ostream& out)const
+{
+  out <<"pt "<<pt_<<" eta "<<eta_<<" phi "<<phi_<<" mass "<<mass_<<" type "<<type_<<" debug var: "<<vars_.size()<<std::endl;
+  for(auto& var : vars_){
+    std::cout <<"     "<<var.first<<" "<<var.second<<std::endl;
+  }
+  return out;
 }
 
 float SHTrigObj::deltaR2(float rhsEta,float rhsPhi)const
