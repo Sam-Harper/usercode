@@ -97,8 +97,10 @@ void RecoEcalCandidateComparer::analyze(const edm::Event& iEvent,const edm::Even
   std::vector<std::pair<const math::XYZTLorentzVector*,const math::XYZTLorentzVector*> > matchedObjs = matchObjs(trigObjsColl1,trigObjsColl2);
 
   std::vector<std::pair<const reco::RecoEcalCandidate*,const reco::RecoEcalCandidate*> > matchedEcalCands = matchEcalCands(matchedObjs,*coll1Handle,*coll2Handle);
-
+  std::cout <<iEvent.id().event()<<" lumi "<<iEvent.luminosityBlock()<<"nr cands "<<matchedEcalCands.size()<<std::endl;
   for(auto& candPair : matchedEcalCands){
+    std::cout <<"E "<<candPair.first->energy()<<" "<<candPair.second->energy()<<std::endl;
+    std::cout <<"Et"<<candPair.first->et()<<" "<<candPair.second->et()<<std::endl;
     if(std::abs(candPair.first->energy()-candPair.second->energy())>1){
       std::cout <<"miss match "<<candPair.first->energy()<<" "<<candPair.second->energy()<<std::endl;
       auto printSC = [](const reco::SuperClusterRef& clus){
