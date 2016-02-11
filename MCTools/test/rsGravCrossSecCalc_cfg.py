@@ -42,6 +42,11 @@ options.register ('outFile',
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.string,          
                   "output filename (without tags)")
+options.register ('cmsswOutput',
+                  False,
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.bool,          
+                  "output in CMSSW format")
 
 #options.parseArguments()
 options.parseArguments()
@@ -147,32 +152,41 @@ process.pdfWeights = cms.EDProducer("PdfWeightProducer",
                                         )
       )
 
-process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("output.root")
-)
 
+if options.cmsswOutput:
+    process.outputTot = cms.OutputModule( "PoolOutputModule",
+                                          fileName = cms.untracked.string(options.outFile ),
+                                          fastCloning = cms.untracked.bool( False ),
+                                          dataset = cms.untracked.PSet(
+                                              filterName = cms.untracked.string( "" ),
+                                              dataTier = cms.untracked.string( "RAW" )
+                                              ),
+                                             
+                                          outputCommands = cms.untracked.vstring( 'drop *','keep recoGenParticles_genParticles_*_*')                                             )
+    outputMod = process.outputTot
+else:
+    
+    process.TFileService = cms.Service("TFileService",
+                                       fileName = cms.string(options.outFile)
+                                       )
+    outputMod = process.TFileService
 
 isCrabJob=False #script seds this if its a crab job
 #if 1, its a crab job...
 if isCrabJob:
     print "using crab specified filename"
-    process.TFileService.fileName= "OUTPUTFILE"
-    #process.crossSecTreeMaker.datasetCode = DATASETCODE
-
-else:
-    print "using user specified filename"
-    
-    process.TFileService.fileName=options.outFile
-   # process.crossSecTreeMaker.datasetCode = int(sys.argv[len(sys.argv)-2])
-    
-
-
+    outputMod.fileName= "OUTPUTFILE"    
 
 
 # Path and EndPath definitions
-process.generation_step = cms.Path(process.pgen*process.crossSecTreeMaker*process.pdfTreeMaker)
+if options.cmsswOutput:
+    process.generation_step = cms.Path(process.pgen)
+    process.endjob_step = cms.EndPath(process.endOfProcess*process.outputTot)
+else:
+    process.generation_step = cms.Path(process.pgen*process.crossSecTreeMaker*process.pdfTreeMaker)
+    process.endjob_step = cms.EndPath(process.endOfProcess)
+
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
-process.endjob_step = cms.EndPath(process.endOfProcess)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.endjob_step)

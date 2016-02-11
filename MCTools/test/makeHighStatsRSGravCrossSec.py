@@ -12,7 +12,8 @@ def genRSGrav(args,jobNr):
     outputFilename=args.resultsDir.rstrip("/")+"/RSGrav_"+kMplStr+"_13TeV_M-"+str(mass)+".root"
     cmsRunArgs=["cmsRun",args.configFile,"kMpl="+args.kMpl,"maxEvents="+str(args.nrEvents),
                 "mass="+str(mass),
-                "outFile="+outputFilename]
+                "outFile="+outputFilename,
+                "cmsswOutput=True"]
     ##runStr=""
     #print cmsRunArgs
     import subprocess
