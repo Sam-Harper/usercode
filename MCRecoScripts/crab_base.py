@@ -19,8 +19,8 @@ config.Data.unitsPerJob = 'TOSED:UNITSPERJOB'
 config.Data.totalUnits = 'TOSED:TOTALUNITS'
 config.Data.publication = False
 config.Data.publishDBS = 'phys03' 
-config.Data.publishDataName = 'TOSED:PUBLISHDATANAME'
-config.Data.outLFN = 'TOSED:OUTPUTDIR'
+config.Data.outputDatasetTag = 'TOSED:PUBLISHDATANAME'
+config.Data.outLFNDirBase = 'TOSED:OUTPUTDIR'
  
 config.section_("Site")
 config.Site.storageSite = "T2_UK_SGrid_RALPP"
