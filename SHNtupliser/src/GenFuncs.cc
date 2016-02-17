@@ -100,9 +100,9 @@ void GenFuncs::fillPDFInfo(const heep::Event& heepEvt,SHGenInfo& genInfo)
 {
   if(!heepEvt.handles().genEvtInfo.isValid()) return;
   
+  //if its a particle gun sample, pdf info may be null
   const gen::PdfInfo* pdfInfo = heepEvt.handles().genEvtInfo->pdf();
-  
-  genInfo.addPDFInfo(SHPDFInfo(pdfInfo->id,pdfInfo->x,pdfInfo->xPDF,pdfInfo->scalePDF));
+  if(pdfInfo) genInfo.addPDFInfo(SHPDFInfo(pdfInfo->id,pdfInfo->x,pdfInfo->xPDF,pdfInfo->scalePDF));
 
 }
 
@@ -114,7 +114,9 @@ void GenFuncs::fillMCParticles(const heep::Event& heepEvt,SHGenInfo& genInfo)
 
   std::vector<const reco::Candidate*> partsToStore;
   for(const auto& mcPart : particles){
-    if(mcPart.pdgId()==2212 && mcPart.status()==4){ //lets save the protons, why not!
+    if(particles.size()<=kNrPartThresToStoreAll){ 
+      partsToStore.push_back(&mcPart);
+    }else if(mcPart.pdgId()==2212 && mcPart.status()==4){ //lets save the protons, why not!
       partsToStore.push_back(&mcPart);
     }else if(mcPart.status()>=20 && mcPart.status()<=29){ //just gets the initial hard interaction in pythia 8 
       //now for these we get the all the daughters of anything thats not a gluon
