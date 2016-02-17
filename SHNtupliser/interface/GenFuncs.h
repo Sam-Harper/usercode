@@ -11,6 +11,9 @@ namespace heep{
 }
 
 class GenFuncs {
+private:
+  
+  static constexpr int kNrPartThresToStoreAll=10; //if the number of gen particles is <= this value, we store all of them
   
   GenFuncs()=delete;
 public:
