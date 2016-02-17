@@ -106,7 +106,7 @@ print args.config
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
 baseDir="/opt/ppd/month/harper"
-baseOutputDir=baseDir+"/data"
+baseOutputDir=baseDir+"/MC"
 batchJobBaseDir=baseDir+"/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
@@ -154,13 +154,15 @@ for jobNr in range(0,args.nrJobs):
     batchFile.write("cmsenv\n eval `scramv1 runtime -sh` \n");
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
-        cmd+=" "+filename
+        if cmd.find("inputFiles=")==-1: cmd+=" inputFiles="
+        else: cmd+=","
+        cmd+=filename
     if runBatch:
-        cmd+=" $TMPDIR/"+outputFilename+"\n"
+        cmd+=" outFile=$TMPDIR/"+outputFilename+"\n"
         batchFile.write(cmd)
         batchFile.write("mv $TMPDIR/"+outputFilename+" "+fullOutputDir)
     else:
-        cmd+=" "+fullOutputDir+"/"+outputFilename
+        cmd+=" outFile="+fullOutputDir+"/"+outputFilename
         batchFile.write(cmd)
 
     batchFile.close()
