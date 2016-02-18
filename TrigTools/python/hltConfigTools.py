@@ -14,28 +14,37 @@ def rmPath(process,path):
         while notAllCopiesRemoved:
             notAllCopiesRemoved = path.remove(getattr(process,moduleName))
 
+
 def rmAllEndPathsWithOutput(process):
     #print process.endpaths_()
     outputModuleNames=process.outputModules_().keys()
     for endPathName in process.endpaths_().keys():
-        endPath = getattr(process,endPathName)
-        pathModuleNames = endPath.moduleNames()
-        for outModName in outputModuleNames:
-            if outModName in pathModuleNames: 
-                rmPath(process,endPath)
-                break
+        if len(endPathName)-endPathName.find("Output")==6 and len(endPathName)>=6:
+            print "removing endpath ",endPathName
+            delattr(process,endPathName)
+#            rmPath(process,endPath)
+            
+        else:
+            endPath = getattr(process,endPathName)
+            pathModuleNames = endPath.moduleNames()
+            for outModName in outputModuleNames:
+                if outModName in pathModuleNames: 
+                    print "removing endpath ",endPathName
+                    delattr(process.endPathName)
+#                    rmPath(process,endPath)
+                    break
         
     
 def rmPaths(process,pathsToKeep):
     for pathName in process.pathNames().split():
-        if pathName.find("HLT_")==0 and pathName not in pathsToKeep:
+        if (pathName.find("HLT_")==0 or pathName.find("MC_")==0 or pathName.find("AlCa_")==0 or pathName.find("DST_")==0) and pathName not in pathsToKeep:
             path = getattr(process,pathName)
             print "removing path ",pathName
             for moduleName in path.moduleNames():
                 notAllCopiesRemoved=True
                 while notAllCopiesRemoved:
                     notAllCopiesRemoved = path.remove(getattr(process,moduleName))
-
+            delattr(process,pathName)
 
 def setSaveTags(process,pathName,saveTagsValue):
     path = getattr(process,pathName)
@@ -70,7 +79,9 @@ def addOutputMod(process):
                                                                                      'keep *_genParticles_*_*',
                                                                                      'keep *_addPileupInfo_*_*',
                                                                                      'keep *_externalLHEProducer_*_*',
-                                                                                     'keep *_generator_*_*')
+                                                                                     'keep *_generator_*_*',
+                                                                                     'keep *_hltEgammaGsfTracks*_*_*',
+                                                                                     'keep recoElectronSeeds_*_*_*')
                                              )
     process.HLTOutput = cms.EndPath(process.hltOutputTot)
     process.HLTSchedule.insert(len(process.HLTSchedule),process.HLTOutput)
