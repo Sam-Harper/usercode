@@ -17,3 +17,12 @@ if isCrabJob:
     process.hltOutputTot.fileName=cms.untracked.string("OUTPUTFILE")
 else:
     process.hltOutputTot.fileName=cms.untracked.string(options.outputFile)
+
+
+
+delattr(process,"EvFDaqDirector")
+delattr(process,"FastMonitoringService")
+delattr(process,"DQMStore")
+delattr(process,"hltDQMFileSaver")
+delattr(process,"RatesMonitoring")
+delattr(process,"MessageLogger")
