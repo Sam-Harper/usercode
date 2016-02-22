@@ -6,14 +6,14 @@
 
 
 #include "FWCore/Utilities/interface/EDGetToken.h"
-#include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
+#include "SHarper/HEEPAnalyzer/interface/HLTPrescaleProvider.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEffectiveAreas.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvtHandles.h"
 
-
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 
 #include <vector>
 

@@ -1,6 +1,6 @@
 <export>
 </export>
 
-<library   name="SHarperTrigTools_plugins" file="TriggerRateNtupMaker.cc,SimTrigFilter.cc,TrigObjP4AnaExample.cc,HEEPHLTWP80TrigEffAnalyser.cc,TrigCrossSecMaker.cc,MuonFilter.cc,JetFilter.cc,HLTElectronTrackMatchFilter.cc,TrigResultTreeMaker.cc,TrigResultsComparer.cc,UsedProductsDumper.cc,EventListDumper.cc,EventListSkimmer.cc,DumpHLTMenuName.cc,EcalRecHitCollComparer.cc,RecoEcalCandidateComparer.cc">
+<library   name="SHarperTrigTools_plugins" file="TriggerRateNtupMaker.cc,SimTrigFilter.cc,TrigObjP4AnaExample.cc,HEEPHLTWP80TrigEffAnalyser.cc,MuonFilter.cc,JetFilter.cc,HLTElectronTrackMatchFilter.cc,TrigResultTreeMaker.cc,UsedProductsDumper.cc,EventListDumper.cc,EventListSkimmer.cc,DumpHLTMenuName.cc,EcalRecHitCollComparer.cc,RecoEcalCandidateComparer.cc">
   <use   name="SHarper/TrigTools"/>
 </library>

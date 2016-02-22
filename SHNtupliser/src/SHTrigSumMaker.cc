@@ -69,7 +69,7 @@ void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
 {
 
   shTrigSum.setProcessName(hltConfig.processName());
-  shTrigSum.setGlobalTag(hltConfig.globalTag());
+  shTrigSum.setGlobalTag("dummy");//hltConfig.globalTag()); (for 74X)
   shTrigSum.setMenuName(hltConfig.tableName());
   
   std::set<std::string> pathNames;

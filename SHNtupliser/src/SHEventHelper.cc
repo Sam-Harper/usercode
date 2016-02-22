@@ -33,6 +33,7 @@
 
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
 
