@@ -1,0 +1,16 @@
+
+/QCD_Pt_15to30_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 601 & 500
+/QCD_Pt_30to50_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 602 & 2000
+/QCD_Pt_30to50_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12_ext1-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 602 & 2000
+/QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 603 & 2000
+/QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12_ext1-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 603 & 2000
+/QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 604 & 600
+/QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12_ext1-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 604 & 600
+/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 605 & 250
+/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 606 & 250
+/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 607 & 250
+/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 608 & 250
+
+
+/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12_ext1-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 101 & 1000
+/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15DR76-25nsFlat10to50NzshcalRaw_76X_mcRun2_asymptotic_v12-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 101 & 1000
