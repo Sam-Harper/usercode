@@ -139,7 +139,7 @@ os.system("cd "+batchJobBaseDir+"; scramv1 proj -n "+batchJobDir+" CMSSW "+cmssw
 #os.system("tar -zxvf "+batchJobDirAndPath+"/default.tgz")
 copyReleaseFiles(batchJobDirAndPath)
 
-runBatch=True
+runBatch=False
 
 for jobNr in range(0,args.nrJobs):
     print jobNr
@@ -151,18 +151,21 @@ for jobNr in range(0,args.nrJobs):
     batchFile.write("#job nr "+str(jobNr)+"\n")
     batchFile.write("cd "+batchJobDirAndPath+"/src\n");
     batchFile.write("echo $PWD\n")
+    batchFile.write("echo $TMPDIR\n")
     batchFile.write("cmsenv\n eval `scramv1 runtime -sh` \n");
+    batchFile.write("echo $CMSSW_RELEASE_BASE $CMSSW_BASE \n")
+    
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
         if cmd.find("inputFiles=")==-1: cmd+=" inputFiles="
         else: cmd+=","
         cmd+=filename
     if runBatch:
-        cmd+=" outFile=$TMPDIR/"+outputFilename+"\n"
+        cmd+=" outputFile=$TMPDIR/"+outputFilename+"\n"
         batchFile.write(cmd)
         batchFile.write("mv $TMPDIR/"+outputFilename+" "+fullOutputDir)
     else:
-        cmd+=" outFile="+fullOutputDir+"/"+outputFilename
+        cmd+=" outputFile="+fullOutputDir+"/"+outputFilename
         batchFile.write(cmd)
 
     batchFile.close()
