@@ -39,12 +39,13 @@ def rmPaths(process,pathsToKeep):
     for pathName in process.pathNames().split():
         if (pathName.find("HLT_")==0 or pathName.find("MC_")==0 or pathName.find("AlCa_")==0 or pathName.find("DST_")==0) and pathName not in pathsToKeep:
             path = getattr(process,pathName)
-            print "removing path ",pathName
-            for moduleName in path.moduleNames():
-                notAllCopiesRemoved=True
-                while notAllCopiesRemoved:
-                    notAllCopiesRemoved = path.remove(getattr(process,moduleName))
+            print "removing path ",pathName   
             delattr(process,pathName)
+            #for moduleName in path.moduleNames():
+            #    notAllCopiesRemoved=True
+            #    while notAllCopiesRemoved:
+            #        notAllCopiesRemoved = path.remove(getattr(process,moduleName))
+
 
 def setSaveTags(process,pathName,saveTagsValue):
     path = getattr(process,pathName)
