@@ -8,6 +8,8 @@ process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),
+                            inputCommands=cms.untracked.vstring('keep *',
+                                                                'drop *_hltEgammaPixelSeedVars*_*_*')
                         #    eventsToProcess = cms.untracked.VEventRange("1:1484800-1:1484810"),
 #                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
                              )
@@ -29,7 +31,7 @@ print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(10000),
+    reportEvery = cms.untracked.int32(5000),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -153,8 +155,17 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
 
+process.hltEgammaPixelSeedVars = cms.EDProducer("EgammaHLTPixelMatchVarProducer",
+                                                recoEcalCandidateProducer=cms.InputTag("hltEgammaCandidates"),
+                                                pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeeds")
+)
+process.hltEgammaPixelSeedVarsUnseeded = cms.EDProducer("EgammaHLTPixelMatchVarProducer",
+                                                        recoEcalCandidateProducer=cms.InputTag("hltEgammaCandidatesUnseeded"),
+                                                        pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeedsUnseeded")
+)
 process.p = cms.Path(#process.primaryVertexFilter*
-    process.egammaFilter*
+#    process.egammaFilter*
+    process.hltEgammaPixelSeedVars*process.hltEgammaPixelSeedVarsUnseeded*
     process.shNtupliser)
         
 if not isMC:
