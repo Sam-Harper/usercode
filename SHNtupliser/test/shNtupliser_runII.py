@@ -74,7 +74,6 @@ process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
-process.shNtupliser.addHLTDebug = True
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)

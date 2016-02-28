@@ -218,7 +218,10 @@ public:
 
   static bool hasNonZeroAND(int setOfBits1,int setOfBits2){return (setOfBits1&setOfBits2)!=0x0;}
 
-  static double getBinContent(const TH1* hist,double x){return hist->GetBinContent(getBinNr(hist,x));} //returns the content of the bin in which x is
+  static double getBinContent(const TH1* hist,double x){return hist->GetBinContent(getBinNr(hist,x));} //returns the content of the bin in which x is 
+  static double getBinContent(const TH2* hist,double x,double y){
+    return hist->GetBinContent(getXBinNr(hist,x),getYBinNr(hist,y));
+  }  
   static double getNrInRange(const TH1* theHist,double min,double max);
   static double getErrInRange(const TH1* theHist,double min,double max);
   static void setHistAttributes(TH1* theHist,int lineColour=-1,int lineWidth=-1,int markerStyle=-1,int markerColour=-1);

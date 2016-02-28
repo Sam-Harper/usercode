@@ -106,6 +106,11 @@ nonIsolMVA_(ele.mvaOutput().mva_e_pi),
 passCutPreSel_(ele.passingCutBasedPreselection()),
 passMVAPreSel_(ele.passingMvaPreselection()),
 passPFlowPreSel_(ele.passingPflowPreselection()),  
+pmDPhi1_(ele.pixelMatchDPhi1()),
+pmDPhi2_(ele.pixelMatchDPhi1()),
+pmDRz1_(ele.pixelMatchDPhi1()),
+pmDRz2_(ele.pixelMatchDPhi1()),
+pmSubDets_(ele.pixelMatchSubdetector1()*10+ele.pixelMatchSubdetector2()),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -201,6 +206,11 @@ nonIsolMVA_(-999.),
 passCutPreSel_(false),
 passMVAPreSel_(false),
 passPFlowPreSel_(false),  
+pmDPhi1_(-999.),
+pmDPhi2_(-999.),
+pmDRz1_(-999.),
+pmDRz2_(-999.),
+pmSubDets_(0),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -300,6 +310,11 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   passCutPreSel_(false),
   passMVAPreSel_(false),
   passPFlowPreSel_(false),  
+  pmDPhi1_(-999.),
+  pmDPhi2_(-999.),
+  pmDRz1_(-999.),
+  pmDRz2_(-999.),
+  pmSubDets_(0),
   rhoCorr_(-999.),
   mEvent_(NULL)
 {

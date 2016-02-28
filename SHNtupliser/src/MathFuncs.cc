@@ -506,18 +506,18 @@ double MathFuncs::getMedian(std::list<double> &list)
    return median;
 }
 
-double MathFuncs::getMedian(std::vector<double> &vector)
+double MathFuncs::getMedian(const std::vector<double> &vec)
 {
   double median=0.;
   
   //odd number, definate median
-  if(vector.size() % 2 !=0) {
-    int middleNr = (vector.size()+1)/2;
-    median = vector[middleNr];
+  if(vec.size() % 2 !=0) {
+    int middleNr = (vec.size()+1)/2;
+    median = vec[middleNr];
   }else{ //even number, take median as halfway between the two middle values
-    int middleNr = (vector.size()+1)/2;
-    median= vector[middleNr];
-    if(middleNr+1 <(int) vector.size()) median+= vector[middleNr+1];
+    int middleNr = (vec.size()+1)/2;
+    median= vec[middleNr];
+    if(middleNr+1 <(int) vec.size()) median+= vec[middleNr+1];
     median/=2.;
   }
   return median;
@@ -543,20 +543,20 @@ double MathFuncs::getWeightedListValue(std::list<double> &list,double listNr)
 }
 
 //I may be offset by one from where I want to be, need to think about it (12/09/12)
-double MathFuncs::getWeightedListValue(std::vector<double> &vector,double index)
+double MathFuncs::getWeightedListValue(const std::vector<double> &vec,double index)
 {
-  //if(index>=vector.size() || index<0) return -999;
-  if(index>=vector.size()-1) return vector.back();
-  else if(index<=0) return vector.front();
+  //if(index>=vec.size() || index<0) return -999;
+  if(index>=vec.size()-1) return vec.back();
+  else if(index<=0) return vec.front();
 
   double tempIndex; //just a tempory value to hold the int part of the index before it is cast into an interger
   double fracNr = std::modf(index,&tempIndex); //decomposing the index into frac and int parts
   size_t intNr = static_cast<size_t>(tempIndex);
   
-  if(intNr+1>=vector.size() || fracNr==0) return vector[intNr];
+  if(intNr+1>=vec.size() || fracNr==0) return vec[intNr];
   else{
-    double lowerValue = vector[intNr];
-    double upperValue = vector[intNr+1];
+    double lowerValue = vec[intNr];
+    double upperValue = vec[intNr+1];
 
     return lowerValue*(1-fracNr) + upperValue*fracNr;
   }

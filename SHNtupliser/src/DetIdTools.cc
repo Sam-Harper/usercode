@@ -220,6 +220,13 @@ int DetIdTools::makeEcalBarrelId(int iEta,int iPhi)
 
 }
 
+std::ostream& DetIdTools::printEBDetId(int detId,std::ostream& out)
+{
+  if(!isEcalBarrel(detId)) out <<"not a EBDetId";
+  else out <<" iEta "<<DetIdTools::iEtaBarrel(detId)<<" iPhi "<<DetIdTools::iPhiBarrel(detId);
+  return out;
+}
+
 int DetIdTools::dIEtaBarrel(int iEta1,int iEta2)
 {
   
@@ -396,6 +403,9 @@ int DetIdTools::calHashHcal(int detId)
     std::cout <<"DetIdTools::calHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
     return -1;
   }
+  if(DetIdTools::newFormatHcal(detId)){
+    LogErr<<" new format HCAL detId, new function not updated to this"<<std::endl;
+  }
   
   int index = -1;
 
@@ -554,7 +564,7 @@ int DetIdTools::nrOfNearestGap(int detId)
 
 
 bool DetIdTools::isValidHcalId(int iEta,int iPhi,int depth)
-{
+{  
   return isValidHcalBarrelId(iEta,iPhi,depth) || isValidHcalEndcapId(iEta,iPhi,depth);
 }
 
@@ -581,6 +591,9 @@ bool DetIdTools::isValidL1CaloId(int iEta,int iPhi)
 //warning, emulating calo tower bug where depth 2 tower 27 is depth 2 and depth 3 is depth 1
 int DetIdTools::getEffectiveHcalDepth(int detId)
 {
+  if(DetIdTools::newFormatHcal(detId)){
+    LogErr<<" new format HCAL detId, new function not updated to this"<<std::endl;
+  }
   if(!isHcal(detId)){
     LogErr <<" : Warning detId "<<detId<<" is not hcal "<<std::endl;
     return 0;
@@ -602,8 +615,12 @@ int DetIdTools::getEffectiveHcalDepth(int detId)
 //towers with three depths 16,27-29 (
 int DetIdTools::getNrDepthsInHcalTower(int detId)
 {
+
   if(!isHcal(detId)){
     LogErr <<" : Warning detId "<<detId<<" is not hcal,not implimented yet for ecal ids "<<std::endl;
+    return 0;
+  }else if(newFormatHcal(detId)){
+    LogErr <<" : Warning detId "<<detId<<" is new format, not validated yet for this "<<std::endl;
     return 0;
   }else{
     int iEtaAbs = iEtaAbsHcal(detId);

@@ -119,10 +119,10 @@ public:
   static double getLowConfidIntValue(std::list<double> &list,double confInt){return getWeightedListValue(list,(1-confInt)*0.5*list.size());}//assumes list is sorted
   static double getWeightedListValue(std::list<double> &list,double listNr);
   
-  static double getMedian(std::vector<double> &vector); //assumes vector is sorted
-  static double getUpConfidIntValue(std::vector<double> &vector,double confInt){return getWeightedListValue(vector,(1+confInt)*0.5*vector.size());}//assumes vector is sorted 
-  static double getLowConfidIntValue(std::vector<double> &vector,double confInt){return getWeightedListValue(vector,(1-confInt)*0.5*vector.size());}//assumes vector is sorted
-  static double getWeightedListValue(std::vector<double> &vector,double vectorNr);
+  static double getMedian(const std::vector<double> &vec); //assumes vector is sorted
+  static double getUpConfidIntValue(const std::vector<double> &vector,double confInt){return getWeightedListValue(vector,(1+confInt)*0.5*vector.size());}//assumes vector is sorted 
+  static double getLowConfidIntValue(const std::vector<double> &vector,double confInt){return getWeightedListValue(vector,(1-confInt)*0.5*vector.size());}//assumes vector is sorted
+  static double getWeightedListValue(const std::vector<double> &vec,double vectorNr);
   static std::pair<int,float> estQuantile(const std::vector<int>& dataPoints,float quantile);
   static float martizJarrettUncert(const std::vector<int>& dataPoints,size_t m);
   static std::pair<float,float> calEffAndErr(float nrPass,float nrTot);
