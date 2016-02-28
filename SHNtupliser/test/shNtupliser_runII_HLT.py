@@ -84,6 +84,7 @@ process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
 
 process.shNtupliser.hltProcName = cms.string("HLTX")
+process.shNtupliser.hltDebug = cms.bool(True)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLTX")
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","","HLTX")
 process.shNtupliser.gsfEleTag = "gsfElectrons"
