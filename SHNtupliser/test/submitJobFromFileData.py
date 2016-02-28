@@ -84,7 +84,7 @@ for line in datasetDefFile:
                     " Data.totalUnits="+str(totalUnits)+ \
                     " Data.outLFNDirBase="+outputPath+ \
                     " Data.ignoreLocality="+str(options.ignoreLocality)+ \
-                    " Data.publishDataName="+publishDataname+ \
+                    " Data.outputDatasetTag="+publishDataname+ \
                     " Data.runRange="+runRange+ \
                     " JobType.psetName="+tempConfig+ \
                     " General.transferLogs="+str(options.transferLogFiles)
