@@ -38,11 +38,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 #Load geometry
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-from Configuration.AlCa.autoCond import autoCond
 if isMC:
-    process.GlobalTag.globaltag = autoCond['run2_mc'] 
+    process.GlobalTag.globaltag = cms.string('MCRUN2_74_V9A')
 else:
-    process.GlobalTag.globaltag = autoCond['run2_data']
+    process.GlobalTag.globaltag = cms.string('GR_P_V56')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
