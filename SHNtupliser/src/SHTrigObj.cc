@@ -42,8 +42,8 @@ float SHTrigObj::var(const std::string& varName)const
   if(result.second-result.first==1){
     return result.first->second;
   }else if(result.second-result.first==0){
-
-    LogErr <<" Warning, var "<<varName<<" not found "<<std::endl;
+    // now suppress the error message as the vars wont always be present
+    //    LogErr <<" Warning, var "<<varName<<" not found "<<std::endl;
     return -999;
   }else{
     LogErr << " Error,  "<<result.second-result.first<<" keys match "<<varName<<std::endl;

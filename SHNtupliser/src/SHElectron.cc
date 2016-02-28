@@ -92,6 +92,11 @@ SHElectron::SHElectron():
   passCutPreSel_(false),
   passMVAPreSel_(false),
   passPFlowPreSel_(false),  
+  pmDPhi1_(-999.),
+  pmDPhi2_(-999.),
+  pmDRz1_(-999.),
+  pmDRz2_(-999.),
+  pmSubDets_(0),
   rhoCorr_(-999.),
   mEvent_(NULL)
 {
@@ -187,6 +192,11 @@ SHElectron::SHElectron(const SHElectron &rhs):
   passCutPreSel_(rhs.passCutPreSel_),
   passMVAPreSel_(rhs.passMVAPreSel_),
   passPFlowPreSel_(rhs.passPFlowPreSel_),  
+  pmDPhi1_(rhs.pmDPhi1_),
+  pmDPhi2_(rhs.pmDPhi2_),
+  pmDRz1_(rhs.pmDRz1_),
+  pmDRz2_(rhs.pmDRz2_),
+  pmSubDets_(rhs.pmSubDets_),
   rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {

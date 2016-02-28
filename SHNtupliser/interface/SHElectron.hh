@@ -151,6 +151,13 @@ class SHElectron : public TObject {
   bool passMVAPreSel_;
   bool passPFlowPreSel_;
 
+  //pm variables
+  float pmDPhi1_;
+  float pmDPhi2_;
+  float pmDRz1_;
+  float pmDRz2_;
+  int pmSubDets_;
+
   float rhoCorr_; //! set by the event each time we get it
 
   //backwards link to the mother event
@@ -335,7 +342,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,23) 
+  ClassDef(SHElectron,24) 
 
 };
 

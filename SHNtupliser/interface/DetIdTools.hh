@@ -137,6 +137,25 @@ private:
   static const int kHcalDepthMin = 1;
   static const int kHcalDepthMax = 3;
 
+  static const int kHcalPhiMask1       = 0x7F;
+  static const int kHcalPhiMask2       = 0x3FF;
+  static const int kHcalEtaOffset1     = 7;
+  static const int kHcalEtaOffset2     = 10;
+  static const int kHcalEtaMask1       = 0x3F;
+  static const int kHcalEtaMask2       = 0x1FF;
+  static const int kHcalZsideMask1     = 0x2000;
+  static const int kHcalZsideMask2     = 0x80000;
+  static const int kHcalDepthOffset1   = 14;
+  static const int kHcalDepthOffset2   = 20;
+  static const int kHcalDepthMask1     = 0x1F;
+  static const int kHcalDepthMask2     = 0xF;
+  static const int kHcalDepthSet1      = 0x1C000;
+  static const int kHcalDepthSet2      = 0xF00000;
+  static const int kHcalIdFormat2      = 0x1000000;
+  static const int kHcalIdMask         = 0xFE000000;
+
+
+
   static const int kNrL1CaloTowers = 64*72; //not strictly true, its actually 28*72 + 4*16 (HF towers have less phi segmentation) but easier for maths right now
   static const int kL1CaloIPhiMin =1;
   static const int kL1CaloIPhiMax =72;
@@ -174,8 +193,8 @@ private:
   static bool isValidEcalId(int detId);
   static bool isValidHcalId(int iEta,int iPhi,int depth); 
   static bool isValidHcalId(int detId){return isHcal(detId)&& isValidHcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
-  static bool isValidHcalBarrelId(int iEta,int iPhi,int depth); 
-  static bool isValidHcalEndcapId(int iEta,int iPhi,int depth);
+  static bool isValidHcalBarrelId(int iEta,int iPhi,int depth);  //not updated to new format
+  static bool isValidHcalEndcapId(int iEta,int iPhi,int depth); //not updated to new format
 
   static bool isValidCaloId(int detId){return isCalo(detId)&& isValidCaloId(iEtaCalo(detId),iPhiCalo(detId));}
   static bool isValidCaloId(int iEta,int iPhi);
@@ -197,7 +216,7 @@ private:
   static int iPhiBarrelTower(int detId){int iPhi = (iPhiBarrel(detId)-1)/5+1;iPhi-=2;return iPhi<=0 ? iPhi+72 : iPhi;}
   static bool positiveZBarrel(int detId){return detId&0x10000;}
   static int zSideBarrel(int detId){return positiveZBarrel(detId) ? 1 : -1;}
-  
+  static std::ostream& printEBDetId(int detId,std::ostream& out);
 
   static int dIEtaBarrel(int iEta1,int iEta2);
   static int dAbsIEtaBarrel(int iEta1,int iEta2){return abs(dIEtaBarrel(iEta1,iEta2));}
@@ -219,13 +238,15 @@ private:
   static int towerIdEndcap(int detId);
   static int ecalToTowerId(int detId);
   //HCAL tools (unified for HB/HE)
-  static int iPhiHcal(int detId){return detId&0x7F;}
-  static int iEtaAbsHcal(int detId){return (detId>>7)&0x3f;}
+  static bool newFormatHcal(int detId){return !oldFormatHcal(detId);}
+  static bool oldFormatHcal(int detId){ return ((detId&kHcalIdFormat2)==0)?(true):(false); }
+  static int iPhiHcal(int detId){return newFormatHcal(detId) ? detId&kHcalPhiMask2 : detId&kHcalPhiMask1;}
+  static int iEtaAbsHcal(int detId){return newFormatHcal(detId) ? (detId>>kHcalEtaOffset2)&kHcalEtaMask2 : (detId>>kHcalEtaOffset1)&kHcalEtaMask1;}
   static int iEtaHcal(int detId){return zSideHcal(detId)*iEtaAbsHcal(detId);}
-  static int zSideHcal(int detId){return (detId&0x2000) ? (1) : (-1);}
-  static int depthHcal(int detId){return (detId>>14)&0x7;}
+  static int zSideHcal(int detId){auto& mask=newFormatHcal(detId) ? kHcalZsideMask2 : kHcalZsideMask1;return (detId&mask) ? (1) : (-1);}
+  static int depthHcal(int detId){return newFormatHcal(detId) ? (detId>>kHcalDepthOffset2)&kHcalDepthMask2 : (detId>>kHcalDepthOffset1)&kHcalDepthMask1;}
   static int getEffectiveHcalDepth(int detId); //effective depth is for isolation and accounts for not all depths being equal
-  static int getNrDepthsInHcalTower(int detId);
+  static int getNrDepthsInHcalTower(int detId); 
   static void getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::vector<int>& ids);
   static void printHcalDetId(int detId);
 

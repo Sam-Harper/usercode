@@ -168,7 +168,7 @@ const SHMCParticle* SHGenInfo::getHardProcessPart_(const std::vector<int>& pids,
   size_t partNr=0;
   for(auto& part : mcParts()){
     if( (part.status()>=20 && part.status()<=29) || //incoming 21, intermediate 22, and outgoing 23 particles
-	(part.status()<=2 && isFromPromptBoson_(part.index())) || //1=final, 2 = final before decay but need to check its from the prompt boson
+	(part.status()<=2 && (part.jmo1()==-1 || isFromPromptBoson_(part.index()))) || //1=final, 2 = final before decay but need to check its from the prompt boson (also take it if theres no mother particle)
 	part.status()==3){ //3=pythia6
       
       if(std::find(pids.begin(),pids.end(),part.pid())!=pids.end()){
@@ -185,7 +185,8 @@ bool SHGenInfo::isFromPromptBoson_(size_t index)const
   auto mothers = getMothers(index);
   if(mothers.size()==1){
     auto mother = mothers.front();
-    if(mother->pid()==22 || mother->pid()==23 || std::abs(mother->pid())==24){
+    if(mother->pid()==22 || mother->pid()==23 || std::abs(mother->pid())==24 ||
+       mother->pid()==5100039){
       if(mother->status()>=20 && mother->status()<=29) return true;
       else return isFromPromptBoson_(mother->index());
     }
