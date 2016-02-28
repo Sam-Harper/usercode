@@ -152,11 +152,21 @@ for jobNr in range(0,args.nrJobs):
     batchFile.write("cd "+batchJobDirAndPath+"/src\n");
     batchFile.write("echo $PWD\n")
     batchFile.write("cmsenv\n eval `scramv1 runtime -sh` \n");
+    batchFile.write("echo $CMSSW_RELEASE_BASE $CMSSW_BASE \n")
+    
+    runVarParsing=False
+
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
-        cmd+=" "+filename
+        if runVarParsing:
+            if cmd.find("inputFiles=")==-1: cmd+=" inputFiles="
+            else: cmd+=","
+        else: cmd+=" "
+        cmd+=filename
     if runBatch:
-        cmd+=" $TMPDIR/"+outputFilename+"\n"
+        cmd+=" "
+        if runVarParsing: cmd+="outputFile="
+        cmd+="$TMPDIR/"+outputFilename+"\n"
         batchFile.write(cmd)
         batchFile.write("mv $TMPDIR/"+outputFilename+" "+fullOutputDir)
     else:
