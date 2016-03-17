@@ -98,9 +98,10 @@ parser.add_argument('--config',help='cmsRun config file to run',required=True)
 parser.add_argument('--input',help='input file or file pattern to run over',required=True)
 parser.add_argument('--output',help='output filebase name, defaults to outputDir+.root',default=None)
 parser.add_argument('--outputDir',help='ouput dir (under scratch/mc/CMSSWVersion/<outputdir>',required=True)
-parser.add_argument('--interfaceType',help='interface type of python config file (0=SamStd, 1=varparsing std,=2 varparsing extended',default=1,type=int)
-parser.add_arugment('--runBatch',help='run on batch rather than locally',default=True,type=bool)
+parser.add_argument('--interfaceType',help='interface type of python config file (0=SamStd, 1=varparsing std,=2 varparsing extended',default=0,type=int)
+parser.add_argument('--runBatch',help='run on batch rather than locally',default=True,type=bool)
 parser.add_argument('--nrJobs',help='number of jobs to split into (can not be larger than #files to run over)',default=1,type=int)
+parser.add_argument('--baseOutDir',help='base output directory',default="mc")
 
 args = parser.parse_args()
 print args.config
@@ -108,7 +109,7 @@ print args.config
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
 baseDir="/opt/ppd/month/harper"
-baseOutputDir=baseDir+"/MC"
+baseOutputDir=baseDir+"/"+args.baseOutDir
 batchJobBaseDir=baseDir+"/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
@@ -170,14 +171,16 @@ for jobNr in range(0,args.nrJobs):
     if args.runBatch==True:
         cmd+=" "
         if args.interfaceType==1: cmd+="outputFile="
-        if(args.interfaceType==2: cmd+="outFile="
+        if args.interfaceType==2: cmd+="outFile="
         cmd+="${TMPDIR}/"+outputFilename+"\n"
-        #cmd+=outputFilename+"\n"
+#        cmd+="${PWD}/"+outputFilename+"\n"
         batchFile.write(cmd)
         batchFile.write("mv $TMPDIR/"+outputFilename+" "+fullOutputDir)
         #batchFile.write("mv "+outputFilename+" "+fullOutputDir)
     else:
-        cmd+=" outputFile="+fullOutputDir+"/"+outputFilename
+        cmd+=" "
+        if runVarParsing: cmd+="outputFile="
+        cmd+=fullOutputDir+"/"+outputFilename
         batchFile.write(cmd)
 
     batchFile.close()
