@@ -148,8 +148,14 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   const std::vector<reco::Photon>& photons = heepEvent.recoPhos();
   //std::cout <<"nr electrons "<<electrons.size()<<std::endl;
   // std::cout <<"nr photons "<<photons.size()<<std::endl;
+  
+  //so turns out the same supercluster can be used for multiple photons
+  //happyness, so we protect against this
+  std::vector<const reco::SuperCluster*> usedSCs;
   for(size_t phoNr=0;phoNr<photons.size();phoNr++){
     const reco::SuperCluster& sc = *photons[phoNr].superCluster();
+    if(std::find(usedSCs.begin(),usedSCs.end(),&sc)!=usedSCs.end()) continue;//already added this supercluster, skip it...
+    usedSCs.push_back(&sc);
     size_t eleNr = matchToEle(sc,electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
     
