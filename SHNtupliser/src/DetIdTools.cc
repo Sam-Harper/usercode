@@ -403,9 +403,6 @@ int DetIdTools::calHashHcal(int detId)
     std::cout <<"DetIdTools::calHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
     return -1;
   }
-  if(DetIdTools::newFormatHcal(detId)){
-    LogErr<<" new format HCAL detId, new function not updated to this"<<std::endl;
-  }
   
   int index = -1;
 
@@ -876,6 +873,14 @@ int DetIdTools::ecalToTowerId(int detId)
   if(isEcalBarrel(detId)) return makeCaloDetId(iEtaBarrelTower(detId),iPhiBarrelTower(detId));
   else if(isEcalEndcap(detId)) return towerIdEndcap(detId);
   else return 0;
+}
+
+
+int DetIdTools::newToOldFormatHcal_(int detId)
+{
+  return makeHcalDetId(DetIdTools::iEtaHcal(detId),
+		       DetIdTools::iPhiHcal(detId),
+		       DetIdTools::depthHcal(detId));
 }
 
 

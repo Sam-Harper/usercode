@@ -240,6 +240,7 @@ private:
   //HCAL tools (unified for HB/HE)
   static bool newFormatHcal(int detId){return !oldFormatHcal(detId);}
   static bool oldFormatHcal(int detId){ return ((detId&kHcalIdFormat2)==0)?(true):(false); }
+  static int convertToOldFormatHcal(int detId){ return oldFormatHcal(detId) ? detId : newToOldFormatHcal_(detId);}
   static int iPhiHcal(int detId){return newFormatHcal(detId) ? detId&kHcalPhiMask2 : detId&kHcalPhiMask1;}
   static int iEtaAbsHcal(int detId){return newFormatHcal(detId) ? (detId>>kHcalEtaOffset2)&kHcalEtaMask2 : (detId>>kHcalEtaOffset1)&kHcalEtaMask1;}
   static int iEtaHcal(int detId){return zSideHcal(detId)*iEtaAbsHcal(detId);}
@@ -281,7 +282,7 @@ private:
 
   static int calHashL1Calo(int iEta,int iPhi);
 
-  static int getHashHcal(int detId){return hcalFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
+  static int getHashHcal(int detId){return hcalFastHashTable_[convertToOldFormatHcal(detId) & ~(kDetMask | kSubDetMask)];}
   static int getHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? getHashEcalBarrel(detId) : getHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}
   static int getHashEcalBarrel(int detId){return ebFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
   static int getHashEcalEndcap(int detId){return eeFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
@@ -290,6 +291,7 @@ private:
   static void fillEEToTowerIdMap(const std::string& filename);
     
 private:
+  static int newToOldFormatHcal_(int detId);
   //yes I'm aware these functions pass 1MB vectors by value, they
   //are only called once and its the only way I can see
   static std::vector<int> makeEBFastHashTable_();

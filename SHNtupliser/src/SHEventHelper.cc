@@ -7,6 +7,7 @@
 #include "SHarper/SHNtupliser/interface/SHTrigSumMaker.h"
 #include "SHarper/SHNtupliser/interface/PFFuncs.h"
 #include "SHarper/SHNtupliser/interface/GenFuncs.h"
+#include "SHarper/SHNtupliser/interface/LogErr.hh"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
@@ -551,13 +552,14 @@ void SHEventHelper::initHcalHitVec_()const
 	 for(int depth=1;depth<=maxDepth;depth++){
 	   if(HackedFuncs::validHcalDetId(HcalBarrel,iEta,iPhi,depth)){
 	     HcalDetId detId(HcalBarrel,iEta,iPhi,depth);
-	     int indx = DetIdTools::calHashHcal(detId.rawId());
-	   
-	    //std::cout <<"iEta "<<iEta<<" iPhi "<<iPhi<<" depth "<<depth<< " pos phi "<<pos.Phi()<<" eta "<<pos.Eta()<<" index "<<indx;//<<std::endl; 
-	     
-
-	    hcalHitVec_[indx].setDetId(detId.rawId());
-	   
+	     size_t indx = DetIdTools::calHashHcal(detId.rawId());
+	     if(indx>=hcalHitVec_.size()){
+	       LogErr<<" error for HCAL barrel with eta "<<iEta<<" "<<iPhi<<" "<<depth<<" has a bad hash "<<indx<<" (max="<<hcalHitVec_.size()<<std::endl;
+	     }else{
+	       if(hcalHitVec_[indx].detId()!=0){
+		 LogErr<<" error for HCAL barrel with eta "<<iEta<<" "<<iPhi<<" "<<depth<<", index "<<indx<<" already used "<<std::endl;
+	       }else hcalHitVec_[indx].setDetId(detId.rawId());
+	     }	  
 	   }//end vaild det id
 	 }//end depth loop 
        }//end iphi loop
@@ -571,13 +573,14 @@ void SHEventHelper::initHcalHitVec_()const
 	for(int depth=1;depth<=3;depth++){
 	  if(HackedFuncs::validHcalDetId(HcalEndcap,iEta,iPhi,depth)){
 	    HcalDetId detId(HcalEndcap,iEta,iPhi,depth);
-	    int indx = DetIdTools::calHashHcal(detId.rawId());
-	   
-	    // std::cout <<"iEta "<<iEta<<" iPhi "<<iPhi<<" depth "<<depth<< " pos phi "<<pos.Phi()<<" eta "<<pos.Eta()<<" index "<<indx;//<<std::endl; 
-	  
-	    hcalHitVec_[indx].setDetId(detId.rawId());
-	    
-	    // std::cout <<" detId "<<hcalHitVec_[indx].detId()<<std::endl;
+	    size_t indx = DetIdTools::calHashHcal(detId.rawId());
+	    if(indx>=hcalHitVec_.size()){
+	       LogErr<<" error for HCAL endcap with eta "<<iEta<<" "<<iPhi<<" "<<depth<<" has a bad hash "<<indx<<" (max="<<hcalHitVec_.size()<<std::endl;
+	     }else{
+	       if(hcalHitVec_[indx].detId()!=0){
+		 LogErr<<" error for HCAL endcap with eta "<<iEta<<" "<<iPhi<<" "<<depth<<", index "<<indx<<" already used "<<std::endl;
+	       }else hcalHitVec_[indx].setDetId(detId.rawId());
+	     }	      
 	  }
 	}//end depth loop
       }//end iphi loop
