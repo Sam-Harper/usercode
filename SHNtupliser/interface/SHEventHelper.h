@@ -99,7 +99,7 @@ public:
   static int getVertexNrClosestZ(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
 
   static bool passMuonId(const reco::Muon& muon,const heep::Event& heepEvent);
-
+  static void fillRecHitClusterMap(const reco::SuperCluster& superClus,SHEvent& shEvent);
 private:
   //the hashing functions for vector positions
   int ecalHitHash_(const DetId detId)const;
@@ -110,11 +110,12 @@ private:
   void initHcalHitVec_()const;
   
   static uint32_t getEcalFlagBits_(const EcalRecHit& hit);//because a simple accessor to the bit was too much to ask
+  static int getTrkQuality_(const reco::Track& trk);//likewise..
 
   void fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE)const;
   void fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const;
   int getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const;
-
+  
 };
 
 #endif

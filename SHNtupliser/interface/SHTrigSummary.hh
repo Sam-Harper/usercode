@@ -81,7 +81,9 @@ public:
   //we shall see if these stay here or migrate to an seperate class
   const SHTrigResult& getTrig(const std::string& trigName)const;
   const SHTrigObj& getTrigObj(const std::string& trigName,float eta,float phi,float maxDR=SHTrigObj::kStdMaxDR)const;
+  const SHTrigObj& getTrigObj(const std::vector<std::string>& trigNames,float eta,float phi,float maxDR=SHTrigObj::kStdMaxDR)const;
   std::vector<const SHTrigObj*> getTrigObjs(const std::string& trigName)const;
+  std::vector<const SHTrigObj*> getTrigObjs(const std::vector<std::string>& trigName)const;
 
   const SHTrigObj& getTrigObj(float eta,float phi,int type,float maxDR=SHTrigObj::kStdMaxDR)const{
     auto objs=getTrigObjs(eta,phi,type,maxDR);return objs.empty() ? nullTrigObj_ : *objs.front();

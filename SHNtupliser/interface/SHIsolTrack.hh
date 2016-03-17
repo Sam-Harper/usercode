@@ -15,10 +15,17 @@ private:
   int vertexNr_;
   float chi2_;
   int ndof_;
+  int algosAndQual_; //packed with algoID, prevAlgoID and quailty 
+                     //(note quality is bits rather than number, breaking with CMSSW, 9th bit is undefined)
+
+  static constexpr int kAlgoIdMask=0x3F;
+  static constexpr int kAlgoIdSize=6;
+  static constexpr int kQualMask=0x1FF;
+  static constexpr int kQualSize=9;
 
 public:
   SHIsolTrack();
-  SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof);
+  SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual);
   
   const TVector3& p3()const{return p3_;}
   const TVector3& vtxPos()const{return vtxPos_;}
@@ -28,8 +35,12 @@ public:
   int vertexNr()const{return vertexNr_;}
   int ndof()const{return ndof_;}
   float chi2()const{return chi2_;}
-
-  ClassDef(SHIsolTrack,3)
+  int algo()const{return algosAndQual_&kAlgoIdMask;}
+  int prevAlgo()const{return (algosAndQual_>>kAlgoIdSize)&kAlgoIdMask;}
+  int quality()const{return (algosAndQual_>>kAlgoIdSize*2)&kQualMask;}
+  static int packAlgoIDInfo(int algoId,int prevAlgoId,int quality);
+  static void unpackAlgoIDInfo(const int packedId,int& algoId,int& prevAlgoId,int& quality); //mainly for debuging
+  ClassDef(SHIsolTrack,5)
 };
 
 #endif

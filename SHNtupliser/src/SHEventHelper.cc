@@ -149,8 +149,14 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   const std::vector<reco::Photon>& photons = heepEvent.recoPhos();
   //std::cout <<"nr electrons "<<electrons.size()<<std::endl;
   // std::cout <<"nr photons "<<photons.size()<<std::endl;
+  
+  //so turns out the same supercluster can be used for multiple photons
+  //happyness, so we protect against this
+  std::vector<const reco::SuperCluster*> usedSCs;
   for(size_t phoNr=0;phoNr<photons.size();phoNr++){
     const reco::SuperCluster& sc = *photons[phoNr].superCluster();
+    if(std::find(usedSCs.begin(),usedSCs.end(),&sc)!=usedSCs.end()) continue;//already added this supercluster, skip it...
+    usedSCs.push_back(&sc);
     size_t eleNr = matchToEle(sc,electrons);
     if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
     
@@ -166,7 +172,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
   shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
- 
+  fillRecHitClusterMap(*gsfEle.superCluster(),shEvent);
+
   if(shEle->seedId()!=0 && false){
     
     const TVector3& seedPos = GeomFuncs::getCell(shEle->seedId()).pos();
@@ -196,7 +203,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const
 {
-  shEvent.addElectron(photon,shEvent.getCaloHits());
+  shEvent.addElectron(photon,shEvent.getCaloHits());  
+  fillRecHitClusterMap(*photon.superCluster(),shEvent);
 }
 
 
@@ -436,11 +444,27 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
       int vertexNr=-1;
       if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
       //std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
-      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,trk.chi2(),trk.ndof());
+      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,
+						 trk.chi2(),trk.ndof(),
+						 SHIsolTrack::packAlgoIDInfo(trk.algo(),trk.originalAlgo(),getTrkQuality_(trk)));
     }
   } 
 }
 
+void SHEventHelper::fillRecHitClusterMap(const reco::SuperCluster& superClus,SHEvent& shEvent)
+{
+  for(auto clusIt=superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
+    const reco::CaloCluster& clus = **clusIt;
+    std::vector<std::pair<int,float>> hitsAndFracs(clus.hitsAndFractions().size());
+    std::transform(clus.hitsAndFractions().begin(),clus.hitsAndFractions().end(),
+		   hitsAndFracs.begin(),
+		   [](const std::pair<DetId,float>& val)
+		   {return std::pair<int,float>(val.first.rawId(),val.second);});
+    if(!shEvent.getRecHitClusMap().addCluster(clus.seed().rawId(),hitsAndFracs)){
+      LogErr <<"bad fill "<<shEvent.runnr()<<" "<<shEvent.lumiSec()<<" "<<shEvent.eventnr()<<std::endl;
+    }
+  }
+}
 void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   //why yes I might be throwing away the patty goodness, whoops
@@ -602,6 +626,19 @@ uint32_t SHEventHelper::getEcalFlagBits_(const EcalRecHit& hit)
   }
   return bits;
 
+}
+
+
+//grr, this should be member func
+int SHEventHelper::getTrkQuality_(const reco::Track& trk)
+{
+  int trkQual=0;
+  for(int qualBit = 0;qualBit<reco::TrackBase::qualitySize;qualBit++){
+    if(trk.quality(static_cast<reco::TrackBase::TrackQuality>(qualBit))) trkQual|=(0x1<<qualBit);
+  }
+  //now we deal with the invalid state
+  if(trkQual==0) trkQual|=(0x1<<reco::TrackBase::qualitySize);
+  return trkQual;
 }
 
 int SHEventHelper::getVertexNr(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices)

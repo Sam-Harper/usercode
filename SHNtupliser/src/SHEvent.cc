@@ -108,6 +108,7 @@ void SHEvent::clear()
   puSum_.clear();
   pfCands_.clear();
   pfClusters_.clear();
+  recHitClusMap_.clear();
 }
 SHEvent::~SHEvent()
 {
@@ -198,9 +199,9 @@ void SHEvent::addIsolTrk(const SHIsolTrack& trk)
   
 }
 
-void SHEvent::addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof)
+void SHEvent::addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual)
 {
-  new(isolTrkArray_[nrIsolTrks()]) SHIsolTrack(p3,vtxPos,posCharge,vertexNr,chi2,ndof);
+  new(isolTrkArray_[nrIsolTrks()]) SHIsolTrack(p3,vtxPos,posCharge,vertexNr,chi2,ndof,algosAndQual);
   
 }
 
