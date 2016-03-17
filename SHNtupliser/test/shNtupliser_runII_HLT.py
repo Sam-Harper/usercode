@@ -124,9 +124,9 @@ else:
   #  print "datset code ",process.shNtupliser.datasetCode
 
 # Additional output definition
-import HLTrigger.HLTfilters.hltHighLevel_cfi
-process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
+#import HLTrigger.HLTfilters.hltHighLevel_cfi
+#process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 
 process.egammaFilter = cms.EDFilter("EGammaFilter",
@@ -157,21 +157,31 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
 
+from SHarper.TrigTools.pixelMatchParams_cfi import *
+
 process.hltEgammaPixelSeedVars = cms.EDProducer("EgammaHLTPixelMatchVarProducer",
                                                 recoEcalCandidateProducer=cms.InputTag("hltEgammaCandidates"),
-                                                pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeeds")
+                                                pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeeds"),
+                                                dPhi1SParams=dPhi1SParams,
+                                                dPhi2SParams=dPhi2SParams,
+                                                dRZ2SParams=dRZ2SParams
 )
 process.hltEgammaPixelSeedVarsUnseeded = cms.EDProducer("EgammaHLTPixelMatchVarProducer",
                                                         recoEcalCandidateProducer=cms.InputTag("hltEgammaCandidatesUnseeded"),
-                                                        pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeedsUnseeded")
+                                                        pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeedsUnseeded"),
+                                                        dPhi1SParams=dPhi1SParams,
+                                                        dPhi2SParams=dPhi2SParams,
+                                                        dRZ2SParams=dRZ2SParams
 )
+
+
 process.p = cms.Path(#process.primaryVertexFilter*
 #    process.egammaFilter*
     process.hltEgammaPixelSeedVars*process.hltEgammaPixelSeedVarsUnseeded*
     process.shNtupliser)
         
-if not isMC:
-    process.p.insert(0,process.skimHLTFilter)
+#if not isMC:
+#    process.p.insert(0,process.skimHLTFilter)
 
 #from SHarper.HEEPAnalyzer.heepTools import *
 #swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")

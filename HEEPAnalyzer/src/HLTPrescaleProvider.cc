@@ -160,7 +160,7 @@ HLTPrescaleProvider::prescaleValuesInDetail(const edm::Event& iEvent,
                        << result.first[i].second;
       }
       message << ".";
-      edm::LogError("HLTConfigData") << message.str();
+      //      edm::LogError("HLTConfigData") << message.str();
       result.first.clear();
     }
   } else {
