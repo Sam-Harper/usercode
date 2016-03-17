@@ -68,7 +68,7 @@ def addOutputMod(process):
                                              ),
                                              
                                              outputCommands = cms.untracked.vstring( 'drop *',
-  #                                                                                  'keep *',
+                                                                                  #   'keep *',
                                                                                      'keep *_hltL1GtObjectMap_*_*',
                                                                                 #     'keep FEDRawDataCollection_rawDataCollector_*_*',
                                                                                 #     'keep FEDRawDataCollection_source_*_*',
@@ -82,7 +82,8 @@ def addOutputMod(process):
                                                                                      'keep *_externalLHEProducer_*_*',
                                                                                      'keep *_generator_*_*',
                                                                                      'keep *_hltEgammaGsfTracks*_*_*',
-                                                                                     'keep recoElectronSeeds_*_*_*')
+                                                                                     'keep recoElectronSeeds_*_*_*',
+                                                                                     'keep *_nrEventsStorer_*_*')
                                              )
     process.HLTOutput = cms.EndPath(process.hltOutputTot)
     process.HLTSchedule.insert(len(process.HLTSchedule),process.HLTOutput)
