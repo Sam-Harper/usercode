@@ -17,7 +17,7 @@ def addInputFiles(source,files):
                     files.append(filename)
         else:
             from SHarper.SHNtupliser.dasFileQuery import dasFileQuery
-            files=dasFileQuery(files)
+            files=dasFileQuery(files,-1)
 
         
 
