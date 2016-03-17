@@ -435,7 +435,9 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
       int vertexNr=-1;
       if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
       //std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
-      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,trk.chi2(),trk.ndof());
+      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,
+						 trk.chi2(),trk.ndof(),
+						 SHIsolTrack::packAlgoIDInfo(trk.algo(),trk.originalAlgo(),getTrkQuality_(trk)));
     }
   } 
 }
@@ -601,6 +603,19 @@ uint32_t SHEventHelper::getEcalFlagBits_(const EcalRecHit& hit)
   }
   return bits;
 
+}
+
+
+//grr, this should be member func
+int SHEventHelper::getTrkQuality_(const reco::Track& trk)
+{
+  int trkQual=0;
+  for(int qualBit = 0;qualBit<reco::TrackBase::qualitySize;qualBit++){
+    if(trk.quality(static_cast<reco::TrackBase::TrackQuality>(qualBit))) trkQual|=(0x1<<qualBit);
+  }
+  //now we deal with the invalid state
+  if(trkQual==0) trkQual|=(0x1<<reco::TrackBase::qualitySize);
+  return trkQual;
 }
 
 int SHEventHelper::getVertexNr(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices)

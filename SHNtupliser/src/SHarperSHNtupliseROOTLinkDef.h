@@ -37,6 +37,7 @@
 #include "SHarper/SHNtupliser/interface/SHTrigResult.hh"
 #include "SHarper/SHNtupliser/interface/SHTrigObj.hh"
 #include "SHarper/SHNtupliser/interface/SHBitsDef.hh"
+#include "SHarper/SHNtupliser/interface/SHRecHitsToClustersMap.hh"
 
 
 
@@ -91,5 +92,6 @@
 #pragma link C++ class SHTrigResult+;
 #pragma link C++ class SHBitsDef+;
 #pragma link C++ class SHL1Result+;
+#pragma link C++ class SHRecHitsToClustersMap+;
 
 #endif

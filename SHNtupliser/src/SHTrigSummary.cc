@@ -21,9 +21,18 @@ const SHTrigResult& SHTrigSummary::getTrig(const std::string& trigName)const
   else return nullTrigResult_;
 }
 
+
 const SHTrigObj& SHTrigSummary::getTrigObj(const std::string& trigName,float eta,float phi,float maxDR)const
 {
-  TBits bits = filterBitsDef_.getBits(trigName);
+  std::vector<std::string> trigNames={trigName};
+  return getTrigObj(trigNames,eta,phi,maxDR);
+}
+  
+
+const SHTrigObj& SHTrigSummary::getTrigObj(const std::vector<std::string>& trigNames,
+					   float eta,float phi,float maxDR)const
+{
+  TBits bits = filterBitsDef_.getBits(trigNames);
   auto allTrigObjs = getTrigObjs(eta,phi,SHTrigObj::ALL,maxDR);
   std::vector<const SHTrigObj*> passingTrigObjs;
   std::copy_if(allTrigObjs.begin(),allTrigObjs.end(),std::back_inserter(passingTrigObjs),
@@ -40,7 +49,13 @@ const SHTrigObj& SHTrigSummary::getTrigObj(const std::string& trigName,float eta
 
 std::vector<const SHTrigObj*> SHTrigSummary::getTrigObjs(const std::string& trigName)const
 {
-  TBits bits = filterBitsDef_.getBits(trigName);
+  std::vector<std::string> trigNames={trigName};
+  return getTrigObjs(trigNames);
+}
+
+std::vector<const SHTrigObj*> SHTrigSummary::getTrigObjs(const std::vector<std::string>& trigNames)const
+{
+  TBits bits = filterBitsDef_.getBits(trigNames);
   std::vector<const SHTrigObj*> passingTrigObjs;
   for(auto& trigObj : trigObjs()){
     if(trigObj.pass(bits)) passingTrigObjs.push_back(&trigObj);

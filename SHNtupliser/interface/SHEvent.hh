@@ -25,6 +25,7 @@
 #include "SHarper/SHNtupliser/interface/SHGenInfo.hh"
 #include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
+#include "SHarper/SHNtupliser/interface/SHRecHitsToClustersMap.hh"
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -110,6 +111,7 @@ class SHEvent : public TObject {
   SHGenInfo genInfo_;//! stored on a seperate branch
   SHTrigSummary trigSum_;//! stored on a seperate branch
   SHPileUpSummary puSum_;//! stored on a seperate branch 
+  SHRecHitsToClustersMap recHitClusMap_;//! stored on a seperate branch 
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -139,7 +141,7 @@ class SHEvent : public TObject {
   /// void addIsolCluster(const reco::CaloCluster& clus);
   // void addIsolSuperCluster(const reco::SuperCluster& superClus);
   void addIsolTrk(const SHIsolTrack& trk);
-  void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof);
+  void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual);
  
   void addMCParticle(int partIndx,int partStdhep,int partIdhep,
 		     int partJmo1,int partJmo2,int partNrMo,
@@ -255,6 +257,8 @@ class SHEvent : public TObject {
   SHPileUpSummary& getPUSum(){return puSum_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   TClonesArray& getPreShowerClusters(){return preShowerClusArray_;}
+  const SHRecHitsToClustersMap& getRecHitClusMap()const{return recHitClusMap_;}
+  SHRecHitsToClustersMap& getRecHitClusMap(){return recHitClusMap_;}
   double genEventPtHat()const{return genEventPtHat_;}
   const TBits& l1Bits()const{return l1Bits_;}
   int bx()const{return bx_;}
