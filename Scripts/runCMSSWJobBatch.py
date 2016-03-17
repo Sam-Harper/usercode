@@ -96,8 +96,10 @@ import argparse
 parser = argparse.ArgumentParser(description='submits CMSSW jobs to RAL batch system')
 parser.add_argument('--config',help='cmsRun config file to run',required=True)
 parser.add_argument('--input',help='input file or file pattern to run over',required=True)
-parser.add_argument('--output',help='output filebase name',required=True)
+parser.add_argument('--output',help='output filebase name, defaults to outputDir+.root',default=None)
 parser.add_argument('--outputDir',help='ouput dir (under scratch/mc/CMSSWVersion/<outputdir>',required=True)
+parser.add_argument('--interfaceType',help='interface type of python config file (0=SamStd, 1=varparsing std,=2 varparsing extended',default=1,type=int)
+parser.add_arugment('--runBatch',help='run on batch rather than locally',default=True,type=bool)
 parser.add_argument('--nrJobs',help='number of jobs to split into (can not be larger than #files to run over)',default=1,type=int)
 
 args = parser.parse_args()
@@ -139,12 +141,15 @@ os.system("cd "+batchJobBaseDir+"; scramv1 proj -n "+batchJobDir+" CMSSW "+cmssw
 #os.system("tar -zxvf "+batchJobDirAndPath+"/default.tgz")
 copyReleaseFiles(batchJobDirAndPath)
 
-runBatch=True
 
 for jobNr in range(0,args.nrJobs):
     print jobNr
     batchSubmitFile="qsub_batch2_"+str(jobNr)+".sh"
-    outputFilename = args.output.split(".root")[0]+"_"+str(jobNr+1)+".root"
+    if args.output!=None:
+        outputFilename = args.output.split(".root")[0]+"_"+str(jobNr+1)+".root"
+    else:
+        outputFilename = args.outputDir.split("/")[-1]+"_"+str(jobNr+1)+".root"
+    
     shutil.copyfile(batchSubmitBaseFile,batchSubmitFile)
     shutil.copyfile(args.config,batchJobDirAndPath+"/src/cmssw.py")
     batchFile=open(batchSubmitFile,'a')
@@ -154,29 +159,30 @@ for jobNr in range(0,args.nrJobs):
     batchFile.write("echo $TMPDIR\n")
     batchFile.write("cmsenv\n eval `scramv1 runtime -sh` \n");
     batchFile.write("echo $CMSSW_RELEASE_BASE $CMSSW_BASE \n")
-    
-    runVarParsing=False
 
     cmd="cmsRun cmssw.py"
     for filename in inputFilesForEachJob[jobNr]:
-        if runVarParsing:
+        if args.interfaceType==1 or args.interfaceType==2:
             if cmd.find("inputFiles=")==-1: cmd+=" inputFiles="
             else: cmd+=","
         else: cmd+=" "
         cmd+=filename
-    if runBatch:
+    if args.runBatch==True:
         cmd+=" "
-        if runVarParsing: cmd+="outputFile="
-        cmd+="$TMPDIR/"+outputFilename+"\n"
+        if args.interfaceType==1: cmd+="outputFile="
+        if(args.interfaceType==2: cmd+="outFile="
+        cmd+="${TMPDIR}/"+outputFilename+"\n"
+        #cmd+=outputFilename+"\n"
         batchFile.write(cmd)
         batchFile.write("mv $TMPDIR/"+outputFilename+" "+fullOutputDir)
+        #batchFile.write("mv "+outputFilename+" "+fullOutputDir)
     else:
         cmd+=" outputFile="+fullOutputDir+"/"+outputFilename
         batchFile.write(cmd)
 
     batchFile.close()
     
-    if runBatch:
+    if args.runBatch==True:
         os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
         os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
     else:
