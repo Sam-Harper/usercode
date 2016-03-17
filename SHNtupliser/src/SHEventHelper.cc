@@ -171,7 +171,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
   shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
- 
+  fillRecHitClusterMap(*gsfEle.superCluster(),shEvent);
+
   if(shEle->seedId()!=0 && false){
     
     const TVector3& seedPos = GeomFuncs::getCell(shEle->seedId()).pos();
@@ -201,7 +202,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const
 {
-  shEvent.addElectron(photon,shEvent.getCaloHits());
+  shEvent.addElectron(photon,shEvent.getCaloHits());  
+  fillRecHitClusterMap(*photon.superCluster(),shEvent);
 }
 
 
@@ -448,6 +450,20 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
   } 
 }
 
+void SHEventHelper::fillRecHitClusterMap(const reco::SuperCluster& superClus,SHEvent& shEvent)
+{
+  for(auto clusIt=superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
+    const reco::CaloCluster& clus = **clusIt;
+    std::vector<std::pair<int,float>> hitsAndFracs(clus.hitsAndFractions().size());
+    std::transform(clus.hitsAndFractions().begin(),clus.hitsAndFractions().end(),
+		   hitsAndFracs.begin(),
+		   [](const std::pair<DetId,float>& val)
+		   {return std::pair<int,float>(val.first.rawId(),val.second);});
+    if(!shEvent.getRecHitClusMap().addCluster(clus.seed().rawId(),hitsAndFracs)){
+      LogErr <<"bad fill "<<shEvent.runnr()<<" "<<shEvent.lumiSec()<<" "<<shEvent.eventnr()<<std::endl;
+    }
+  }
+}
 void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   //why yes I might be throwing away the patty goodness, whoops

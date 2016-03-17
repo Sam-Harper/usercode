@@ -99,7 +99,7 @@ public:
   static int getVertexNrClosestZ(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
 
   static bool passMuonId(const reco::Muon& muon,const heep::Event& heepEvent);
-
+  static void fillRecHitClusterMap(const reco::SuperCluster& superClus,SHEvent& shEvent);
 private:
   //the hashing functions for vector positions
   int ecalHitHash_(const DetId detId)const;
