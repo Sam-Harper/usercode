@@ -99,12 +99,13 @@ parser.add_argument('--input',help='input file or file pattern to run over',requ
 parser.add_argument('--output',help='output filebase name, defaults to outputDir+.root',default=None)
 parser.add_argument('--outputDir',help='ouput dir (under scratch/mc/CMSSWVersion/<outputdir>',required=True)
 parser.add_argument('--interfaceType',help='interface type of python config file (0=SamStd, 1=varparsing std,=2 varparsing extended',default=0,type=int)
-parser.add_argument('--runBatch',help='run on batch rather than locally',default=True,type=bool)
+parser.add_argument('--runLocal',help='run locally rather than batch',action='store_true')
 parser.add_argument('--nrJobs',help='number of jobs to split into (can not be larger than #files to run over)',default=1,type=int)
 parser.add_argument('--baseOutDir',help='base output directory',default="mc")
 
 args = parser.parse_args()
 print args.config
+
 
 inputFilesForEachJob=splitInput(args.input,args.nrJobs)
 
@@ -168,7 +169,7 @@ for jobNr in range(0,args.nrJobs):
             else: cmd+=","
         else: cmd+=" "
         cmd+=filename
-    if args.runBatch==True:
+    if args.runLocal==False:
         cmd+=" "
         if args.interfaceType==1: cmd+="outputFile="
         if args.interfaceType==2: cmd+="outFile="
@@ -179,13 +180,14 @@ for jobNr in range(0,args.nrJobs):
         #batchFile.write("mv "+outputFilename+" "+fullOutputDir)
     else:
         cmd+=" "
-        if runVarParsing: cmd+="outputFile="
+        if args.interfaceType==1: cmd+="outputFile="
+        if args.interfaceType==2: cmd+="outFile="
         cmd+=fullOutputDir+"/"+outputFilename
         batchFile.write(cmd)
 
     batchFile.close()
     
-    if args.runBatch==True:
+    if args.runLocal==False:
         os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
         os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
     else:
