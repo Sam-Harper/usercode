@@ -43,6 +43,7 @@ class CrossSecTreeMaker : public edm::EDAnalyzer {
   std::string datasetName_;
   int datasetCode_;
   float crossSec_;
+  float crossSecErr_;
   float cmsEnergy_;
   
 
@@ -95,6 +96,7 @@ void CrossSecTreeMaker::beginJob()
   fs->file().cd();
   tree_= new TTree("crossSecTree","PDF Tree");
   tree_->Branch("crossSec",&crossSec_,"crossSec/F");
+  tree_->Branch("crossSec",&crossSecErr_,"crossSecErr/F");
   tree_->Branch("datasetCode",&datasetCode_,"datasetCode/I");
   tree_->Branch("datasetName",&datasetName_);
   tree_->Branch("mass",&mass_);
@@ -107,6 +109,7 @@ void CrossSecTreeMaker::endRun(edm::Run const& iRun, edm::EventSetup const&)
   edm::Handle< GenRunInfoProduct > genInfoProduct;
   iRun.getByLabel("generator", genInfoProduct );
   crossSec_ = genInfoProduct->internalXSec().value();
+  crossSecErr_ = genInfoProduct->internalXSec().error();
   tree_->Fill();
   
 }
