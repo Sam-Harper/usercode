@@ -14,7 +14,7 @@ config.JobType.psetName = 'shNtupliser_autoGen_cfg.py'
 #TOSED:EXTRAJOBTYPEINFO
 
 config.section_("Data")
-config.Data.inputDataset = 'TOSED:DATASETPATH'
+config.Data.outputPrimaryDataset = 'TOSED:DATASETPATH'
 config.Data.inputDBS = 'global'
 config.Data.splitting = 'EventBased'
 config.Data.unitsPerJob = 'TOSED:UNITSPERJOB'

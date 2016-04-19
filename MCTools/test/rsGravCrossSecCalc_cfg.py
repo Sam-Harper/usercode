@@ -47,7 +47,11 @@ options.register ('cmsswOutput',
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.bool,          
                   "output in CMSSW format")
-
+options.register ('pdfSet',
+                  13, 
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.int,          
+                  "pythia pdf set")
 #options.parseArguments()
 options.parseArguments()
 
@@ -105,7 +109,7 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
                         'ParticleDecays:tauMax = 10',
                         'Tune:pp 5',
                         'Tune:ee 3',
-                        'PDF:pSet 13',
+                        'PDF:pSet '+str(options.pdfSet),
                         'ExtraDimensionsG*:all = on',
                         'ExtraDimensionsG*:kappaMG = '+str(5.4*options.kMpl),
                         '5100039:m0 = '+str(options.mass),

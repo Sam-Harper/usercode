@@ -27,3 +27,8 @@ def registerDefaultMCOptions(options):
                       VarParsing.VarParsing.multiplicity.singleton,
                       VarParsing.VarParsing.varType.string,          
                       "output filename (without tags)")
+    options.register ('pdfSet',
+                      13, 
+                      VarParsing.VarParsing.multiplicity.singleton,
+                      VarParsing.VarParsing.varType.int,          
+                      "pythia pdf set")

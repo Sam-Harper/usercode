@@ -57,7 +57,7 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
                         'ParticleDecays:tauMax = 10',
                         'Tune:pp 5',
                         'Tune:ee 3',
-                    #     'PDF:pSet 13',
+                        'PDF:pSet 13',
 
                         'WeakSingleBoson:ffbar2gmZ = on',
                         '23:onMode = off',

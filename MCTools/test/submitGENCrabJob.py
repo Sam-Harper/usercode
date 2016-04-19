@@ -43,7 +43,7 @@ outputFile=options.dataset+"_"+pubName+"_"+datasetFormat+".root"
 outputPath="/store/user/sharper/"+options.outDir+"/"+datasetFormat # /store/user/<dir>[/<subdirs>]/<primary-dataset>/<publication-name>/<time-stamp>/<counter>/<file-name>
 import datetime
 currTime=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-workingDir="MC_"+options.outDir+"_"+options.dataset+"_"+pubName+"_"+currTime
+workingDir="MC_"+options.outDir.replace("/","-")+"_"+options.dataset+"_"+pubName+"_"+currTime
 workingDirTmp="MC_"+options.dataset+currTime
 
 with open(options.config,"r") as configFile:
@@ -52,14 +52,14 @@ with open(options.config,"r") as configFile:
     tempConfig="cmssw_temp.py"
     with open(tempConfig,"w") as tempConfigFile:
         for line in configLines:
-            line=line.replace("TOSED:OUTPUTFILE",outputFile)
+            line=line.replace("OUTPUTFILE.root",outputFile)
             tempConfigFile.write(line)
 
   
 
 crabSubmitCmd = "crab submit -c crab_mcGen.py --wait General.requestName="+workingDirTmp+ \
     " General.transferOutputs="+str(options.copyData)+ \
-    " Data.inputDataset="+options.dataset+ \
+    " Data.outputPrimaryDataset="+options.dataset+ \
     " Data.unitsPerJob="+str(options.nrEventsPerJob)+ \
     " Data.totalUnits="+str(int(options.nrJobs)*int(options.nrEventsPerJob))+ \
     " Data.outLFNDirBase="+outputPath+ \
@@ -67,7 +67,7 @@ crabSubmitCmd = "crab submit -c crab_mcGen.py --wait General.requestName="+worki
     " JobType.psetName="+tempConfig+ \
     " General.workArea="+crabProjDir+ \
     " General.transferLogs="+str(options.transferLogFiles) + \
-    " General.publication="+str(options.publish)
+    " Data.publication="+str(options.publish)
 
 print "will submit:"
 print crabSubmitCmd

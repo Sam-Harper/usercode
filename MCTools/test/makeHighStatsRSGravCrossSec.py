@@ -7,13 +7,19 @@ def genRSGrav(args,jobNr):
     
     mass=args.massStep*jobNr+args.startMass;
 ##    maxMass=minMass+args.massStep;
-    
+    massWin=int(0.05*1000*args.com)
+    minMass=mass-massWin
+    if minMass<0: minMass=0
+    maxMass=mass+massWin
+
     kMplStr="kMpl"+args.kMpl.replace(".","")
-    outputFilename=args.resultsDir.rstrip("/")+"/RSGrav_"+kMplStr+"_13TeV_M-"+str(mass)+".root"
+    outputFilename=args.resultsDir.rstrip("/")+"/RSGrav_"+kMplStr+"_"+str(args.com)+"TeV_pdfSet"+str(args.pdfSet)+"_M-"+str(mass)+"_"+str(minMass)+"to"+str(maxMass)+".root"
     cmsRunArgs=["cmsRun",args.configFile,"kMpl="+args.kMpl,"maxEvents="+str(args.nrEvents),
-                "mass="+str(mass),
+                "mass="+str(mass),"minMass="+str(minMass),"maxMass="+str(maxMass),
                 "outFile="+outputFilename,
-                "cmsswOutput=True"]
+                "cmsswOutput=False",
+                "comEnergy="+str(args.com),
+		"pdfSet="+str(args.pdfSet)]
     ##runStr=""
     #print cmsRunArgs
     import subprocess
@@ -42,7 +48,9 @@ parser.add_argument('--massStep',default=100,type=int,help='mass step')
 parser.add_argument('--kMpl',required=True,help='kMpl value')
 parser.add_argument('--nrEvents',default=50000,help='nrEvents to gen for each point')
 parser.add_argument('--nrThreads',default=1,type=int,help='number of threads to run')
+parser.add_argument('--com',default=13,type=int,help='sqrt(s) (int in TeV)')
 parser.add_argument('--resultsDir',default="./",help='results directory')
+parser.add_argument('--pdfSet',default=13,type=int,help='pdfset')
 args = parser.parse_args()
 
 if not os.path.exists(args.resultsDir):
