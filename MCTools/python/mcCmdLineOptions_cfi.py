@@ -32,3 +32,8 @@ def registerDefaultMCOptions(options):
                       VarParsing.VarParsing.multiplicity.singleton,
                       VarParsing.VarParsing.varType.int,          
                       "pythia pdf set")
+    options.register ('cmsswOutput',
+                      False,
+                      VarParsing.VarParsing.multiplicity.singleton,
+                      VarParsing.VarParsing.varType.bool,          
+                      "output in CMSSW format")

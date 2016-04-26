@@ -149,9 +149,10 @@ for jobNr in range(0,args.nrJobs):
     batchFile.write("cd "+batchJobDirAndPath+"/src\n");
     batchFile.write("echo $PWD\n")
     batchFile.write("cmsenv\n eval `scramv1 runtime -sh` \n");
-    cmd="cmsRun cmssw.py"
+    cmd="cmsRun cmssw.py inputFiles="
     for filename in inputFilesForEachJob[jobNr]:
-        cmd+=" "+filename
+        cmd+=filename+","
+    cmd=cmd.rstrip(",")
     cmd+=" "+fullOutputDir+"/"+outputFilename
    # cmd+=" $TMPDIR/"+outputFilename+"\n"
    # cmd+="mv $TMPDIR/"+outputFilename+" "+fullOutputDir
@@ -159,8 +160,8 @@ for jobNr in range(0,args.nrJobs):
     batchFile.close()
 
     #os.system("qsub "+batchSubmitFile+" -j oe -o "+fullLogDir+" -q prod -l walltime=16:00:00")
-    os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
-   # os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
+   # os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
+    os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
     #os.system("chmod +x "+batchSubmitFile);
     #cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(jobNr)+".log &"
    ## print cmd
