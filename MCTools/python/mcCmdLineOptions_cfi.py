@@ -28,9 +28,9 @@ def registerDefaultMCOptions(options):
                       VarParsing.VarParsing.varType.string,          
                       "output filename (without tags)")
     options.register ('pdfSet',
-                      13, 
+                      "13", 
                       VarParsing.VarParsing.multiplicity.singleton,
-                      VarParsing.VarParsing.varType.int,          
+                      VarParsing.VarParsing.varType.string,          
                       "pythia pdf set")
     options.register ('cmsswOutput',
                       False,
