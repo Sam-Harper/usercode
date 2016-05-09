@@ -1,6 +1,6 @@
 #ifndef Sharper_TrigTools_TrigToolsStructs_h
 #define Sharper_TrigTools_TrigToolsStructs_h
-
+#include "DataFormats/Math/interface/LorentzVector.h"
 #include "TLorentzVector.h"
 #include <string>
 #include <vector>
@@ -44,14 +44,19 @@ namespace trigtools{
     float et,nrgy,pt,eta,phi;
     P4Struct(){}
     P4Struct(const TLorentzVector& p4){fill(p4);}
+    static std::string contents(){return "et/F:nrgy:pt:eta:phi";}
     void fill(const TLorentzVector&p4){
       et=p4.Et();pt=p4.Pt();nrgy=p4.E();eta=p4.Eta();phi=p4.Phi();
     }
-    
+    void fill(const math::XYZTLorentzVector&p4){
+      et=p4.Et();pt=p4.Pt();nrgy=p4.E();eta=p4.Eta();phi=p4.Phi();
+    }
     
     P4Struct& operator=(float val){et=val;nrgy=val;eta=val;phi=val;return *this;}
     P4Struct& operator=(int val){et=val;nrgy=val;eta=val;phi=val;return *this;}
-    P4Struct& operator=(const TLorentzVector&p4){fill(p4);return *this;}
+      P4Struct& operator=(const TLorentzVector&p4){fill(p4);return *this;}
+      P4Struct& operator=(const math::XYZTLorentzVector&p4){fill(p4);return *this;}
+    void clear(){*this=-999;}
   };
   
   struct PathData {
