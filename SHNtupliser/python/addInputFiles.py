@@ -28,7 +28,7 @@ def addInputFiles(source,files):
     if(files[0].find("/store/")==0):
         filePrefex=""
     if(files[0].find("/eos/")==0):
-        filePrefex="'root://eoscms/"
+        filePrefex="root://eoscms/"
 
  
     for i in range(0,len(files)):
