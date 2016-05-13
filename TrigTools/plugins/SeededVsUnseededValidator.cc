@@ -228,8 +228,7 @@ printMaxRecHitDistsOfCands(const std::vector<reco::RecoEcalCandidate>& cands,
   std::cout <<"printing max dEta,dPhi"<<std::endl;
   for(auto& cand : cands){
     
-    auto maxDiff = getMaxEtaPhiRecHitDist(cand,l1EGs);
-    std::cout <<"  et "<<cand.et()<<" eta "<<cand.eta()<<" phi "<<cand.phi()<<" max dEta "<<maxDiff.first<<" dPhi "<<maxDiff.second<<std::endl;
+    getMaxEtaPhiRecHitDist(cand,l1EGs);
   }
 }
 
@@ -321,8 +320,12 @@ getMaxEtaPhiRecHitDist(const reco::RecoEcalCandidate& cand,
   
   float maxEtaDiff=0.;
   float maxPhiDiff=0.;
+  std::pair<DetId,float> maxEtaHit;
+  std::pair<DetId,float> maxPhiHit;
+    
 
   reco::SuperClusterRef superClus = cand.superCluster();
+
   for(auto subClus = superClus->clustersBegin();subClus!=superClus->clustersEnd();++subClus){
     for(auto& hit : (*subClus)->hitsAndFractions()){
       const CaloSubdetectorGeometry* subDetGeom =  calGeometryHandle_->getSubdetectorGeometry(hit.first);
@@ -331,14 +334,22 @@ getMaxEtaPhiRecHitDist(const reco::RecoEcalCandidate& cand,
 	const GlobalPoint& cellPos =cellGeom->getPosition();
 	float dPhi = std::abs(reco::deltaPhi(l1Phi,cellPos.phi()));
 	float dEta = std::abs(l1Eta-cellPos.eta());
-	if(dPhi>maxPhiDiff) maxPhiDiff=dPhi;
-	if(dEta>maxEtaDiff) maxEtaDiff=dEta;
+	if(dPhi>maxPhiDiff){
+	  maxPhiDiff=dPhi;
+	  maxPhiHit=hit;
+	}
+	if(dEta>maxEtaDiff){
+	  maxEtaDiff=dEta;
+	  maxEtaHit=hit;
+	}
 	
       }else{
 	std::cout <<"Error, didnt find cell geom for "<<hit.first.rawId()<<std::endl;
       }
     }
   }
+  std::cout <<"  et "<<cand.et()<<" eta "<<cand.eta()<<" phi "<<cand.phi()<<" l1 "<<matchedEG.first->pt()<<" eta "<<l1Eta<<" phi "<<l1Phi<<" max dEta "<<maxEtaDiff<<",frac "<<maxEtaHit.second<<" dPhi "<<maxPhiDiff<<", frac "<<maxPhiHit.second<<std::endl;
+
   return {maxEtaDiff,maxPhiDiff};
 
 }
