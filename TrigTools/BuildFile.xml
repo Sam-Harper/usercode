@@ -13,6 +13,7 @@
 <use   name="DataFormats/VertexReco"/>
 <use   name="DataFormats/EgammaReco"/>
 #<use   name="SimDataFormats/SLHC"/>
+<use   name="Geometry/CaloGeometry"/>
 <use   name="DataFormats/CaloTowers"/>
 <export>
   <lib   name="1"/>

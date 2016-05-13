@@ -5,6 +5,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
@@ -28,8 +29,11 @@
 #include "DataFormats/Common/interface/AssociationMap.h"
 
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
+#include "DataFormats/EgammaReco/interface/SuperCluster.h"
 
-
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
 #include "TTree.h"
 
 #include <vector>
@@ -58,7 +62,7 @@ private:
 
   std::vector<FilterToken > seededFilterTokens_,unseededFilterTokens_;
   std::vector<VarToken > seededVarTokens_,unseededVarTokens_;
-  
+  edm::ESHandle<CaloGeometry> calGeometryHandle_;
   
 public:
   explicit SeededVsUnseededValidator(const edm::ParameterSet& iPara);
@@ -73,10 +77,22 @@ public:
   std::pair<const l1t::EGamma*,double> matchL1(const math::XYZTLorentzVector& cand,const l1t::EGammaBxCollection& egs,const double minL1Et,const double maxDR);
   std::pair<const math::XYZTLorentzVector*,double> matchHLT(const math::XYZTLorentzVector& cand,const std::vector<math::XYZTLorentzVector>& hltObjs,const double maxDR);
   std::pair<const reco::RecoEcalCandidate*,double> matchHLT(const reco::RecoEcalCandidateRef& cand,const std::vector<reco::RecoEcalCandidateRef>& hltObjs,const double maxDR);
+
+  const reco::RecoEcalCandidate* matchSCBySeed(const reco::SuperCluster& sc,const std::vector<reco::RecoEcalCandidate>& cands);
+
   template <typename T> void setToken(edm::EDGetTokenT<T>& token,edm::InputTag tag){token=consumes<T>(tag);}
   template <typename T> void setToken(edm::EDGetTokenT<T>& token,const edm::ParameterSet& iPara,const std::string& tag){token=consumes<T>(iPara.getParameter<edm::InputTag>(tag));}
   bool lastFilterMatches(const edm::Event& iEvent);
   void printFilterInfo(const edm::Event& iEvent,FilterToken filterToken,VarToken varToken,CandToken candToken);
+  
+  void printSuperClusters(const std::vector<reco::RecoEcalCandidate>& seededCands,
+			  const std::vector<reco::RecoEcalCandidate>& unseededCands,
+			  const l1t::EGammaBxCollection& l1EGs);
+  std::pair<float,float> getMaxEtaPhiRecHitDist(const reco::RecoEcalCandidate& cand,
+						const l1t::EGammaBxCollection& egs);
+  void printMaxRecHitDistsOfCands(const std::vector<reco::RecoEcalCandidate>& cands,
+				  const l1t::EGammaBxCollection& l1EGs);
+    
 
 };
 
@@ -159,20 +175,24 @@ void SeededVsUnseededValidator::printFilterInfo(const edm::Event& iEvent,FilterT
     auto candRef = edm::Ref<reco::RecoEcalCandidateCollection>(cands,candNr);
     auto match = matchHLT(candRef,passingCands,0.001);
     float val = varMap.isValid() ? varMap->find(candRef)->val : -999;
-    std::cout <<"  et "<<candRef->et()<<" eta "<<candRef->eta()<<" phi "<<candRef->phi()<<" var "<<val<<" pass "<<(match.first!=nullptr)<<std::endl;
-    
+    if(candRef->et()>30){
+      std::cout <<"  et "<<candRef->et()<<" eta "<<candRef->eta()<<" phi "<<candRef->phi()<<" var "<<val<<" pass "<<(match.first!=nullptr)<<std::endl;
+    }
   }
    
 }
 
 void SeededVsUnseededValidator::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+  iSetup.get<CaloGeometryRecord>().get(calGeometryHandle_);
+
   bool pass = lastFilterMatches(iEvent);
   auto l1EGs = getHandle(iEvent,l1EGToken_);
   int nrEG26s = 0;
   for(auto l1EG = l1EGs->begin(0);l1EG!=l1EGs->end(0);++l1EG){
     if(l1EG->pt()>=26) nrEG26s++;
   }
+  pass=true;
   if(!pass && nrEG26s>=2){
 
 
@@ -189,9 +209,28 @@ void SeededVsUnseededValidator::analyze(const edm::Event& iEvent, const edm::Eve
       std::cout <<"filter "<<unseededFilterTags_[filterNr].label()<<std::endl;
       printFilterInfo(iEvent,unseededFilterTokens_[filterNr],unseededVarTokens_[filterNr],unseededCandToken_);
     }
-  }
-  
+    printSuperClusters(*getHandle(iEvent,seededCandToken_),
+		       *getHandle(iEvent,unseededCandToken_),
+		       *getHandle(iEvent,l1EGToken_));  
 
+  }
+  printMaxRecHitDistsOfCands(*getHandle(iEvent,unseededCandToken_),
+			       *getHandle(iEvent,l1EGToken_)); 
+
+}
+
+
+
+void SeededVsUnseededValidator::
+printMaxRecHitDistsOfCands(const std::vector<reco::RecoEcalCandidate>& cands,
+			   const l1t::EGammaBxCollection& l1EGs)
+{
+  std::cout <<"printing max dEta,dPhi"<<std::endl;
+  for(auto& cand : cands){
+    
+    auto maxDiff = getMaxEtaPhiRecHitDist(cand,l1EGs);
+    std::cout <<"  et "<<cand.et()<<" eta "<<cand.eta()<<" phi "<<cand.phi()<<" max dEta "<<maxDiff.first<<" dPhi "<<maxDiff.second<<std::endl;
+  }
 }
 
 std::pair<const math::XYZTLorentzVector*,double> SeededVsUnseededValidator::matchHLT(const math::XYZTLorentzVector& cand,const std::vector<math::XYZTLorentzVector>& hltObjs,const double maxDR)
@@ -210,7 +249,18 @@ std::pair<const math::XYZTLorentzVector*,double> SeededVsUnseededValidator::matc
   return {bestObj,std::sqrt(bestDR2)};
 
 }
-std::pair<const reco::RecoEcalCandidate*,double> SeededVsUnseededValidator::matchHLT(const reco::RecoEcalCandidateRef& cand,const std::vector<reco::RecoEcalCandidateRef>& hltObjs,const double maxDR)
+const reco::RecoEcalCandidate*
+SeededVsUnseededValidator::matchSCBySeed(const reco::SuperCluster& sc,const std::vector<reco::RecoEcalCandidate>& cands)
+{
+  for(auto& cand : cands){
+    if(cand.superCluster()->seed()->seed()==sc.seed()->seed()) return &cand;
+  }
+  return nullptr;
+    
+}
+
+std::pair<const reco::RecoEcalCandidate*,double> 
+SeededVsUnseededValidator::matchHLT(const reco::RecoEcalCandidateRef& cand,const std::vector<reco::RecoEcalCandidateRef>& hltObjs,const double maxDR)
 {
   const float candEta = cand->eta();
   const float candPhi = cand->phi();
@@ -224,6 +274,72 @@ std::pair<const reco::RecoEcalCandidate*,double> SeededVsUnseededValidator::matc
     }
   }
   return {bestObj,std::sqrt(bestDR2)};
+
+}
+
+
+void SeededVsUnseededValidator::
+printSuperClusters(const std::vector<reco::RecoEcalCandidate>& seededCands,
+		   const std::vector<reco::RecoEcalCandidate>& unseededCands,
+		   const l1t::EGammaBxCollection& l1EGs)
+{
+  for(const auto& unseededCand : unseededCands){
+    reco::SuperClusterRef unseededSC = unseededCand.superCluster();
+    auto matchedCand = matchSCBySeed(*unseededSC,seededCands);
+    reco::SuperClusterRef matchedSC;
+    if(matchedCand) matchedSC = matchedCand->superCluster();
+    if(matchedSC.isNonnull() && std::abs(unseededSC->energy()-matchedSC->energy())>0.00001){
+      std::cout <<"supercluster energy difference "<<std::endl;
+      auto printSC =[](const reco::SuperCluster& sc){
+	std::cout <<"energy "<<sc.energy()<<" raw nrgy "<<sc.rawEnergy()<<" ps nrgy "<<sc.preshowerEnergy()<<" eta "<<sc.eta()<<" phi "<<sc.phi()<<" nr ps clus "<<sc.preshowerClustersSize()<<" nr sub clus "<<sc.clustersSize()<<std::endl;
+	for(auto bc = sc.clustersBegin();bc!=sc.clustersEnd();++bc){
+	  std::cout <<"   clus : "<<(*bc)->energy()<<" , "<<(*bc)->eta()<<" , "<<(*bc)->phi()<<std::endl;//<<" "<<**bc<<std::endl;
+	}
+      };
+      std::cout <<"unseeded "<<std::endl;
+      printSC(*unseededSC);
+      std::cout <<"seeded "<<std::endl;
+      printSC(*matchedSC);
+      auto maxDiff = getMaxEtaPhiRecHitDist(unseededCand,l1EGs);
+      
+      std::cout <<" unseeded max diff eta "<<maxDiff.first<<" phi "<<maxDiff.second<<std::endl;   
+    }
+  }
+}
+
+
+
+std::pair<float,float> 
+SeededVsUnseededValidator::
+getMaxEtaPhiRecHitDist(const reco::RecoEcalCandidate& cand,
+		       const l1t::EGammaBxCollection& egs)
+{
+  auto matchedEG = matchL1(cand.p4(),egs,0,0.2);
+  if(matchedEG.first==nullptr) return {-1,-1};
+  float l1Eta = matchedEG.first->eta();
+  float l1Phi = matchedEG.first->phi();
+  
+  float maxEtaDiff=0.;
+  float maxPhiDiff=0.;
+
+  reco::SuperClusterRef superClus = cand.superCluster();
+  for(auto subClus = superClus->clustersBegin();subClus!=superClus->clustersEnd();++subClus){
+    for(auto& hit : (*subClus)->hitsAndFractions()){
+      const CaloSubdetectorGeometry* subDetGeom =  calGeometryHandle_->getSubdetectorGeometry(hit.first);
+      const CaloCellGeometry* cellGeom = subDetGeom ? subDetGeom->getGeometry(hit.first) : nullptr;
+      if(cellGeom){
+	const GlobalPoint& cellPos =cellGeom->getPosition();
+	float dPhi = std::abs(reco::deltaPhi(l1Phi,cellPos.phi()));
+	float dEta = std::abs(l1Eta-cellPos.eta());
+	if(dPhi>maxPhiDiff) maxPhiDiff=dPhi;
+	if(dEta>maxEtaDiff) maxEtaDiff=dEta;
+	
+      }else{
+	std::cout <<"Error, didnt find cell geom for "<<hit.first.rawId()<<std::endl;
+      }
+    }
+  }
+  return {maxEtaDiff,maxPhiDiff};
 
 }
 
