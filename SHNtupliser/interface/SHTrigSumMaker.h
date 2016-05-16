@@ -39,6 +39,7 @@ public:
     P4Struct(float iPt,float iEta,float iPhi,float iMass):pt(iPt),eta(iEta),phi(iPhi),mass(iMass){}
   };
 
+  static int verboseLvl_;
 public:
   SHTrigSumMaker(){}
   ~SHTrigSumMaker(){}

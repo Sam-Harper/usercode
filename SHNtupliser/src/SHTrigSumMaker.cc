@@ -7,6 +7,9 @@
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
+
+int SHTrigSumMaker::verboseLvl_ = 0;
+
 void SHTrigSumMaker::makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
 {
   if(heepEvent.handles().trigEvent.isValid()){
@@ -168,7 +171,7 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
       shTrigObjsTmp[key].second.first.SetBitNumber(bitNr);
       if(shTrigObjsTmp[key].second.second==0) shTrigObjsTmp[key].second.second=id;
       else if(shTrigObjsTmp[key].second.second!=id && id!=0){
-	LogErr<<" Error trigger object type for filter "<<trigEvt.filterTag(filterNr).label()<<" was previously type "<<shTrigObjsTmp[key].second.second<<" but is now type "<<id<<" cmss id "<<trigIds[objNr]<<std::endl;
+	if(verboseLvl_>0) LogErr<<" Error trigger object type for filter "<<trigEvt.filterTag(filterNr).label()<<" was previously type "<<shTrigObjsTmp[key].second.second<<" but is now type "<<id<<" cmss id "<<trigIds[objNr]<<std::endl;
       }
     }
   }
