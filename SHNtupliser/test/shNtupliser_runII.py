@@ -80,7 +80,6 @@ process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
 
 process.shNtupliser.hltProcName = cms.string("HLT")
-process.shNtupliser.gsfEleTag = "gsfElectrons"
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
 process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
@@ -93,12 +92,6 @@ process.TFileService = cms.Service("TFileService",
 )
 
 import os
-cmsswVersion = os.environ['CMSSW_VERSION']
-if "CMSSW_7" in cmsswVersion:
-    process.shNtupliser.recoPhoTag = "gedPhotons"
-    process.shNtupliser.gsfEleTag = "gedGsfElectrons"
-    process.shNtupliser.superClusterEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel")
-    process.shNtupliser.superClusterEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower")
 
 
 #if 1, its a crab job...
