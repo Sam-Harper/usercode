@@ -109,6 +109,7 @@ private:
       idPos = diff.maxPosDiffHit().first.rawId();
       fracPos = diff.maxPosDiffHit().second;
     }
+    void clear(){dNeg=dPos=fracNeg=fracPos=-999.;idPos=idNeg=0.;}
   };
   struct SeedTreeData {
     trigtools::EvtInfoStruct evtInfo; 
@@ -125,7 +126,18 @@ private:
       tree->Branch("etaHitDiffSC",&etaHitDiffSC,HitDiffs::contents().c_str());
       tree->Branch("phiHitDiffSC",&phiHitDiffSC,HitDiffs::contents().c_str());
       tree->Branch("etaHitDiffL1",&etaHitDiffL1,HitDiffs::contents().c_str());
-      tree->Branch("phiHitDiffL1",&phiHitDiffL1,HitDiffs::contents().c_str());    }
+      tree->Branch("phiHitDiffL1",&phiHitDiffL1,HitDiffs::contents().c_str());   
+    }
+    void clearNonEvt(){
+      p4Unseeded.clear();
+      p4Seeded.clear();
+      p4L1.clear();
+      dRL1=-999;
+      etaHitDiffSC.clear();
+      phiHitDiffSC.clear();
+      etaHitDiffL1.clear();
+      phiHitDiffL1.clear();
+    }
   };
 
     
@@ -316,20 +328,30 @@ void SCSizeTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   for(auto& seededCand : *seededCands){
     const reco::RecoEcalCandidate* matchedCand = matchSCBySeed(*seededCand.superCluster(),*unseededCands);
     if(matchedCand==nullptr){
-      std::cout <<"Error seeded cluster does not have a matching seeded cluster, this was thought to be impossible "<<iEvent.id().run()<<" "<<iEvent.luminosityBlock()<<" "<<iEvent.id().event()<<std::endl;
-      continue;
+      std::cout <<"Error seeded cluster does not have a matching seeded cluster, this was thought to be impossible " <<iEvent.id().run()<<" "<<iEvent.luminosityBlock()<<" "<<iEvent.id().event()<<std::endl;
+      
+      std::cout <<"   et "<<seededCand.et()<<" eta "<<seededCand.eta()<<" phi "<<seededCand.phi()<<std::endl;
+      for(auto& unseededCand : *unseededCands){
+	std::cout <<"       et "<<unseededCand.et()<<" eta "<<unseededCand.eta()<<" phi "<<unseededCand.phi()<<std::endl;
+      }
     }
     auto matchedEG = matchL1(seededCand.p4(),*l1EGs,0,0.2);
     if(matchedEG.first==nullptr){
       //      std::cout <<"Error seeded cluster does not have a matching L1 object, this was thought to be impossible "<<iEvent.id().run()<<" "<<iEvent.luminosityBlock()<<" "<<iEvent.id().event()<<std::endl;
-      continue;
     }
-    treeData_.dRL1 = matchedEG.second;
-    treeData_.p4L1.fill(matchedEG.first->p4());
-    treeData_.p4Seeded.fill(seededCand.p4());
-    treeData_.p4Unseeded.fill(matchedCand->p4());
+    treeData_.clearNonEvt();
     
-    analyzeSC(*matchedCand->superCluster(),*pfClusters,matchedEG.first->p4());
+    treeData_.p4Seeded.fill(seededCand.p4());
+    if(matchedEG.first){
+      treeData_.dRL1 = matchedEG.second;
+      treeData_.p4L1.fill(matchedEG.first->p4());
+    }
+    if(matchedCand){
+      treeData_.p4Unseeded.fill(matchedCand->p4());
+    }
+    if(matchedCand && matchedEG.first){
+      analyzeSC(*matchedCand->superCluster(),*pfClusters,matchedEG.first->p4());
+    }
     tree_->Fill();
     
   }
@@ -372,6 +394,17 @@ SCSizeTreeMaker::matchSCBySeed(const reco::SuperCluster& sc,const std::vector<re
   for(auto& cand : cands){
     if(cand.superCluster()->seed()->seed()==sc.seed()->seed()) return &cand;
   }
+  //well that didnt work, lets see if our subclusters got yanked into another supercluster
+  for(auto& cand : cands){
+    for(auto scBC = sc.clustersBegin();scBC!=sc.clustersEnd();++scBC){
+      for(auto candBC = cand.superCluster()->clustersBegin();candBC!=cand.superCluster()->clustersEnd();++candBC){
+	if((*scBC)->seed()==(*candBC)->seed()){
+	  return &cand;
+	}
+      }
+    }
+  }
+  //really?
   return nullptr;
     
 }
