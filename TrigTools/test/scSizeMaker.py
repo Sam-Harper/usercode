@@ -53,7 +53,8 @@ process.scSizeTreeMaker = cms.EDAnalyzer("SCSizeTreeMaker",
                                          l1EGTag = cms.InputTag('hltCaloStage2Digis','EGamma' ),
                                          seededCands=cms.InputTag("hltEgammaCandidates"),
                                          unseededCands=cms.InputTag("hltEgammaCandidatesUnseeded"),
-                                         pfClusters=cms.InputTag("hltParticleFlowClusterECALL1Seeded")
+                                         seededPFClusters=cms.InputTag("hltParticleFlowClusterECALL1Seeded"),
+                                         unseededPFClusters=cms.InputTag("hltParticleFlowClusterECALUnseeded")
 )
 #load geometry
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
