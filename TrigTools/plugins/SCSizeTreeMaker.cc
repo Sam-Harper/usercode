@@ -109,13 +109,15 @@ private:
       idPos = diff.maxPosDiffHit().first.rawId();
       fracPos = diff.maxPosDiffHit().second;
     }
+    void clear(){dNeg=dPos=fracNeg=fracPos=-999.;idPos=idNeg=0.;}
   };
   struct SeedTreeData {
     trigtools::EvtInfoStruct evtInfo; 
     trigtools::P4Struct p4Unseeded,p4Seeded,p4L1;
     float dRL1;
     HitDiffs etaHitDiffSC,phiHitDiffSC,etaHitDiffL1,phiHitDiffL1;
-
+    float emIsolUnseeded,emIsolHybrid,emIsolSeeded;
+    
     void createBranches(TTree* tree){
       tree->Branch("evt",&evtInfo,trigtools::EvtInfoStruct::contents().c_str());
       tree->Branch("p4Unseeded",&p4Unseeded,trigtools::P4Struct::contents().c_str());
@@ -125,7 +127,22 @@ private:
       tree->Branch("etaHitDiffSC",&etaHitDiffSC,HitDiffs::contents().c_str());
       tree->Branch("phiHitDiffSC",&phiHitDiffSC,HitDiffs::contents().c_str());
       tree->Branch("etaHitDiffL1",&etaHitDiffL1,HitDiffs::contents().c_str());
-      tree->Branch("phiHitDiffL1",&phiHitDiffL1,HitDiffs::contents().c_str());    }
+      tree->Branch("phiHitDiffL1",&phiHitDiffL1,HitDiffs::contents().c_str());   
+      tree->Branch("emIsolUnseeded",&emIsolUnseeded,"emIsolUnseeded/F");
+      tree->Branch("emIsolHybrid",&emIsolHybrid,"emIsolHybrid/F");
+      tree->Branch("emIsolSeeded",&emIsolSeeded,"emIsolSeeded/F");
+    }
+    void clearNonEvt(){
+      p4Unseeded.clear();
+      p4Seeded.clear();
+      p4L1.clear();
+      dRL1=-999;
+      etaHitDiffSC.clear();
+      phiHitDiffSC.clear();
+      etaHitDiffL1.clear();
+      phiHitDiffL1.clear();
+      emIsolUnseeded=emIsolHybrid=emIsolSeeded=-999.;
+    }
   };
 
     
@@ -137,7 +154,8 @@ private:
   
   CandToken seededCandToken_,unseededCandToken_;
   edm::EDGetTokenT<l1t::EGammaBxCollection> l1EGToken_; 
-  edm::EDGetTokenT<reco::PFClusterCollection> pfClustersToken_; 
+  edm::EDGetTokenT<reco::PFClusterCollection> seededPFClustersToken_; 
+  edm::EDGetTokenT<reco::PFClusterCollection> unseededPFClustersToken_; 
   
   edm::ESHandle<CaloGeometry> calGeometryHandle_;
   
@@ -175,6 +193,8 @@ public:
     
   std::vector<std::pair<DetId,float> > getAllHitsInInfluence(const reco::SuperCluster& superClus,const reco::PFClusterCollection& clusters);
   std::vector<const reco::PFCluster*> getClustersWithHit(DetId id,const reco::PFClusterCollection& clusters);
+  static float calIsolation(const reco::SuperCluster& superClus,const reco::PFClusterCollection& clusters);
+  static std::vector<DetId> getSeedDetIds(const reco::SuperCluster& superClus);
 };
 
 
@@ -185,7 +205,8 @@ SCSizeTreeMaker::SCSizeTreeMaker(const edm::ParameterSet& iPara)
   setToken(l1EGToken_,iPara,"l1EGTag");
   setToken(seededCandToken_,iPara,"seededCands");
   setToken(unseededCandToken_,iPara,"unseededCands");
-  setToken(pfClustersToken_,iPara,"pfClusters");
+  setToken(seededPFClustersToken_,iPara,"seededPFClusters");
+  setToken(unseededPFClustersToken_,iPara,"unseededPFClusters");
   
 }
 
@@ -257,6 +278,37 @@ void SCSizeTreeMaker::analyzeSC(const reco::SuperCluster& superClus,
 
 }
 
+std::vector<DetId> SCSizeTreeMaker::
+getSeedDetIds(const reco::SuperCluster& superClus)
+{
+  std::vector<DetId> seedDetIds;
+  for (auto subClus=superClus.clustersBegin();subClus!=superClus.clustersEnd();++subClus) {
+    seedDetIds.push_back((*subClus)->seed());
+  }
+  std::sort(seedDetIds.begin(),seedDetIds.end());
+  return seedDetIds;
+}
+
+
+float SCSizeTreeMaker::
+calIsolation(const reco::SuperCluster& superClus,const reco::PFClusterCollection& clusters)
+{
+  const float dR2Max = 0.3*0.3;
+  const float scEta = superClus.eta();
+  const float scPhi = superClus.phi();
+  const std::vector<DetId> seedDetIds = getSeedDetIds(superClus);
+
+  float isolVal=0;
+  
+  for(auto& clus : clusters){
+    const float dR2 = reco::deltaR2(scEta,scPhi,clus.eta(),clus.phi());
+    if(dR2<dR2Max && !std::binary_search(seedDetIds.begin(),seedDetIds.end(),clus.seed())){
+      isolVal+=clus.energy();
+    }
+  }
+  return isolVal;
+}
+
 std::vector<const reco::PFCluster*>  SCSizeTreeMaker::
 getClustersWithHit(DetId id,const reco::PFClusterCollection& clusters)
 {
@@ -309,27 +361,49 @@ void SCSizeTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   auto l1EGs = getHandle(iEvent,l1EGToken_);
   auto seededCands = getHandle(iEvent,seededCandToken_);
   auto unseededCands = getHandle(iEvent,unseededCandToken_);
-  auto pfClusters = getHandle(iEvent,pfClustersToken_);
+  auto seededPFClusters = getHandle(iEvent,seededPFClustersToken_);
+  auto unseededPFClusters = getHandle(iEvent,unseededPFClustersToken_);
   
 
   treeData_.evtInfo.fill(iEvent);
-  for(auto& seededCand : *seededCands){
-    const reco::RecoEcalCandidate* matchedCand = matchSCBySeed(*seededCand.superCluster(),*unseededCands);
-    if(matchedCand==nullptr){
-      std::cout <<"Error seeded cluster does not have a matching seeded cluster, this was thought to be impossible "<<iEvent.id().run()<<" "<<iEvent.luminosityBlock()<<" "<<iEvent.id().event()<<std::endl;
-      continue;
+  for(auto& unseededCand : *unseededCands){
+    const reco::RecoEcalCandidate* matchedCand = matchSCBySeed(*unseededCand.superCluster(),*seededCands);
+    if(matchedCand==nullptr && false){
+      std::cout <<"Error unseeded cluster does not have a matching seeded cluster, this was thought to be impossible " <<iEvent.id().run()<<" "<<iEvent.luminosityBlock()<<" "<<iEvent.id().event()<<std::endl;
+      
+      std::cout <<"   et "<<unseededCand.et()<<" eta "<<unseededCand.eta()<<" phi "<<unseededCand.phi()<<std::endl;
+      for(auto& seededCand : *seededCands){
+	std::cout <<"       et "<<seededCand.et()<<" eta "<<seededCand.eta()<<" phi "<<unseededCand.phi()<<std::endl;
+      }
     }
-    auto matchedEG = matchL1(seededCand.p4(),*l1EGs,0,0.2);
+    auto matchedEG = matchL1(unseededCand.p4(),*l1EGs,0,0.2);
     if(matchedEG.first==nullptr){
       //      std::cout <<"Error seeded cluster does not have a matching L1 object, this was thought to be impossible "<<iEvent.id().run()<<" "<<iEvent.luminosityBlock()<<" "<<iEvent.id().event()<<std::endl;
-      continue;
     }
-    treeData_.dRL1 = matchedEG.second;
-    treeData_.p4L1.fill(matchedEG.first->p4());
-    treeData_.p4Seeded.fill(seededCand.p4());
-    treeData_.p4Unseeded.fill(matchedCand->p4());
+    treeData_.clearNonEvt();
     
-    analyzeSC(*matchedCand->superCluster(),*pfClusters,matchedEG.first->p4());
+    treeData_.p4Unseeded.fill(unseededCand.p4());
+    if(matchedEG.first){
+      treeData_.dRL1 = matchedEG.second;
+      treeData_.p4L1.fill(matchedEG.first->p4());
+    }
+    if(matchedCand){
+      treeData_.p4Seeded.fill(matchedCand->p4());
+    }
+    if(matchedEG.first){
+      analyzeSC(*unseededCand.superCluster(),*unseededPFClusters,matchedEG.first->p4());
+    }
+    treeData_.emIsolUnseeded = calIsolation(*unseededCand.superCluster(),*unseededPFClusters);
+    treeData_.emIsolHybrid = calIsolation(*unseededCand.superCluster(),*seededPFClusters);
+    
+    if(matchedCand){
+      treeData_.emIsolSeeded = calIsolation(*matchedCand->superCluster(),*seededPFClusters);
+    }
+    
+    
+
+
+
     tree_->Fill();
     
   }
@@ -372,6 +446,17 @@ SCSizeTreeMaker::matchSCBySeed(const reco::SuperCluster& sc,const std::vector<re
   for(auto& cand : cands){
     if(cand.superCluster()->seed()->seed()==sc.seed()->seed()) return &cand;
   }
+  //well that didnt work, lets see if our subclusters got yanked into another supercluster
+  for(auto& cand : cands){
+    for(auto scBC = sc.clustersBegin();scBC!=sc.clustersEnd();++scBC){
+      for(auto candBC = cand.superCluster()->clustersBegin();candBC!=cand.superCluster()->clustersEnd();++candBC){
+	if((*scBC)->seed()==(*candBC)->seed()){
+	  return &cand;
+	}
+      }
+    }
+  }
+  //really?
   return nullptr;
     
 }
