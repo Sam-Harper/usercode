@@ -92,7 +92,7 @@ process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsTrkIsoCorr")
+#process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsTrkIsoCorr")
 import os
 
 
