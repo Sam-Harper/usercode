@@ -186,6 +186,7 @@ bool SHGenInfo::isFromPromptBoson_(size_t index)const
   if(mothers.size()==1){
     auto mother = mothers.front();
     if(mother->pid()==22 || mother->pid()==23 || std::abs(mother->pid())==24 ||
+       mother->pid()==32 ||
        mother->pid()==5100039){
       if(mother->status()>=20 && mother->status()<=29) return true;
       else return isFromPromptBoson_(mother->index());

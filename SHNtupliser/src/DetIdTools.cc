@@ -588,9 +588,9 @@ bool DetIdTools::isValidL1CaloId(int iEta,int iPhi)
 //warning, emulating calo tower bug where depth 2 tower 27 is depth 2 and depth 3 is depth 1
 int DetIdTools::getEffectiveHcalDepth(int detId)
 {
-  if(DetIdTools::newFormatHcal(detId)){
-    LogErr<<" new format HCAL detId, new function not updated to this"<<std::endl;
-  }
+  //if(DetIdTools::newFormatHcal(detId)){
+    //LogErr<<" new format HCAL detId, new function not updated to this"<<std::endl;
+    //}
   if(!isHcal(detId)){
     LogErr <<" : Warning detId "<<detId<<" is not hcal "<<std::endl;
     return 0;
