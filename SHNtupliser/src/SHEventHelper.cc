@@ -169,8 +169,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
-  shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
-  shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
+  //shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
+  //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle.superCluster(),shEvent);
 
   if(shEle->seedId()!=0 && false){

@@ -74,6 +74,8 @@ process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
+
+
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
@@ -90,7 +92,7 @@ process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-
+process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsTrkIsoCorr")
 import os
 
 
@@ -112,8 +114,8 @@ else:
 # Additional output definition
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele27_WPLoose_Gsf_v*")
 process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
-#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
@@ -142,8 +144,15 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
+process.gedGsfElectronsTrkIsoCorr = cms.EDProducer('CorrectedElectronTrkisoProducers',
+     # input collections
+     electronsLabel = cms.InputTag('gedGsfElectrons'),
+     generalTracksLabel= cms.InputTag('generalTracks'),
+     beamSpotLabel = cms.InputTag('offlineBeamSpot')
+)
 
 process.p = cms.Path(#process.primaryVertexFilter*
+    process.gedGsfElectronsTrkIsoCorr*
     process.egammaFilter*
     process.shNtupliser)
         
