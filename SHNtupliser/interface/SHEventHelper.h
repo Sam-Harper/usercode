@@ -115,7 +115,7 @@ private:
   void fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE)const;
   void fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const;
   int getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const;
-  
+  void fixTrkIsols(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
 };
 
 #endif

@@ -144,15 +144,9 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
-process.gedGsfElectronsTrkIsoCorr = cms.EDProducer('CorrectedElectronTrkisoProducers',
-     # input collections
-     electronsLabel = cms.InputTag('gedGsfElectrons'),
-     generalTracksLabel= cms.InputTag('generalTracks'),
-     beamSpotLabel = cms.InputTag('offlineBeamSpot')
-)
+
 
 process.p = cms.Path(#process.primaryVertexFilter*
-    process.gedGsfElectronsTrkIsoCorr*
     process.egammaFilter*
     process.shNtupliser)
         

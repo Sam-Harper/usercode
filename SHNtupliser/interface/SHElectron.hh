@@ -179,19 +179,20 @@ private:
   	     const cmssw::IsolationVariables& isol04,int superClusNr);
   ~SHElectron(){}
 
-  void setPosTrackInnToSeed(const TVector3& pos){posTrackInnToSeed_=pos;}
-  void setPosTrackOutToSeed(const TVector3& pos){posTrackOutToSeed_=pos;}
+  // void setPosTrackInnToSeed(const TVector3& pos){posTrackInnToSeed_=pos;}
+  // void setPosTrackOutToSeed(const TVector3& pos){posTrackOutToSeed_=pos;}
   void setD0(float d0){d0_=d0;}
 
-  void setIsolMVA(float mva){isolMVA_=mva;}
-  void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
-  void setPFIsol(float charged,float neutral,float photon);
-  void fixTrkIsol();
-  void setIsConversion(float isCon){dCotTheta_=isCon;}
-  void setConvInfo(float iDist,float iDcot){dCotTheta_=iDcot;dist_=iDist;}
-  void setShowerShape(float sigmaEtaEta,float sigmaIEtaIEta,float e1x5,float e2x5Max,float e5x5);
-  void setPassPFlowPreSel(bool pass){passPFlowPreSel_=pass;}
-  void setPassMVAPreSel(bool pass){passMVAPreSel_=pass;}
+  // void setIsolMVA(float mva){isolMVA_=mva;}
+  // void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
+  // void setPFIsol(float charged,float neutral,float photon);
+  // void fixTrkIsol();
+  // void setIsConversion(float isCon){dCotTheta_=isCon;}
+  // void setConvInfo(float iDist,float iDcot){dCotTheta_=iDcot;dist_=iDist;}
+  // void setShowerShape(float sigmaEtaEta,float sigmaIEtaIEta,float e1x5,float e2x5Max,float e5x5);
+  // void setPassPFlowPreSel(bool pass){passPFlowPreSel_=pass;}
+  // void setPassMVAPreSel(bool pass){passMVAPreSel_=pass;}
+  void setTrkIsol(float isolPt03,float isolPt04,float isolNrTrks){isolPtTrks_=isolPt03;isolPtTrksDR04_=isolPt04;isolNrTrks_=isolNrTrks;}
 
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont

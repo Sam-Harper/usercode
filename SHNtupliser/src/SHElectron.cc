@@ -230,28 +230,28 @@ float SHElectron::et()const
 
 }
 
-void SHElectron::setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2)
-{
-  isolEm_ = isolEm; 
-  isolHad_ =isolHad; 
-  isolHadDepth1_ = isolHadDepth1; 
-  isolHadDepth2_ = isolHadDepth2; 
+// void SHElectron::setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2)
+// {
+//   isolEm_ = isolEm; 
+//   isolHad_ =isolHad; 
+//   isolHadDepth1_ = isolHadDepth1; 
+//   isolHadDepth2_ = isolHadDepth2; 
 
-}
+// }
 
-void SHElectron::setPFIsol(float charged,float neutral,float photon)
-{
-  isolChargedHadron_=charged;
-  isolNeutralHadron_=neutral;
-  isolPhoton_ = photon;
-}
+// void SHElectron::setPFIsol(float charged,float neutral,float photon)
+// {
+//   isolChargedHadron_=charged;
+//   isolNeutralHadron_=neutral;
+//   isolPhoton_ = photon;
+// }
 
-void SHElectron::fixTrkIsol()
-{
-  std::pair<int,float> trkIsol = isolTrk(0.1,0.2,0.1,1.5);
-  isolPtTrks_ = trkIsol.second;
-  isolNrTrks_ = trkIsol.first;
-}
+// void SHElectron::fixTrkIsol()
+// {
+//   std::pair<int,float> trkIsol = isolTrk(0.1,0.2,0.1,1.5);
+//   isolPtTrks_ = trkIsol.second;
+//   isolNrTrks_ = trkIsol.first;
+// }
 
 
 float SHElectron::dxy()const
@@ -412,16 +412,16 @@ void SHElectron::setNewNrgy(float newNrgy)
 }
 
 
-void SHElectron::setShowerShape(float sigmaEtaEta,float sigmaIEtaIEta,float e1x5,float e2x5Max,float e5x5)
-{
-  sigmaEtaEta_=sigmaEtaEta;
-  sigmaIEtaIEta_=sigmaIEtaIEta;
-  if(e5x5!=0){
-    e1x5Over5x5_=e1x5/e5x5;
-    e2x5Over5x5_=e2x5Max/e5x5;
-  }else{
-    e1x5Over5x5_=0;
-    e2x5Over5x5_=0;
-  }
-  e5x5_=e5x5;
-}
+// void SHElectron::setShowerShape(float sigmaEtaEta,float sigmaIEtaIEta,float e1x5,float e2x5Max,float e5x5)
+// {
+//   sigmaEtaEta_=sigmaEtaEta;
+//   sigmaIEtaIEta_=sigmaIEtaIEta;
+//   if(e5x5!=0){
+//     e1x5Over5x5_=e1x5/e5x5;
+//     e2x5Over5x5_=e2x5Max/e5x5;
+//   }else{
+//     e1x5Over5x5_=0;
+//     e2x5Over5x5_=0;
+//   }
+//   e5x5_=e5x5;
+// }
