@@ -38,6 +38,10 @@
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
+
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "TTree.h"
 
 #include <vector>
@@ -53,7 +57,13 @@ public:
  
 private:
   
-  
+  TTree* tree_;
+  trigtools::EvtInfoStruct evtInfo_; 
+  trigtools::P4Struct candP4_;
+  float hademCand_;
+  float hademSeed_;
+  std::string treeName_;
+
   edm::EDGetTokenT<reco::RecoEcalCandidateCollection> candsToken_;
   edm::EDGetTokenT<RecoEcalCandMap> hademToken_;
   edm::EDGetTokenT<reco::ElectronSeedCollection> seedsToken_;
@@ -85,6 +95,7 @@ public:
 
 HEComparer::HEComparer(const edm::ParameterSet& iPara)
 {
+  treeName_ = iPara.getParameter<std::string>("treeName");
   setToken(candsToken_,iPara,"cands");
   setToken(seedsToken_,iPara,"seeds");
   setToken(hademToken_,iPara,"hadem");  
@@ -92,7 +103,14 @@ HEComparer::HEComparer(const edm::ParameterSet& iPara)
 
 void HEComparer::beginRun(const edm::Run& run,const edm::EventSetup& setup)
 {
- 
+  edm::Service<TFileService> fs;
+  fs->file().cd();
+  tree_= new TTree(treeName_.c_str(),"hlt trigger");
+  tree_->Branch("evt",&evtInfo_,trigtools::EvtInfoStruct::contents().c_str());
+  tree_->Branch("candP4",&candP4_,trigtools::P4Struct::contents().c_str());
+  tree_->Branch("hademCand",&hademCand_,"hademCand/F");
+  tree_->Branch("hademSeed",&hademSeed_,"hademSeed/F");
+  
 
 }
 template<typename T> edm::Handle<T> getHandle(const edm::Event& iEvent,const edm::EDGetTokenT<T>& token)
@@ -138,9 +156,9 @@ HEComparer::matchSeedsAndCands(const edm::Handle<reco::RecoEcalCandidateCollecti
   for(size_t candNr=0;candNr<cands->size();candNr++){
     auto candRef = edm::Ref<reco::RecoEcalCandidateCollection>(cands,candNr);
     auto seed = matchSeed(candRef,seeds);
-    if(!seed){
-      std::cout <<"Error, cand "<<candRef->pt()<<" "<<candRef->eta()<<" "<<candRef->phi()<<" does not have a seed"<<std::endl;
-    }
+    //    if(!seed){
+    // std::cout <<"Error, cand "<<candRef->pt()<<" "<<candRef->eta()<<" "<<candRef->phi()<<" does not have a seed"<<std::endl;
+    //}
     candsAndSeeds.push_back({candRef,seed});
   }
   for(auto& seed : *seeds){
@@ -168,14 +186,16 @@ bool HEComparer::compareHE(CandSeedVec& candsAndSeeds,
 {
   bool missMatch=false;
   for(auto& candSeed : candsAndSeeds){
-    float hademCand = getHadem(candSeed.first,hademValues);
-    float hademSeed = candSeed.second ? candSeed.second->hoe1()+ candSeed.second->hoe2() : -1;
-    
-    if(std::abs(hademCand-hademSeed)>0.00001){
-      auto cand = candSeed.first;
-      std::cout <<"hadem miss match for E "<<cand->energy()<<" eta "<<cand->eta()<<" phi "<<cand->phi()<<" cand: hadem "<<hademCand<<" seed: hadem "<<hademSeed<<std::endl;
+    candP4_.fill(candSeed.first->p4());
+    hademCand_ = getHadem(candSeed.first,hademValues);
+    hademSeed_ = candSeed.second ? candSeed.second->hoe1()+ candSeed.second->hoe2() : -1;
+    tree_->Fill();
+    if(std::abs(hademCand_-hademSeed_)>0.00001){
+      //auto cand = candSeed.first;
+      // std::cout <<"hadem miss match for E "<<cand->energy()<<" eta "<<cand->eta()<<" phi "<<cand->phi()<<" cand: hadem "<<hademCand_<<" seed: hadem "<<hademSeed_<<std::endl;
       missMatch=true;
     }
+    
 
   }
   return missMatch;
@@ -189,6 +209,7 @@ void HEComparer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   
   if(seeds.isValid() && hademValues.isValid()){
     auto candsAndSeeds = matchSeedsAndCands(cands,seeds);
+    evtInfo_.fill(iEvent);
     compareHE(candsAndSeeds,hademValues);
   }
 
