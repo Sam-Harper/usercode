@@ -52,8 +52,8 @@ namespace trigtools{
       et=p4.Et();pt=p4.Pt();nrgy=p4.E();eta=p4.Eta();phi=p4.Phi();
     }
     
-    P4Struct& operator=(float val){et=val;nrgy=val;eta=val;phi=val;return *this;}
-    P4Struct& operator=(int val){et=val;nrgy=val;eta=val;phi=val;return *this;}
+    P4Struct& operator=(float val){et=val;nrgy=val;pt=val;eta=val;phi=val;return *this;}
+      P4Struct& operator=(int val){et=val;nrgy=val;pt=val;eta=val;phi=val;return *this;}
       P4Struct& operator=(const TLorentzVector&p4){fill(p4);return *this;}
       P4Struct& operator=(const math::XYZTLorentzVector&p4){fill(p4);return *this;}
     void clear(){*this=-999;}
