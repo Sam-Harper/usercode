@@ -22,6 +22,7 @@
 void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollector & cc)
 {
   cuts_.setup(conf);
+  gsfEleExtraFiller_.setup(conf,cc);
   getToken_(eleTag_,conf.getUntrackedParameter<edm::InputTag>("electronTag"),cc);
   getToken_(muonTag_ , conf.getUntrackedParameter<edm::InputTag>("muonTag"),cc);
   getToken_(jetTag_ , conf.getUntrackedParameter<edm::InputTag>("jetTag"),cc);
@@ -84,8 +85,6 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   onlyAddEcalDriven_ = conf.getParameter<bool>("onlyAddEcalDriven");
   heepEleSource_ = conf.getParameter<int>("heepEleSource");
 
-  applyRhoCorrToEleIsol_ = conf.getParameter<bool>("applyRhoCorrToEleIsol");
-  eleIsolEffectiveAreas_ = conf.getParameter<edm::ParameterSet>("eleIsolEffectiveAreas");
   
 }
 
@@ -159,6 +158,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   //setup.get<L1GtTriggerMenuRcd>().get(handles.l1Menu);
   //setup.get<TrackerDigiGeometryRecord>().get(handles.trackGeom);
   setup.get<IdealMagneticFieldRecord>().get(handles.bField);
+  
+  gsfEleExtraFiller_.getEvtContent(event,setup);
 }
 
 //fills the heepEles vector using pat electrons as starting point
@@ -205,14 +206,9 @@ void heep::EventHelper::addHEEPEle_(const edm::Ptr<reco::GsfElectron>& gsfEle,co
 {
   heepEles.push_back(heep::Ele(gsfEle));
   heep::Ele& ele =  heepEles.back();  
-  //now we need to set isolation rho corrections
-  ele.setApplyRhoIsolCorr(applyRhoCorrToEleIsol_);
-  ele.setIsolEffectiveAreas(eleIsolEffectiveAreas_);
+  //all the extra stuff is set here now
+  ele.setGsfEleExtra(gsfEleExtraFiller_(gsfEle));
   
-  math::XYZPoint pvPos(0,0,0);
-  if(handles.vertices.isValid() && !handles.vertices->empty()) pvPos = handles.vertices->front().position();
-  ele.setEvtPrimVertexPos(pvPos);
-  if(handles.eleRhoCorr.isValid()) ele.setRhoForIsolCorr(*handles.eleRhoCorr);
   //now we would like to set the cut results, this has to come after setting isolation parameters
   ele.setCutCode(cuts_.getCutCode(ele)); 
   //int cutCode = cuts_.getCutCode(*handles.eleRhoCorr,pvPos,gsfEle);

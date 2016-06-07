@@ -13,14 +13,10 @@ void heep::EleSelector::setup(const edm::ParameterSet& iConfig)
   endcapCutValues_ = iConfig.getParameter<edm::ParameterSet>("endcapCuts");
 }
 
-
 int heep::EleSelector::getCutCode(const heep::Ele& ele,const int cutMask)const
 {
-  const EleCutValues* cuts = ele.isEB() ? getBarrelCuts() : getEndcapCuts();
-  if(cuts!=NULL) return getCutCode(ele,*cuts,cutMask);
-  else return CutCodes::INVALID;
+  return getCutCode(ele.gsfEle(),ele.gsfEleExtra(),cutMask);
 }
-
 
 int heep::EleSelector::getCutCode(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra,
 				  const int cutMask)const

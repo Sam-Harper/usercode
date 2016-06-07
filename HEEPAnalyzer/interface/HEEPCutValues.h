@@ -140,7 +140,7 @@ namespace heep {
       return ele.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= maxNrMissHits;
     }
     bool passDXY(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      const float dxyAbs = std::abs(ele.gsfTrack()->dxy(eleExtra.vertex));
+      const float dxyAbs = std::abs(ele.gsfTrack()->dxy(eleExtra.primaryVertex));
       return dxyAbs<=maxDXY;
     }
 

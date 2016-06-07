@@ -10,7 +10,7 @@
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
-#include "SHarper/HEEPAnalyzer/interface/HEEPEffectiveAreas.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPGsfEleExtraFiller.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvtHandles.h"
 
 
@@ -98,9 +98,10 @@ namespace heep {
     bool onlyAddEcalDriven_;
     int heepEleSource_; // 0=fill from GsfElectrons, 1 fill from pat::Electrons
 
-    //isolation correction parameters
-    bool applyRhoCorrToEleIsol_;
-    heep::EffectiveAreas eleIsolEffectiveAreas_;
+    //right this is a classic 1am hack (okay its only 22:30)
+    //because this has both handles and tokens, it doesnt play nice
+    //with the current design, poor I know
+    mutable heep::GsfEleExtraFiller gsfEleExtraFiller_;
 
   public:
     template<typename T>

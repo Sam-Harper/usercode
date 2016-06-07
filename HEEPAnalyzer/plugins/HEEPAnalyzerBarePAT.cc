@@ -1,8 +1,22 @@
-#include "SHarper/HEEPAnalyzer/interface/HEEPAnalyzerBarePAT.h"
+
+
+// Description: A simple example HEEPAnalyzer which makes a mass spectrum of selected electron pairs
+
+// Implementation: 
+//    This does it using just bare PAT with only heep::EleSelector which does the heep selection
+//
+ 
+//
+// Original Author:  S. Harper
+//         Created: Tues Sep 2 2008
+
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+
 
 
 #include "TH1D.h"
@@ -12,14 +26,50 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPGsfEleExtraFiller.h"
+
+
+
+
+class HEEPAnalyzerBarePAT : public edm::EDAnalyzer {
+
+private:
+  heep::EleSelector cuts_; //allows us to apply the heep selection
+  heep::GsfEleExtraFiller eleExtraFiller_;
+  edm::EDGetTokenT<edm::View<pat::Electron>> eleToken_;
+  
+  
+  //the next three variables are simply for the example analysis
+  int nrPass_;
+  int nrFail_;
+  TH1* massHist_; //we do not own hist
+
+  //disabling copy and assignment 
+  //this class is in theory copyable but it seems odd to allow it
+private:
+  HEEPAnalyzerBarePAT(const HEEPAnalyzerBarePAT& rhs)=delete;
+  HEEPAnalyzerBarePAT& operator=(const HEEPAnalyzerBarePAT& rhs)=delete;
+
+public:
+  explicit HEEPAnalyzerBarePAT(const edm::ParameterSet& iPara);
+  virtual ~HEEPAnalyzerBarePAT(){}
+  
+private:
+  virtual void beginJob() ;
+  virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
+  virtual void endJob() ;
+  
+};
+
+
+
 
 HEEPAnalyzerBarePAT::HEEPAnalyzerBarePAT(const edm::ParameterSet& iPara):
-  cuts_(iPara),nrPass_(0),nrFail_(0)
+  cuts_(iPara),eleExtraFiller_(iPara,consumesCollector()),nrPass_(0),nrFail_(0)
 {
-  eleLabel_=iPara.getParameter<edm::InputTag>("eleLabel");
-  eleRhoCorrLabel_=iPara.getParameter<edm::InputTag>("eleRhoCorrLabel");
-  applyRhoCorrToEleIsol_=iPara.getParameter<bool>("applyRhoCorrToEleIsol");
-  verticesLabel_ = iPara.getParameter<edm::InputTag>("verticesLabel");
+  eleToken_=consumes<edm::View<pat::Electron> >(iPara.getParameter<edm::InputTag>("eleLabel"));
+  
 }
 
 void HEEPAnalyzerBarePAT::beginJob()
@@ -34,22 +84,14 @@ void HEEPAnalyzerBarePAT::beginJob()
 void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 { 
   edm::Handle<edm::View<pat::Electron> > eleHandle;
-  iEvent.getByLabel(eleLabel_,eleHandle);
+  iEvent.getByToken(eleToken_,eleHandle);
   const edm::View<pat::Electron>& eles = *(eleHandle.product());
-
-  edm::Handle<double> rhoHandle;
-  iEvent.getByLabel(eleRhoCorrLabel_,rhoHandle);
-  double rho = applyRhoCorrToEleIsol_ ? *rhoHandle : 0;
-
-  edm::Handle<reco::VertexCollection> verticesHandle;
-  iEvent.getByLabel(verticesLabel_,verticesHandle);
-  math::XYZPoint pvPos(0,0,0);
-  if(!verticesHandle->empty()) pvPos = verticesHandle->front().position();
+  eleExtraFiller_.getEvtContent(iEvent,iSetup);
   
   //do what ever you wa
   //count the number that pass / fail cuts
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
-    if(cuts_.passCuts(rho,pvPos,eles[eleNr])) nrPass_++;
+    if(cuts_.passCuts(eles[eleNr],eleExtraFiller_(eles.ptrAt(eleNr)))) nrPass_++;
     else nrFail_++;
   }
   
@@ -58,8 +100,8 @@ void HEEPAnalyzerBarePAT::analyze(const edm::Event& iEvent,const edm::EventSetup
     for(size_t ele2Nr=ele1Nr+1;ele2Nr<eles.size();ele2Nr++){
       const pat::Electron& ele1 = eles[ele1Nr];
       const pat::Electron& ele2 = eles[ele2Nr];
-      int ele1CutCode = cuts_.getCutCode(rho,pvPos,ele1);
-      int ele2CutCode = cuts_.getCutCode(rho,pvPos,ele2);
+      int ele1CutCode = cuts_.getCutCode(ele1,eleExtraFiller_(eles.ptrAt(ele1Nr)));
+      int ele2CutCode = cuts_.getCutCode(ele2,eleExtraFiller_(eles.ptrAt(ele2Nr)));
      
       if(ele1CutCode==0x0 && ele2CutCode==0x0 && !(ele1.isEE() && ele2.isEE())){ //EB-EB, EE-EE
 	math::XYZTLorentzVector ele1P4 = ele1.p4()*ele1.caloEnergy()/ele1.energy();

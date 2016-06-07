@@ -1,16 +1,42 @@
-#include "SHarper/HEEPAnalyzer/interface/HEEPAttStatusToPAT.h"
+
+// This producer adds the HEEPSelector status word as userdate to the PAT electron collection
+//
+//
+// Original Author:  S. Harper / M.Mozer
+//         Created: Tues Sep 2 2008
+
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EDProducer.h"
+
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPGsfEleExtraFiller.h"
+
+class HEEPAttStatusToPAT : public edm::EDProducer {
+
+private:
+  heep::EleSelector cuts_; //allows us to apply the heep selection
+  heep::GsfEleExtraFiller eleExtraFiller_;
+  edm::EDGetTokenT<edm::View<pat::Electron>> eleToken_;
+  
+
+public:
+  explicit HEEPAttStatusToPAT(const edm::ParameterSet& iPara);
+  virtual ~HEEPAttStatusToPAT(){}
+  
+private:
+  virtual void produce(edm::Event& iEvent, const edm::EventSetup& iSetup);
+  
+};
 
 HEEPAttStatusToPAT::HEEPAttStatusToPAT(const edm::ParameterSet& iPara):
-  cuts_(iPara)
+  cuts_(iPara),eleExtraFiller_(iPara,consumesCollector())
 {
-  eleLabel_=iPara.getParameter<edm::InputTag>("eleLabel");
-  applyRhoCorrToEleIsol_ = iPara.getParameter<bool>("applyRhoCorrToEleIsol");
-  eleRhoCorrLabel_=iPara.getParameter<edm::InputTag>("eleRhoCorrLabel");  
-  verticesLabel_ = iPara.getParameter<edm::InputTag>("verticesLabel");
+  eleToken_=consumes<edm::View<pat::Electron> >(iPara.getParameter<edm::InputTag>("eleLabel")); 
   produces < pat::ElectronCollection >();
 }
 
@@ -19,19 +45,10 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
 { 
   //load electrons
   edm::Handle<edm::View<pat::Electron> > eleHandle;
-  iEvent.getByLabel(eleLabel_,eleHandle);
+  iEvent.getByToken(eleToken_,eleHandle);
   const edm::View<pat::Electron>& eles = *(eleHandle.product());
-
-  edm::Handle<double> rhoHandle;
-  iEvent.getByLabel(eleRhoCorrLabel_,rhoHandle);
-  //double rho = rhoHandle.isValid() ? *rhoHandle : 0;
-  double rho = applyRhoCorrToEleIsol_ ? *rhoHandle : 0; //actually I want to throw an exception if rho is missing
-
-
-  edm::Handle<reco::VertexCollection> verticesHandle;
-  iEvent.getByLabel(verticesLabel_,verticesHandle);
-  math::XYZPoint pvPos(0,0,0);
-  if(!verticesHandle->empty()) pvPos = verticesHandle->front().position();
+  eleExtraFiller_.getEvtContent(iEvent,iSetup);
+  
 
   //prepare output collection
   std::auto_ptr<pat::ElectronCollection> outEle(new pat::ElectronCollection());
@@ -40,8 +57,8 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     pat::Electron * newEle = eles[eleNr].clone();
     newEle->setP4(newEle->p4()/newEle->energy()*newEle->ecalEnergy());
-    if(applyRhoCorrToEleIsol_) newEle->addUserInt("HEEPId",cuts_.getCutCode(rho,pvPos,eles[eleNr]));
-    else newEle->addUserInt("HEEPId",cuts_.getCutCode(eles[eleNr]));
+    newEle->addUserInt("HEEPId",cuts_.getCutCode(eles[eleNr],eleExtraFiller_(eles.ptrAt(eleNr))));
+    
     outEle->push_back(*(newEle));
     delete newEle;
   }
