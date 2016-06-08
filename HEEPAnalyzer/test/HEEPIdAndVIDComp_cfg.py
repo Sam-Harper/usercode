@@ -35,10 +35,24 @@ process.heepId = cms.EDProducer("HEEPIdValueMapProducer",
                                 eleLabel = cms.InputTag("gedGsfElectrons"),
                                 barrelCuts = cms.PSet(heepBarrelCuts),
                                 endcapCuts = cms.PSet(heepEndcapCuts),
-                                eleIsolEffectiveAreas = cms.PSet(heepEffectiveAreas),
-                                eleRhoCorrLabel = cms.InputTag("fixedGridRhoFastjetAll"),
-                                applyRhoCorrToEleIsol = cms.bool(True),
-                                verticesLabel = cms.InputTag("offlinePrimaryVertices"),
+                                trkIsoNoJetCoreTag = cms.InputTag(""),
+                                nrSatCrysIn5x5Tag = cms.InputTag(""),
+                                eleRhoCorrTag = cms.InputTag("fixedGridRhoFastjetAll"),
+                                verticesTag = cms.InputTag("offlinePrimaryVertices"),
+                                beamSpotTag = cms.InputTag("offlineBeamSpot"),
+                                reducedBarrelRecHitTag = cms.InputTag("reducedEcalRecHitsEB"),
+                                reducedEndcapRecHitTag = cms.InputTag("reducedEcalRecHitsEE"),
+                                ctfTrackTag=cms.InputTag("generalTracks"),
+                                trkIsoConfig= cms.PSet(
+                                   extRadius=cms.double(0.3),
+                                   intRadiusBarrel=cms.double(0.015),
+                                   intRadiusEndcap=cms.double(0.015),
+                                   stripBarrel=cms.double(0.015),
+                                   stripEndcap=cms.double(0.015),
+                                   ptMin=cms.double(0.7),
+                                   maxVtxDist=cms.double(0.2),
+                                   drb=cms.double(999999999.0)
+                                ),
                                 writeIdAsInt =cms.bool(True) #true saves the heep ID as an int, false: saves as a float, user request
                                 )
 

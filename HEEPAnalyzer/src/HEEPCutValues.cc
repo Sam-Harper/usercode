@@ -20,6 +20,7 @@ heep::EleCutValues::EleCutValues():
   maxSigmaIEtaIEta(0),
   minE2x5Over5x5(0),
   minE1x5Over5x5(0),
+  maxNrSatCrysForShowerShapeCut(999),
   //em+had D1 calo isolation
   isolEmHadDepth1ConstTerm(0),
   isolEmHadDepth1GradTerm(0),
@@ -36,6 +37,7 @@ heep::EleCutValues::EleCutValues():
   isolPtTrksGradStart(0),
   isolPtTrksRhoStart(0),//80X
   isolPtTrksRhoEA(0),//80X
+  useValMapForTrkIso(0),
   //WP80
   maxIsolPtTrksRel03(0),
   isolPtTrksRelRhoEA(0),//80X
@@ -70,7 +72,8 @@ heep::EleCutValues& heep::EleCutValues::operator=(const edm::ParameterSet& iConf
   maxSigmaIEtaIEta = iConfig.getParameter<double>("maxSigmaIEtaIEta");
   minE2x5Over5x5 =iConfig.getParameter<double>("minE2x5Over5x5");
   minE1x5Over5x5 =iConfig.getParameter<double>("minE1x5Over5x5");
- 
+  maxNrSatCrysForShowerShapeCut = iConfig.getParameter<int>("maxNrSatCrysForShowerShapeCut");
+   
   isolEmHadDepth1ConstTerm = iConfig.getParameter<double>("isolEmHadDepth1ConstTerm");
   isolEmHadDepth1GradTerm = iConfig.getParameter<double>("isolEmHadDepth1GradTerm");
   isolEmHadDepth1GradStart = iConfig.getParameter<double>("isolEmHadDepth1GradStart");
@@ -86,6 +89,7 @@ heep::EleCutValues& heep::EleCutValues::operator=(const edm::ParameterSet& iConf
   isolPtTrksGradStart = iConfig.getParameter<double>("isolPtTrksGradStart");
   isolPtTrksRhoStart = iConfig.getParameter<double>("isolPtTrksRhoStart");
   isolPtTrksRhoEA = iConfig.getParameter<double>("isolPtTrksRhoEA");
+  useValMapForTrkIso = iConfig.getParameter<bool>("useValMapForTrkIso");
 
   maxIsolEmRel03     = iConfig.getParameter<double>("maxIsolEmRel03");//WP80
   isolEmRelRhoEA     = iConfig.getParameter<double>("isolEmRelRhoEA");//WP80

@@ -25,8 +25,6 @@ private:
   heep::EleSelector cuts_; //allows us to apply the heep selection 
   heep::GsfEleExtraFiller eleExtraFiller_;
   edm::EDGetTokenT<edm::View<reco::GsfElectron> >  eleToken_;
-  edm::EDGetTokenT<double>  eleRhoCorrToken_;
-  edm::EDGetTokenT<reco::VertexCollection> verticesToken_;
   bool writeIdAsInt_;
 
 public:
@@ -55,7 +53,8 @@ void HEEPIdValueMapProducer::produce(edm::Event& iEvent,const edm::EventSetup& i
   //load electrons
   edm::Handle<edm::View<reco::GsfElectron> > eleHandle; 
   iEvent.getByToken(eleToken_,eleHandle);
-  
+
+  eleExtraFiller_.getEvtContent(iEvent,iSetup);
 
   //get the cut results for each electron
   std::vector<int> cutResults;

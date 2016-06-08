@@ -32,6 +32,7 @@ namespace heep {
     double maxSigmaIEtaIEta;
     double minE2x5Over5x5;
     double minE1x5Over5x5;
+    int maxNrSatCrysForShowerShapeCut;//new for HEEP V6.0 corr
     double isolEmHadDepth1ConstTerm;
     double isolEmHadDepth1GradTerm;
     double isolEmHadDepth1GradStart;
@@ -43,8 +44,9 @@ namespace heep {
     double isolPtTrksConstTerm;
     double isolPtTrksGradTerm;
     double isolPtTrksGradStart;
-    double isolPtTrksRhoStart; //new for HEPE V6.1
+    double isolPtTrksRhoStart; //new for HEEP V6.1
     double isolPtTrksRhoEA;
+    bool useValMapForTrkIso; //new for HEEP V6.0 corr
     double maxIsolPtTrksRel03; // WP80
     double isolPtTrksRelRhoEA;
     double maxIsolEmRel03;     // WP80
@@ -90,7 +92,9 @@ namespace heep {
       return ele.hadronicOverEm()*scEnergy <= hademConstTerm + maxHadem*scEnergy;
     }
     bool passSigmaIEtaIEta(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      return ele.full5x5_sigmaIetaIeta()<maxSigmaIEtaIEta;
+      if(maxNrSatCrysForShowerShapeCut<=25 && 
+	 eleExtra.nrSatCrysIn5x5 > maxNrSatCrysForShowerShapeCut) return true;
+      return ele.full5x5_sigmaIetaIeta()<=maxSigmaIEtaIEta;
     }
     bool passIsolEmHadDepth1(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
       const float isol = ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt();
@@ -101,8 +105,10 @@ namespace heep {
       
     }
     bool passE2x5Over5x5(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
+      if(maxNrSatCrysForShowerShapeCut<=25 && 
+	 eleExtra.nrSatCrysIn5x5 > maxNrSatCrysForShowerShapeCut) return true;
       return ele.full5x5_e2x5Max()/ele.full5x5_e5x5() >= minE2x5Over5x5 ||
-	ele.full5x5_e1x5()/ele.full5x5_e5x5()<minE1x5Over5x5;
+	ele.full5x5_e1x5()/ele.full5x5_e5x5()>=minE1x5Over5x5;
     }
     bool passIsolHadDepth2(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
       const float isol = ele.dr03HcalDepth2TowerSumEt();
@@ -112,14 +118,14 @@ namespace heep {
       return isolRhoCorr <= cutValue;
     }
     bool passIsolPtTrks(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      const float isol = ele.dr03TkSumPt();
+      const float isol = useValMapForTrkIso ? eleExtra.trkIsoNoJetCore : ele.dr03TkSumPt() ;
       const float isolRhoCorr = getEt(ele) > isolPtTrksRhoStart ? isol - eleExtra.rho*isolPtTrksRhoEA : isol;
       const float etFromStart =  std::max(0.,getEt(ele)-isolPtTrksGradStart);
       const float cutValue = isolPtTrksConstTerm + isolPtTrksGradTerm*etFromStart;
       return isolRhoCorr <= cutValue;
     }
     bool passIsolPtTrksRel03(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      const float isol = ele.dr03TkSumPt();
+      const float isol = useValMapForTrkIso ? eleExtra.trkIsoNoJetCore : ele.dr03TkSumPt() ;
       const float isolRhoCorr = isol - eleExtra.rho*isolPtTrksRelRhoEA;
       const float relIso = isolRhoCorr/ele.trackMomentumAtVtx().rho();
       return relIso <= maxIsolPtTrksRel03;

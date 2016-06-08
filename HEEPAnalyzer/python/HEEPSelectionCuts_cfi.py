@@ -16,18 +16,27 @@ heepBarrelCutsV41 = cms.PSet (
     maxSigmaIEtaIEta=cms.double(999.), #not defined for barrel
     minE2x5Over5x5=cms.double(0.94),
     minE1x5Over5x5=cms.double(0.83),
+    maxNrSatCrysForShowerShapeCut=cms.int32(26),
     isolEmHadDepth1ConstTerm=cms.double(2), #cut is of the form <const + grad*(et-gradStart) where et-gradStart is 0 if negative
     isolEmHadDepth1GradTerm=cms.double(0.03),
     isolEmHadDepth1GradStart=cms.double(0.),
+    isolEmHadDepth1RhoEA=cms.double(0.28),
     isolHadDepth2ConstTerm=cms.double(999.), #not defined for barrel
     isolHadDepth2GradTerm=cms.double(0.0), #not defined for barrel
     isolHadDepth2GradStart=cms.double(0.), #not defined for barrel
+    isolHadDepth2RhoEA=cms.double(0.), #not defined for barrel
     isolPtTrksConstTerm=cms.double(5.0),
     isolPtTrksGradTerm=cms.double(0.0),
     isolPtTrksGradStart=cms.double(0.),
+    isolPtTrksRhoStart=cms.double(99999999.),
+    isolPtTrksRhoEA=cms.double(0.),
+    useValMapForTrkIso=cms.bool(False),
     maxIsolPtTrksRel03=cms.double(0.09),  #WP80
+    isolPtTrksRelRhoEA=cms.double(0.),
     maxIsolEmRel03=cms.double(0.07),      #WP80
+    isolEmRelRhoEA=cms.double(0.14),
     maxIsolHadRel03=cms.double(0.1),      #WP80
+    isolHadRelRhoEA=cms.double(0.14),
     maxNrMissHits=cms.int32(1),
     maxDXY=cms.double(0.02)
 )
@@ -46,18 +55,27 @@ heepEndcapCutsV41 = cms.PSet (
     maxSigmaIEtaIEta=cms.double(0.03),
     minE2x5Over5x5=cms.double(0.), #not defined for endcap
     minE1x5Over5x5=cms.double(0.), #not defined for endcap
+    maxNrSatCrysForShowerShapeCut=cms.int32(26),
     isolEmHadDepth1ConstTerm=cms.double(2.5),
     isolEmHadDepth1GradTerm=cms.double(0.03),
     isolEmHadDepth1GradStart=cms.double(50.),
+    isolEmHadDepth1RhoEA=cms.double(0.28),
     isolHadDepth2ConstTerm=cms.double(999), #no longer defined for endcap
     isolHadDepth2GradTerm=cms.double(0.0),#no longer defined for endcap
     isolHadDepth2GradStart=cms.double(0.),#no longer defined for endcap
+    isolHadDepth2RhoEA=cms.double(0.),#no longer defined for endcap
     isolPtTrksConstTerm=cms.double(5.0),
     isolPtTrksGradTerm=cms.double(0.0),
     isolPtTrksGradStart=cms.double(0.),
+    isolPtTrksRhoStart=cms.double(99999999.),
+    isolPtTrksRhoEA=cms.double(0.), 
+    useValMapForTrkIso=cms.bool(False),
     maxIsolPtTrksRel03=cms.double(0.09),  #WP80
+    isolPtTrksRelRhoEA=cms.double(0.),
     maxIsolEmRel03=cms.double(0.07),      #WP80
+    isolEmRelRhoEA=cms.double(0.14),
     maxIsolHadRel03=cms.double(0.1),      #WP80
+    isolHadRelRhoEA=cms.double(0.14),
     maxNrMissHits=cms.int32(1),
     maxDXY=cms.double(0.05)
 )
@@ -93,26 +111,37 @@ heepBarrelCutsV51.minEta=cms.double(0.)
 heepBarrelCutsV51.maxEta=cms.double(1.4442)
 
 
-heepEndcapCutsV60 = heepEndcapCutsV51.clone()
-heepEndcapCutsV60.hademConstTerm = 5
-
 
 heepBarrelCutsV60 = heepBarrelCutsV51.clone()
 heepBarrelCutsV60.hademConstTerm = 1
 
 
+heepEndcapCutsV60 = heepEndcapCutsV51.clone()
+heepEndcapCutsV60.hademConstTerm = 5
 
-heepBarrelCuts = heepBarrelCutsV60.clone()
-heepEndcapCuts = heepEndcapCutsV60.clone()
 
-heepEffectiveAreas = cms.PSet (
-    trackerBarrel = cms.double(0.),
-    trackerEndcap = cms.double(0.),
-    ecalBarrel = cms.double(0.14),
-    ecalEndcap = cms.double(0.14),
-    hcalBarrel = cms.double(0.14),
-    hcalEndcap = cms.double(0.14)
-              )                                
+heepBarrelCutsV6080XAOD = heepBarrelCutsV60.clone()
+heepBarrelCutsV6080XAOD.maxNrSatCrysForShowerShapeCut = 0
+heepBarrelCutsV6080XAOD.useValMapForTrkIso=True
+
+heepEndcapCutsV6080XAOD = heepEndcapCutsV60.clone()
+heepEndcapCutsV6080XAOD.maxNrSatCrysForShowerShapeCut = 0
+heepEndcapCutsV6080XAOD.useValMapForTrkIso=True
+
+
+heepBarrelCutsV61 = heepBarrelCutsV60.clone()
+heepBarrelCutsV61.isolPtTrksRhoStart = 95.0
+heepBarrelCutsV61.isolPtTrksRhoEA= 1.5
+
+heepEndcapCutsV61 = heepEndcapCutsV60.clone()
+heepEndcapCutsV61.isolPtTrksRhoStart = 100.0
+heepEndcapCutsV61.isolPtTrksRhoEA= 0.5
+
+
+
+heepBarrelCuts = heepBarrelCutsV6080XAOD.clone()
+heepEndcapCuts = heepEndcapCutsV6080XAOD.clone()
+
 
 heepBarrelCutsV31 = cms.PSet (
     cuts=cms.string("et:detEta:ecalDriven:dEtaIn:dPhiIn:hadem:e2x5Over5x5:isolEmHadDepth1:isolPtTrks"),
@@ -137,7 +166,7 @@ heepBarrelCutsV31 = cms.PSet (
     isolPtTrksConstTerm=cms.double(7.5),
     isolPtTrksGradTerm=cms.double(0.0),
     isolPtTrksGradStart=cms.double(0.),
-     maxIsolPtTrksRel03=cms.double(0.09),  #WP80
+    maxIsolPtTrksRel03=cms.double(0.09),  #WP80
     maxIsolEmRel03=cms.double(0.07),      #WP80
     maxIsolHadRel03=cms.double(0.1),      #WP80
     maxNrMissHits=cms.int32(0),
