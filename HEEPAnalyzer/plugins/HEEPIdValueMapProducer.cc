@@ -1,14 +1,46 @@
-#include "SHarper/HEEPAnalyzer/interface/HEEPIdValueMapProducer.h"
+
+
+// This producer adds makes a value map with the heep selection results
+//
+//
+// Original Author:  S. Harper 
+//         Created: Tues Sep 2 2008
+
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+
+#include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
+#include "SHarper/HEEPAnalyzer/interface/HEEPGsfEleExtraFiller.h"
+
+class HEEPIdValueMapProducer : public edm::EDProducer {
+
+private:
+  heep::EleSelector cuts_; //allows us to apply the heep selection 
+  heep::GsfEleExtraFiller eleExtraFiller_;
+  edm::EDGetTokenT<edm::View<reco::GsfElectron> >  eleToken_;
+  bool writeIdAsInt_;
+
+public:
+  explicit HEEPIdValueMapProducer(const edm::ParameterSet& iPara);
+  virtual ~HEEPIdValueMapProducer(){}
+  
+private:
+  virtual void produce(edm::Event& iEvent, const edm::EventSetup& iSetup);
+  
+};
 
 
 HEEPIdValueMapProducer::HEEPIdValueMapProducer(const edm::ParameterSet& iPara):
-  cuts_(iPara)
+  cuts_(iPara),eleExtraFiller_(iPara,consumesCollector())
 {
   eleToken_=consumes<edm::View<reco::GsfElectron> >(iPara.getParameter<edm::InputTag>("eleLabel"));
-  applyRhoCorrToEleIsol_ = iPara.getParameter<bool>("applyRhoCorrToEleIsol");
-  eleRhoCorrToken_=consumes<double>(iPara.getParameter<edm::InputTag>("eleRhoCorrLabel"));
-  verticesToken_ = consumes<reco::VertexCollection>(iPara.getParameter<edm::InputTag>("verticesLabel"));
   writeIdAsInt_=iPara.getParameter<bool>("writeIdAsInt");
   if(writeIdAsInt_) produces < edm::ValueMap<int> >();
   else produces < edm::ValueMap<float> >(); //we had requests to write out as a float to be consistant with e/gamma 
@@ -21,22 +53,14 @@ void HEEPIdValueMapProducer::produce(edm::Event& iEvent,const edm::EventSetup& i
   //load electrons
   edm::Handle<edm::View<reco::GsfElectron> > eleHandle; 
   iEvent.getByToken(eleToken_,eleHandle);
-  
-  edm::Handle<double> rhoHandle;
-  iEvent.getByToken(eleRhoCorrToken_,rhoHandle);
-  double rho = rhoHandle.isValid() ? *rhoHandle : 0;
 
-  edm::Handle<reco::VertexCollection> verticesHandle;
-  iEvent.getByToken(verticesToken_,verticesHandle);
-  math::XYZPoint pvPos(0,0,0);
-  if(!verticesHandle->empty()) pvPos = verticesHandle->front().position();
-
+  eleExtraFiller_.getEvtContent(iEvent,iSetup);
 
   //get the cut results for each electron
   std::vector<int> cutResults;
-  for(auto& ele : *eleHandle){
-    if(applyRhoCorrToEleIsol_) cutResults.push_back(cuts_.getCutCode(rho,pvPos,ele));
-    else  cutResults.push_back(cuts_.getCutCode(ele));
+  for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
+    edm::Ptr<reco::GsfElectron> ele = eleHandle->ptrAt(eleNr);
+    cutResults.push_back(cuts_.getCutCode(*ele,eleExtraFiller_(ele)));
   }
   
   if(writeIdAsInt_){
