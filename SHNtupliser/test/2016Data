@@ -16,6 +16,6 @@
 /SinglePhoton/Run2016B-PromptReco-v2/AOD & 273731 & 274240 & 20 & redo
 
 
-/DoubleEG/Run2016B-PromptReco-v2/AOD & 274241 & RUNNR & 40
-/SingleElectron/Run2016B-PromptReco-v2/AOD & 274241 & RUNNR & 40
-/SinglePhoton/Run2016B-PromptReco-v2/AOD & 274241 & RUNNR & 40 & redo
+/DoubleEG/Run2016B-PromptReco-v2/AOD & 274241 & 274421 & 40
+/SingleElectron/Run2016B-PromptReco-v2/AOD & 274241 & 274421 & 40
+/SinglePhoton/Run2016B-PromptReco-v2/AOD & 274241 & 274421 & 40 & redo

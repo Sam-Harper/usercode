@@ -64,7 +64,6 @@ heepEventPara  = cms.PSet (
     barrelCuts = cms.PSet(heepBarrelCuts),
     endcapCuts = cms.PSet(heepEndcapCuts),
     applyRhoCorrToEleIsol = cms.bool(True),
-    eleIsolEffectiveAreas = cms.PSet (heepEffectiveAreas),
     onlyAddEcalDriven = cms.bool(True), #only promote ecal driven (ie not tracker driven PF electrons) to heep electrons
     heepEleSource = cms.int32(0), #0 = GsfElectrons, 1 = pat::Electrons to make the heep electrons from
     pfClustersECALTag = cms.InputTag("particleFlowClusterECAL"),
@@ -72,7 +71,10 @@ heepEventPara  = cms.PSet (
     gsfEleToPFCandMapTag = cms.InputTag("particleBasedIsolation","gedGsfElectrons"),
     heepIDVID = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51"),
     lheEventTag=cms.InputTag("externalLHEProducer"),
-    genEvtInfoTag=cms.InputTag("generator")
+    genEvtInfoTag=cms.InputTag("generator"),
+    trkIsoNoJetCoreTag=cms.InputTag(""),
+    nrSatCrysIn5x5Tag=cms.InputTag(""),
+    beamSpotTag=cms.InputTag("offlineBeamSpot")
 )
 
 
