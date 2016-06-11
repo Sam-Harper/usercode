@@ -1,6 +1,6 @@
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
 
-//evil nasty CMSSW stuff
+//evil nasty CMSSW stuff. obviously should be using athena
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"

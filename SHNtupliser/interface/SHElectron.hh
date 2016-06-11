@@ -158,6 +158,8 @@ class SHElectron : public TObject {
   float pmDRz2_;
   int pmSubDets_;
 
+  int nrSatCrysIn5x5_; //new for v25
+
   float rhoCorr_; //! set by the event each time we get it
 
   //backwards link to the mother event
@@ -182,7 +184,8 @@ private:
   // void setPosTrackInnToSeed(const TVector3& pos){posTrackInnToSeed_=pos;}
   // void setPosTrackOutToSeed(const TVector3& pos){posTrackOutToSeed_=pos;}
   void setD0(float d0){d0_=d0;}
-
+  void setNrSatCrysIn5x5(int val){nrSatCrysIn5x5_=val;}
+  void setCutCode(int val){cutCode_=val;}
   // void setIsolMVA(float mva){isolMVA_=mva;}
   // void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   // void setPFIsol(float charged,float neutral,float photon);
@@ -276,6 +279,8 @@ private:
   float e1x5Over5x5()const{return e1x5Over5x5_;}
   float e2x5Over5x5()const{return e2x5Over5x5_;}
 
+  int nrSatCrysIn5x5()const{return nrSatCrysIn5x5_;}
+
   float trkChi2()const{return trkChi2_;}
   int nrDof()const{return nrDof_;}
   int charge()const{return posCharge_ ? 1 : -1;}
@@ -343,7 +348,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,24) 
+  ClassDef(SHElectron,25) 
 
 };
 

@@ -166,6 +166,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
   fixTrkIsols(heepEvent,gsfEle,*shEle);
+  setNrSatCrysIn5x5(heepEvent,*shEle);
+  setCutCode(heepEvent,gsfEle,*shEle);
   //shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle.superCluster(),shEvent);
@@ -202,6 +204,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const
 {
   shEvent.addElectron(photon,shEvent.getCaloHits());  
+  SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);   
+  setNrSatCrysIn5x5(heepEvent,*shEle);
   fillRecHitClusterMap(*photon.superCluster(),shEvent);
 }
 
@@ -812,8 +816,31 @@ void SHEventHelper::fixTrkIsols(const heep::Event& heepEvent,const reco::GsfElec
     }
   }
   shEle.setTrkIsol(isolPtTrks03,isolPtTrks04,isolNrTrks);
+}
 
-   
 
+void SHEventHelper::setCutCode(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
+{
+  const heep::Ele* heepEle=nullptr;
+  for(auto& ele : heepEvent.heepEles()){
+    if(&ele.gsfEle()==&gsfEle){
+      heepEle=&ele;
+      break;
+    }
+  }
+  if(heepEle) shEle.setCutCode(heepEle->cutCode());
+    
+}
+#include "SHarper/HEEPAnalyzer/interface/HEEPEcalClusterTools.h"
+void SHEventHelper::setNrSatCrysIn5x5(const heep::Event& heepEvent,SHElectron& shEle)const
+{
+  DetId id = shEle.superClus()->seedClus()->seedId();
+  const EcalRecHitCollection* ebHits =heepEvent.handles().ebRecHits.isValid() ? heepEvent.ebHitsFull() : 
+    heepEvent.handles().ebReducedRecHits.isValid() ? &(*heepEvent.handles().ebReducedRecHits) : nullptr;
+  const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : 
+    heepEvent.handles().eeReducedRecHits.isValid() ? &(*heepEvent.handles().eeReducedRecHits) : nullptr;
+  auto recHits = id.subdetId()==EcalBarrel ? ebHits : eeHits;
+  shEle.setNrSatCrysIn5x5(heep::EcalClusterTools::nrSaturatedCrysIn5x5(id,recHits,heepEvent.handles().caloTopology.product()));
+  
 
 }

@@ -97,6 +97,7 @@ SHElectron::SHElectron():
   pmDRz1_(-999.),
   pmDRz2_(-999.),
   pmSubDets_(0),
+  nrSatCrysIn5x5_(-1),
   rhoCorr_(-999.),
   mEvent_(NULL)
 {
@@ -197,6 +198,7 @@ SHElectron::SHElectron(const SHElectron &rhs):
   pmDRz1_(rhs.pmDRz1_),
   pmDRz2_(rhs.pmDRz2_),
   pmSubDets_(rhs.pmSubDets_),
+  nrSatCrysIn5x5_(rhs.nrSatCrysIn5x5_),
   rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {
