@@ -69,6 +69,7 @@ for line in datasetDefFile:
             line=line.replace("SAMPLEWEIGHT","1")
             line=line.replace("isCrabJob=False","isCrabJob=True");
             line=line.replace("DATASETCODE",str(datasetCode))
+            line=line.replace("TOSED:DATASETNAME",str(dataset))
             tempConfigFile.write(line)
 
   
