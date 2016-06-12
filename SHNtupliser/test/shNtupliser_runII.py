@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=0
+    datasetCode=101
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -159,6 +159,9 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.shNtupliser.addPFCands = False
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
+
+if process.shNtupliser.datasetCode.value()>10:
+    process.addTrigSum = cms.bool(False)
 
 process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
