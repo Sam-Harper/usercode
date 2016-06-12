@@ -116,7 +116,7 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.skimHLTFilter.throw=cms.bool(False)
 datasetName="TOSED:DATASETNAME"
-datasetName="SinglePhoton"
+
 if datasetName=="DoubleEG":
     print "setting up HLT skim for DoubleEG"
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle37*","HLT_DoublePhoton60_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*")
