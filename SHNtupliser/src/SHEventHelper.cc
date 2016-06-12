@@ -165,9 +165,9 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 {
   shEvent.addElectron(gsfEle,shEvent.getCaloHits());
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
-  fixTrkIsols(heepEvent,gsfEle,*shEle);
-  setNrSatCrysIn5x5(heepEvent,*shEle);
-  setCutCode(heepEvent,gsfEle,*shEle);
+  fixTrkIsols_(heepEvent,gsfEle,*shEle);
+  setNrSatCrysIn5x5_(heepEvent,*shEle);
+  setCutCode_(heepEvent,gsfEle,*shEle);
   //shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle.superCluster(),shEvent);
@@ -205,7 +205,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 {
   shEvent.addElectron(photon,shEvent.getCaloHits());  
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);   
-  setNrSatCrysIn5x5(heepEvent,*shEle);
+  setNrSatCrysIn5x5_(heepEvent,*shEle);
   fillRecHitClusterMap(*photon.superCluster(),shEvent);
 }
 
@@ -439,16 +439,20 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
   if(heepEvent.handles().ctfTrack.isValid()){
     const std::vector<reco::Track>& tracks = heepEvent.ctfTracks();
     
+
     for(size_t trkNr=0;trkNr<tracks.size();trkNr++){
       const reco::Track& trk = tracks[trkNr];
-      trkP3.SetXYZ(trk.px(),trk.py(),trk.pz());
-      trkVtxPos.SetXYZ(trk.vx(),trk.vy(),trk.vz());
-      int vertexNr=-1;
-      if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
-      //std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
-      if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,
-						 trk.chi2(),trk.ndof(),
-						 SHIsolTrack::packAlgoIDInfo(trk.algo(),trk.originalAlgo(),getTrkQuality_(trk)));
+      bool passFilter = branches_.filterIsolTrks ? isNearEle_(trk,shEvent,0.4) : true;
+      if(passFilter){
+	trkP3.SetXYZ(trk.px(),trk.py(),trk.pz());
+	trkVtxPos.SetXYZ(trk.vx(),trk.vy(),trk.vz());
+	int vertexNr=-1;
+	if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
+	//std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
+	if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,
+						   trk.chi2(),trk.ndof(),
+						   SHIsolTrack::packAlgoIDInfo(trk.algo(),trk.originalAlgo(),getTrkQuality_(trk)));
+      }
     }
   } 
 }
@@ -781,7 +785,7 @@ const std::vector<int> makeSortedVec(std::vector<int> vec)
   return sorted;
 }
 
-void SHEventHelper::fixTrkIsols(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
+void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
 {
   
   const float minDR2=0.015*0.015;
@@ -819,7 +823,7 @@ void SHEventHelper::fixTrkIsols(const heep::Event& heepEvent,const reco::GsfElec
 }
 
 
-void SHEventHelper::setCutCode(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
+void SHEventHelper::setCutCode_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
 {
   const heep::Ele* heepEle=nullptr;
   for(auto& ele : heepEvent.heepEles()){
@@ -832,7 +836,7 @@ void SHEventHelper::setCutCode(const heep::Event& heepEvent,const reco::GsfElect
     
 }
 #include "SHarper/HEEPAnalyzer/interface/HEEPEcalClusterTools.h"
-void SHEventHelper::setNrSatCrysIn5x5(const heep::Event& heepEvent,SHElectron& shEle)const
+void SHEventHelper::setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const
 {
   DetId id = shEle.superClus()->seedClus()->seedId();
   const EcalRecHitCollection* ebHits =heepEvent.handles().ebRecHits.isValid() ? heepEvent.ebHitsFull() : 
@@ -842,5 +846,21 @@ void SHEventHelper::setNrSatCrysIn5x5(const heep::Event& heepEvent,SHElectron& s
   auto recHits = id.subdetId()==EcalBarrel ? ebHits : eeHits;
   shEle.setNrSatCrysIn5x5(heep::EcalClusterTools::nrSaturatedCrysIn5x5(id,recHits,heepEvent.handles().caloTopology.product()));
   
+
+}
+
+bool SHEventHelper::isNearEle_(const reco::Track& trk,const SHEvent& shEvent,const float maxDR)const
+{
+  const float maxDR2=maxDR*maxDR;
+  const float trkEta = trk.eta();
+  const float trkPhi = trk.phi();
+  for(int eleNr=0;eleNr<shEvent.nrElectrons();eleNr++){
+    const SHElectron& ele = *shEvent.getElectron(eleNr);
+    if(ele.dEtaIn()>900) continue;
+    if(MathFuncs::calDeltaR2(ele.detEta(),ele.detPhi(),trkEta,trkPhi)<maxDR2) return true;
+    if(MathFuncs::calDeltaR2(ele.eta(),ele.phi(),trkEta,trkPhi)<maxDR2) return true;
+    
+  }
+  return false;
 
 }

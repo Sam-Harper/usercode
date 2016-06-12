@@ -27,6 +27,7 @@ public:
     bool addSuperClus;
     bool addEles; 
     bool addHLTDebug;
+    bool filterIsolTrks;
     BranchData(){}
     BranchData(const edm::ParameterSet& iPara){setup(iPara);}
     void setup(const edm::ParameterSet& iPara);

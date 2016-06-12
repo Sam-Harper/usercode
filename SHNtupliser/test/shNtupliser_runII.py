@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=101
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -115,7 +115,7 @@ else:
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele27_WPLoose_Gsf_v*")
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
+process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle37*","HLT_DoublePhoton60_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*")
 
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
@@ -143,8 +143,9 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
-
-
+    process.shNtupliser.addPFCands = False
+    process.shNtupliser.addPFClusters = False
+    process.shNtupliser.addIsolTrks = False
 
 process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*

@@ -115,9 +115,11 @@ private:
   void fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE)const;
   void fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const;
   int getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const;
-  void fixTrkIsols(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
-  void setCutCode(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
-  void setNrSatCrysIn5x5(const heep::Event& heepEvent,SHElectron& shEle)const;
+  void fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
+  void setCutCode_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
+  void setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const;
+  bool isNearEle_(const reco::Track& trk,const SHEvent& shEvent,const float maxDR)const;
+
 };
 
 #endif

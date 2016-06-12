@@ -48,6 +48,9 @@ void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContain
 
 void fillPFClustersECAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE);
 void fillPFClustersHCAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters);
+
+void filterIsoTrks(SHEvent* event,double maxDR);
+
 int getSCSeedCrysId(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters);
 
 void dumpPFInfo(const edm::ValueMap<std::vector<reco::PFCandidateRef> >& isoMaps,const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle);

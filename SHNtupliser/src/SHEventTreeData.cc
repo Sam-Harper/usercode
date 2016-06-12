@@ -18,6 +18,7 @@ void SHEventTreeData::BranchData::setup(const edm::ParameterSet& iPara)
   addSuperClus=iPara.getParameter<bool>("addSuperClus");
   addEles=iPara.getParameter<bool>("addEles");
   addHLTDebug=iPara.getParameter<bool>("addHLTDebug");
+  filterIsolTrks=iPara.getParameter<bool>("filterIsolTrks");
 }
 
 SHEventTreeData::SHEventTreeData(SHEvent* & event):

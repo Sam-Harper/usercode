@@ -21,6 +21,7 @@ shNtupPara = cms.PSet(
     addGenInfo = cms.bool(True),
     addTrigSum = cms.bool(True),
     addHLTDebug = cms.bool(False),
+    filterIsolTrks=cms.bool(True),
     fillFromGsfEle = cms.bool(True),
     minEtToPromoteSC = cms.double(-1.),
     outputGeom = cms.bool(True),                  

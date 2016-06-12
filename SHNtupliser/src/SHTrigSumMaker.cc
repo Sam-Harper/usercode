@@ -257,6 +257,10 @@ int SHTrigSumMaker::convertToSHTrigType(int cmsswTrigType)
   case trigger::TriggerELongit: return SHTrigObj::MISC;
   case trigger::TriggerMHTSig: return SHTrigObj::SUM;
   case trigger::TriggerHLongit: return SHTrigObj::MISC;
+  case trigger::TriggerL1EG: return SHTrigObj::L1EG;
+  case trigger::TriggerL1Jet: return SHTrigObj::L1JET;
+  case trigger::TriggerL1Tau: return SHTrigObj::L1TAU;
+  
   default: return SHTrigObj::UNDEFINED;
   }
 }
