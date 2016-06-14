@@ -161,7 +161,7 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.shNtupliser.addIsolTrks = False
 
 if process.shNtupliser.datasetCode.value()>10:
-    process.addTrigSum = cms.bool(False)
+    process.shNtupliser.addTrigSum = cms.bool(False)
 
 process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
