@@ -48,7 +48,8 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
   //this can only happen for private production/studies and we will ignore this
   if(hltConfig.tableName()!=shTrigSum.menuName() || true){
     shTrigSum.clearMenu();
-    fillMenu_(shTrigSum,hltConfig,hltPSProv.l1GtUtils());
+    //fix for issue where methods in L1TGlobalUtil were not properly decleared const
+    fillMenu_(shTrigSum,hltConfig,const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil()));
   }
   shTrigSum.setProcessName(hltConfig.processName()); //in theory this could change without chaning menu name and its fine
   shTrigSum.clearEvent();
@@ -61,14 +62,14 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
   shTrigSum.setPreScaleColumn(hltPSProv.prescaleSet(edmEvent,edmEventSetup));
   fillSHTrigResults_(trigResults,trigNames,hltPSProv,edmEvent,edmEventSetup,shTrigSum);
   fillSHTrigObjs_(trigEvt,shTrigSum);
-  fillSHL1Results_(hltPSProv.l1GtUtils(),edmEvent,shTrigSum);
+  fillSHL1Results_(const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil()),edmEvent,shTrigSum);
   shTrigSum.sort();
 }
 
 
 void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
 			       const HLTConfigProvider& hltConfig,
-			       const L1GtUtils& l1GtUtils)
+			       l1t::L1TGlobalUtil& l1GtUtils)
 {
 
   shTrigSum.setProcessName(hltConfig.processName());
@@ -89,14 +90,10 @@ void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
     }
   }
   
-  std::vector<std::string> l1Names;
+  std::vector<std::string> l1Names(l1GtUtils.prescales().size());
+  std::transform(l1GtUtils.prescales().begin(),l1GtUtils.prescales().end(),l1Names.begin(),
+		 [](const std::pair<std::string,int>& val){return val.first;});
   
-  std::string trigName,trigAlias;
-  for(int bitNr=0;bitNr<=127;bitNr++){  //should fix this
-    l1GtUtils.l1TriggerNameFromBit(bitNr,L1GtUtils::AlgorithmTrigger,trigAlias,trigName);
-      //if(trigAlias!=trigName) std::cout <<"name" <<trigName<<" alias "<<trigAlias<<std::endl;
-    l1Names.push_back(trigAlias);
-  }
   shTrigSum.setL1Names(l1Names);
   shTrigSum.setPathBitsDef(pathNames);
   shTrigSum.setFilterBitsDef(filterNames);
@@ -117,6 +114,7 @@ void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
     throw edm::Exception(edm::errors::LogicError,msg.str());
   }
 
+
   for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
     
     SHTrigResult trigResult;
@@ -128,6 +126,14 @@ void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
     auto l1Prescales = getPathL1Prescales_(pathName,hltPSProv,edmEvent,edmEventSetup,shTrigSum);
 
     SHTrigResult::Status status = static_cast<SHTrigResult::Status>(trigResults[pathNr].state());
+
+    if(pathNameWOVersion=="HLT_Photon36wdwq_v"){
+      std::cout <<"for  "<<pathNameWOVersion<<std::endl;
+      for(auto ps : l1Prescales){
+	std::cout <<"   l1 PS "<<ps.first<<" "<<ps.second<<" l1Prescale "<<std::endl;
+      }
+    }
+
     shTrigSum.addTrigResult(SHTrigResult(bitNr,status,prescale,l1Prescales));     
   } 
 }
@@ -187,17 +193,28 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
   }
 }    
 
-void SHTrigSumMaker::fillSHL1Results_(const L1GtUtils& l1Util,
+void SHTrigSumMaker::fillSHL1Results_(l1t::L1TGlobalUtil& l1Util,
 				      const edm::Event& edmEvent,
 				      SHTrigSummary& shTrigSum)
 {
-  int errorCode;
+  // std::cout <<"starting ps dump "<<l1Util.prescales().size()<<std::endl;
+  // for(auto& ps : l1Util.prescales()){
+  //   std::cout <<ps.first<<" "<<ps.second<<std::endl;
+  // }
+
   for(size_t bitNr=0;bitNr<shTrigSum.l1Names().size();bitNr++){
-    const std::string& l1Name = shTrigSum.l1Names()[bitNr];
-    bool pass = l1Util.decision(edmEvent,l1Name,errorCode);
-    int mask = l1Util.triggerMask(l1Name,errorCode);
-    int prescale = l1Util.prescaleFactor(edmEvent,l1Name,errorCode);
+    bool pass = l1Util.decisionsFinal()[bitNr].second;
+    int mask = l1Util.masks()[bitNr].second;
+    int prescale = l1Util.prescales()[bitNr].second;
     shTrigSum.addL1Result(SHL1Result(bitNr,pass,mask,prescale));
+
+    if(shTrigSum.l1Names()[bitNr]!=l1Util.decisionsFinal()[bitNr].first ||
+       shTrigSum.l1Names()[bitNr]!=l1Util.masks()[bitNr].first ||
+       shTrigSum.l1Names()[bitNr]!=l1Util.prescales()[bitNr].first){
+      LogErr<<" Warning, algo names dont match up "<<shTrigSum.l1Names()[bitNr]<<" "<<l1Util.decisionsFinal()[bitNr].first <<" "<<l1Util.masks()[bitNr].first<<" "<<l1Util.prescales()[bitNr].first<<std::endl;
+    }
+    
+
   }
   
 }
@@ -211,12 +228,29 @@ SHTrigSumMaker::getPathL1Prescales_(const std::string& pathName,
 {
   std::vector<std::pair<size_t,int>> retVal;
   if(!hltPSProv.hltConfigProvider().inited()) return retVal;
-  
-  auto prescales = hltPSProv.prescaleValuesInDetail(edmEvent,edmEventSetup,pathName);
+  auto& l1Util = const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil());
+
+
+  auto l1SeedMods = hltPSProv.hltConfigProvider().hltL1TSeeds(pathName);
   const std::vector<std::string>& l1Names = shTrigSum.l1Names();
-  for(auto& prescale : prescales.first){
-    size_t bitNr=std::distance(l1Names.begin(),std::find(l1Names.begin(),l1Names.end(),prescale.first));
-    retVal.push_back(std::pair<size_t,int>(bitNr,prescale.second));
+  if(l1SeedMods.size()!=1) {
+    if(!l1SeedMods.empty() && pathName.find("HLT_Mu3_PFJet40_v")==std::string::npos) LogErr<<pathName<<" mass more than 1 L1GTSeed "<<l1SeedMods.size()<<std::endl;
+    return retVal;
+  }
+  
+  auto seedNames = splitL1SeedExpr(l1SeedMods[0]);
+  if(seedNames.size()>10) return retVal;
+  
+  for(auto& l1SeedName : seedNames){
+    size_t bitNr=std::distance(l1Names.begin(),std::find(l1Names.begin(),l1Names.end(),l1SeedName));
+    int prescale=-1;
+    //if(bitNr>=l1Util.prescales().size()) LogErr<<"for seed "<<l1SeedName<<" bit nr is "<<bitNr<<" nr l1 seeds "<<l1Util.prescales().size()<<std::endl;
+    if(bitNr<l1Util.prescales().size()){
+      if(l1SeedName==l1Util.prescales()[bitNr].first) prescale=l1Util.prescales()[bitNr].second;
+      else LogErr<<" miss match bit "<<bitNr<<" should be "<<l1SeedName<<" but instead get "<<l1Util.prescales()[bitNr].first<<std::endl;
+    }
+  
+    retVal.push_back(std::pair<size_t,int>(bitNr,prescale));
   }
   return retVal;
 }
@@ -304,9 +338,19 @@ void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const reco::
   
   for(auto trigObj : trigObjs){
     trigObj->addVars(values);
-  }
+  } 
   
   
+}
+#include <boost/regex.hpp>
+#include <boost/algorithm/string/regex.hpp>
+#include <boost/algorithm/string/trim.hpp>
+std::vector<std::string> SHTrigSumMaker::splitL1SeedExpr(const std::string& l1SeedExpr)
+{
+  std::vector<std::string> seedNames;
+  boost::algorithm::split_regex( seedNames, l1SeedExpr, boost::regex( " OR " ) ) ;
+  for(auto& seedName : seedNames) boost::algorithm::trim( seedName);
+  return seedNames; 
 }
 
 
