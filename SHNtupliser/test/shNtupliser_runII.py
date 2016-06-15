@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=101
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
