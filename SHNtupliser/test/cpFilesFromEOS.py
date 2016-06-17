@@ -36,10 +36,13 @@ for filename in filesSet:
     outputFilename = "{d[dataset]}_{d[runnr]}_LS{d[minLS]}to{d[maxLS]}.root".format(d=fileData)
     print fileLumis,filename,outputFilename
     
-    fullEOSFilename="/eos/cms/tier0/"+filename
-    
+    fullEOSFilename=str("/eos/cms/tier0/"+filename)
+    eosCpArgs=['/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select','cp',fullEOSFilename,args.outputDir.rstrip("/")+"/"+outputFilename]
+    print eosCpArgs
     import subprocess
-    out,err = subprocess.Popen(['/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select','cp',fullEOSFilename,args.outputDir+"/"+outputFilename],stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-    for line in err.splitline():
-        print line
+    out,err = subprocess.Popen(eosCpArgs,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+    print out
+    print err
+    #for line in err.splitline():
+    #    print line
 
