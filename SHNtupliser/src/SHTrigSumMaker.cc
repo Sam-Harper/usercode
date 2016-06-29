@@ -62,7 +62,7 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
   shTrigSum.setPreScaleColumn(hltPSProv.prescaleSet(edmEvent,edmEventSetup));
   fillSHTrigResults_(trigResults,trigNames,hltPSProv,edmEvent,edmEventSetup,shTrigSum);
   fillSHTrigObjs_(trigEvt,shTrigSum);
-  fillSHL1Results_(const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil()),edmEvent,shTrigSum);
+  //fillSHL1Results_(const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil()),edmEvent,shTrigSum);
   shTrigSum.sort();
 }
 
@@ -71,7 +71,7 @@ void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
 			       const HLTConfigProvider& hltConfig,
 			       l1t::L1TGlobalUtil& l1GtUtils)
 {
-
+  //  std::cout <<"filling menu"<<std::endl;
   shTrigSum.setProcessName(hltConfig.processName());
   shTrigSum.setGlobalTag(hltConfig.globalTag());
   shTrigSum.setMenuName(hltConfig.tableName());
@@ -97,7 +97,7 @@ void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
   shTrigSum.setL1Names(l1Names);
   shTrigSum.setPathBitsDef(pathNames);
   shTrigSum.setFilterBitsDef(filterNames);
-
+  //std::cout <<"end menu fill"<<std::endl;
 }
 
 void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
@@ -108,6 +108,7 @@ void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
 					SHTrigSummary& shTrigSum)
 					
 {
+  //std::cout <<"filling trig results"<<std::endl;
   if(trigNames.size()!=trigResults.size()){
     std::ostringstream msg;
     msg<<" Error trig results and trig names not the same size "<<trigNames.size()<<" "<<trigResults.size();
@@ -122,8 +123,9 @@ void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
     const std::string& pathName = trigNames.triggerName(pathNr);
     const std::string  pathNameWOVersion=rmTrigVersionFromName(pathName);
     size_t bitNr=shTrigSum.pathBitsDef().getBitNr(pathNameWOVersion);
-    int prescale=hltPSProv.hltConfigProvider().inited() ? hltPSProv.prescaleValue(edmEvent,edmEventSetup,pathName) : -1;
+    //int prescale=hltPSProv.hltConfigProvider().inited() ? hltPSProv.prescaleValue(edmEvent,edmEventSetup,pathName) : -1;
     auto l1Prescales = getPathL1Prescales_(pathName,hltPSProv,edmEvent,edmEventSetup,shTrigSum);
+    int prescale = -1;
 
     SHTrigResult::Status status = static_cast<SHTrigResult::Status>(trigResults[pathNr].state());
 
@@ -135,7 +137,8 @@ void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
     }
 
     shTrigSum.addTrigResult(SHTrigResult(bitNr,status,prescale,l1Prescales));     
-  } 
+  }   
+  //  std::cout <<"END filling trig results"<<std::endl;
 }
 
 
@@ -227,6 +230,7 @@ SHTrigSumMaker::getPathL1Prescales_(const std::string& pathName,
 				    SHTrigSummary& shTrigSum)
 {
   std::vector<std::pair<size_t,int>> retVal;
+  return retVal;
   if(!hltPSProv.hltConfigProvider().inited()) return retVal;
   auto& l1Util = const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil());
 
