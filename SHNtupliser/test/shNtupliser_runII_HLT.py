@@ -8,8 +8,6 @@ process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),
-                            inputCommands=cms.untracked.vstring('keep *',
-                                                                'drop *_hltEgammaPixelSeedVars*_*_*')
                         #    eventsToProcess = cms.untracked.VEventRange("1:1484800-1:1484810"),
 #                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
                              )
@@ -21,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=101
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -31,7 +29,7 @@ print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(5000),
+    reportEvery = cms.untracked.int32(10000),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -61,7 +59,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 import sys
 
 #CRABHLTNAMEOVERWRITE
-hltName="HLT"
+hltName="HLTX"
 patCandID=""
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
@@ -76,16 +74,16 @@ process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
-process.shNtupliser.addHLTDebug = cms.bool(True)
+process.shNtupliser.addHLTDebug = True
+
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
 
-process.shNtupliser.hltProcName = cms.string("HLTX")
-process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","","HLTX")
-process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","","HLTX")
-process.shNtupliser.gsfEleTag = "gsfElectrons"
+process.shNtupliser.hltProcName = cms.string(hltName)
+process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
+
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
 process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
@@ -96,14 +94,8 @@ process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-
+#process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsTrkIsoCorr")
 import os
-cmsswVersion = os.environ['CMSSW_VERSION']
-if "CMSSW_7" in cmsswVersion:
-    process.shNtupliser.recoPhoTag = "gedPhotons"
-    process.shNtupliser.gsfEleTag = "gedGsfElectrons"
-    process.shNtupliser.superClusterEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel")
-    process.shNtupliser.superClusterEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower")
 
 
 #if 1, its a crab job...
@@ -124,8 +116,21 @@ else:
 # Additional output definition
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
-#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
+process.skimHLTFilter.throw=cms.bool(False)
+datasetName="TOSED:DATASETNAME"
+
+if datasetName=="DoubleEG":
+    print "setting up HLT skim for DoubleEG"
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle37*","HLT_DoublePhoton60_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*")
+elif datasetName=="SingleElectron":
+    print "setting up HLT skim for SingleElectron"
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele105_CaloIdVT_GsfTrkIdT_v*","HLT_Ele115_CaloIdVT_GsfTrkIdT_v*","HLT_Ele27_WPLoose_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPTight_Gsf_v*","HLT_Ele32_eta2p1_WPTight_Gsf_v*","HLT_Ele35_WPLoose_Gsf_v*")
+elif datasetName=="SinglePhoton":
+    print "setting up HLT skim for SinglePhoton"
+    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_Photon22_v*","HLT_Photon30_v*","HLT_Photon36_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon165_HE10_v*","HLT_Photon175_v*","HLT_Photon250_NoHE_v*","HLT_Photon300_NoHE_v*")
+else:
+    print "setting HLT skim to select all"
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
@@ -153,19 +158,15 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
+    process.shNtupliser.addPFCands = False
+    process.shNtupliser.addPFClusters = False
+    process.shNtupliser.addIsolTrks = False
 
+if process.shNtupliser.datasetCode.value()>10:
+    process.shNtupliser.addTrigSum = cms.bool(False)
 
-process.hltEgammaPixelSeedVars = cms.EDProducer("EgammaHLTPixelMatchVarProducer",
-                                                recoEcalCandidateProducer=cms.InputTag("hltEgammaCandidates"),
-                                                pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeeds")
-)
-process.hltEgammaPixelSeedVarsUnseeded = cms.EDProducer("EgammaHLTPixelMatchVarProducer",
-                                                        recoEcalCandidateProducer=cms.InputTag("hltEgammaCandidatesUnseeded"),
-                                                        pixelSeedsProducer=cms.InputTag("hltEgammaElectronPixelSeedsUnseeded")
-)
 process.p = cms.Path(#process.primaryVertexFilter*
-#    process.egammaFilter*
-    process.hltEgammaPixelSeedVars*process.hltEgammaPixelSeedVarsUnseeded*
+    process.egammaFilter*
     process.shNtupliser)
         
 if not isMC:
