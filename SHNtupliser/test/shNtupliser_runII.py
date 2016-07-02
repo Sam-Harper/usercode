@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=0
+#    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -126,6 +126,9 @@ elif datasetName=="SingleElectron":
 elif datasetName=="SinglePhoton":
     print "setting up HLT skim for SinglePhoton"
     process.skimHLTFilter.HLTPaths =cms.vstring("HLT_Photon22_v*","HLT_Photon30_v*","HLT_Photon36_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon165_HE10_v*","HLT_Photon175_v*","HLT_Photon250_NoHE_v*","HLT_Photon300_NoHE_v*")
+elif datasetName=="JetHT":
+    print "setting up HLT skim for JetHT"
+    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_CaloJet500_NoJetID_v*",)
 else:
     print "setting HLT skim to select all"
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
@@ -147,12 +150,8 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                      )
 
 print "dataset code: ",process.shNtupliser.datasetCode.value()
-if process.shNtupliser.datasetCode.value()>=800 and process.shNtupliser.datasetCode.value()<700:
-    print "applying filter for 1 ele and disabling large collections"
-    process.egammaFilter.nrElesRequired=cms.int32(1)
-    process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
-if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCode.value()<1000:
+if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetCode.value()<1000:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
@@ -160,7 +159,12 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
 
-if process.shNtupliser.datasetCode.value()>10:
+if process.shNtupliser.datasetCode.value() in [321,322]:
+    print "TTbar detected, disabling mc particles"
+    process.shNtupliser.addMCParts = False
+    
+
+if isCrabJob and process.shNtupliser.datasetCode.value()>10:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
 process.p = cms.Path(#process.primaryVertexFilter*
