@@ -1,43 +1,42 @@
 
 
 
-/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 111 & 800 & redo22
-/ZToEE_NNPDF30_13TeV-powheg_M_120_200/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 112 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_200_400/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 113 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_400_800/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 114 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_800_1400/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 115 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_1400_2300/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 116 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_2300_3500/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 117 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_3500_4500/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 118 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_4500_6000/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 119 & 800 &
-/ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 120 & 400 &
-
+/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 111 & 800 &  core1
+/ZToEE_NNPDF30_13TeV-powheg_M_120_200/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 112 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_200_400/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 113 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_400_800/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 114 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_800_1400/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 115 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_1400_2300/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 116 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_2300_3500/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 117 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_3500_4500/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 118 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_4500_6000/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 119 & 800 & core1
+/ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 120 & 400 & core1
 
 /TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 321 & 1600 & 
-/TTTo2L2Nu_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 322 & 1600 & 
+/TTTo2L2Nu_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 322 & 1600 & core2
 
-/WWTo2L2Nu_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 262 & 1600 & 
+/WWTo2L2Nu_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 262 & 1600 & core2
 /WWTo4Q_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 263 & 1600 & 
 /WWToLNuQQ_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 264 & 1600 & 
-/WWTo2L2Nu_Mll_200To600_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 265 & 1600 & 
-/WWTo2L2Nu_Mll_600To1200_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 266 & 1600 & 
-/WWTo2L2Nu_Mll_1200To2500_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 267 & 1600 & 
+/WWTo2L2Nu_Mll_200To600_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 265 & 1600 & core2
+/WWTo2L2Nu_Mll_600To1200_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 266 & 1600 &  core2
+/WWTo2L2Nu_Mll_1200To2500_13TeV-powheg/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 267 & 1600 &  core2
 
 
-/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 181 & 800 & do21
-/WZJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM& -1 & -1 & 1.0 & 1.0 & 182 & 1600 & ttlike
-/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM& -1 & -1 & 1.0 & 1.0 & 191 & 8000 & do21
-/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM   & -1 & -1 & 1.0 & 1.0 & 341 & 1600 & ttlike
-/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 342 & 8000 & ttlike
+/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 181 & 800 & core2
+/WZJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM& -1 & -1 & 1.0 & 1.0 & 182 & 1600 & core2
+/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM& -1 & -1 & 1.0 & 1.0 & 191 & 8000 & core2
+/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM   & -1 & -1 & 1.0 & 1.0 & 341 & 1600 & core2
+/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 342 & 8000 & core2
 
-/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 220 & 1600 &
+/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 130 & 800 & core2
+/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 131 & 800 &
 
-
-/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 211 & 1600 & do123
-/WJetsToLNu_Pt-100To250_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 212 & 1600 & do123
-/WJetsToLNu_Pt-250To400_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 213 & 1600 & do123
-/WJetsToLNu_Pt-400To600_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 214 & 1600 & do123
-/WJetsToLNu_Pt-600ToInf_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 215 & 1600 & do123
+/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 211 & 1600 & 
+/WJetsToLNu_Pt-100To250_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 212 & 1600 & 
+/WJetsToLNu_Pt-250To400_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 213 & 1600 & 
+/WJetsToLNu_Pt-400To600_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 214 & 1600 & 
+/WJetsToLNu_Pt-600ToInf_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 215 & 1600 & 
 
 /WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 220 & 1600 &
 /WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 221 & 1600 &
@@ -48,11 +47,9 @@
 /WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 226 & 1600 &
 /WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 227 & 1600 &
 
-/GJets_HT-40To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 651 & 1600 &  do123
-/GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 652 & 1600 &  do123
-/GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 653 & 1600 &  do123
-/GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 654 & 1600 &  do123
-/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 655 & 1600 & do123
+/GJets_HT-40To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 651 & 1600 &  
+/GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 652 & 1600 &  
+/GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 653 & 1600 &  
+/GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 654 & 1600 & 
+/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 655 & 1600 & 
 
-/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 130 & 800 &
-/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 131 & 800 &
