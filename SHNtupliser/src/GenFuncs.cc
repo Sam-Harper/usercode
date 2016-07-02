@@ -39,11 +39,11 @@ SHMCParticle GenFuncs::makeMCParticle(const reco::GenParticle* genPart,const std
   
 }
 
-void GenFuncs::fillGenInfo(const heep::Event& heepEvt,SHGenInfo& genInfo)
+void GenFuncs::fillGenInfo(const heep::Event& heepEvt,SHGenInfo& genInfo,bool addMCParts)
 {
 
   fillLHEParticles(heepEvt,genInfo);
-  fillMCParticles(heepEvt,genInfo);
+  if(addMCParts) fillMCParticles(heepEvt,genInfo);
   fillPDFInfo(heepEvt,genInfo);
   if(heepEvt.handles().genEvtInfo.isValid()) genInfo.setWeight(heepEvt.handles().genEvtInfo->weight());
   else genInfo.setWeight(1);

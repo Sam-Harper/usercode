@@ -28,6 +28,7 @@ public:
     bool addEles; 
     bool addHLTDebug;
     bool filterIsolTrks;
+    bool addMCParts;
     BranchData(){}
     BranchData(const edm::ParameterSet& iPara){setup(iPara);}
     void setup(const edm::ParameterSet& iPara);

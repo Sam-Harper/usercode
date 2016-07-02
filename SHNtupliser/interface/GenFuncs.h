@@ -19,7 +19,7 @@ private:
 public:
   static SHMCParticle makeMCParticle(const reco::GenParticle* genPart,const std::vector<reco::GenParticle>& particles);
 
-  static void fillGenInfo(const heep::Event& heepEvt,SHGenInfo& genInfo);
+  static void fillGenInfo(const heep::Event& heepEvt,SHGenInfo& genInfo,bool addMCParts);
 
   static void getAllDaughters(const reco::Candidate* part,
 			      std::vector<const reco::Candidate*>& daughters);
