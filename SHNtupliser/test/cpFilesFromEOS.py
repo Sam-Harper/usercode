@@ -11,11 +11,20 @@ print args
 
 from SHarper.SHNtupliser.dasFileQuery import *
 
+lumis=args.lumis
+if len(args.lumis.split("-"))==2:
+    lumis=""
+    for lumiNr in range(int(args.lumis.split("-")[0]),int(args.lumis.split("-")[1])+1):
+        lumis+=str(lumiNr)+":"
+    lumis=lumis.rstrip(":")
+
+print lumis
+
 eventList=[]
 Event.dataset = args.dataset
 import re
 commentRE = re.compile (r'#.+$')
-for lumi in args.lumis.split(":"):
+for lumi in lumis.split(":"):
     eventStr=str(args.runnr)+":"+lumi+":1"
     try:
         event = Event (eventStr)
