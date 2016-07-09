@@ -80,9 +80,11 @@ process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
+
 process.shNtupliser.hltProcName = cms.string(hltName)
-process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
+process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
+
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
 process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
@@ -151,12 +153,8 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                      )
 
 print "dataset code: ",process.shNtupliser.datasetCode.value()
-if process.shNtupliser.datasetCode.value()>=800 and process.shNtupliser.datasetCode.value()<700:
-    print "applying filter for 1 ele and disabling large collections"
-    process.egammaFilter.nrElesRequired=cms.int32(1)
-    process.shNtupliser.nrGenPartToStore = cms.int32(0)
 
-if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCode.value()<1000:
+if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetCode.value()<1000:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
@@ -164,7 +162,12 @@ if process.shNtupliser.datasetCode.value()>140 and process.shNtupliser.datasetCo
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
 
-if isCrabJob and process.shNtupliser.datasetCode.value()>10:
+if process.shNtupliser.datasetCode.value() in [321,322]:
+    print "TTbar detected, disabling mc particles"
+    process.shNtupliser.addMCParts = False
+    
+
+if isCrabJob and process.shNtupliser.datasetCode.value()>130:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
 process.p = cms.Path(#process.primaryVertexFilter*

@@ -81,7 +81,9 @@ process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
 
-process.shNtupliser.hltProcName = cms.string("HLT")
+process.shNtupliser.hltProcName = cms.string(hltName)
+process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
+process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
 process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
@@ -176,3 +178,5 @@ if not isMC:
 
 #from SHarper.HEEPAnalyzer.heepTools import *
 #swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")
+#import FWCore.PythonUtilities.LumiList as LumiList
+#process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
