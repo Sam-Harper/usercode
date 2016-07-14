@@ -109,7 +109,7 @@ with open(args.input,'r') as inFile:
 
 
 baseDir="/opt/ppd/month/harper"
-baseOutputDir=baseDir+"/MC"
+baseOutputDir=baseDir+"/data"
 batchJobBaseDir=baseDir+"/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
@@ -168,7 +168,7 @@ for runnr in runFileDict.keys():
         cmd+=" outputFile=$TMPDIR/"+outputFilename+"\n"
         batchFile.write(cmd)
         batchFile.write("mv $TMPDIR/"+outputFilename+" "+fullOutputDir)
-      #  print cmd
+        print cmd
     else:
         cmd+=" outputFile="+fullOutputDir+"/"+outputFilename
         batchFile.write(cmd)
@@ -178,7 +178,7 @@ for runnr in runFileDict.keys():
     if runBatch:
        # print "would run batch",runnr
         os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
-        os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
+        #os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
     else:
         os.system("chmod +x "+batchSubmitFile);
         cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(runnr)+".log &"
