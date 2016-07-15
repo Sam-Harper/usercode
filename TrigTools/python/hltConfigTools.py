@@ -47,6 +47,12 @@ def rmPaths(process,pathsToKeep):
             #        notAllCopiesRemoved = path.remove(getattr(process,moduleName))
 
 
+def rmPath(process,pathName):
+     path = getattr(process,pathName)
+     print "removing path ",pathName   
+     delattr(process,pathName)
+
+
 def setSaveTags(process,pathName,saveTagsValue):
     path = getattr(process,pathName)
     for filterName in path.moduleNames():

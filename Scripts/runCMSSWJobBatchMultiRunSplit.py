@@ -98,6 +98,7 @@ parser.add_argument('--config',help='cmsRun config file to run',required=True)
 parser.add_argument('--input',help='input file or file pattern to run over',required=True)
 parser.add_argument('--output',help='output filebase name',required=True)
 parser.add_argument('--outputDir',help='ouput dir (under scratch/mc/CMSSWVersion/<outputdir>',required=True)
+parser.add_argument('--baseOutDir',help='base output directory',default="mc")
 
 args = parser.parse_args()
 print args.config
@@ -109,7 +110,7 @@ with open(args.input,'r') as inFile:
 
 
 baseDir="/opt/ppd/month/harper"
-baseOutputDir=baseDir+"/data"
+baseOutputDir=baseDir+"/"+args.baseOutDir
 batchJobBaseDir=baseDir+"/cmsswBatchJobFiles/"
 cmsswVersion=os.environ['CMSSW_VERSION']
 swArea=os.environ['CMSSW_BASE']
@@ -121,7 +122,7 @@ batchSubmitFile="qsub_autoGen.sh"
 print "config file ",args.config," base batch file ",batchSubmitBaseFile
     
 fullOutputDir=baseOutputDir+"/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
-fullLogDir=baseDir+"/qsubLogs/"+cmsswVersion.split("CMSSW_")[1]+"/"+args.outputDir
+fullLogDir=fullOutputDir+"/logs"
 if os.path.exists(fullOutputDir):
     print "output directory ",fullOutputDir," exists, aborting "
     exit(1)
@@ -178,7 +179,7 @@ for runnr in runFileDict.keys():
     if runBatch:
        # print "would run batch",runnr
         os.system("mv "+batchSubmitFile+" "+batchJobDirAndPath+"/src");
-        #os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
+        os.system("condor_qsub "+batchJobDirAndPath+"/src/"+batchSubmitFile+" -o "+fullLogDir+" -e "+fullLogDir)
     else:
         os.system("chmod +x "+batchSubmitFile);
         cmd = "./"+batchSubmitFile+" >& "+fullLogDir+"/job_"+str(runnr)+".log &"
