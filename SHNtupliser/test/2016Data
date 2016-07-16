@@ -35,11 +35,18 @@
 
 /DoubleEG/Run2016C-PromptReco-v2/AOD & 275656 & 275783 & 40 & doThis
 /SingleElectron/Run2016C-PromptReco-v2/AOD & 275656 & 275783 & 40 & doThis 
-/SinglePhoton/Run2016C-PromptReco-v2/AOD & 275656 & 275783 & 40 & local
+/SinglePhoton/Run2016C-PromptReco-v2/AOD & 275656 & 275783 & 40 & photonRedo
+
 /JetHT/Run2016C-PromptReco-v2/AOD &  275656 & 275783  & 20 & local
 
 
 
 /DoubleEG/Run2016C-PromptReco-v2/AOD & 275784 & 276097 & 120 & 
-/SingleElectron/Run2016C-PromptReco-v2/AOD & 275784 & 276097 & 120 & 
+/SingleElectron/Run2016C-PromptReco-v2/AOD & 275784 & 276097 & 80 & 
 /SinglePhoton/Run2016C-PromptReco-v2/AOD & 275784 & 276097 & 120 & 
+
+/DoubleEG/Run2016C-PromptReco-v2/AOD & 276098 & 276384 & 120 & 
+/SingleElectron/Run2016C-PromptReco-v2/AOD & 276098 & 276384 & 80 & 
+/SinglePhoton/Run2016C-PromptReco-v2/AOD & 276098 & 276384 & 120 & 
+
+
