@@ -8,11 +8,14 @@ def makeGridPack(args,massPair):
     with open(args.baseConfig,"r") as f:
         configLines = f.readlines()
         
-    processName=args.baseConfig.split("_ee_")[0]
+    baseConfigName = args.baseConfig.split("/")[-1]
+    processName=baseConfigName.split("_ee_")[0]
     if processName=="Z_ew-BMNNPV":
-        configFilename=args.baseConfig.replace("_13TeV","_13TeV_M_"+str(massPair[0]))
+        configFilename=baseConfigName.replace("_13TeV","_13TeV_M_"+str(massPair[0]))
     else:
-        configFilename=args.baseConfig.replace("_13TeV","_13TeV_M_"+str(massPair[0])+"_"+str(massPair[1]))
+        if massPair>=0: maxMassStr=str(massPair[1])
+        else : maxMassStr="Inf"
+        configFilename=baseConfigName.replace("_13TeV","_13TeV_M_"+str(massPair[0])+"_"+maxMassStr)
     if args.withNegWeights==1:
         configFilename=configFilename.replace(".input","_withNegWeights.input")
     configFilename=configFilename.replace("_base","")
@@ -29,8 +32,7 @@ def makeGridPack(args,massPair):
     import subprocess
     jobArgs=['python','./run_pwg.py','-p','f','-i',configFilename,'-m',processName,'-f',outputDir,'-n',str(args.nrEvents)]
    # print configFilename+"\n",  #the \n and the , are important here
-  #  output= subProcess.Popen(jobArgs,stdout=subprocess.PIPE).communicate()[0]
-#    output= subProcess.Popen(['python','./run_pwg.py','-p','f','-i','Z_ew-BMNNPV_ee_M2000_NNPDF30_13TeV.input','-m','Z_ew-BMNNPV','-f','Z_ew-BMNNPV_Test5','-n','1000'],stdout=subprocess.PIPE).communicate()[0]
+    output= subprocess.Popen(jobArgs,stdout=subprocess.PIPE).communicate()[0]
 
     
 
