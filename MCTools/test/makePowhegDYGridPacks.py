@@ -1,4 +1,9 @@
-
+def getPDFName(pdfSetNr):
+    if pdfSetNr==260000: return "NNPDF30"
+    elif pdfSetNr==10800: return "CT10"
+    elif pdfSetNr==13100: return "CT14"
+    elif pdfSetNr==90500: return "PDF4LHCmc"
+    else: return "PDFSET"+str(pdfSetNr)
 
 def makeGridPack(args,massPair):
     if args.baseConfig.find("_ee_")==-1 or args.baseConfig.find("_13TeV")==-1:
@@ -13,12 +18,13 @@ def makeGridPack(args,massPair):
     if processName=="Z_ew-BMNNPV":
         configFilename=baseConfigName.replace("_13TeV","_13TeV_M_"+str(massPair[0]))
     else:
-        if massPair>=0: maxMassStr=str(massPair[1])
+        if massPair[1]>=0: maxMassStr=str(massPair[1])
         else : maxMassStr="Inf"
         configFilename=baseConfigName.replace("_13TeV","_13TeV_M_"+str(massPair[0])+"_"+maxMassStr)
     if args.withNegWeights==1:
         configFilename=configFilename.replace(".input","_withNegWeights.input")
     configFilename=configFilename.replace("_base","")
+    configFilename=configFilename.replace("_NNPDF30_","_"+getPDFName(args.pdfSetNr)+"_")
     outputDir=configFilename.replace(".input","")
 
     with open(configFilename,"w") as configFile:
@@ -26,12 +32,13 @@ def makeGridPack(args,massPair):
             line=line.replace("TOSED:MASSLOW",str(massPair[0]))
             line=line.replace("TOSED:MASSHIGH",str(massPair[1]))
             line=line.replace("TOSED:WITHNEGWEIGHTS",str(args.withNegWeights))
+            line=line.replace("TOSED:PDFSETNR",str(args.pdfSetNr))
             configFile.write(line)
 
 
     import subprocess
     jobArgs=['python','./run_pwg.py','-p','f','-i',configFilename,'-m',processName,'-f',outputDir,'-n',str(args.nrEvents)]
-   # print configFilename+"\n",  #the \n and the , are important here
+    print configFilename+"\n",  #the \n and the , are important here
     output= subprocess.Popen(jobArgs,stdout=subprocess.PIPE).communicate()[0]
 
     
@@ -60,6 +67,7 @@ parser.add_argument('baseConfig',help='base config filename')#,nargs="+")
 parser.add_argument('--nrEvents',default=1000,type=int,help='number of events to gen')
 parser.add_argument('--withNegWeights',default=0,type=int,help='with negative weights')
 parser.add_argument('--nrThreads',default=-1,type=int,help='number of threads to run')
+parser.add_argument('--pdfSetNr',default=260000,type=int,help='pdf set number (260000 NNPDF3.0, 10800 CT10, 13100 CT14, 90500 PDF4LHC mc')
 args = parser.parse_args()
 
 

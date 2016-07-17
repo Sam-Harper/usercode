@@ -9,8 +9,10 @@ ndns2 131         ! pdf set for hadron 2 (mlm numbering)
 ebeam1 6500d0    ! energy of beam 1
 ebeam2 6500d0    ! energy of beam 2
 ! To be set only if using LHA pdfs
-lhans1  260000    ! pdf set for hadron 1 (LHA numbering)
-lhans2  260000     ! pdf set for hadron 2 (LHA numbering)
+#lhans1 260000      ! pdf set for hadron 1 (LHA numbering)
+#lhans2 260000     ! pdf set for hadron 2 (LHA numbering)	
+lhans1 TOSED:PDFSETNR
+lhans2 TOSED:PDFSETNR
 ! To be set only if using different pdf sets for the two incoming hadrons
 ! QCDLambda5  0.25 ! for not equal pdf sets 
 
