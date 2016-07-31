@@ -20,12 +20,9 @@ namespace trigger{
 namespace heep{
   class Event;
 }
-namespace l1t{
-  class L1TGlobalUtil;
-}
 class HLTConfigProvider;
 class HLTPrescaleProvider;
-
+class L1GtUtils;
 class SHTrigSummary;
 class SHTrigObj;
 //known bugs:
@@ -42,7 +39,6 @@ public:
     P4Struct(float iPt,float iEta,float iPhi,float iMass):pt(iPt),eta(iEta),phi(iPhi),mass(iMass){}
   };
 
-  static int verboseLvl_;
 public:
   SHTrigSumMaker(){}
   ~SHTrigSumMaker(){}
@@ -68,7 +64,7 @@ public:
   
 private:
   static void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig,
-			l1t::L1TGlobalUtil& l1GtUtils);
+			const L1GtUtils& l1GtUtils);
   static void fillSHTrigResults_(const edm::TriggerResults& trigResults,
 				 const edm::TriggerNames& trigNames,
 				 HLTPrescaleProvider& hltPSProv,
@@ -80,7 +76,7 @@ private:
   static void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum);
 
 
-  static void fillSHL1Results_(l1t::L1TGlobalUtil& l1Util,const edm::Event& edmEvent,
+  static void fillSHL1Results_(const L1GtUtils& l1Util,const edm::Event& edmEvent,
 			       SHTrigSummary& shTrigSum);  
 
   
@@ -90,8 +86,6 @@ private:
 		      const edm::Event& edmEvent,
 		      const edm::EventSetup& edmEventSetup,
 		      SHTrigSummary& shTrigSum);
-
-  static std::vector<std::string> splitL1SeedExpr(const std::string& l1SeedExpr);
 };
   
 
