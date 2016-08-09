@@ -8,11 +8,6 @@ def rmOutputMods(process):
             outMod = getattr(process,modName)
             getattr(process,endPath).remove(outMod)
 
-def rmPath(process,path):
-    for moduleName in path.moduleNames():
-        notAllCopiesRemoved=True
-        while notAllCopiesRemoved:
-            notAllCopiesRemoved = path.remove(getattr(process,moduleName))
 
 
 def rmAllEndPathsWithOutput(process):
@@ -33,24 +28,21 @@ def rmAllEndPathsWithOutput(process):
                     delattr(process.endPathName)
 #                    rmPath(process,endPath)
                     break
-        
+def rmPath(process,pathName):
+     print "removing path ",pathName   
+     delattr(process,pathName)     
+     for psSet in process.PrescaleService.prescaleTable:
+         if psSet.pathName.value()==pathName:
+             process.PrescaleService.prescaleTable.remove(psSet)
+
+           
     
-def rmPaths(process,pathsToKeep):
+def rmAllPathsExcept(process,pathsToKeep):
     for pathName in process.pathNames().split():
         if (pathName.find("HLT_")==0 or pathName.find("MC_")==0 or pathName.find("AlCa_")==0 or pathName.find("DST_")==0) and pathName not in pathsToKeep:
-            path = getattr(process,pathName)
-            print "removing path ",pathName   
-            delattr(process,pathName)
-            #for moduleName in path.moduleNames():
-            #    notAllCopiesRemoved=True
-            #    while notAllCopiesRemoved:
-            #        notAllCopiesRemoved = path.remove(getattr(process,moduleName))
-
-
-def rmPath(process,pathName):
-     path = getattr(process,pathName)
-     print "removing path ",pathName   
-     delattr(process,pathName)
+            rmPath(process,pathName)
+            
+                
 
 
 def setSaveTags(process,pathName,saveTagsValue):
@@ -72,10 +64,10 @@ def addOutputMod(process):
                                                  filterName = cms.untracked.string( "" ),
                                                  dataTier = cms.untracked.string( "RAW" )
                                              ),
-                                             
+                                             SelectEvents = cms.untracked.PSet(),
                                              outputCommands = cms.untracked.vstring( 'drop *',
                                                                                   #   'keep *',
-                                                                                     'keep *_hltL1GtObjectMap_*_*',
+                                                                                     'keep *_hltGtStage2ObjectMap_*_*',
                                                                                 #     'keep FEDRawDataCollection_rawDataCollector_*_*',
                                                                                 #     'keep FEDRawDataCollection_source_*_*',
                                                                                      'keep edmTriggerResults_*_*_*',
