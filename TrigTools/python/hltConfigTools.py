@@ -42,8 +42,25 @@ def rmAllPathsExcept(process,pathsToKeep):
         if (pathName.find("HLT_")==0 or pathName.find("MC_")==0 or pathName.find("AlCa_")==0 or pathName.find("DST_")==0) and pathName not in pathsToKeep:
             rmPath(process,pathName)
             
-                
 
+def rmL1Seeds(process,l1SeedsToRM):
+           
+    for filterName in process.filterNames().split():
+        filt=getattr(process,filterName)
+        if filt.type_()=="HLTL1TSeed":# and filterName=="hltL1sDoubleEGor":
+            #print filt.L1SeedsLogicalExpression.value()
+            l1SeedsInExp=filt.L1SeedsLogicalExpression.value().split(" OR ")
+            for l1SeedToRM in l1SeedsToRM:
+                for l1SeedInExp in l1SeedsInExp:
+                    if l1SeedInExp==l1SeedToRM: l1SeedsInExp.remove(l1SeedInExp)
+            
+
+            l1SeedStr=""
+            for l1SeedInExp in l1SeedsInExp[:-1]:
+                l1SeedStr+=l1SeedInExp+" OR "
+            l1SeedStr+=l1SeedsInExp[-1]
+            filt.L1SeedsLogicalExpression=l1SeedStr    
+            #print filt.L1SeedsLogicalExpression.value()
 
 def setSaveTags(process,pathName,saveTagsValue):
     path = getattr(process,pathName)
