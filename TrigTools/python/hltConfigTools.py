@@ -31,9 +31,16 @@ def rmAllEndPathsWithOutput(process):
 def rmPath(process,pathName):
      print "removing path ",pathName   
      delattr(process,pathName)     
-     for psSet in process.PrescaleService.prescaleTable:
-         if psSet.pathName.value()==pathName:
-             process.PrescaleService.prescaleTable.remove(psSet)
+     try:
+         for psSet in process.PrescaleService.prescaleTable:
+             if psSet.pathName.value()==pathName:
+                 process.PrescaleService.prescaleTable.remove(psSet)
+     except:
+         pass
+def rmPathPattern(process,pathPattern):
+    for pathName in process.pathNames().split():
+        if pathName.find(pathPattern)!=-1:
+            rmPath(process,pathName)
 
            
     
@@ -58,7 +65,11 @@ def rmL1Seeds(process,l1SeedsToRM):
             l1SeedStr=""
             for l1SeedInExp in l1SeedsInExp[:-1]:
                 l1SeedStr+=l1SeedInExp+" OR "
-            l1SeedStr+=l1SeedsInExp[-1]
+          #  print filt.L1SeedsLogicalExpression.value(),filterName
+            try:
+                l1SeedStr+=l1SeedsInExp[-1]
+            except:
+                l1SeedStr+="L1_ZeroBias"
             filt.L1SeedsLogicalExpression=l1SeedStr    
             #print filt.L1SeedsLogicalExpression.value()
 
