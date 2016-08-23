@@ -83,6 +83,7 @@ process.shNtupliser.outputGeom = cms.bool(False)
 
 process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
+process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 
 process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
 process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
