@@ -45,6 +45,7 @@ void GenFuncs::fillGenInfo(const heep::Event& heepEvt,SHGenInfo& genInfo,bool ad
   fillLHEParticles(heepEvt,genInfo);
   if(addMCParts) fillMCParticles(heepEvt,genInfo);
   fillPDFInfo(heepEvt,genInfo);
+  fillWeights(heepEvt,genInfo);
   if(heepEvt.handles().genEvtInfo.isValid()) genInfo.setWeight(heepEvt.handles().genEvtInfo->weight());
   else genInfo.setWeight(1);
 }
@@ -105,6 +106,20 @@ void GenFuncs::fillPDFInfo(const heep::Event& heepEvt,SHGenInfo& genInfo)
   if(pdfInfo) genInfo.addPDFInfo(SHPDFInfo(pdfInfo->id,pdfInfo->x,pdfInfo->xPDF,pdfInfo->scalePDF));
 
 }
+
+void GenFuncs::fillWeights(const heep::Event& heepEvt,SHGenInfo& genInfo)
+{
+  edm::Handle<LHEEventProduct> lheEventHandle = heepEvt.handles().lheEvent;
+  if(!lheEventHandle.isValid()) return;
+
+  std::vector<std::pair<int,float> > weightVec;
+  for(auto& weight : lheEventHandle->weights()){
+    weightVec.push_back({std::stoi(weight.id),weight.wgt});
+  }
+  genInfo.setExtraWeights(std::move(weightVec));
+
+}
+
 
 void GenFuncs::fillMCParticles(const heep::Event& heepEvt,SHGenInfo& genInfo)
 {

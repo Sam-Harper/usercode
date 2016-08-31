@@ -121,9 +121,9 @@ const SHMCParticle* SHGenInfo::getLastCopy(size_t index)const
 float SHGenInfo::lheHT()const
 {
   float ht=0;
-  //std::cout <<"start "<<std::endl;
+  // std::cout <<"start "<<std::endl;
   for(const auto& part : lheParticles_){
-    //    std::cout <<part<<std::endl;
+    //std::cout <<part<<std::endl;
     if(part.pid()==21 || std::abs(part.pid())<=6){
        if(part.status()==1){
 	 ht+=part.p4().Pt();
@@ -134,6 +134,25 @@ float SHGenInfo::lheHT()const
   //  std::cout <<"ht "<<ht<<std::endl;
   return ht;
 }
+
+float SHGenInfo::lheBosonPt()const
+{
+  //  float pt=0;
+  for(const auto& part : lheParticles_){
+    if(part.pid()==22 || part.pid()==23 || std::abs(part.pid())==24){
+      //if(part.p4().Pt()<-100){
+	//std::cout <<"pt of "<<part.p4().Pt()<<std::endl;
+	//for(const auto& p : lheParticles_) std::cout <<p<<std::endl;
+	//  }
+      return part.p4().Pt();
+    }
+  }
+  //std::cout <<"no W "<<std::endl;
+  //for(const auto& p : lheParticles_) std::cout <<p<<std::endl;
+ 
+  return -1;
+}
+
 
 void SHGenInfo::printMCParts(size_t nrLines)const
 {

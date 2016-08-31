@@ -27,6 +27,7 @@ public:
   static void fillPDFInfo(const heep::Event& heepEvt,SHGenInfo& genInfo);
   static void fillMCParticles(const heep::Event& heepEvt,SHGenInfo& genInfo);
   static void fillLHEParticles(const heep::Event& heepEvt,SHGenInfo& genInfo);
+  static void fillWeights(const heep::Event& heepEvt,SHGenInfo& genInfo);
 };
 
 #endif
