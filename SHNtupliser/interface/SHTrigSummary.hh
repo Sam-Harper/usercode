@@ -97,8 +97,9 @@ public:
   const SHBitsDef& filterBitsDef()const{return filterBitsDef_;}
   const std::vector<std::string>& l1Names()const{return l1Names_;}
 
-  void print();
-
+  void print()const;
+  void printTrigs()const;
+  void printObjs()const;
   void clearEvent();
   void clearMenu();
   void clearAll(){clearEvent();clearMenu();}

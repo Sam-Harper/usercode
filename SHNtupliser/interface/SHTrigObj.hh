@@ -10,7 +10,7 @@ class SHTrigObj {
 public:
  
   enum Type{
-    UNDEFINED=0x0,
+    UNDEFINED=0x80000000,
     PHOTON=0x1,ELECTRON=0x2,EGAMMA=0x3,JET=0x4,TAU=0x8,MUON=0x10,SUM=0x20,MISC=0x40,
     HLT=0x7F,
     L1EGISO=0x100,L1EGNONISO=0x200,L1EG=0x300,L1JET=0x400,L1TAU=0x800,L1MUON=0x1000,L1SUM=0x2000,L1MISC=0x4000,
@@ -36,10 +36,13 @@ private:
   using VarSorter = TempFuncs::PairComp<std::string,float,std::less<std::string> >;
 
 public:
-  SHTrigObj():pt_(-1),eta_(-999),phi_(-999),mass_(0.),type_(0){}
+  SHTrigObj():pt_(0),eta_(-999),phi_(-999),mass_(0.),type_(0){}
   SHTrigObj(float iPt,float iEta,float iPhi,float iMass,int iType,const TBits& iFiltersPassed);
   virtual ~SHTrigObj(){}
   
+  //little nasty hack func
+  void setType(int val){type_=val;}
+
   float pt()const{return pt_;}
   float eta()const{return eta_;}
   float phi()const{return phi_;}
@@ -48,14 +51,15 @@ public:
   bool isHLT()const{return (type_&HLT)!=0;}
   bool isL1()const{return (type_&L1)!=0;}
   bool isL1S1()const{return (type_&L1S1)!=0;}
+  bool isType(const SHTrigObj::Type val)const{return (type_&val)!=0;}
   TLorentzVector p4()const{TLorentzVector vec;vec.SetPtEtaPhiM(pt(),eta(),phi(),0.);return vec;}
   bool hasDebug()const{return !vars_.empty();}
 
   const TBits& filtersPassed()const{return filtersPassed_;}
   bool pass(size_t bitNr)const{return filtersPassed_.TestBitNumber(bitNr);}
   bool pass(const TBits& bits)const;//{ bits&=filtersPassed_; return bits.CountBits()!=0;} //intentionally copying TBits
-  bool valid()const{return type_!=UNDEFINED;}
-
+  bool valid()const{return type_!=0;}
+  bool isUndefined()const{return type_==static_cast<int>(UNDEFINED);}
   float var(const std::string& varName)const; 
   void clearVars(){vars_.clear();}
   void addVars(const std::vector<std::pair<std::string,float> >& vars);

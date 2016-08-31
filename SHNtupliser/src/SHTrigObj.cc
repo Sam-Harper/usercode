@@ -35,7 +35,7 @@ float SHTrigObj::var(const std::string& varName)const
   // else if(varName=="phi") return phi();
   // else if(varName=="nrgy") return p4().E();
   // else if(varName=="et") return p4().Et();
-  if(vars_.empty()) return 999;
+  if(vars_.empty()) return -9999;
 
   auto result =  std::equal_range(vars_.begin(),vars_.end(),varName,VarSorter());
   
@@ -44,10 +44,10 @@ float SHTrigObj::var(const std::string& varName)const
   }else if(result.second-result.first==0){
     // now suppress the error message as the vars wont always be present
     //    LogErr <<" Warning, var "<<varName<<" not found "<<std::endl;
-    return 999;
+    return -999;
   }else{
     LogErr << " Error,  "<<result.second-result.first<<" keys match "<<varName<<std::endl;
-    return 999;
+    return -999;
   }  
 }
 
@@ -78,6 +78,8 @@ float SHTrigObj::deltaR2(float rhsEta,float rhsPhi)const
     return MathFuncs::calDeltaR2(eta_,phi_,rhsEta,rhsPhi);
   }else if(isL1S1()){
     return deltaR2L1_(rhsEta,rhsPhi);
+  }else if(isUndefined()){
+    return MathFuncs::calDeltaR2(eta_,phi_,rhsEta,rhsPhi);
   }else{
     LogErr <<" unrecongised trigger type for DR "<<type_<<std::endl;
     return 999.;
