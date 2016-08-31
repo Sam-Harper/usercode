@@ -75,7 +75,7 @@ const SHCaloHit& SHCaloHitContainer::getHit(int detId)const
     if(indx!=-1) return DetIdTools::isEcalBarrel(detId) ? getEcalBarrelHitByIndx(indx) : getEcalEndcapHitByIndx(indx);
   }else if(DetIdTools::isHcal(detId)){
     if(hitIndxTable_.empty()) createHitIndxTable_(); //if we havnt already filled our nice vector for fast lookup, fill it
-    int indx = hitIndxTable_[DetIdTools::getHashEcal(detId)];
+    int indx = hitIndxTable_[DetIdTools::getHashHcal(detId)+DetIdTools::kNrCrysBarrel+DetIdTools::kNrCrysEndcap];
     if(indx!=-1) return getHcalHitByIndx(indx);
   }
   return nullHit_; //no hit found, returns null hit

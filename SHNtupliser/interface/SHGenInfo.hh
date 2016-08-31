@@ -13,6 +13,7 @@ private:
 
   SHPDFInfo pdfInfo_;
   float weight_; //the generator weight (ie for madgraph)
+  std::vector<std::pair<int,float> > extraWeights_; //pdf/scale weights
   
   mutable std::vector<size_t> mcPartIndxTbl_; //for fast lookup, probably unnecessary but maps particle position to position in mcParticle index
 
@@ -31,6 +32,8 @@ public:
   void addLHEParticle(const SHMCParticle& mcPart){lheParticles_.push_back(mcPart);}
   void addPDFInfo(const SHPDFInfo& pdfInfo){pdfInfo_=pdfInfo;}
   void setWeight(float iWeight){weight_=iWeight;}
+  void setExtraWeights(std::vector<std::pair<int,float> >&& val){extraWeights_=val;}
+  void setExtraWeights(const std::vector<std::pair<int,float> >& val){extraWeights_=val;}
 
   const std::vector<SHMCParticle>& mcParts()const{return mcParticles_;}
   const SHMCParticle* getPart(size_t index)const; //note this is via index in event, not vector index
@@ -54,8 +57,11 @@ public:
   const std::vector<SHMCParticle>& lheParts()const{return lheParticles_;}
   const SHPDFInfo& pdfInfo()const{return pdfInfo_;}
   float weight()const{return weight_;}
+  std::vector<std::pair<int,float> > extraWeights()const{return extraWeights_;}
+
 
   float lheHT()const;
+  float lheBosonPt()const;
   void printMCParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
   void printLHEParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
   
@@ -71,7 +77,7 @@ private:
   void getFSRDaughters_(size_t index,std::vector<const SHMCParticle*>& fsrDaughters)const;
   void createMCPartIndxTbl_()const;
 
-  ClassDef(SHGenInfo,3)
+  ClassDef(SHGenInfo,5)
 };
 
 

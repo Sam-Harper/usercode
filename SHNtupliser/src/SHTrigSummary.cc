@@ -90,8 +90,13 @@ std::vector<SHTrigObj*> SHTrigSummary::getTrigObjs(float eta,float phi,int type,
   return matchedObjs;
 }
 
+void SHTrigSummary::print()const
+{
+  printTrigs();
+  printObjs();
+}
 
-void SHTrigSummary::print()
+void SHTrigSummary::printTrigs()const
 {
   std::cout <<"Menu "<<menuName()<<" process "<<processName()<<" gt "<<globalTag()<<std::endl;
   std::cout <<"nr trigs "<<trigResults().size()<<std::endl;
@@ -100,6 +105,8 @@ void SHTrigSummary::print()
     std::string trigName = pathBitsDef().getBitName(trig.bitNr());
     std::cout <<"trig "<<trig.bitNr()<<" "<<trigName<<" pass: "<<trig.accept()<<" run: "<<trig.wasRun()<<" ps: "<<trig.preScale()<<std::endl;
   }
+}
+void SHTrigSummary::printObjs()const{
   
   for(auto& trig : trigObjs()){
     std::cout <<"trig "<<std::hex<<trig.type()<<std::dec<<" "<<trig.pt()<<" "<<trig.eta()<<" "<<trig.phi()<<" "<<trig.mass();
@@ -107,7 +114,6 @@ void SHTrigSummary::print()
     for(auto& name : names) std::cout <<" "<<name;
     std::cout <<std::endl;
   }
-  
 
 }
 

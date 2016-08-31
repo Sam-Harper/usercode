@@ -18,16 +18,16 @@ def getDatasetCode(filename):
     if filename.find("QCD_Pt_1800to2400")!=-1: return 612;
     if filename.find("QCD_Pt_2400to3200")!=-1: return 613;
     if filename.find("QCD_Pt_3200toInf")!=-1: return 614;
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_50_120_")!=-1: return 111 
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_120_200_")!=-1: return 112 
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_200_400_")!=-1: return 113
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_400_800_")!=-1: return 114
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_800_1400_")!=-1: return 115
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_1400_2300_")!=-1: return 116
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_50_120")!=-1: return 111 
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_120_200")!=-1: return 112 
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_200_400")!=-1: return 113
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_400_800")!=-1: return 114
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_800_1400")!=-1: return 115
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_1400_2300")!=-1: return 116
     if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_2300_3500")!=-1: return 117
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_3500_4500_")!=-1: return 118
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_4500_6000_")!=-1: return 119
-    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf_")!=-1: return 120 
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_3500_4500")!=-1: return 118
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_4500_6000")!=-1: return 119
+    if filename.find("ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf")!=-1: return 120 
     
 
     return 0
