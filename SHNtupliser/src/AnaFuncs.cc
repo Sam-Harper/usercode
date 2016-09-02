@@ -673,39 +673,58 @@ void AnaFuncs::setBranchAddress(TTree *tree,const char* branchName,void *address
   tree->SetBranchAddress(branchName,address);
 }
 
+void AnaFuncs::readFilelistFromPattern(const std::string& filelistPattern,std::vector<std::string> &filenames)
+{
+  char filename[512];
+  auto file = popen(("ls "+filelistPattern).c_str(),"r");
+  while(file && !std::feof(file)){
+    if(std::fgets(filename,sizeof(filename),file)==NULL) break; //otherwise will read the last entry twice
+    std::string filenameStr(filename);
+    filenameStr.pop_back(); //removing end of line character
+    filenames.push_back(filenameStr);
+  }
+  std::fclose(file);
+}
+
+void AnaFuncs::readFilelistFromFile(const std::string& fileListName,std::vector<std::string> &filenames)
+{
+  std::ifstream fileList(fileListName.c_str());
+  char filename[512];
+  while(!fileList.eof() && fileList.is_open()){
+    fileList.getline(filename,511);
+    if(strcmp(filename,"")!=0 && filename[0]!='#'){
+      //std::cout <<"filename ="<<filename<<std::endl;
+      filenames.push_back(filename);
+    }
+  }
+  fileList.close();
+}
+
 void AnaFuncs::readFilelist(std::string fileListName,std::vector<std::string> &filenames,int nrJobs,int jobNr,int verbose)
 {
-  if(fileListName.find("*")!=std::string::npos || fileListName.find("?")!=std::string::npos  ){
-    system(("ls "+fileListName+" > tempAutoGen.list").c_str());
-    fileListName ="tempAutoGen.list";
-  }
-  const char* extension = strstr(fileListName.c_str(),".root");
-  if(extension!=NULL && strlen(extension)==5){ //file is a root file, process it
-    filenames.push_back(fileListName);
-  }else{
+  readFilelist(std::vector<std::string>{fileListName},filenames,nrJobs,jobNr,verbose);
+}
 
-
-    std::ifstream fileList(fileListName.c_str());
-    char filename[512];
-   
-    while(!fileList.eof() && fileList.is_open()){
-     
-      fileList.getline(filename,511);
-      if(strcmp(filename,"")!=0 && filename[0]!='#'){
-	//std::cout <<"filename ="<<filename<<std::endl;
-	filenames.push_back(filename);
-      }
+void AnaFuncs::readFilelist(std::vector<std::string> fileListNames,std::vector<std::string> &filenames,int nrJobs,int jobNr,int verbose)  
+{
+  for(const auto& fileListName : fileListNames){
+    const char* extension = strstr(fileListName.c_str(),".root");
+    if(fileListName.find("*")!=std::string::npos || fileListName.find("?")!=std::string::npos  ){ 
+      readFilelistFromPattern(fileListName,filenames);
+    }else if(extension!=NULL && strlen(extension)==5){ //file is a root file, process it
+      filenames.push_back(fileListName);
+    }else{
+      readFilelistFromFile(fileListName,filenames);
     }
-    fileList.close();
   }
+  
   for(auto& filename : filenames){
     boost::replace_all(filename,"dcap://heplnx209.pp.rl.ac.uk/","root://dcap.pp.rl.ac.uk:1094/");
   }
 
-
   if(nrJobs!=1) splitFilelist(nrJobs,jobNr,filenames);
-  if(verbose) for(unsigned i=0;i<filenames.size();i++) std::cout <<"filename = "<<filenames[i].c_str()<<std::endl;
-  std::cout <<"nr files: "<<filenames.size()<<std::endl; 
+  if(verbose>=2) for(unsigned i=0;i<filenames.size();i++) std::cout <<"filename = "<<filenames[i].c_str()<<std::endl;
+  if(verbose) std::cout <<"nr files: "<<filenames.size()<<std::endl; 
 }
 
 void AnaFuncs::splitFilelistConsecutive(int nrJobs,int jobNr,std::vector<std::string>& filenames)

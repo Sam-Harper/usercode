@@ -98,6 +98,8 @@ private:
 
   static std::vector<std::pair<int,int> > eeDetIdToTowerId_;
 
+  static const std::vector<std::vector<int> > towerToRecHits_;
+  static const std::vector<int> dummyTowerHits_;
 
  public:
   static const int kDetOffset = 28;
@@ -178,10 +180,16 @@ private:
   //to make det ids
   static int makeEcalBarrelId(int iEta,int iPhi);
   static int makeEcalEndcapId(int ix,int iy,int iz);
+  static int makeHcalDetIdOld(int subDetCode,int iEta,int iPhi,int depth);
+  static int makeHcalDetIdOld(int iEta,int iPhi,int depth);
+  static int makeHcalBarrelDetIdOld(int iEta,int iPhi,int depth){return makeHcalDetIdOld(kBarrelCode,iEta,iPhi,depth);}
+  static int makeHcalEndcapDetIdOld(int iEta,int iPhi,int depth){return makeHcalDetIdOld(kEndcapCode,iEta,iPhi,depth);}
   static int makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth);
   static int makeHcalDetId(int iEta,int iPhi,int depth);
   static int makeHcalBarrelDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kBarrelCode,iEta,iPhi,depth);}
   static int makeHcalEndcapDetId(int iEta,int iPhi,int depth){return makeHcalDetId(kEndcapCode,iEta,iPhi,depth);}
+  
+
   static int makeCaloDetId(int iEta,int iPhi);
   static int makeL1CaloDetId(int iEta,int iPhi);
 
@@ -290,6 +298,8 @@ private:
 
   static void fillEEToTowerIdMap(const std::string& filename);
     
+  static const std::vector<int>& getRecHitsOfTower(int towerId); //this is definately bugged for iEta 27/28/29 and possibly bugged for the endcap
+
 private:
   static int newToOldFormatHcal_(int detId);
   //yes I'm aware these functions pass 1MB vectors by value, they
@@ -297,7 +307,7 @@ private:
   static std::vector<int> makeEBFastHashTable_();
   static std::vector<int> makeEEFastHashTable_();
   static std::vector<int> makeHcalFastHashTable_();
- 
+  static std::vector<std::vector<int> > makeTowerToRecHitsHashTable_();
 
 };
 

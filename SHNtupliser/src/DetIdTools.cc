@@ -13,7 +13,8 @@
 #include <sstream>
 
 std::vector<std::pair<int,int> > DetIdTools::eeDetIdToTowerId_;
-
+const std::vector<std::vector<int> > DetIdTools::towerToRecHits_ =DetIdTools::makeTowerToRecHitsHashTable_();
+const std::vector<int> DetIdTools::dummyTowerHits_;
 DetIdTools::EcalNavigator::EcalNavigator(int startId):
   startId_(startId)
 { 
@@ -282,6 +283,26 @@ int DetIdTools::makeEcalEndcapId(int ix,int iy,int iz)
 // {
 //   return iYEndcap(detId) - nBegin_[iXEndcap(detId)-1] + nIntegral_[iXEndcap(detId) -1 ] + (positiveZEndcap(detId) ? kICrFee_ : 0);
 // }
+int DetIdTools::makeHcalDetIdOld(int iEta,int iPhi,int depth)
+{
+  int subDetCode=0;
+  if(abs(iEta)>=17 || (abs(iEta)==16 && depth==3) ) subDetCode = kEndcapCode;
+  else subDetCode=kBarrelCode;
+  return makeHcalDetIdOld(subDetCode,iEta,iPhi,depth);
+}
+
+int DetIdTools::makeHcalDetIdOld(int subDetCode,int iEta,int iPhi,int depth)
+{
+  int detId=0x0;
+  detId |= kHcalCode;
+  detId |= subDetCode;
+  detId |= (iPhi&0x7F);
+  if(iEta>0) detId |= (0x2000 | (iEta<<7) );
+  else detId |= ((-iEta)<<7);
+  detId |= ((depth&0x7)<<14);
+  return detId;
+}
+
 int DetIdTools::makeHcalDetId(int iEta,int iPhi,int depth)
 {
   int subDetCode=0;
@@ -295,13 +316,13 @@ int DetIdTools::makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth)
   int detId=0x0;
   detId |= kHcalCode;
   detId |= subDetCode;
-  detId |= (iPhi&0x7F);
-  if(iEta>0) detId |= (0x2000 | (iEta<<7) );
-  else detId |= ((-iEta)<<7);
-  detId |= ((depth&0x7)<<14);
+  detId |= (kHcalIdFormat2);
+  detId |= ((depth&kHcalDepthMask2)<<kHcalDepthOffset2);
+  if(iEta>0) detId |= kHcalZsideMask2 | (iEta<<kHcalEtaOffset2);
+  else detId |= (-iEta<<kHcalEtaOffset2);
+  detId |=  (iPhi&kHcalPhiMask2);
   return detId;
 }
-
 void DetIdTools::printHcalDetId(int detId)
 {
   std::cout <<"detId "<<std::hex<<detId<<std::dec<<" isHcal "<<isHcal(detId)<<" isBarrel "<<isBarrel(detId)<<" isEndcap "<<isEndcap(detId)<<" iEta "<<iEtaHcal(detId)<<" iPhi "<<iPhiHcal(detId)<<" depth "<<depthHcal(detId)<<std::endl;
@@ -813,6 +834,18 @@ int DetIdTools::normEndcapIXOrIY(int iXOrIY)
 
 }
 
+const std::vector<int>& DetIdTools::getRecHitsOfTower(int towerId)
+{
+  if(isValidCaloId(towerId)){
+    size_t hash = calHashCalo(towerId);
+    if(hash<towerToRecHits_.size()) return towerToRecHits_[hash];
+    else{
+      LogErr <<" warning hash of "<<towerId<<" is "<<hash<<" which is bigger than "<<towerToRecHits_.size()<<std::endl;
+    }
+  }
+  return dummyTowerHits_;
+}
+
 
 std::vector<int> DetIdTools::makeEBFastHashTable_()
 {
@@ -855,6 +888,9 @@ struct PairLessThan {
 int DetIdTools::towerIdEndcap(int detId)
 {
   if(eeDetIdToTowerId_.empty()) fillEEToTowerIdMap("input/CaloTowerEEGeometric.map");
+  if(eeDetIdToTowerId_.empty() && std::getenv("CMSSW_BASE")){ //try for CMSSW setup
+    fillEEToTowerIdMap(std::string(std::getenv("CMSSW_BASE"))+"/src/SHarper/SHNtupliser/data/CaloTowerEEGeometric.map");
+  }
   if(eeDetIdToTowerId_.empty()){
     LogErr <<" Warning, you didnt load in a tower map, I didnt find the default, so I'm now going to put a dummy entry in which will stop all warnings and just fail silently ";
     eeDetIdToTowerId_.push_back(std::make_pair<int,int>(0,0)); 
@@ -878,9 +914,9 @@ int DetIdTools::ecalToTowerId(int detId)
 
 int DetIdTools::newToOldFormatHcal_(int detId)
 {
-  return makeHcalDetId(DetIdTools::iEtaHcal(detId),
-		       DetIdTools::iPhiHcal(detId),
-		       DetIdTools::depthHcal(detId));
+  return makeHcalDetIdOld(DetIdTools::iEtaHcal(detId),
+			  DetIdTools::iPhiHcal(detId),
+			  DetIdTools::depthHcal(detId));
 }
 
 
@@ -921,37 +957,15 @@ void DetIdTools::fillEEToTowerIdMap(const std::string& filename)
     } else if(file.eof()){
       std::cout <<"file map found but empty"<<std::endl;
     }
-
-    if(!file.bad()){
-      while(!file.eof()){
-	char tempBuffer[1024];
-	file.getline(tempBuffer,1024);
-	
-	
-	char* detIdChar = strtok(tempBuffer," ");
-	char* etaChar = strtok(NULL," ");
-	char* phiChar = strtok(NULL," ");
-	
-	//std::cout <<detIdChar<<std::endl;
-
-	int detId;
-	std::stringstream ss;
-	ss << std::hex << detIdChar;
-	ss >> detId;
-
-	
-	int eta= atoi(etaChar);
-	int phi = atoi(phiChar);
-	
-	
+    for(std::string line;std::getline(file,line); ){
+      std::stringstream ss(line);
+      int detId,eta,phi;
+      if(ss >> std::hex >> detId >> std::dec >> eta >> phi){
 	int towerId = makeCaloDetId(eta,phi);
-
-	//std::cout <<" detId "<<detId<<" "<<eta<<" "<<phi<<std::endl;
+	 //	std::cout <<" detId "<<detId<<" "<<eta<<" "<<phi<<std::endl;
 	eeDetIdToTowerId_.push_back(std::make_pair(detId,towerId));
-
-      }
-    }//bad file check  
-       
+      }   
+    }
   }//empty file name check
   //  std::cout <<"end of the menu "<<std::endl;
   std::sort(eeDetIdToTowerId_.begin(),eeDetIdToTowerId_.end(),boost::bind( std::less<int>(),boost::bind(&std::pair<int,int>::first,_1),boost::bind(&std::pair<int,int>::first,_2)));
@@ -963,3 +977,51 @@ void DetIdTools::fillEEToTowerIdMap(const std::string& filename)
     //}
 }
   
+std::vector<std::vector<int> > DetIdTools::makeTowerToRecHitsHashTable_()
+{
+  std::vector<std::vector<int> > hashTable(kNrCaloTowers);
+  
+  auto filler=[&hashTable](int towerId,int hitId){
+    size_t towerHash = calHashCalo(towerId);
+    if(towerHash<hashTable.size()){
+      hashTable[towerHash].push_back(hitId);
+    }else {
+      LogErr<<" error hash of "<<towerId<<" is "<<towerHash<<" which is larger than hashTable "<<hashTable.size()<<std::endl;
+    }
+  };
+
+  for(int iEta=-1*kMaxIEtaBarrel;iEta<=kMaxIEtaBarrel;iEta++){
+    for(int iPhi=kMinIPhiBarrel;iPhi<=kMaxIPhiBarrel;iPhi++){
+      if(isValidEcalBarrelId(iEta,iPhi)){
+	int id =makeEcalBarrelId(iEta,iPhi);
+	int towerId = ecalToTowerId(id);
+	if(towerId!=0) filler(towerId,id);
+      }
+    }
+  }
+ 
+  for(int iX=kMinIXEndcap;iX<=kMaxIXEndcap;iX++){
+    for(int iY=kMinIYEndcap;iY<=kMaxIYEndcap;iY++){
+      for(int iZ=-1;iZ<=1;iZ+=2){
+	if(isValidEcalEndcapId(iX,iY,iZ)){
+	  int id =makeEcalEndcapId(iX,iY,iZ);
+	  int towerId = ecalToTowerId(id);
+	  if(towerId!=0) filler(towerId,id);
+	}
+      }
+    }
+  }
+
+  for(int iEta=-1*kHcalIEtaAbsMax;iEta<=kHcalIEtaAbsMax;iEta++){
+    for(int iPhi=kHcalIPhiMin;iPhi<=kHcalIPhiMax;iPhi++){
+      for(int depth=kHcalDepthMin;depth<=kHcalDepthMax;depth++){
+	if(isValidHcalId(iEta,iPhi,depth)){
+	  int id = makeHcalDetId(iEta,iPhi,depth);
+	  int towerId= makeCaloDetId(iEta,iPhi);
+	  if(towerId!=0 && isValidCaloId(iEta,iPhi)) filler(towerId,id);
+	}
+      }
+    }
+  }
+  return hashTable;
+}

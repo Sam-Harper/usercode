@@ -38,7 +38,7 @@
 #include "SHarper/SHNtupliser/interface/SHTrigObj.hh"
 #include "SHarper/SHNtupliser/interface/SHBitsDef.hh"
 #include "SHarper/SHNtupliser/interface/SHRecHitsToClustersMap.hh"
-
+#include "SHarper/SHNtupliser/interface/SHTrigMenuData.hh"
 
 
 #ifdef __CINT__
@@ -93,5 +93,5 @@
 #pragma link C++ class SHBitsDef+;
 #pragma link C++ class SHL1Result+;
 #pragma link C++ class SHRecHitsToClustersMap+;
-
+#pragma link C++ class SHTrigMenuData+;
 #endif

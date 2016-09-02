@@ -193,8 +193,10 @@ public:
   static std::vector<float> makeVecFromInputStringF(const std::string& inputStr){std::vector<float> retVal;makeVecFromInputString(retVal,inputStr);return retVal;} 
   static std::vector<double> makeVecFromInputStringD(const std::string& inputStr){std::vector<double> retVal;makeVecFromInputString(retVal,inputStr);return retVal;}
   static void copyArrayToVec(const double* array,size_t nrEntries,std::vector<double>& vec);
-
-  static void readFilelist(std::string fileListName,std::vector<std::string> &filenames,int nrJobs=1,int jobNr=1,int verbose=1);
+  static void readFilelistFromPattern(const std::string& filelistPattern,std::vector<std::string> &filenames);
+  static void readFilelistFromFile(const std::string& fileListName,std::vector<std::string> &filenames);
+  static void readFilelist(std::string fileListName,std::vector<std::string> &filenames,int nrJobs=1,int jobNr=1,int verbose=2); 
+  static void readFilelist(std::vector<std::string> fileListName,std::vector<std::string> &filenames,int nrJobs=1,int jobNr=1,int verbose=2);
   static void splitFilelist(int nrJobs,int jobNr,std::vector<std::string>& filenames);
   static void splitFilelistMixed(int nrJobs,int jobNr,std::vector<std::string>& filenames);//files are maxmally mixed between jobs
   static void splitFilelistConsecutive(int nrJobs,int jobNr,std::vector<std::string>& filenames);//each job has files that were consecutive to each other
@@ -245,7 +247,9 @@ public:
 
   static std::string convertToTTreeStr(int val); //for -ve vals, string is M instead 
   static std::string convertToStr(int val){std::ostringstream retVal;retVal<<val;return retVal.str();}
-
+  static std::string getenv(const std::string& var){
+    auto val = std::getenv(var.c_str()); return val ? std::string(val) : std::string();
+  }
   //static double calChi2(const TH1* hist1,const TH1* hist2,double minRange,double maxRange,double minBinContent);
 
 

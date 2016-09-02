@@ -53,6 +53,27 @@ void SHBitsDef::setBitsDef(const std::set<std::string>& bitNames)
   
 }
 
+
+void SHBitsDef::setBitsDef(std::vector<std::string> bitNames)
+{
+  clear();
+
+  //sort and remove dups from our names
+  std::sort(bitNames.begin(),bitNames.end(),StrComp());
+  auto lastNonDup = std::unique(bitNames.begin(),bitNames.end());
+  bitNames.erase(lastNonDup,bitNames.end()); //not necessary in theory as could just loop to this point but a mild pain...
+
+  size_t bitNr=0;
+  for(auto& bitName : bitNames){
+    strToBitNr_.push_back(std::pair<std::string,int>(bitName,bitNr));
+    bitNr++;
+  }
+  //not strictly necessary as the set should be sorted but just in case we end up sorting differently for
+  //some werid reason
+  std::sort(strToBitNr_.begin(),strToBitNr_.end(),KeyComp());
+  
+}
+
 void SHBitsDef::buildBitNrToStrMap_()const
 {
   bitNrToStr_.clear(); 

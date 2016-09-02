@@ -20,8 +20,10 @@ class SHBitsDef {
 private:
   std::vector<std::pair<std::string,size_t> > strToBitNr_;
   mutable std::vector<std::string> bitNrToStr_; //! a cache which is constructed from the first one
-  
-  typedef TempFuncs::PairSortBy1st<std::string,int,std::less<std::string> > KeyComp;
+
+  using StrComp=std::less<std::string>;
+  using KeyComp=TempFuncs::PairSortBy1st<std::string,int,StrComp >;
+  //  typedef TempFuncs::PairSortBy1st<std::string,int,std::less<std::string> > KeyComp;
 
 public:
   SHBitsDef(){}
@@ -56,6 +58,14 @@ public:
       
   const std::vector<std::pair<std::string,size_t> >& data()const{return strToBitNr_;}
   void setBitsDef(const std::set<std::string>& bitNames);
+
+  //no requirements on uniquiness of entries or that they are sorted, function will handle that
+  //in theory, could have done this all by a non-const reference but I disliked the fact it would
+  //do a non-obvious from function name modification of the vector and wanted to make it explict
+  //in the code when it modifies the input vector
+  //std::vector is cheap to move so its not that inefficient
+  void setBitsDef(std::vector<std::string> bitNames);
+
   void clear(){strToBitNr_.clear();bitNrToStr_.clear();}
 
 private:
