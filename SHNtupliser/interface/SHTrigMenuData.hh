@@ -46,8 +46,8 @@ public:
   void setMenuName(const std::string& name){menuName_=name;}
   void setGlobalTag(const std::string& name){globalTag_=name;}
   void setProcessName(const std::string& name){processName_=name;}
-  void setPathBitsDef(const std::set<std::string>& bitNames){pathBitsDef_.setBitsDef(bitNames);}
-  void setFilterBitsDef(const std::set<std::string>& bitNames){filterBitsDef_.setBitsDef(bitNames);}
+  template <typename T> void setPathBitsDef(const T& bitNames){pathBitsDef_.setBitsDef(bitNames);}
+  template <typename T> void setFilterBitsDef(const T& bitNames){filterBitsDef_.setBitsDef(bitNames);}
   void setL1Names(std::vector<std::string> l1Names){l1Names_=std::move(l1Names);}
   
   void clearCache(){pathBitsDef_.clearCache();filterBitsDef_.clearCache();}

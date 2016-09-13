@@ -9,6 +9,11 @@ const SHTrigMenuData& TrigMenuDataMgr::get(const std::string& menuName,const std
   else return dummyData_;
 }
 
+bool TrigMenuDataMgr::hasMenu(const std::string& menuName,const std::string& procName)const
+{
+  return menuData_.find({menuName,procName})!=menuData_.end();
+}
+
 void TrigMenuDataMgr::read(TTree* tree)
 {
   

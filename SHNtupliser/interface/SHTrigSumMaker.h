@@ -84,7 +84,7 @@ public:
 
   //menu information
   TrigMenuDataMgr menuMgr_;  
-
+  
   //debug information
   int verboseLvl_;
 
@@ -113,8 +113,13 @@ public:
   static void associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs);
   
 private:
-  static void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig,
-			l1t::L1TGlobalUtil& l1GtUtils);
+  void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig,
+		 l1t::L1TGlobalUtil& l1GtUtils);
+  const SHTrigMenuData& getMenuData_(const HLTConfigProvider& hltConfig,
+				 l1t::L1TGlobalUtil& l1GtUtils);
+  void addMenuData_(const HLTConfigProvider& hltConfig,
+		    l1t::L1TGlobalUtil& l1GtUtils);
+    
   void fillSHTrigResults_(const edm::TriggerResults& trigResults,
 			  const edm::TriggerNames& trigNames,
 			  HLTPrescaleProvider& hltPSProv,
@@ -135,12 +140,10 @@ private:
     
 
   void updateCacheMenuChange_(const edm::Event& edmEvent,
-			      const edm::EventSetup& edmEventSetup, 
-			      const std::vector<std::string>& l1Names,
+			      const edm::EventSetup& edmEventSetup, 			   
 			      HLTPrescaleProvider& hltPSProv);
   void updateCacheRunChange_(const edm::Event& edmEvent,
 			     const edm::EventSetup& edmEventSetup, 
-			     const std::vector<std::string>& l1Names,
 			     HLTPrescaleProvider& hltPSProv);
   void updateCacheLumiChange_(const edm::Event& edmEvent,
 			      const edm::EventSetup& edmEventSetup, 

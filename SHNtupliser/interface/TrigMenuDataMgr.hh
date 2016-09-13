@@ -39,6 +39,9 @@ public:
   const SHTrigMenuData& get(const std::string& menuName,const std::string& procName)const;
   bool add(const SHTrigMenuData& data){return menuData_.insert({data,data}).second;}
   void clear(){menuData_.clear();}
+  bool hasMenu(const std::string& menuName,const std::string& procName)const;
+  
+
 
   void read(TTree* tree);
   void write(TTree* tree)const;
