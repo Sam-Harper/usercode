@@ -12,6 +12,7 @@
 
 #include "SHarper/SHNtupliser/interface/SHCaloHit.hh"
 #include "SHarper/SHNtupliser/interface/SHEventTreeData.h"
+#include "SHarper/SHNtupliser/interface/SHTrigSumMaker.h"
 
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
@@ -49,6 +50,7 @@ private:
   bool applyMuonId_;
 
   SHEventTreeData::BranchData branches_;
+  mutable SHTrigSumMaker trigSumMaker_;
 
   //storage for SHCaloHits so we dont have to keep reallocating the memory 
   mutable std::vector<SHCaloHit> ecalHitVec_;

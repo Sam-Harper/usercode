@@ -102,14 +102,15 @@ public:
   void printObjs()const;
   void clearEvent();
   void clearMenu();
+  void clearMenuData();
   void clearAll(){clearEvent();clearMenu();}
 
   void setMenuName(const std::string& name){menuName_=name;}
   void setGlobalTag(const std::string& name){globalTag_=name;}
   void setProcessName(const std::string& name){processName_=name;}
   void setPreScaleColumn(int val){preScaleColumn_=val;}
-  void setPathBitsDef(const std::set<std::string>& bitNames){pathBitsDef_.setBitsDef(bitNames);}
-  void setFilterBitsDef(const std::set<std::string>& bitNames){filterBitsDef_.setBitsDef(bitNames);}
+  template <typename T> void setPathBitsDef(const T& bitNames){pathBitsDef_.setBitsDef(bitNames);}
+  template <typename T> void setFilterBitsDef(const T& bitNames){filterBitsDef_.setBitsDef(bitNames);}
   void setL1Names(std::vector<std::string> l1Names){l1Names_=std::move(l1Names);}
   void addL1Result(const SHL1Result& result);
   void addTrigObj(const SHTrigObj& obj){trigObjs_.push_back(obj);}

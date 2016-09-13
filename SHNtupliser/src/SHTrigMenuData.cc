@@ -1,6 +1,18 @@
 #include "SHarper/SHNtupliser/interface/SHTrigMenuData.hh"
+#include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
 
 ClassImp(SHTrigMenuData)
+
+SHTrigMenuData::SHTrigMenuData(const SHTrigSummary& trigSum):
+  menuName_(trigSum.menuName()),
+  processName_(trigSum.processName()),
+  globalTag_(trigSum.globalTag()),
+  pathBitsDef_(trigSum.pathBitsDef()),
+  filterBitsDef_(trigSum.filterBitsDef()),
+  l1Names_(trigSum.l1Names())
+{
+
+}
 
 bool SHTrigMenuData::operator==(const SHTrigMenuData& rhs)const
 {

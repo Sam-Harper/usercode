@@ -17,6 +17,7 @@ void TrigMenuDataMgr::read(TTree* tree)
   while(TObject *obj = next()){
     if(obj->ClassName()==std::string("SHTrigMenuData")){
       auto shObj = static_cast<SHTrigMenuData*>(obj);
+      shObj->clearCache(); //just in case of root shenanigans
       menuData_.insert({*shObj,*shObj});
     }
   }

@@ -71,3 +71,15 @@ void SHEventTreeData::makeTree(const std::string& name)
   if(branches_.addPUInfo) tree_->Branch("PUInfoBranch","SHPileUpSummary",&shPUSum_,32000,splitLevel);
   if(branches_.addTrigSum) tree_->Branch("TrigSummaryBranch","SHTrigSummary",&shTrigSum_,32000,splitLevel);
 }
+
+void SHEventTreeData::fill()
+{
+  //menu is not already stored in the manager, add it
+  if(!trigMenuMgr_.get(shTrigSum_->menuName(),shTrigSum_->processName()).valid()) {
+    trigMenuMgr_.add(*shTrigSum_);
+  }
+  trigMenuMgr_.write(tree_);
+  shTrigSum_->clearMenuData();
+  tree_->Fill();
+
+}

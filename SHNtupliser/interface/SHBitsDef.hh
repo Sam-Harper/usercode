@@ -63,11 +63,13 @@ public:
   //in theory, could have done this all by a non-const reference but I disliked the fact it would
   //do a non-obvious from function name modification of the vector and wanted to make it explict
   //in the code when it modifies the input vector
-  //std::vector is cheap to move so its not that inefficient
+  //std::vector is cheap to move as well 
   void setBitsDef(std::vector<std::string> bitNames);
 
-  void clear(){strToBitNr_.clear();bitNrToStr_.clear();}
+  void setBitsDef(const SHBitsDef& rhs){*this=rhs;}
 
+  void clear(){strToBitNr_.clear();bitNrToStr_.clear();}
+  void clearCache(){bitNrToStr_.clear();}
 private:
   void buildBitNrToStrMap_()const;
   bool cacheOutOfDate_()const{return bitNrToStr_.empty();}

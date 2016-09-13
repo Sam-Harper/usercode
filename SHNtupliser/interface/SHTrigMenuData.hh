@@ -7,6 +7,8 @@
 #include <vector>
 #include <string>
 
+class SHTrigSummary;
+
 //this class holds information the HLT menu used, including the defination of the bits and L1 names
 //a menu name and process name uniquely define the HLT menu
 //kinda of a glorified struct but kept as a class for consistency 
@@ -23,7 +25,10 @@ private:
 
 public:
   SHTrigMenuData(){}
+  SHTrigMenuData(const SHTrigSummary& trigSum);
   virtual ~SHTrigMenuData(){}
+
+  bool valid()const{return !menuName_.empty() && !processName_.empty();}
   
   const std::string& menuName()const{return menuName_;}
   const std::string& processName()const{return processName_;}
@@ -44,6 +49,8 @@ public:
   void setPathBitsDef(const std::set<std::string>& bitNames){pathBitsDef_.setBitsDef(bitNames);}
   void setFilterBitsDef(const std::set<std::string>& bitNames){filterBitsDef_.setBitsDef(bitNames);}
   void setL1Names(std::vector<std::string> l1Names){l1Names_=std::move(l1Names);}
+  
+  void clearCache(){pathBitsDef_.clearCache();filterBitsDef_.clearCache();}
 
   ClassDef(SHTrigMenuData,1)
 };

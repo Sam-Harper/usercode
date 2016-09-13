@@ -11,7 +11,7 @@ private:
   size_t bitNr_;
   Status result_;
   int hltPreScale_;
-  std::vector<std::pair<size_t,int>> l1PreScales_;
+  std::vector<std::pair<size_t,int>> l1PreScales_; //L1 bit, prescale
 
 public:
   SHTrigResult():bitNr_(std::numeric_limits<size_t>::max()),result_(Status::UNDEFINED),hltPreScale_(-1){}

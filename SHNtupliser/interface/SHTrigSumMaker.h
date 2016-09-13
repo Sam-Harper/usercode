@@ -8,6 +8,8 @@
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
 #include "FWCore/Framework/interface/GenericHandle.h"
 
+#include "SHarper/SHNtupliser/interface/TrigMenuDataMgr.hh"
+
 namespace edm{
   class Event;
   class EventSetup;
@@ -41,22 +43,66 @@ public:
     float pt,eta,phi,mass;
     P4Struct(float iPt,float iEta,float iPhi,float iMass):pt(iPt),eta(iEta),phi(iPhi),mass(iMass){}
   };
+  class RunLumi{
+  private:
+    uint runnr_;
+    uint lumiSec_;
+  public:
+    RunLumi():runnr_(0),lumiSec_(0){}
+    RunLumi(uint iRunnr,uint iLumiSec):runnr_(iRunnr),lumiSec_(iLumiSec){}
+    bool sameLumi(RunLumi rhs)const{return runnr_==rhs.runnr_ && lumiSec_==rhs.lumiSec_;}
+    bool sameRun(RunLumi rhs)const{return runnr_==rhs.runnr_;}  
+  };
+  
+  class PathL1Seeds {
+    std::string name_;
+    std::vector<size_t> seeds_;
+  public:
+    PathL1Seeds(std::string iName,std::vector<size_t> iSeeds):
+      name_(std::move(iName)),seeds_(std::move(iSeeds)){} 
 
-  static int verboseLvl_;
+    bool operator==(const PathL1Seeds& rhs)const{return name_==rhs.name_;}
+    bool operator==(const std::string& rhs)const{return name_==rhs;}
+    template<typename T> bool operator!=(const T& rhs)const{return !(*this==rhs);}
+    const std::vector<size_t>& seeds()const{return seeds_;}
+  };
+  
+  
+  //our cached data (mainly L1 stuff as its really slow)
+  //changes on a menu basis
+  std::vector<PathL1Seeds> pathsL1Seeds_;
+  
+  //changes on a run basis
+  std::vector<std::vector<int> > l1PreScaleTbl_; //currently not filled due to L1 software issues
+  //changes on a lumi basis
+  int currPSColumn_;
+  std::vector<int> l1Prescales_; //temporary for L1 software issues
+  
+  //our info to track if cache is out of date
+  RunLumi lastRunLumi_;
+  std::pair<std::string,std::string> menuAndProcName_;
+
+  //menu information
+  TrigMenuDataMgr menuMgr_;  
+
+  //debug information
+  int verboseLvl_;
+
+  static const size_t kMaxNrL1SeedsToStore_=20;
 public:
-  SHTrigSumMaker(){}
+  SHTrigSumMaker():verboseLvl_(0){}
   ~SHTrigSumMaker(){}
   
-  static void makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
+  void makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
   
   //having to pass in l1decision as gt utilis was giving me odd results.
-  static void makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
-			    const edm::TriggerResults& trigResults,
-			    const edm::TriggerNames& trigNames,
-			    HLTPrescaleProvider& hltPSProv,
-			    const edm::Event& edmEvent,
-			    const edm::EventSetup& edmEventSetup,
-			    SHTrigSummary& shTrigSum);
+  void makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
+		     const edm::TriggerResults& trigResults,
+		     const edm::TriggerNames& trigNames,
+		     HLTPrescaleProvider& hltPSProv,
+		     const edm::Event& edmEvent,
+		     const edm::EventSetup& edmEventSetup,
+		     SHTrigSummary& shTrigSum);
   
   
   static int convertToSHTrigType(int cmsswTrigType);
@@ -69,29 +115,38 @@ public:
 private:
   static void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig,
 			l1t::L1TGlobalUtil& l1GtUtils);
-  static void fillSHTrigResults_(const edm::TriggerResults& trigResults,
-				 const edm::TriggerNames& trigNames,
-				 HLTPrescaleProvider& hltPSProv,
-				 const edm::Event& edmEvent,
-				 const edm::EventSetup& edmEventSetup,	
-				 SHTrigSummary& shTrigSum);
+  void fillSHTrigResults_(const edm::TriggerResults& trigResults,
+			  const edm::TriggerNames& trigNames,
+			  HLTPrescaleProvider& hltPSProv,
+			  SHTrigSummary& shTrigSum)const;
 
-  
-  static void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum);
-
+  void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum)const;
 
   static void fillSHL1Results_(l1t::L1TGlobalUtil& l1Util,const edm::Event& edmEvent,
 			       SHTrigSummary& shTrigSum);  
 
   
-  static std::vector<std::pair<size_t,int>> 
-  getPathL1Prescales_(const std::string& pathName,
-		      HLTPrescaleProvider& hltPSProv,
-		      const edm::Event& edmEvent,
-		      const edm::EventSetup& edmEventSetup,
-		      SHTrigSummary& shTrigSum);
+  std::vector<std::pair<size_t,int>> 
+  getPathL1Prescales_(const std::string& pathName)const;
+  
+  std::vector<size_t> getL1Seeds_(const std::string& pathName,
+				  const std::vector<std::string>& l1Names,
+				  const HLTConfigProvider& hltConfig)const;
+    
 
-  static std::vector<std::string> splitL1SeedExpr(const std::string& l1SeedExpr);
+  void updateCacheMenuChange_(const edm::Event& edmEvent,
+			      const edm::EventSetup& edmEventSetup, 
+			      const std::vector<std::string>& l1Names,
+			      HLTPrescaleProvider& hltPSProv);
+  void updateCacheRunChange_(const edm::Event& edmEvent,
+			     const edm::EventSetup& edmEventSetup, 
+			     const std::vector<std::string>& l1Names,
+			     HLTPrescaleProvider& hltPSProv);
+  void updateCacheLumiChange_(const edm::Event& edmEvent,
+			      const edm::EventSetup& edmEventSetup, 
+			      HLTPrescaleProvider& hltPSProv);
+
+  static std::vector<std::string> splitL1SeedExpr_(const std::string& l1SeedExpr);
 };
   
 

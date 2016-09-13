@@ -6,7 +6,7 @@ namespace edm{
 }
 
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
-
+#include "SHarper/SHNtupliser/interface/TrigMenuDataMgr.hh"
 #include "TTree.h"
 
 class SHEventTreeData {
@@ -51,12 +51,14 @@ private:
   TClonesArray* shPreShowerClusters_;//or this
   SHGenInfo* shGenInfo_;//we own this, nah just kidding, we dont
   SHTrigSummary* shTrigSum_; //we do not own this
+  
+  TrigMenuDataMgr trigMenuMgr_;
 
 public:
   SHEventTreeData(SHEvent* & event);
   void setMemLocs();
   void makeTree(const std::string& name);
-  void fill(){tree_->Fill();}
+  void fill();
   void setup(const edm::ParameterSet& iPara){branches_.setup(iPara);}
 
 };

@@ -130,6 +130,11 @@ void SHTrigSummary::clearMenu()
   menuName_="";
   processName_="";
   globalTag_="";
+  clearMenuData();
+}
+
+void SHTrigSummary::clearMenuData()
+{
   pathBitsDef_.clear();
   filterBitsDef_.clear();
   l1Names_.clear();
