@@ -6,7 +6,7 @@
 #include "DataFormats/EgammaReco/interface/PreshowerCluster.h"
 
 //note the seed cluster must be the first entry of the shape map
-SHSuperCluster::SHSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits):
+SHSuperCluster::SHSuperCluster(const reco::SuperCluster& superClus):
   nrgy_(superClus.energy()),
   preShowerNrgy_(superClus.preshowerEnergy()),
   pos_(superClus.position().X(),superClus.position().Y(),superClus.position().Z()), 
@@ -18,7 +18,7 @@ SHSuperCluster::SHSuperCluster(const reco::SuperCluster& superClus,const SHCaloH
 {
   
   for(reco::CaloCluster_iterator clusIt  = superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
-    new(clusterArray_[nrClus()]) SHBasicCluster(**clusIt,hits);
+    new(clusterArray_[nrClus()]) SHBasicCluster(**clusIt);
   }
   
 

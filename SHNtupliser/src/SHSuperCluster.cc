@@ -103,22 +103,6 @@ float SHSuperCluster::rawNrgy()const
   return rawNrgy;
 }
 
-
-
-
-//loop over all the clusters of the supercluster and add the hits to the vector
-void SHSuperCluster::getHitsByDetId(std::vector<int>& hitDetIds)const
-{
-  hitDetIds.clear();
-  for(int clusNr=0;clusNr<nrClus();clusNr++){
-    const SHBasicCluster* clus = getClus(clusNr);
-    std::vector<int> clusHits = clus->getHitsByDetId();
-    //I know, I know i should do this via stl algorthims
-    for(size_t i=0;i<clusHits.size();i++) hitDetIds.push_back(clusHits[i]);
-  }
-  std::sort(hitDetIds.begin(),hitDetIds.end());
-}
-
 std::ostream& SHSuperCluster::print(std::ostream& output)const
 {
   output<<"supercluster nrgy: "<<nrgy()<<" preshow nrgy "<<preShowerNrgy()<<" et "<<et()<<" eta "<<eta()<<" phi "<<phi()<<std::endl;

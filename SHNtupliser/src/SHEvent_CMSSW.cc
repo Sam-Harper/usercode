@@ -8,7 +8,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 //note: change pointers to reference variables
-void SHEvent::addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits)
+void SHEvent::addElectron(const heep::Ele& ele)
 {
   const reco::SuperCluster& superClus = ele.superCluster();
 
@@ -18,7 +18,7 @@ void SHEvent::addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits)
 
   if(superClusIndx==-1){//not already added, need to add to event
     superClusIndx=nrSuperClus();
-    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus,hits);
+    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus);
   }
   
   new(electronArray_[nrElectrons()]) SHElectron(ele,superClusIndx);
@@ -30,7 +30,7 @@ void SHEvent::addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits)
 }
 
 //note: change pointers to reference variables
-void SHEvent::addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer& hits)
+void SHEvent::addElectron(const reco::GsfElectron& ele)
 {
   const reco::SuperCluster& superClus = *ele.superCluster();
 
@@ -40,7 +40,7 @@ void SHEvent::addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer&
 
   if(superClusIndx==-1){//not already added, need to add to event
     superClusIndx=nrSuperClus();
-    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus,hits);
+    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus);
   }
   
   new(electronArray_[nrElectrons()]) SHElectron(ele,superClusIndx);
@@ -53,7 +53,7 @@ void SHEvent::addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer&
 }
 
 //note: change pointers to reference variables
-void SHEvent::addElectron(const reco::Photon& pho,const SHCaloHitContainer& hits)
+void SHEvent::addElectron(const reco::Photon& pho)
 {
   const reco::SuperCluster& superClus = *pho.superCluster();
 
@@ -63,7 +63,7 @@ void SHEvent::addElectron(const reco::Photon& pho,const SHCaloHitContainer& hits
 
   if(superClusIndx==-1){//not already added, need to add to event
     superClusIndx=nrSuperClus();
-    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus,hits);
+    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus);
   }
   
   new(electronArray_[nrElectrons()]) SHElectron(pho,superClusIndx);
@@ -77,14 +77,13 @@ void SHEvent::addElectron(const TLorentzVector&p4,const reco::SuperCluster& supe
 			  const cmssw::FiducialFlags& fid,
 			  const cmssw::ShowerShape& shape,
 			  const cmssw::IsolationVariables& isol03,
-			  const cmssw::IsolationVariables& isol04,
-			  const SHCaloHitContainer& hits)
+			  const cmssw::IsolationVariables& isol04)
 {
   int superClusIndx = getSuperClusIndx(superClus.rawEnergy(),superClus.position().Eta(),superClus.position().Phi()); //matches on raw energy, eta and phi in calo, returns -1 if not found
 
   if(superClusIndx==-1){//not already added, need to add to event
     superClusIndx=nrSuperClus();
-    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus,hits);
+    new(superClusArray_[superClusIndx]) SHSuperCluster(superClus);
   }
   
   new(electronArray_[nrElectrons()]) SHElectron(p4,superClus,fid,shape,isol03,isol04,superClusIndx);
@@ -150,11 +149,11 @@ void SHEvent::addVertex(const reco::Vertex& vtx)
 // }
 
 
-void SHEvent::addSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits)
+void SHEvent::addSuperCluster(const reco::SuperCluster& superClus)
 {
   int superClusIndx = getSuperClusIndx(superClus.rawEnergy(),superClus.position().Eta(),superClus.position().Phi()); //matches on raw energy, eta and phi in calo, returns -1 if not found
   if(superClusIndx==-1){//not already added, need to add to event
-    new(superClusArray_[nrSuperClus()]) SHSuperCluster(superClus,hits);
+    new(superClusArray_[nrSuperClus()]) SHSuperCluster(superClus);
   }
 }
 

@@ -36,7 +36,7 @@ class SHSuperCluster : public TObject {
   SHSuperCluster(const SHSuperCluster& rhs);
   //note that in shape map, the seed should be the first entry
   //note: change pointers to reference variables
-  SHSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits);
+  SHSuperCluster(const reco::SuperCluster& superClus);
   SHSuperCluster(const std::vector<SHBasicCluster>& basicClusters);
   ~SHSuperCluster();//need to check if need to delete TClonesArray objects
 
@@ -58,7 +58,6 @@ class SHSuperCluster : public TObject {
   const SHBasicCluster* getClus(int clusNr)const; //clusNr=0 always seed cluster
   // const SHPreShowerCluster* getPreShowerClus(int clusNr)const;
   
-  void getHitsByDetId(std::vector<int>& hitDetIds)const;
   friend std::ostream &operator <<(std::ostream& output,const SHSuperCluster &clus);
   std::ostream& print(std::ostream& output)const;
 

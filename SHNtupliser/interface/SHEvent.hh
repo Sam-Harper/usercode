@@ -120,24 +120,20 @@ class SHEvent : public TObject {
   SHEvent();
   virtual ~SHEvent();//need to check if need to delete TClonesArray objects
 
-  //note: change pointers to reference variables
-  //shapeMap : all the clusters + shape making up the cluster with seed 1st
-  //dominoVec : all the dominos starting at -phi to +phi with seed in middle
 
-  void addElectron(const heep::Ele& ele,const SHCaloHitContainer& hits); 
-  void addElectron(const reco::GsfElectron& ele,const SHCaloHitContainer& hits); 
-  void addElectron(const reco::Photon& ele,const SHCaloHitContainer& hits);
+  void addElectron(const heep::Ele& ele);
+  void addElectron(const reco::GsfElectron& ele);
+  void addElectron(const reco::Photon& ele);
   void addElectron(const SHElectron& ele,const SHSuperCluster& superClus);
   void addElectron(const SHElectron& ele);
   void addElectron(const TLorentzVector&p4,const reco::SuperCluster& superClus, //for trackless electrons
 		   const cmssw::FiducialFlags& fid,
 		   const cmssw::ShowerShape& shape,
 		   const cmssw::IsolationVariables& isol03,
-		   const cmssw::IsolationVariables& isol04,
-		   const SHCaloHitContainer& hits);
+		   const cmssw::IsolationVariables& isol04);
   void addJet(const pat::Jet& jet);
   void addJet(const SHJet& jet);
-  void addSuperCluster(const reco::SuperCluster& superClus,const SHCaloHitContainer& hits);
+  void addSuperCluster(const reco::SuperCluster& superClus);
   /// void addIsolCluster(const reco::CaloCluster& clus);
   // void addIsolSuperCluster(const reco::SuperCluster& superClus);
   void addIsolTrk(const SHIsolTrack& trk);

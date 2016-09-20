@@ -370,14 +370,6 @@ std::pair<int,float> SHElectron::isolTrk(double minDeltaR,double maxDeltaR,doubl
   
 }
 
-void SHElectron::getHitsByDetId(std::vector<int>& hitDetIds)const
-{
-  const SHSuperCluster* supClus = superClus();
-  if(supClus!=NULL) supClus->getHitsByDetId(hitDetIds);
-  else hitDetIds.clear(); //no sc, clear the vector and return
-}
-
-
 int SHElectron::calPhiRoad()const
 {
   float sinTheta = et()/nrgy();

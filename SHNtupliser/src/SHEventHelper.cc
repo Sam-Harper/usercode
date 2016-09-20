@@ -72,9 +72,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   shEvent.clear(); //reseting the event 
   
   addEventPara(heepEvent,shEvent); //this must be filled before (ele + mu need beam spot info)
-  //it is currently critical that calo hits are filled first as they are used in constructing the basic clusters
-  if(branches_.addCaloHits) addCaloHits(heepEvent,shEvent);
-  if(branches_.addCaloTowers) addCaloTowers(heepEvent,shEvent);
+
   if(branches_.addSuperClus) addSuperClusters(heepEvent,shEvent);
   if(branches_.addEles) addElectrons(heepEvent,shEvent);
   if(branches_.addPreShowerClusters) addPreShowerClusters(heepEvent,shEvent);
@@ -87,6 +85,10 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   if(branches_.addPUInfo) addPUInfo(heepEvent,shEvent);
   if(branches_.addPFCands) addPFCands(heepEvent,shEvent);
   if(branches_.addPFClusters) addPFClusters(heepEvent,shEvent);
+  if(branches_.addCaloHits) addCaloHits(heepEvent,shEvent);
+  if(branches_.addCaloTowers) addCaloTowers(heepEvent,shEvent);
+
+
 }
 
 void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -163,7 +165,7 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const
 {
-  shEvent.addElectron(gsfEle,shEvent.getCaloHits());
+  shEvent.addElectron(gsfEle);
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
   fixTrkIsols_(heepEvent,gsfEle,*shEle);
   setNrSatCrysIn5x5_(heepEvent,*shEle);
@@ -203,7 +205,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const
 {
-  shEvent.addElectron(photon,shEvent.getCaloHits());  
+  shEvent.addElectron(photon);  
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);   
   setNrSatCrysIn5x5_(heepEvent,*shEle);
   fillRecHitClusterMap(*photon.superCluster(),shEvent);
@@ -263,14 +265,14 @@ void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEv
   if(heepEvent.handles().superClusEB.isValid()){
     const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
     for(size_t superClusNr=0;superClusNr<superClusEB.size();superClusNr++){
-      shEvent.addSuperCluster(superClusEB[superClusNr],shEvent.getCaloHits());
+      shEvent.addSuperCluster(superClusEB[superClusNr]);
     }
   }
   if(heepEvent.handles().superClusEB.isValid()){
   //now endcap
     const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE(); 
     for(size_t superClusNr=0;superClusNr<superClusEE.size();superClusNr++){
-      shEvent.addSuperCluster(superClusEE[superClusNr],shEvent.getCaloHits());
+      shEvent.addSuperCluster(superClusEE[superClusNr]);
     }
   }
 }

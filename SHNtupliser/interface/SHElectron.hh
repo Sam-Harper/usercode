@@ -335,8 +335,6 @@ private:
   // float isolEmClus(double coneRadius)const;
   // float isolEmEtClus(double coneRadius)const;
 
-  void getHitsByDetId(std::vector<int>& hitDetIds)const;
-
   //links
   int superClusIndex()const{return superClusIndx_;}
 
