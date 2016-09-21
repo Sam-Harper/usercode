@@ -311,37 +311,14 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
   const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : 
     heepEvent.handles().eeReducedRecHits.isValid() ? &(*heepEvent.handles().eeReducedRecHits) : NULL;
   
-
-
-  if(ebHits!=NULL){
-    for(EcalRecHitCollection::const_iterator hitIt = ebHits->begin();
-	hitIt!=ebHits->end();++hitIt){
-      SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
-      shHit.setNrgy(hitIt->energy());
-      shHit.setTime(hitIt->time());
-      //shHit.setFlag(hitIt->flags());
-      shHit.setFlag(0);//temp fix
-      shHit.setFlagBits(getEcalFlagBits_(*hitIt));
-      
-    }
-  }//end of null check on ebHits
-
-  if(eeHits!=NULL){
-    for(EcalRecHitCollection::const_iterator hitIt = eeHits->begin();
-	hitIt!=eeHits->end();++hitIt){
-      SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hitIt->detid())];
-      shHit.setNrgy(hitIt->energy());
-      shHit.setTime(hitIt->time());  
-      //shHit.setFlag(hitIt->flags()); 
-      shHit.setFlag(0),
-      shHit.setFlagBits(getEcalFlagBits_(*hitIt));
-      
-    }
-  }//end of null check on eeHits
+  if(ebHits) fillEcalHitVec_(*ebHits,shEvent);
+  if(eeHits) fillEcalHitVec_(*eeHits,shEvent);
 
   shEvent.addEcalHits(ecalHitVec_);
 
 }
+
+
 
 void SHEventHelper::addHcalHits(const heep::Event& heepEvent, SHEvent& shEvent)const
 {
@@ -352,7 +329,11 @@ void SHEventHelper::addHcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
   if(hcalHits!=NULL){
     for(HBHERecHitCollection::const_iterator hitIt = hcalHits->begin();
 	hitIt!=hcalHits->end();++hitIt){
-      hcalHitVec_[hcalHitHash_(hitIt->detid())].setNrgy(hitIt->energy());
+      if(!branches_.filterHcalHits || 
+	 passCaloHitFilter_(hitIt->detid(),shEvent,kMaxDRHcalHits_) ){
+	 
+	hcalHitVec_[hcalHitHash_(hitIt->detid())].setNrgy(hitIt->energy());
+      }
     }
   }//end of null check on hcal hits
 
@@ -367,11 +348,14 @@ void SHEventHelper::addCaloTowers(const heep::Event& heepEvent, SHEvent& shEvent
     for(CaloTowerCollection::const_iterator towerIt=caloTowers->begin();
 	towerIt!=caloTowers->end();++towerIt){
       if(towerIt->id().ietaAbs()<=29){
-	SHCaloTower caloTower(towerIt->id(),towerIt->emEnergy(),
-			      towerIt->hadEnergy()-towerIt->hadEnergyHeOuterLayer(),
-			      towerIt->hadEnergyHeOuterLayer(),
-			      towerIt->eta(),towerIt->phi());
-	shEvent.addCaloTower(caloTower);
+	if(!branches_.filterCaloTowers ||
+	   isNearEle_(towerIt->eta(),towerIt->phi(),shEvent,kMaxDRCaloTowers_) ){
+	  SHCaloTower caloTower(towerIt->id(),towerIt->emEnergy(),
+				towerIt->hadEnergy()-towerIt->hadEnergyHeOuterLayer(),
+				towerIt->hadEnergyHeOuterLayer(),
+				towerIt->eta(),towerIt->phi());
+	  shEvent.addCaloTower(caloTower);
+	}
       }
     }
   }
@@ -390,7 +374,7 @@ void SHEventHelper::addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)con
     if(heepEvent.handles().pfCandidate.isValid() &&
        heepEvent.handles().gsfEle.isValid() && 
        heepEvent.handles().gsfEleToPFCandMap.isValid()){
-      PFFuncs::fillPFCands(&shEvent,0.5,shEvent.getPFCands(),heepEvent.handles().pfCandidate,
+      PFFuncs::fillPFCands(&shEvent,kMaxDRPFCands_,shEvent.getPFCands(),heepEvent.handles().pfCandidate,
 			   mainVtx,heepEvent.handles().vertices,
 			   *(heepEvent.handles().gsfEleToPFCandMap.product()),
 			   heepEvent.handles().gsfEle);
@@ -403,8 +387,8 @@ void SHEventHelper::addPFClusters(const heep::Event& heepEvent,SHEvent& shEvent)
   if(heepEvent.handles().pfClustersECAL.isValid() && heepEvent.handles().pfClustersHCAL.isValid() &&
      heepEvent.handles().superClusEB.isValid() && heepEvent.handles().superClusEE.isValid()){
 
-    fillPFClustersECAL_(&shEvent,0.5,shEvent.getPFClusters(),heepEvent.pfClustersECAL(),heepEvent.superClustersEB(),heepEvent.superClustersEE());
-    fillPFClustersHCAL_(&shEvent,0.5,shEvent.getPFClusters(),heepEvent.pfClustersHCAL());
+    fillPFClustersECAL_(&shEvent,kMaxDRPFClusts_,shEvent.getPFClusters(),heepEvent.pfClustersECAL(),heepEvent.superClustersEB(),heepEvent.superClustersEE());
+    fillPFClustersHCAL_(&shEvent,kMaxDRPFClusts_,shEvent.getPFClusters(),heepEvent.pfClustersHCAL());
   }
 }
 
@@ -444,8 +428,8 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
 
     for(size_t trkNr=0;trkNr<tracks.size();trkNr++){
       const reco::Track& trk = tracks[trkNr];
-      bool passFilter = branches_.filterIsolTrks ? isNearEle_(trk,shEvent,0.4) : true;
-      if(passFilter){
+      if(!branches_.filterIsolTrks || 
+	 isNearEle_(trk.eta(),trk.phi(),shEvent,kMaxDRTrks_) ){
 	trkP3.SetXYZ(trk.px(),trk.py(),trk.pz());
 	trkVtxPos.SetXYZ(trk.vx(),trk.vy(),trk.vz());
 	int vertexNr=-1;
@@ -851,17 +835,46 @@ void SHEventHelper::setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& 
 
 }
 
-bool SHEventHelper::isNearEle_(const reco::Track& trk,const SHEvent& shEvent,const float maxDR)const
+bool SHEventHelper::isNearEle_(float eta,float phi,const SHEvent& shEvent,const float maxDR)const
 {
   const float maxDR2=maxDR*maxDR;
-  const float trkEta = trk.eta();
-  const float trkPhi = trk.phi();
   for(int eleNr=0;eleNr<shEvent.nrElectrons();eleNr++){
     const SHElectron& ele = *shEvent.getElectron(eleNr);
     if(ele.dEtaIn()>900) continue;
-    if(MathFuncs::calDeltaR2(ele.detEta(),ele.detPhi(),trkEta,trkPhi)<maxDR2) return true;
-    if(MathFuncs::calDeltaR2(ele.eta(),ele.phi(),trkEta,trkPhi)<maxDR2) return true;
+    if(MathFuncs::calDeltaR2(ele.detEta(),ele.detPhi(),eta,phi)<maxDR2) return true;
+    if(MathFuncs::calDeltaR2(ele.eta(),ele.phi(),eta,phi)<maxDR2) return true;
     
+  }
+  return false;
+
+}
+void SHEventHelper::fillEcalHitVec_(const EcalRecHitCollection& hitColl,const SHEvent& shEvent)const 
+{
+  for(auto& hit : hitColl){
+    if(!branches_.filterEcalHits || 
+       passCaloHitFilter_(hit.detid(),shEvent,kMaxDREcalHits_) ){
+      
+      
+      SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hit.detid())];
+      shHit.setNrgy(hit.energy());
+      shHit.setTime(hit.time());
+      //shHit.setFlag(hit.flags());
+      shHit.setFlag(0);//temp fix
+      shHit.setFlagBits(getEcalFlagBits_(hit));     
+    }
+  }
+}
+
+
+bool SHEventHelper::passCaloHitFilter_(int hitId,const SHEvent& shEvent,const float maxDR)const
+{
+  double cellEta=0,cellPhi=0;
+  GeomFuncs::getCellEtaPhi(hitId,cellEta,cellPhi);
+  
+  const float maxDR2=maxDR;
+  for(int eleNr=0;eleNr<shEvent.nrElectrons();eleNr++){
+    const SHElectron& ele = *shEvent.getElectron(eleNr);
+    if(MathFuncs::calDeltaR2(ele.detEta(),ele.detPhi(),cellEta,cellPhi)<maxDR2) return true;    
   }
   return false;
 

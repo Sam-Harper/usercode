@@ -17,7 +17,7 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
-
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
 #include <vector>
 #include <memory>
@@ -57,9 +57,15 @@ private:
   mutable std::vector<SHCaloHit> hcalHitVec_;
   
   //magic numbers, number of hcal cells (need to fix)
-  static const int kNrHcalBarrelCrys_=1296*2;
-  static const int kNrHcalEndcapCrys_=1296*2;
-  
+  static constexpr int kNrHcalBarrelCrys_=1296*2;
+  static constexpr int kNrHcalEndcapCrys_=1296*2;
+
+  static constexpr float kMaxDRTrks_=0.4;
+  static constexpr float kMaxDRPFCands_=0.5;
+  static constexpr float kMaxDRPFClusts_=0.5;
+  static constexpr float kMaxDREcalHits_=0.5;
+  static constexpr float kMaxDRHcalHits_=0.5;
+  static constexpr float kMaxDRCaloTowers_=0.5;
 public:
   SHEventHelper();
   
@@ -120,8 +126,9 @@ private:
   void fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
   void setCutCode_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
   void setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const;
-  bool isNearEle_(const reco::Track& trk,const SHEvent& shEvent,const float maxDR)const;
-
+  bool isNearEle_(float eta,float phi,const SHEvent& shEvent,const float maxDR)const;
+  void fillEcalHitVec_(const EcalRecHitCollection& hitColl,const SHEvent& event)const;
+  bool passCaloHitFilter_(int hitId,const SHEvent& shEvent,const float maxDR)const;
 };
 
 #endif

@@ -26,9 +26,12 @@ public:
     bool addMuons;
     bool addSuperClus;
     bool addEles; 
-    bool addHLTDebug;
-    bool filterIsolTrks;
+    bool addHLTDebug;    
     bool addMCParts;
+    bool filterIsolTrks;
+    bool filterEcalHits;
+    bool filterHcalHits;
+    bool filterCaloTowers;
     BranchData(){}
     BranchData(const edm::ParameterSet& iPara){setup(iPara);}
     void setup(const edm::ParameterSet& iPara);

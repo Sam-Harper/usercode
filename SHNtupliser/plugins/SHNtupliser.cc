@@ -42,16 +42,6 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
-void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
-void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits);
-void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits);
-
-void fillPFClustersECAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE);
-void fillPFClustersHCAL(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters);
-
-void filterIsoTrks(SHEvent* event,double maxDR);
-
-int getSCSeedCrysId(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters);
 
 void dumpPFInfo(const edm::ValueMap<std::vector<reco::PFCandidateRef> >& isoMaps,const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle);
 
@@ -127,20 +117,9 @@ void SHNtupliser::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup
 
 bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
-  evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
- 
-  //even easier to convert from heep to shEvt
-  //std::cout <<"converting eventing" <<std::endl;
-  
   nrTot_++;
- 
-  
+  evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
-  
-  SHCaloHitContainer outputHits;
-  filterHcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);  
-  filterEcalHits(shEvt_,0.5,shEvt_->getCaloHits(),outputHits);
-  shEvt_->addCaloHits(outputHits);
     
   return true;
 
@@ -187,111 +166,8 @@ void SHNtupliser::endJob()
   std::cout <<"job ended "<<std::endl;
 }
 
-void filterHcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits)
-{
 
-  std::vector<std::pair<float,float> > eleEtaPhi;
-  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
-    const SHElectron* ele = event->getElectron(eleNr);
-    eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
-  }
   
-  // outputHits.clear();
-  double maxDR2 = maxDR*maxDR;
-  for(size_t hitNr=0;hitNr<inputHits.nrHcalHitsStored();hitNr++){
-    int detId = inputHits.getHcalHitByIndx(hitNr).detId();
-    double cellEta=0,cellPhi=0;
-    GeomFuncs::getCellEtaPhi(detId,cellEta,cellPhi);
-    
-    bool accept =false;
-    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
-      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
-			       cellEta,cellPhi)<maxDR2){
-	accept=true;
-	break;
-      }
-    }//end ele loop
-    if(accept) outputHits.addHit(inputHits.getHcalHitByIndx(hitNr));
-    
-  }//end hit loop
-
-
-}
-
-void filterEcalHits(const SHEvent* event,double maxDR,const SHCaloHitContainer& inputHits,SHCaloHitContainer& outputHits)
-{
-
-  std::vector<std::pair<float,float> > eleEtaPhi;
-  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
-    const SHElectron* ele = event->getElectron(eleNr);
-    eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
-  }
-  
-  //outputHits.clear();
-  double maxDR2 = maxDR*maxDR;
-  for(size_t hitNr=0;hitNr<inputHits.nrEcalHitsStored();hitNr++){
-    int detId = inputHits.getEcalHitByIndx(hitNr).detId();
-    double cellEta=0,cellPhi=0;
-    GeomFuncs::getCellEtaPhi(detId,cellEta,cellPhi);
-    
-    bool accept =false;
-    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
-      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
-			       cellEta,cellPhi)<maxDR2){
-	accept=true;
-	break;
-      }
-    }//end ele loop
-    if(accept) outputHits.addHit(inputHits.getEcalHitByIndx(hitNr));
-    
-  }//end hit loop
-
-
-}
-  
-void filterCaloTowers(const SHEvent* event,double maxDR,const SHCaloTowerContainer& inputHits,SHCaloTowerContainer& outputHits)
-{
-
-  std::vector<std::pair<float,float> > eleEtaPhi;
-  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
-    const SHElectron* ele = event->getElectron(eleNr);
-    eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
-  }
-  
-  outputHits.clear();
-  double maxDR2 = maxDR*maxDR;
-  for(size_t hitNr=0;hitNr<inputHits.nrCaloTowersStored();hitNr++){
-    float towerEta = inputHits.getCaloTowerByIndx(hitNr).eta();
-    float towerPhi = inputHits.getCaloTowerByIndx(hitNr).phi(); 
-  
-    bool accept =false;
-    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
-      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
-			       towerEta,towerPhi)<maxDR2){
-	accept=true;
-	break;
-      }
-    }//end ele loop
-    if(accept) outputHits.addTower(inputHits.getCaloTowerByIndx(hitNr));
-    
-  }//end hit loop
-
-
-}
-
-
-void addPFClustersVec(std::vector<const reco::CaloCluster*>& clus,const std::vector<reco::SuperCluster>& scs)
-{
-  for(auto& sc : scs){
-    for(reco::CaloCluster_iterator clusIt  = sc.clustersBegin();clusIt!=sc.clustersEnd();++clusIt){
-
-      //    const reco::PFCluster* pfClus = dynamic_cast<const reco::PFCluster*>(&**clusIt);
-      // std::cout<<typeid(**clusIt).name()<<" pf "<<pfClus<<std::endl;
-      clus.push_back((&**clusIt));
-    }
-  }
-}
-
 
 
 //define this as a plug-in
