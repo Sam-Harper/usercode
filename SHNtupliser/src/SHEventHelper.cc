@@ -246,7 +246,7 @@ size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::
 {
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr];
-    if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
+    if(ele.superCluster()->seed()->seed()==superClus.seed()->seed()) return eleNr;
   }
   return eles.size();
 }
@@ -255,7 +255,7 @@ size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::
 {
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr].gsfEle();
-    if(ele.superCluster()->seed()->hitsAndFractions()[0].first==superClus.seed()->hitsAndFractions()[0].first) return eleNr;
+    if(ele.superCluster()->seed()->seed()==superClus.seed()->seed()) return eleNr;
   }
   return eles.size();
 }
