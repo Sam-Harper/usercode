@@ -435,9 +435,7 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
 	int vertexNr=-1;
 	if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
 	//std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
-	if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trkP3,trkVtxPos,trk.charge()>0,vertexNr,
-						   trk.chi2(),trk.ndof(),
-						   SHIsolTrack::packAlgoIDInfo(trk.algo(),trk.originalAlgo(),getTrkQuality_(trk)));
+	if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trk,vertexNr);
       }
     }
   } 

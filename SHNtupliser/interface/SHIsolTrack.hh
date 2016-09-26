@@ -6,6 +6,10 @@
 
 #include "TVector3.h"
 
+namespace reco{
+  class Track;
+}
+
 class SHIsolTrack : public TObject {
 
 private:
@@ -17,6 +21,9 @@ private:
   int ndof_;
   int algosAndQual_; //packed with algoID, prevAlgoID and quailty 
                      //(note quality is bits rather than number, breaking with CMSSW, 9th bit is undefined)
+  int nrHits_; 
+  int nrLostHits_;
+  float ptErr_;
 
   static constexpr int kAlgoIdMask=0x3F;
   static constexpr int kAlgoIdSize=6;
@@ -25,7 +32,8 @@ private:
 
 public:
   SHIsolTrack();
-  SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual);
+  SHIsolTrack(const reco::Track& trk,int vertexNr);
+  //SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual);
   
   const TVector3& p3()const{return p3_;}
   const TVector3& vtxPos()const{return vtxPos_;}
@@ -38,9 +46,12 @@ public:
   int algo()const{return algosAndQual_&kAlgoIdMask;}
   int prevAlgo()const{return (algosAndQual_>>kAlgoIdSize)&kAlgoIdMask;}
   int quality()const{return (algosAndQual_>>kAlgoIdSize*2)&kQualMask;}
+  int nrHits()const{return nrHits_;}
+  int nrLostHits()const{return nrLostHits_;}
+  float ptErr()const{return ptErr_;}
   static int packAlgoIDInfo(int algoId,int prevAlgoId,int quality);
   static void unpackAlgoIDInfo(const int packedId,int& algoId,int& prevAlgoId,int& quality); //mainly for debuging
-  ClassDef(SHIsolTrack,5)
+  ClassDef(SHIsolTrack,6)
 };
 
 #endif

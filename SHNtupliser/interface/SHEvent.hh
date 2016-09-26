@@ -43,6 +43,7 @@ namespace reco{
   class GsfElectron;
   class Muon;
   class Vertex;
+  class Track;
 }
 
 
@@ -137,7 +138,8 @@ class SHEvent : public TObject {
   /// void addIsolCluster(const reco::CaloCluster& clus);
   // void addIsolSuperCluster(const reco::SuperCluster& superClus);
   void addIsolTrk(const SHIsolTrack& trk);
-  void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual);
+  void addIsolTrk(const reco::Track& trk,int vertexNr);
+  //  void addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual);
  
   void addMCParticle(int partIndx,int partStdhep,int partIdhep,
 		     int partJmo1,int partJmo2,int partNrMo,

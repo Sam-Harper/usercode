@@ -199,11 +199,11 @@ void SHEvent::addIsolTrk(const SHIsolTrack& trk)
   
 }
 
-void SHEvent::addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual)
-{
-  new(isolTrkArray_[nrIsolTrks()]) SHIsolTrack(p3,vtxPos,posCharge,vertexNr,chi2,ndof,algosAndQual);
+// void SHEvent::addIsolTrk(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual)
+// {
+//   new(isolTrkArray_[nrIsolTrks()]) SHIsolTrack(p3,vtxPos,posCharge,vertexNr,chi2,ndof,algosAndQual);
   
-}
+// }
 
 void SHEvent::addTrigInfo(const SHTrigInfo& trigInfo)
 {

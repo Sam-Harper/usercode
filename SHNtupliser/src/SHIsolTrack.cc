@@ -9,23 +9,26 @@ SHIsolTrack::SHIsolTrack():
   vertexNr_(-1),
   chi2_(-999),
   ndof_(-1),
-  algosAndQual_(0)
+  algosAndQual_(0),
+  nrHits_(0),
+  nrLostHits_(0),
+  ptErr_(0.)
   
 {
 
 }
 
-SHIsolTrack::SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual):
-  p3_(p3),
-  vtxPos_(vtxPos),
-  posCharge_(posCharge),
-  vertexNr_(vertexNr),
-  chi2_(chi2),
-  ndof_(ndof),
-  algosAndQual_(algosAndQual)
-{
+// SHIsolTrack::SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual):
+//   p3_(p3),
+//   vtxPos_(vtxPos),
+//   posCharge_(posCharge),
+//   vertexNr_(vertexNr),
+//   chi2_(chi2),
+//   ndof_(ndof),
+//   algosAndQual_(algosAndQual)
+// {
 
-}
+// }
 
 
 float SHIsolTrack::dz()const

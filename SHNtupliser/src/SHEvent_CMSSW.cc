@@ -96,7 +96,11 @@ void SHEvent::addJet(const pat::Jet& jet)
 {
   new(jetArray_[nrJets()]) SHJet(jet);
 }
-
+void SHEvent::addIsolTrk(const reco::Track& trk,int vertexNr)
+{
+  new(isolTrkArray_[nrIsolTrks()]) SHIsolTrack(trk,vertexNr);
+  
+}
 void SHEvent::addMuon(const reco::Muon& mu)
 {
   new(muArray_[nrMuons()]) SHMuon(mu,beamSpot_);
