@@ -70,23 +70,28 @@ heep::GsfEleExtra heep::GsfEleExtraFiller::operator()(const edm::Ptr<reco::GsfEl
 float heep::GsfEleExtraFiller::getTrkIsoNoJetCore_(const edm::Ptr<reco::GsfElectron>& ele)
 {
   if(trkIsoNoJetCoreHandle_.isValid()) return (*trkIsoNoJetCoreHandle_)[ele];
-  else{ //we recalculate it
+  else if(trkHandle_.isValid()){ //we recalculate it
     heep::ElectronTkIsolation isolCorr(trkIsoParam_.extRadius,trkIsoParam_.intRadiusBarrel,trkIsoParam_.intRadiusEndcap,
 				       trkIsoParam_.stripBarrel,trkIsoParam_.stripEndcap,trkIsoParam_.ptMin,
 				       trkIsoParam_.maxVtxDist,trkIsoParam_.drb,
 				       trkHandle_.product(),beamSpotHandle_->position());
     isolCorr.setAlgosToReject({reco::TrackBase::jetCoreRegionalStep});
     return isolCorr.getPtTracks(&*ele);
+  }else{//no tracks no previously stored value, return -1
+    return -1;
   }
+    
     
 }
 float heep::GsfEleExtraFiller::getNrSatCrysIn5x5_(const edm::Ptr<reco::GsfElectron>& ele)
 {
   if(nrSatCrysIn5x5Handle_.isValid()) return (*nrSatCrysIn5x5Handle_)[ele];
-  else{ //we recalculate it
+  else if(ebRecHitHandle_.isValid() && eeRecHitHandle_.isValid()){ //we recalculate it
    
     DetId id = ele->superCluster()->seed()->seed();
     auto recHits = id.subdetId()==EcalBarrel ? ebRecHitHandle_.product() : eeRecHitHandle_.product();
     return heep::EcalClusterTools::nrSaturatedCrysIn5x5(id,recHits,caloTopoHandle_.product());
+  }else{
+    return -1;
   }
 }
