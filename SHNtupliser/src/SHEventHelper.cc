@@ -265,14 +265,18 @@ void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEv
   if(heepEvent.handles().superClusEB.isValid()){
     const std::vector<reco::SuperCluster>& superClusEB = heepEvent.superClustersEB(); 
     for(size_t superClusNr=0;superClusNr<superClusEB.size();superClusNr++){
-      shEvent.addSuperCluster(superClusEB[superClusNr]);
+      if(isEcalBarrel_(superClusEB[superClusNr])){
+	shEvent.addSuperCluster(superClusEB[superClusNr]);
+      }
     }
   }
   if(heepEvent.handles().superClusEB.isValid()){
   //now endcap
     const std::vector<reco::SuperCluster>& superClusEE = heepEvent.superClustersEE(); 
     for(size_t superClusNr=0;superClusNr<superClusEE.size();superClusNr++){
-      shEvent.addSuperCluster(superClusEE[superClusNr]);
+      if(isEcalEndcap_(superClusEE[superClusNr])){
+	shEvent.addSuperCluster(superClusEE[superClusNr]);
+      }
     }
   }
 }
@@ -876,4 +880,14 @@ bool SHEventHelper::passCaloHitFilter_(int hitId,const SHEvent& shEvent,const fl
   }
   return false;
 
+}
+
+bool SHEventHelper::isEcalBarrel_(const DetId& id)
+{
+  return id.det()==DetId::Ecal && id.subdetId()==EcalBarrel;
+}
+
+bool SHEventHelper::isEcalEndcap_(const DetId& id)
+{
+  return id.det()==DetId::Ecal && id.subdetId()==EcalEndcap;
 }

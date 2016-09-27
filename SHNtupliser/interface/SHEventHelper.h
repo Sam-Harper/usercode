@@ -129,6 +129,10 @@ private:
   bool isNearEle_(float eta,float phi,const SHEvent& shEvent,const float maxDR)const;
   void fillEcalHitVec_(const EcalRecHitCollection& hitColl,const SHEvent& event)const;
   bool passCaloHitFilter_(int hitId,const SHEvent& shEvent,const float maxDR)const;
+  static bool isEcalBarrel_(const DetId& id);
+  static bool isEcalEndcap_(const DetId& id);
+  static bool isEcalBarrel_(const reco::SuperCluster& sc){return isEcalBarrel_(sc.seed()->seed());}
+  static bool isEcalEndcap_(const reco::SuperCluster& sc){return isEcalEndcap_(sc.seed()->seed());}
 };
 
 #endif
