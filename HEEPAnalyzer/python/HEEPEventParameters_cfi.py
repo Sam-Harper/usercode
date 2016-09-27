@@ -9,6 +9,8 @@ def swapHEEPToMiniAOD(heepPara):
     heepPara.jetTag = cms.untracked.InputTag("slimmedJets")
     heepPara.photonTag = cms.untracked.InputTag("slimmedPhotons")
     heepPara.metTag = cms.untracked.InputTag("slimmedMETs")
+    heepPara.gsfEleTag = cms.InputTag("slimmedElectrons")
+    heepPara.recoPhoTag = cms.InputTag("slimmedPhotons")
     heepPara.reducedBarrelRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
     heepPara.reducedEndcapRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
     heepPara.superClusterEBTag = cms.InputTag("reducedEgamma","reducedSuperClusters")
