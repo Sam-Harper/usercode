@@ -101,8 +101,8 @@ public:
   void addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addPFClusters(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
-  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const;
-  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const;
+  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron>& eles)const;
+  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele>& eles)const;
   static int getVertexNr(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
   static int getVertexNrClosestZ(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
 

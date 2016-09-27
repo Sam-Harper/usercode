@@ -242,7 +242,7 @@ bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEve
   return false;
 }
 
-size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron> eles)const
+size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron>& eles)const
 {
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr];
@@ -251,7 +251,7 @@ size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::
   return eles.size();
 }
 
-size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele> eles)const
+size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele>& eles)const
 {
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     const reco::GsfElectron& ele = eles[eleNr].gsfEle();
