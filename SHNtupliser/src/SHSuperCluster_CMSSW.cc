@@ -16,10 +16,13 @@ SHSuperCluster::SHSuperCluster(const reco::SuperCluster& superClus):
   flags_(superClus.flags())
   //preShowerArray_("SHPreShowerCluster",10)
 {
-  
-  for(reco::CaloCluster_iterator clusIt  = superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
-    new(clusterArray_[nrClus()]) SHBasicCluster(**clusIt);
+  if(superClus.clusters().isAvailable()){
+    for(auto clusIt  = superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
+      new(clusterArray_[nrClus()]) SHBasicCluster(**clusIt);
+    }
+  }else{ //just the seed was stored in the CMSSW dataformat
+    new(clusterArray_[nrClus()]) SHBasicCluster(*superClus.seed());
   }
-  
+    
 
 }
