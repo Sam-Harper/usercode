@@ -143,8 +143,8 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
-  const std::vector<reco::GsfElectron>& electrons = heepEvent.gsfEles();
-  const std::vector<reco::Photon>& photons = heepEvent.recoPhos();
+  const auto& electrons = heepEvent.gsfEles();
+  const auto& photons = heepEvent.recoPhos();
   //std::cout <<"nr electrons "<<electrons.size()<<std::endl;
   // std::cout <<"nr photons "<<photons.size()<<std::endl;
   
@@ -160,7 +160,6 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
     
     else if(sc.energy()*sin(sc.position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,photons[phoNr]);
   }
-  
 }
 
 void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const
@@ -173,7 +172,6 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   //shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle.superCluster(),shEvent);
-
   //MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
  
   // if(shEle->seedId()!=0 && false){
@@ -240,24 +238,6 @@ bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEve
     
   }
   return false;
-}
-
-size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron>& eles)const
-{
-  for(size_t eleNr=0;eleNr<eles.size();eleNr++){
-    const reco::GsfElectron& ele = eles[eleNr];
-    if(ele.superCluster()->seed()->seed()==superClus.seed()->seed()) return eleNr;
-  }
-  return eles.size();
-}
-
-size_t SHEventHelper::matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele>& eles)const
-{
-  for(size_t eleNr=0;eleNr<eles.size();eleNr++){
-    const reco::GsfElectron& ele = eles[eleNr].gsfEle();
-    if(ele.superCluster()->seed()->seed()==superClus.seed()->seed()) return eleNr;
-  }
-  return eles.size();
 }
 
 void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -447,18 +427,28 @@ void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)co
 
 void SHEventHelper::fillRecHitClusterMap(const reco::SuperCluster& superClus,SHEvent& shEvent)
 {
-  for(auto clusIt=superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
-    const reco::CaloCluster& clus = **clusIt;
-    std::vector<std::pair<int,float>> hitsAndFracs(clus.hitsAndFractions().size());
-    std::transform(clus.hitsAndFractions().begin(),clus.hitsAndFractions().end(),
-		   hitsAndFracs.begin(),
-		   [](const std::pair<DetId,float>& val)
-		   {return std::pair<int,float>(val.first.rawId(),val.second);});
-    if(!shEvent.getRecHitClusMap().addCluster(clus.seed().rawId(),hitsAndFracs)){
-      LogErr <<"bad fill "<<shEvent.runnr()<<" "<<shEvent.lumiSec()<<" "<<shEvent.eventnr()<<std::endl;
+  if(superClus.clusters().isAvailable()){
+    for(auto clusIt=superClus.clustersBegin();clusIt!=superClus.clustersEnd();++clusIt){
+      fillRecHitClusterMap_(**clusIt,shEvent);
     }
-  }
+  }else{
+    fillRecHitClusterMap_(*superClus.seed(),shEvent);
+  } 
 }
+
+void SHEventHelper::fillRecHitClusterMap_(const reco::CaloCluster& clus,SHEvent& shEvent)
+{
+  std::vector<std::pair<int,float>> hitsAndFracs(clus.hitsAndFractions().size());
+  std::transform(clus.hitsAndFractions().begin(),clus.hitsAndFractions().end(),
+		 hitsAndFracs.begin(),
+		     [](const std::pair<DetId,float>& val)
+		 {return std::pair<int,float>(val.first.rawId(),val.second);});
+  if(!shEvent.getRecHitClusMap().addCluster(clus.seed().rawId(),hitsAndFracs)){
+    LogErr <<"bad fill "<<shEvent.runnr()<<" "<<shEvent.lumiSec()<<" "<<shEvent.eventnr()<<std::endl;
+  }
+  
+}
+
 void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   //why yes I might be throwing away the patty goodness, whoops
@@ -775,7 +765,10 @@ const std::vector<int> makeSortedVec(std::vector<int> vec)
 
 void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
 {
-  
+  if(!heepEvent.handles().ctfTrack.isValid()){
+    shEle.setTrkIsol(-1.,-1.,-1);
+    return;
+  }
   const float minDR2=0.015*0.015;
   const float minAbsEta = 0.015;
   const float minTrkPt = 0.7;
@@ -785,11 +778,11 @@ void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfEle
   float isolPtTrks03=0.;
   float isolPtTrks04=0.;
   int isolNrTrks=0;
-
+  
   const float gsfTrkEta = gsfEle.gsfTrack()->eta();
   const float gsfTrkPhi = gsfEle.gsfTrack()->phi();
   const float gsfTrkVZ = gsfEle.gsfTrack()->vz();
- 
+  
   for (auto& trk  : heepEvent.ctfTracks()){
     
     if(std::abs(trk.vz() - gsfTrkVZ)<maxTrkDZ && 

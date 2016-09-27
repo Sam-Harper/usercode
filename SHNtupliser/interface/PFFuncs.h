@@ -26,14 +26,14 @@ public:
   static const reco::PFBlockElementCluster* getHighestEtECALCluster(const reco::PFCandidate& pfCand);
   static int getSeedCrysIdOfPFCandSC(const reco::PFCandidateRef pfCandRef,
 				     const edm::ValueMap<std::vector<reco::PFCandidateRef> > & gsfToPFMap,
-				     const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle);
+				     const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle);
   
   
   static void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands, 
 			  const edm::Handle<std::vector<reco::PFCandidate> >& pfCands,
 			  const reco::VertexRef mainVtx,const edm::Handle<reco::VertexCollection> vertices,
 			  const edm::ValueMap<std::vector<reco::PFCandidateRef> > & gsfToPFMap,
-			  const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle);
+			  const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle);
   static bool isPhoton(const reco::PFCandidateRef& pfCand);
   static bool isNeutralHadron(const reco::PFCandidateRef& pfCand);
   static bool isChargedHadron(const reco::PFCandidateRef& pfCand);

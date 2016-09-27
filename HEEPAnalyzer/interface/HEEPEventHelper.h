@@ -50,8 +50,8 @@ namespace heep {
     edm::EDGetTokenT<EcalRecHitCollection> ecalReducedRecHitsEBTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalReducedRecHitsEETag_;
     edm::EDGetTokenT<HBHERecHitCollection> hcalRecHitsTag_;
-    edm::EDGetTokenT<reco::GsfElectronCollection> gsfEleTag_;
-    edm::EDGetTokenT<reco::PhotonCollection> recoPhoTag_;
+    edm::EDGetTokenT<edm::View<reco::GsfElectron> > gsfEleTag_;
+    edm::EDGetTokenT<edm::View<reco::Photon> > recoPhoTag_;
     edm::EDGetTokenT<reco::PFCandidateCollection> pfCandidateTag_;
     edm::EDGetTokenT<reco::SuperClusterCollection> superClusterEBTag_;
     edm::EDGetTokenT<reco::SuperClusterCollection> superClusterEETag_; 

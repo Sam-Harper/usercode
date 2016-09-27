@@ -83,11 +83,11 @@ const reco::PFBlockElementCluster* PFFuncs::getHighestEtECALCluster(const reco::
 
 int PFFuncs::getSeedCrysIdOfPFCandSC(const reco::PFCandidateRef pfCandRef,
 				     const edm::ValueMap<std::vector<reco::PFCandidateRef> > & gsfToPFMap,
-				     const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle)
+				     const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle)
 
 {
   for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
-    reco::GsfElectronRef ele(eleHandle,eleNr);
+    edm::Ptr<reco::GsfElectron> ele(eleHandle,eleNr);
     const std::vector<reco::PFCandidateRef>& elePFCands =  gsfToPFMap[ele];
   
     for(size_t candNr=0;candNr<elePFCands.size();candNr++){
@@ -108,7 +108,7 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 			  const edm::Handle<std::vector<reco::PFCandidate> >& pfCands,
 			  const reco::VertexRef mainVtx,const edm::Handle<reco::VertexCollection> vertices,
 			  const edm::ValueMap<std::vector<reco::PFCandidateRef> > & gsfToPFMap,
-			  const edm::Handle<std::vector<reco::GsfElectron> >& eleHandle)
+			  const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle)
 {
  
 

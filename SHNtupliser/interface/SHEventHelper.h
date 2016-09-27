@@ -133,6 +133,14 @@ private:
   static bool isEcalEndcap_(const DetId& id);
   static bool isEcalBarrel_(const reco::SuperCluster& sc){return isEcalBarrel_(sc.seed()->seed());}
   static bool isEcalEndcap_(const reco::SuperCluster& sc){return isEcalEndcap_(sc.seed()->seed());}
+  static void fillRecHitClusterMap_(const reco::CaloCluster& clus,SHEvent& shEvent);
+  template<typename T> static size_t matchToEle(const reco::SuperCluster& sc,const T& eles){
+    for(size_t eleNr=0;eleNr<eles.size();eleNr++){
+      if(eles[eleNr].superCluster()->seed()->seed()==sc.seed()->seed()) return eleNr;
+    }
+    return eles.size();
+  }
+
 };
 
 #endif

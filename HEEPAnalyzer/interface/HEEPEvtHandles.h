@@ -79,8 +79,8 @@ namespace heep {
     edm::Handle<reco::SuperClusterCollection> superClusEE;  
     edm::Handle<reco::PreshowerClusterCollection> preShowerClusX;
     edm::Handle<reco::PreshowerClusterCollection> preShowerClusY; 
-    edm::Handle<reco::GsfElectronCollection> gsfEle; 
-    edm::Handle<reco::PhotonCollection> recoPho;
+    edm::Handle<edm::View<reco::GsfElectron> > gsfEle; 
+    edm::Handle<edm::View<reco::Photon> > recoPho;
     edm::Handle<reco::TrackCollection> ctfTrack;
     edm::Handle<reco::GenParticleCollection> genParticle;
     edm::Handle<trigger::TriggerEvent> trigEvent;

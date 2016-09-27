@@ -187,10 +187,10 @@ void heep::EventHelper::fillHEEPElesFromGsfEles(const heep::EvtHandles& handles,
 
   heepEles.clear();
   if(!handles.gsfEle.isValid()) return;
-  const edm::Handle<std::vector<reco::GsfElectron> >& eles = handles.gsfEle;
-  for(std::vector<reco::GsfElectron>::const_iterator eleIt = eles->begin(); eleIt!=eles->end(); ++eleIt){ 
-    if(!onlyAddEcalDriven_ || eleIt->ecalDrivenSeed()){
-      edm::Ptr<reco::GsfElectron> elePtr(eles,eleIt-eles->begin());
+  const auto& eles = handles.gsfEle;
+  for(size_t eleNr=0;eleNr<eles->size();eleNr++){
+    edm::Ptr<reco::GsfElectron> elePtr(eles,eleNr);
+    if(!onlyAddEcalDriven_ || elePtr->ecalDrivenSeed()){
       addHEEPEle_(elePtr,handles,heepEles);
     }
   }

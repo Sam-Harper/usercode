@@ -70,8 +70,8 @@ namespace heep{
     const edm::View<pat::Tau>& taus()const{return *handles_.tau;}
     const std::vector<reco::SuperCluster>& superClustersEB()const{return *handles_.superClusEB;}   
     const std::vector<reco::SuperCluster>& superClustersEE()const{return *handles_.superClusEE;}
-    const std::vector<reco::GsfElectron>& gsfEles()const{return *handles_.gsfEle;}
-    const std::vector<reco::Photon>& recoPhos()const{return *handles_.recoPho;}
+    const edm::View<reco::GsfElectron>& gsfEles()const{return *handles_.gsfEle;}
+    const edm::View<reco::Photon>& recoPhos()const{return *handles_.recoPho;}
     const std::vector<reco::PFCandidate>& pfCands()const{return *handles_.pfCandidate;}
     const EcalRecHitCollection* ebHitsFull()const{return &(*handles_.ebRecHits);}
     const EcalRecHitCollection* eeHitsFull()const{return &(*handles_.eeRecHits);}
