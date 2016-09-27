@@ -215,7 +215,6 @@ void SHEventHelper::addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const
   if(heepEvent.handles().muon.isValid()){
     for(size_t muNr=0;muNr<heepEvent.muons().size();muNr++){
       const reco::Muon& muon = heepEvent.muons()[muNr];
-      
       if(muon.isGlobalMuon() && (!applyMuonId_ || passMuonId(muon,heepEvent))) shEvent.addMuon(muon);
     }
   }
@@ -450,21 +449,24 @@ void SHEventHelper::fillRecHitClusterMap_(const reco::CaloCluster& clus,SHEvent&
 }
 
 void SHEventHelper::addMet(const heep::Event& heepEvent,SHEvent& shEvent)const
-{
-  //why yes I might be throwing away the patty goodness, whoops
-  
+{ 
   SHMet shMet;
   SHMet shPFMet;
   if(heepEvent.handles().met.isValid() && !heepEvent.mets().empty()){
-    const pat::MET& met = heepEvent.mets()[0];
+    
+    if(heepEvent.mets().size()!=1) throw cms::Exception("CorruptData","More than one (or zero) MET in the collection");
+    
+    const pat::MET& met = heepEvent.mets().front();
     if(met.isPFMET()){
-      shPFMet.setMet(met.et()*cos(met.phi()),met.et()*sin(met.phi()));
+      shPFMet.setMet(met.et()*std::cos(met.phi()),
+		     met.et()*std::sin(met.phi()));
       shPFMet.setSumEmEt(0,0,0);
       shPFMet.setSumHadEt(0,0,0,0);
-    }else{
-      shMet.setMet(met.mEtCorr()[0].mex,met.mEtCorr()[0].mey);
-      shMet.setSumEmEt(met.emEtInEB(),met.emEtInEE(),met.emEtInHF());
-      shMet.setSumHadEt(met.hadEtInHB(),met.hadEtInHE(),met.hadEtInHO(),met.hadEtInHF());
+      shMet.setMet(met.caloMETPt()*std::cos(met.caloMETPhi()),
+		   met.caloMETPt()*std::sin(met.caloMETPhi()));
+      shMet.setSumEmEt(0,0,0);
+      shMet.setSumHadEt(0,0,0,0);
+      
     }
   }
   shEvent.setMet(shMet); 
