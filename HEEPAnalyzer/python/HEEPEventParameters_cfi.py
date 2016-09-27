@@ -12,12 +12,13 @@ def swapHEEPToMiniAOD(heepPara):
     heepPara.reducedBarrelRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
     heepPara.reducedEndcapRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
     heepPara.superClusterEBTag = cms.InputTag("reducedEgamma","reducedSuperClusters")
-    heepPara.superClusterEETag = cms.InputTag("reducedEgamma","reducedSuperClsuters")
+    heepPara.superClusterEETag = cms.InputTag("reducedEgamma","reducedSuperClusters")
     heepPara.preShowerClusterXTag = cms.InputTag("reducedEgamma","reducedESClusters")
     heepPara.preShowerClusterYTag = cms.InputTag("reducedEgamma","reducedESClusters")
     heepPara.heepIDVID = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV51-miniAOD")
     heepPara.heepEleSource = cms.int32(1)
     heepPara.verticesTag = cms.InputTag("offlineSlimmedPrimaryVertices")
+    heepPara.pileUpMCInfoTag = cms.InputTag("slimmedAddPileupInfo")
     
 heepEventPara  = cms.PSet (
     electronTag = cms.untracked.InputTag("patElectrons"),
