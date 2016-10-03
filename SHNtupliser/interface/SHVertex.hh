@@ -49,7 +49,7 @@ public:
   
   static int packData(const bool isValid,const int ndof,const int nrTrks);
   
-  ClassDef(SHVertex,1)
+  ClassDef(SHVertex,2)
 
 };
 
