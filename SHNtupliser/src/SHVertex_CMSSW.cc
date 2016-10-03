@@ -3,14 +3,10 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 SHVertex::SHVertex(const reco::Vertex& vertex):
-  pos_(vertex.x(),vertex.y(),vertex.z()),
-  ndof_(vertex.ndof()),
+  vx_(vertex.x()),vy_(vertex.y()),vz_(vertex.z()),
   chi2_(vertex.chi2()),
-  nrTracks_(vertex.tracksSize()),
-  isValid_(vertex.isValid()),
-  sumP4_()
-{
-  math::XYZTLorentzVectorD p4(vertex.p4());
-  sumP4_.SetXYZT(p4.X(),p4.Y(),p4.Z(),p4.T());
-  
+  sumPt_(vertex.p4().pt()),
+  data_(packData(vertex.isValid(),vertex.ndof(),vertex.tracksSize()))
+{ 
+
 }

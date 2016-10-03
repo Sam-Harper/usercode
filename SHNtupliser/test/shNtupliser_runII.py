@@ -169,6 +169,11 @@ if process.shNtupliser.datasetCode.value() in [321,322]:
 if isCrabJob and process.shNtupliser.datasetCode.value()>10:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
+from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
+swapHEEPToMiniAOD(process.shNtupliser)
+
+print process.shNtupliser
+
 process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
     process.shNtupliser)

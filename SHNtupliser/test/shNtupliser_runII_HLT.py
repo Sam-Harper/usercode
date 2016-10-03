@@ -173,5 +173,8 @@ process.p = cms.Path(#process.primaryVertexFilter*
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
+#from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
+#swapHEEPToMiniAOD(process.shNtupliser)
+#process.source.eventsToProcess = cms.untracked.VEventRange("1:57017-1:57017",)
 #from SHarper.HEEPAnalyzer.heepTools import *
 #swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")

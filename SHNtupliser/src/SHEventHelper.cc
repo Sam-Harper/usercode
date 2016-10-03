@@ -29,6 +29,7 @@
 #include "DataFormats/EgammaCandidates/interface/ElectronFwd.h"
 #include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
 #include "DataFormats/L1Trigger/interface/L1EmParticle.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 #include "DataFormats/METReco/interface/PFMET.h"
 
@@ -402,26 +403,83 @@ void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
 
 void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  TVector3 trkP3,trkVtxPos;
+  if(heepEvent.handles().ctfTrack.isValid()){ //we're in AOD, fill from tracks
+    addIsolTrksFromTrks_(heepEvent,shEvent);
+  }else if(heepEvent.handles().packedPFCand.isValid() &&
+	   heepEvent.handles().lostTrack.isValid()){// &&
+    //	   heepEvent.handles().muons.isValid() &&
+    //	   heepEvent.handles().electrons.isValid()){ //we're in miniAOD, fill from packed cands
+    addIsolTrksFromCands_(heepEvent,shEvent);
+  }
+  
+}
+
+void SHEventHelper::addIsolTrksFromTrks_(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
   const float minPtCut=-1;
 
   if(heepEvent.handles().ctfTrack.isValid()){
     const std::vector<reco::Track>& tracks = heepEvent.ctfTracks();
-    
-
+   
     for(size_t trkNr=0;trkNr<tracks.size();trkNr++){
       const reco::Track& trk = tracks[trkNr];
       if(!branches_.filterIsolTrks || 
 	 isNearEle_(trk.eta(),trk.phi(),shEvent,kMaxDRTrks_) ){
-	trkP3.SetXYZ(trk.px(),trk.py(),trk.pz());
-	trkVtxPos.SetXYZ(trk.vx(),trk.vy(),trk.vz());
 	int vertexNr=-1;
 	if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
 	//std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
-	if(trkP3.Pt()>minPtCut) shEvent.addIsolTrk(trk,vertexNr);
+	if(trk.pt()>minPtCut) shEvent.addIsolTrk(trk,vertexNr);
       }
     }
   } 
+}
+
+
+void SHEventHelper::addIsolTrksFromCands_(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  if(heepEvent.handles().packedPFCand.isValid() &&
+     heepEvent.handles().lostTrack.isValid()){
+    
+    addIsolTrksFromCands_(*heepEvent.handles().packedPFCand,heepEvent,shEvent);
+    addIsolTrksFromCands_(*heepEvent.handles().lostTrack,heepEvent,shEvent);
+  }
+}
+
+void SHEventHelper::addIsolTrksFromCands_(const std::vector<pat::PackedCandidate>& cands,
+					  const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  float minPtCut = 1;
+  //  std::cout <<"looping over "<<cands.size()<<std::endl;
+  for(auto& cand : cands){
+    const int absPdgId = std::abs(cand.pdgId());
+    //ensure its a charged object
+    //in theory charge()!=0 should work
+    // const reco::Track& trk2 = cand.pseudoTrack();
+    //std::cout <<"cand "<<cand.pdgId()<<" "<<cand.pt()<<" eta "<<cand.eta()<<" "<<cand.phi()<<" trk pt " <<trk2.pt()<<" "<<trk2.eta()<<" "<<trk2.phi()<<std::endl;
+    if(absPdgId==11 || absPdgId==13 || absPdgId==15 || absPdgId==211 ){ 
+      const reco::Track& trk = cand.pseudoTrack();
+      if(!branches_.filterIsolTrks || 
+	 isNearEle_(trk.eta(),trk.phi(),shEvent,kMaxDRTrks_) ){
+	int vertexNr=-1;
+	if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
+	//std::cout <<"cand "<<cand.pdgId()<<" "<<cand.pt()<<" trk pt " <<trk.pt()<<" vert "<<vertexNr<<std::endl;
+	//std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
+	SHIsolTrack isolTrk(trk,vertexNr);
+
+	int pseudoAlgo=0;
+	if(absPdgId==11) pseudoAlgo=1;
+	if(absPdgId==13) pseudoAlgo=2;
+	if(absPdgId==15) pseudoAlgo=3;
+	if(absPdgId==211) pseudoAlgo=4;
+	
+
+	isolTrk.setAlgosAndQual(SHIsolTrack::packAlgoIDInfo(pseudoAlgo,0,isolTrk.quality()));
+	//	if(trk.pt()>minPtCut) shEvent.addIsolTrk(trk,vertexNr);
+	if(trk.pt()>minPtCut) shEvent.addIsolTrk(isolTrk);
+	
+      }
+    }
+  }
 }
 
 void SHEventHelper::fillRecHitClusterMap(const reco::SuperCluster& superClus,SHEvent& shEvent)

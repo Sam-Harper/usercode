@@ -45,6 +45,8 @@ namespace heep {
     edm::EDGetTokenT<edm::View<pat::MET>> metTag_;
     edm::EDGetTokenT<edm::View<pat::Photon>> phoTag_;
     //non physics objects
+    edm::EDGetTokenT<std::vector<pat::PackedCandidate> > packedPFCandTag_;
+    edm::EDGetTokenT<std::vector<pat::PackedCandidate> > lostTrackTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsEBTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsEETag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalReducedRecHitsEBTag_;

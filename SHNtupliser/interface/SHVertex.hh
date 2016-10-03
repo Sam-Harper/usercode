@@ -11,25 +11,42 @@ namespace reco{
 
 class SHVertex : public TObject {
 private:
-  TVector3 pos_;
-  int ndof_;
-  float chi2_;
-  int nrTracks_;
-  bool isValid_;
-  TLorentzVector sumP4_;
+  float vx_;
+  float vy_;
+  float vz_;
 
+  float chi2_;
+  float sumPt_;
+  
+  //bit packed
+  //bit 0 : isValid
+  //bit 1-10 : ndof (0-1024)
+  //bit 11-20 : nrtracks (0-1024)
+  int data_;
+  
+  static constexpr int kIsValidMask=0x1;
+  static constexpr int kIsValidOffset=0;
+  static constexpr int kNDOFMask=0x2F;
+  static constexpr int kNDOFOffset=__builtin_popcount(kIsValidMask)+kIsValidOffset;
+  static constexpr int kNrTrksMask=0x2F;
+  static constexpr int kNrTrksOffset=__builtin_popcount(kNDOFMask)+kNDOFOffset;
+  
 public:
-  SHVertex():pos_(),ndof_(-1),chi2_(-1),nrTracks_(-1),isValid_(false),sumP4_(){}
+  SHVertex():vx_(0.),vy_(0.),vz_(0.),chi2_(-1),sumPt_(-1),data_(0){}
   SHVertex(const reco::Vertex& vertex);
 
 
-  const TVector3& pos()const{return pos_;}
-  int ndof()const{return ndof_;}
+  TVector3 pos()const{return TVector3(vx_,vy_,vz_);}
+  float vx()const{return vx_;}
+  float vy()const{return vy_;}
+  float vz()const{return vz_;}
   float chi2()const{return chi2_;}
-  int nrTracks()const{return nrTracks_;}
-  bool isValid()const{return isValid_;}
-  const TLorentzVector& sumP4()const{return sumP4_;}
-  float sumPt()const{return sumP4_.Pt();}
+  float sumPt()const{return sumPt_;}
+  int ndof()const{return (data_>>kNDOFOffset) & kNDOFMask;}
+  int nrTracks()const{return (data_>>kNrTrksOffset) & kNrTrksMask;}
+  bool isValid()const{return (data_>>kIsValidOffset) & kIsValidMask;}
+  
+  static int packData(const bool isValid,const int ndof,const int nrTrks);
   
   ClassDef(SHVertex,1)
 

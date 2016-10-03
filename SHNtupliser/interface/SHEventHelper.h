@@ -35,6 +35,9 @@ namespace reco{
   class TrackBase;
   class EcalRecHit;
 }
+namespace pat{
+  class PackedCandidate;
+}
 class EcalRecHit;
 class SHEvent;
 
@@ -119,7 +122,11 @@ private:
   
   static uint32_t getEcalFlagBits_(const EcalRecHit& hit);//because a simple accessor to the bit was too much to ask
   static int getTrkQuality_(const reco::Track& trk);//likewise..
-
+  void addIsolTrksFromTrks_(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addIsolTrksFromCands_(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addIsolTrksFromCands_(const std::vector<pat::PackedCandidate>& cands,
+			     const heep::Event& heepEvent,SHEvent& shEvent)const;
+  
   void fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE)const;
   void fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const;
   int getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const;

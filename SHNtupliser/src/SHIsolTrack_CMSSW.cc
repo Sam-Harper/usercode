@@ -18,16 +18,16 @@ int getTrkQuality(const reco::Track& trk)
 
 //note the seed cluster must be the first entry of the shape map
 SHIsolTrack::SHIsolTrack(const reco::Track& trk,int vertexNr):
-  p3_(trk.px(),trk.py(),trk.pz()),
-  vtxPos_(trk.vx(),trk.vy(),trk.vz()),
-  posCharge_(trk.charge()>0),
-  vertexNr_(vertexNr),
+  pt_(trk.pt()),eta_(trk.eta()),phi_(trk.phi()),
+  vx_(trk.vx()),vy_(trk.vy()),vz_(trk.vz()),
   chi2_(trk.chi2()),
-  ndof_(trk.ndof()),
+  ptErr_(trk.ptError()),
   algosAndQual_(SHIsolTrack::packAlgoIDInfo(trk.algo(),trk.originalAlgo(),getTrkQuality(trk))),
-  nrHits_(trk.hitPattern().trackerLayersWithMeasurement()),
-  nrLostHits_(trk.hitPattern().trackerLayersWithoutMeasurement(reco::HitPattern::TRACK_HITS)),
-  ptErr_(trk.ptError())
+  trkData_(SHIsolTrack::packTrackData(trk.charge()>0,vertexNr,trk.ndof())),
+  hitData_(SHIsolTrack::packHitData(trk.hitPattern().numberOfValidHits(),
+				    trk.hitPattern().trackerLayersWithMeasurement(),
+				    trk.hitPattern().trackerLayersWithoutMeasurement(reco::HitPattern::TRACK_HITS),
+				    trk.hitPattern().numberOfValidPixelHits()))
 {
 
 }

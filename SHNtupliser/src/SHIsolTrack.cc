@@ -3,17 +3,13 @@
 ClassImp(SHIsolTrack)
 
 SHIsolTrack::SHIsolTrack():
-  p3_(0.,0.,0.),
-  vtxPos_(0.,0.,0.),
-  posCharge_(false),
-  vertexNr_(-1),
-  chi2_(-999),
-  ndof_(-1),
+  pt_(0.),eta_(0.),phi_(0.),
+  vx_(0.),vy_(0.),vz_(0.),
+  chi2_(-999.),
+  ptErr_(0.),
   algosAndQual_(0),
-  nrHits_(0),
-  nrLostHits_(0),
-  ptErr_(0.)
-  
+  trkData_(0),
+  hitData_(0)
 {
 
 }
@@ -33,7 +29,9 @@ SHIsolTrack::SHIsolTrack():
 
 float SHIsolTrack::dz()const
 {
-  return vtxPos().Z()-(vtxPos().X()*p3().X()+vtxPos().Y()*p3().Y())/p3().Pt() * p3().Z()/p3().Pt();
+  TVector3 mom;
+  mom.SetPtEtaPhi(pt(),eta(),phi());
+  return vz()-(vx()*mom.X()+vy()*mom.Y())/mom.Pt() * mom.Z()/mom.Pt();
 }
 
 int SHIsolTrack::packAlgoIDInfo(int algoId,int prevAlgoId,int quality)
@@ -51,4 +49,24 @@ void SHIsolTrack::unpackAlgoIDInfo(const int packedId,int& algoId,int& prevAlgoI
   algoId = packedId&kAlgoIdMask;
   prevAlgoId = (packedId>>kAlgoIdSize)&kAlgoIdMask;
   quality = (packedId>>kAlgoIdSize*2)&kQualMask;
+}
+
+int SHIsolTrack::packTrackData(bool posCharge,int vertexNr,int ndof)
+{
+  int packedData=0;
+  packedData |= (posCharge&kChargeMask) << kChargeOffset;
+  packedData |= (vertexNr&kVertexNrMask) << kVertexNrOffset;
+  packedData |= (ndof&kNDOFMask) << kNDOFOffset;
+  return packedData;
+}
+
+int SHIsolTrack::packHitData(int nrHits,int nrLayers,int nrLostHits,int nrPixelHits)
+{
+  int packedData=0;
+  packedData |= (nrHits&kNrHitsMask) << kNrHitsOffset;
+  packedData |= (nrLayers&kNrLayersMask) << kNrLayersOffset;
+  packedData |= (nrLostHits&kNrLostHitsMask) << kNrLostHitsOffset;
+  packedData |= (nrPixelHits&kNrPixelHitsMask) << kNrPixelHitsOffset;
+  return packedData;
+
 }

@@ -54,6 +54,7 @@
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateFwd.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 namespace heep {
@@ -73,6 +74,8 @@ namespace heep {
     edm::Handle<edm::View<pat::MET> > met;
     edm::Handle<edm::View<pat::Photon> > pho;
     edm::Handle<edm::View<pat::Tau> > tau;
+    edm::Handle<std::vector<pat::PackedCandidate> > packedPFCand;
+    edm::Handle<std::vector<pat::PackedCandidate> > lostTrack;
 
     edm::Handle<reco::PFCandidateCollection> pfCandidate;
     edm::Handle<reco::SuperClusterCollection> superClusEB;
