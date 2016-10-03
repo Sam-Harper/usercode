@@ -65,8 +65,8 @@ process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
 
-process.shNtupliser.addMet = False
-process.shNtupliser.addJets = False
+process.shNtupliser.addMet = True
+process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = False
 process.shNtupliser.applyMuonId = False
 process.shNtupliser.addCaloTowers = True
@@ -84,12 +84,6 @@ process.shNtupliser.outputGeom = cms.bool(False)
 process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
-process.shNtupliser.electronTag = cms.untracked.InputTag("patElectrons"+patCandID)
-process.shNtupliser.tauTag = cms.untracked.InputTag("patTaus"+patCandID)
-process.shNtupliser.muonTag = cms.untracked.InputTag("patMuons"+patCandID)
-process.shNtupliser.jetTag = cms.untracked.InputTag("patJets"+patCandID)
-process.shNtupliser.photonTag = cms.untracked.InputTag("patPhotons"+patCandID)
-process.shNtupliser.metTag = cms.untracked.InputTag("patMETs"+patCandID)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -172,8 +166,6 @@ if isCrabJob and process.shNtupliser.datasetCode.value()>10:
 from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
 swapHEEPToMiniAOD(process.shNtupliser)
 
-print process.shNtupliser
-
 process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
     process.shNtupliser)
@@ -181,7 +173,5 @@ process.p = cms.Path(#process.primaryVertexFilter*
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-#from SHarper.HEEPAnalyzer.heepTools import *
-#swapCollection(process,"gsfElectrons","gsfElectronsHEEPCorr")
 #import FWCore.PythonUtilities.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
