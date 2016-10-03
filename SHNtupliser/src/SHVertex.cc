@@ -1,7 +1,7 @@
 #include "SHarper/SHNtupliser/interface/SHVertex.hh"
 
 ClassImp(SHVertex)
-
+#include <iostream>
 int SHVertex::packData(const bool isValid,const int ndof,const int nrTrks)
 {
   int packedData=0;

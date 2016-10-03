@@ -26,8 +26,8 @@ private:
                      //(note quality is bits rather than number, breaking with CMSSW, 9th bit is undefined)
   //track data
   //bit 0 = +ve charge
-  //bit 1-7 = vertex number
-  //bit 8-15 = ndof
+  //bit 1-7 = vertex number (0-127)
+  //bit 8-15 = ndof (0-255)
   int16_t trkData_;
   //bit 0-6 = nr hits (0-127)
   //bit 7-11 = nr layers  (0-31)
@@ -44,9 +44,9 @@ private:
   //using gcc instrinsic to get the number of bits of the previous mask automatically
   static constexpr int kChargeMask=0x1;
   static constexpr int kChargeOffset=0;
-  static constexpr int kVertexNrMask=0x7;
+  static constexpr int kVertexNrMask=0x7F;
   static constexpr int kVertexNrOffset=__builtin_popcount(kChargeMask)+kChargeOffset;
-  static constexpr int kNDOFMask=0xF;
+  static constexpr int kNDOFMask=0xFF;
   static constexpr int kNDOFOffset=__builtin_popcount(kVertexNrMask)+kVertexNrOffset;
   
   static constexpr int kNrHitsMask=0x7F;
@@ -54,9 +54,9 @@ private:
   static constexpr int kNrLayersMask=0x1F;
   static constexpr int kNrLayersOffset=__builtin_popcount(kNrHitsMask)+kNrHitsOffset;
   static constexpr int kNrLostHitsMask=0x0F;
-  static constexpr int kNrLostHitsOffset=__builtin_popcount(kNrLostHitsMask)+kNrLayersOffset;
+  static constexpr int kNrLostHitsOffset=__builtin_popcount(kNrLayersMask)+kNrLayersOffset;
   static constexpr int kNrPixelHitsMask=0x1F;
-  static constexpr int kNrPixelHitsOffset=__builtin_popcount(kNrPixelHitsMask)+kNrLayersOffset;
+  static constexpr int kNrPixelHitsOffset=__builtin_popcount(kNrLostHitsMask)+kNrLostHitsOffset;
   
   
     
@@ -66,6 +66,8 @@ public:
   //SHIsolTrack(const TVector3& p3,const TVector3& vtxPos,bool posCharge,int vertexNr,float chi2,int ndof,int algosAndQual);
    //debuging
   void setAlgosAndQual(int val){algosAndQual_=val;}
+  void setTrkData(uint16_t val){trkData_=val;}
+  void setHitData(int val){hitData_=val;}
 
   TVector3 p3()const{TVector3 tmp;tmp.SetPtEtaPhi(pt_,eta_,phi_);return tmp;}
   TVector3 vtxPos()const{return TVector3(vx_,vy_,vz_);}

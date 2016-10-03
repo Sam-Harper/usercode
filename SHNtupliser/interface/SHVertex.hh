@@ -20,21 +20,22 @@ private:
   
   //bit packed
   //bit 0 : isValid
-  //bit 1-10 : ndof (0-1024)
-  //bit 11-20 : nrtracks (0-1024)
+  //bit 1-10 : ndof (0-1023)
+  //bit 11-20 : nrtracks (0-1023)
   int data_;
   
   static constexpr int kIsValidMask=0x1;
   static constexpr int kIsValidOffset=0;
-  static constexpr int kNDOFMask=0x2F;
+  static constexpr int kNDOFMask=0x3FF;
   static constexpr int kNDOFOffset=__builtin_popcount(kIsValidMask)+kIsValidOffset;
-  static constexpr int kNrTrksMask=0x2F;
+  static constexpr int kNrTrksMask=0x3FF;
   static constexpr int kNrTrksOffset=__builtin_popcount(kNDOFMask)+kNDOFOffset;
   
 public:
   SHVertex():vx_(0.),vy_(0.),vz_(0.),chi2_(-1),sumPt_(-1),data_(0){}
   SHVertex(const reco::Vertex& vertex);
-
+  //debuging
+  void setData(int val){data_=val;}
 
   TVector3 pos()const{return TVector3(vx_,vy_,vz_);}
   float vx()const{return vx_;}
