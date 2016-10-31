@@ -133,10 +133,26 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
       eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
     }
   }
-
+  // std::cout <<"starting pf cand dump"<<std::endl;
   for(size_t candNr=0;candNr<pfCands->size();candNr++){ 
     const reco::PFCandidateRef pfCandRef(pfCands,candNr);
     const reco::PFCandidate& pfParticle = *pfCandRef;
+    
+    // const reco::PFCandidate& pfCand =*pfCandRef;
+    // if(pfCand.particleId()==reco::PFCandidate::h){
+    //   if(std::abs(pfCand.pt()-pfCand.trackRef()->pt())>0.0001){
+    // 	std::cout <<"  bad match "<<"  pt "<<pfCand.pt()<<" "<<pfCand.eta()<<" "<<pfCand.phi()<<" track: "<<pfCand.trackRef()->pt()<<" "<<pfCand.trackRef()->eta()<<" "<<pfCand.trackRef()->phi()<<" track qual "<<pfCand.trackRef()->quality(reco::TrackBase::highPurity)<<" err "<<pfCand.trackRef()->ptError()/pfCand.trackRef()->pt()<<" E: "<<pfCand.ecalEnergy()<<" H: "<<pfCand.hcalEnergy()<<std::endl;
+    // 	//	std::cout <<"      "<<pfCand<<std::endl;
+    //   }
+    //   else if(pfCand.trackRef()->ptError()/pfCand.trackRef()->pt()>0.1){
+    // 	std::cout <<"  good match "<<"  pt "<<pfCand.pt()<<" "<<pfCand.eta()<<" "<<pfCand.phi()<<" track: "<<pfCand.trackRef()->pt()<<" "<<pfCand.trackRef()->eta()<<" "<<pfCand.trackRef()->phi()<<" track qual "<<pfCand.trackRef()->quality(reco::TrackBase::highPurity)<<" err "<<pfCand.trackRef()->ptError()/pfCand.trackRef()->pt()<<" E: "<<pfCand.ecalEnergy()<<" H: "<<pfCand.hcalEnergy()<<std::endl;
+    // 	//	std::cout <<"      "<<pfCand<<std::endl;
+    //   }
+    // }
+      
+   
+    
+
     int scSeedCrysId=getSeedCrysIdOfPFCandSC(pfCandRef,gsfToPFMapToUse,eleHandle);
     bool accept =false;
     for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
