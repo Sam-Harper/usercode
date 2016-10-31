@@ -1,4 +1,5 @@
 isCrabJob=False #script seds this if its a crab job
+useMiniAOD=False
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -19,12 +20,12 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-#    datasetCode=0
+    datasetCode=102
 
 if datasetCode==0: isMC=False
 else: isMC=True
 
-print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode
+print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -163,11 +164,13 @@ if process.shNtupliser.datasetCode.value() in [321,322]:
 if isCrabJob and process.shNtupliser.datasetCode.value()>10:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
-swapHEEPToMiniAOD(process.shNtupliser)
+
+if useMiniAOD:
+    from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
+    swapHEEPToMiniAOD(process.shNtupliser)
 
 process.p = cms.Path(#process.primaryVertexFilter*
-    process.egammaFilter*
+#    process.egammaFilter*
     process.shNtupliser)
         
 if not isMC:
