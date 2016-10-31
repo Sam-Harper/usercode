@@ -68,6 +68,7 @@ public:
   void setAlgosAndQual(int val){algosAndQual_=val;}
   void setTrkData(uint16_t val){trkData_=val;}
   void setHitData(int val){hitData_=val;}
+  void setPt(float val){pt_=val;}
 
   TVector3 p3()const{TVector3 tmp;tmp.SetPtEtaPhi(pt_,eta_,phi_);return tmp;}
   TVector3 vtxPos()const{return TVector3(vx_,vy_,vz_);}
