@@ -145,9 +145,15 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
 
   // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
   const auto& electrons = heepEvent.gsfEles();
+
+  // for(auto& ele : electrons){
+  //   const pat::Electron* patEle = static_cast<const pat::Electron*>(&ele);
+  //   std::cout <<typeid(ele).name()<<std::endl;
+  //   std::cout <<"trk "<<patEle->pt();
+  //   std::cout <<" "<<patEle->closestCtfTrackRef()->pt()<<std::endl;
+  // }
+
   const auto& photons = heepEvent.recoPhos();
-  //std::cout <<"nr electrons "<<electrons.size()<<std::endl;
-  // std::cout <<"nr photons "<<photons.size()<<std::endl;
   
   //so turns out the same supercluster can be used for multiple photons
   //happyness, so we protect against this
@@ -448,31 +454,23 @@ void SHEventHelper::addIsolTrksFromCands_(const heep::Event& heepEvent,SHEvent& 
 void SHEventHelper::addIsolTrksFromCands_(const std::vector<pat::PackedCandidate>& cands,
 					  const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  float minPtCut = 1;
-  //  std::cout <<"looping over "<<cands.size()<<std::endl;
+  float minPtCut = 1.; 
   for(auto& cand : cands){
     const int absPdgId = std::abs(cand.pdgId());
     //ensure its a charged object
     //in theory charge()!=0 should work
-    // const reco::Track& trk2 = cand.pseudoTrack();
-    //std::cout <<"cand "<<cand.pdgId()<<" "<<cand.pt()<<" eta "<<cand.eta()<<" "<<cand.phi()<<" trk pt " <<trk2.pt()<<" "<<trk2.eta()<<" "<<trk2.phi()<<std::endl;
-    if(absPdgId==11 || absPdgId==13 || absPdgId==15 || absPdgId==211 ){ 
+    if(cand.charge()!=0){
+      if(!(absPdgId==11 || absPdgId==13 || absPdgId==15 || absPdgId==211) ) std::cout <<"pid "<<cand.pdgId()<<" charged but not usual ones"<<std::endl;
       const reco::Track& trk = cand.pseudoTrack();
       if(!branches_.filterIsolTrks || 
 	 isNearEle_(trk.eta(),trk.phi(),shEvent,kMaxDRTrks_) ){
-	int vertexNr=-1;
-	if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
-	//std::cout <<"cand "<<cand.pdgId()<<" "<<cand.pt()<<" trk pt " <<trk.pt()<<" vert "<<vertexNr<<std::endl;
-	//std::cout <<"trk chi2 "<<trk.chi2()<<" trk err "<<trk.ptError()<<std::endl;
-	SHIsolTrack isolTrk(trk,vertexNr);
-
+	SHIsolTrack isolTrk = createSHIsolTrack_(cand,heepEvent);
 	int pseudoAlgo=0;
 	if(absPdgId==11) pseudoAlgo=1;
 	if(absPdgId==13) pseudoAlgo=2;
 	if(absPdgId==15) pseudoAlgo=3;
 	if(absPdgId==211) pseudoAlgo=4;
 	
-
 	isolTrk.setAlgosAndQual(SHIsolTrack::packAlgoIDInfo(pseudoAlgo,0,isolTrk.quality()));
 	//	if(trk.pt()>minPtCut) shEvent.addIsolTrk(trk,vertexNr);
 	if(trk.pt()>minPtCut) shEvent.addIsolTrk(isolTrk);
@@ -480,6 +478,39 @@ void SHEventHelper::addIsolTrksFromCands_(const std::vector<pat::PackedCandidate
       }
     }
   }
+}
+SHIsolTrack SHEventHelper::createSHIsolTrack_(const pat::PackedCandidate& cand,
+					    const heep::Event& heepEvent)const
+{
+  const reco::Track& trk = cand.pseudoTrack();
+  
+  int vertexNr=-1;
+  if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
+
+  if(std::abs(cand.pdgId())==11){
+    const reco::GsfElectron* ele = matchCandToEle_(cand,heepEvent);
+    if(ele){
+      float trkP = 1./ele->eSuperClusterOverP()  / ele->superCluster()->energy();
+      float trkPt = sin(ele->p4().theta())*trkP;
+      SHIsolTrack isoTrk(cand.pseudoTrack(),vertexNr);
+      isoTrk.setPt(trkPt);
+      return isoTrk;
+    }
+  }
+  return SHIsolTrack(cand.pseudoTrack(),vertexNr);
+  
+}
+const reco::GsfElectron* SHEventHelper::matchCandToEle_(const pat::PackedCandidate& cand,
+						  const heep::Event& heepEvent)const
+{
+  if(heepEvent.handles().gsfEle.isValid()){
+    for(auto& ele : *heepEvent.handles().gsfEle){
+      if(reco::deltaR2(cand.eta(),cand.phi(),ele.eta(),ele.phi())<0.01*0.01){
+	return &ele;
+      }
+    }
+  }
+  return nullptr;
 }
 
 void SHEventHelper::fillRecHitClusterMap(const reco::SuperCluster& superClus,SHEvent& shEvent)

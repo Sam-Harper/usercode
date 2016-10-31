@@ -147,7 +147,10 @@ private:
     }
     return eles.size();
   }
-
+  SHIsolTrack createSHIsolTrack_(const pat::PackedCandidate& cand,
+				 const heep::Event& heepEvent)const;
+  const reco::GsfElectron* matchCandToEle_(const pat::PackedCandidate& cand,
+				     const heep::Event& heepEvent)const;
 };
 
 #endif
