@@ -167,6 +167,7 @@ void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
   shTrigSum.setMenuName(menuData.menuName());
   shTrigSum.setProcessName(menuData.processName());
   shTrigSum.setGlobalTag(menuData.globalTag());  
+   
 }
 
 const SHTrigMenuData&
@@ -210,7 +211,13 @@ void SHTrigSumMaker::addMenuData_(const HLTConfigProvider& hltConfig,
   menuData.setL1Names(l1Names);
   menuData.setPathBitsDef(pathNames);
   menuData.setFilterBitsDef(filterNames);  
+
+  // like all L1 software, this is broken
+  // std::cout <<"l1 "<<l1GtUtils.gtTriggerMenuName()<<" "<<
+  //   l1GtUtils.gtTriggerMenuVersion()<<
+  //   l1GtUtils.gtTriggerMenuComment()<<std::endl;
   
+
   menuMgr_.add(menuData);
 }
 
