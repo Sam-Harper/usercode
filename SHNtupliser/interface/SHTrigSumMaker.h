@@ -85,7 +85,7 @@ public:
 
   static const size_t kMaxNrL1SeedsToStore_=20;
 public:
-  SHTrigSumMaker():verboseLvl_(0){}
+  SHTrigSumMaker():l1Menu_(nullptr),hltMenu_(nullptr),verboseLvl_(0){}
   ~SHTrigSumMaker(){}
   
   void makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);

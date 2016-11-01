@@ -44,6 +44,7 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
   //tempory L1 menu to work around L1 software issues, we have to invent a name
   std::string l1MenuName("l1MenuForRun"+std::to_string(edmEvent.id().run()));
   if(!l1Menu_ || l1Menu_->menuName()!=l1MenuName){
+    std::cout <<"making a new l1 menu"<<std::endl;
     l1Menu_ = &getL1Menu_(hltConfig,hltPSProv.l1tGlobalUtil(),l1MenuName);
   }
   //there is a small potenial bug here if the menu changes but is kept the same name
