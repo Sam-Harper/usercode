@@ -4,22 +4,44 @@
 #include "SHarper/SHNtupliser/interface/LogErr.hh"
 ClassImp(SHTrigSummary)
 
+const SHL1Result SHTrigSummary::nullL1Result_;
 const SHTrigResult SHTrigSummary::nullTrigResult_;
 const SHTrigObj SHTrigSummary::nullTrigObj_;
+const SHBitsDef SHTrigSummary::nullBitsDef_;
 
-
-const SHTrigResult& SHTrigSummary::getTrig(const std::string& trigName)const
+SHL1Result SHTrigSummary::getL1Trig(const std::string& seedName)const
 {
-  size_t bitNr=pathBitsDef_.getBitNr(trigName);
-  auto result=std::equal_range(trigResults_.begin(),trigResults_.end(),bitNr,SHTrigResult::Sorter<>());
-  if(result.first!=result.second){
-    if(std::distance(result.first,result.second)!=1){
-      LogErr<<" warning "<<std::distance(result.first,result.second)<<" entries found for trigger "<<trigName<<" this should not be possible"<<std::endl;
-    }
-    return *result.first;
-  }
-  else return nullTrigResult_;
+  if(l1Menu_==nullptr) return nullL1Result_;
+  
+  const SHL1Menu::Seed& seed = l1Menu_->getSeed(seedName);
+  if(!seed.valid()) return nullL1Result_;
+  
+  bool accept = l1Result_.TestBitNumber(seed.bitNr());
+  //its important to take seedName not seed.name() incase we have a null seed (ie we didnt find the seed)
+  return SHL1Result(seed.bitNr(),seedName,accept,seed.masked(),seed.preScale(preScaleColumn()));
 }
+
+SHTrigResult SHTrigSummary::getTrig(const std::string& trigName)const
+{
+  if(hltMenu_==nullptr) return nullTrigResult_;
+  
+  const SHHLTMenu::Path& path = hltMenu_->getPath(trigName);
+  if(!path.valid()) return nullTrigResult_;
+  
+  SHTrigResult::Status status = hltResult_.TestBitNumber(path.pathNr()) ? 
+    SHTrigResult::Status::PASS : SHTrigResult::Status::FAIL;
+    
+  int preScale = path.preScale(preScaleColumn());
+  
+  std::vector<SHL1Result> l1Seeds;
+  for(auto l1SeedName : path.l1Seeds()){
+    SHL1Result l1Res = getL1Trig(l1SeedName);
+    l1Seeds.emplace_back(std::move(l1Res));
+  }
+  //its important to take trigName not path.name() incase we have a null seed (ie we didnt find the seed)
+  return SHTrigResult(path.pathNr(),trigName,status,preScale,std::move(l1Seeds));
+}
+
 
 
 const SHTrigObj& SHTrigSummary::getTrigObj(const std::string& trigName,float eta,float phi,float maxDR)const
@@ -32,7 +54,7 @@ const SHTrigObj& SHTrigSummary::getTrigObj(const std::string& trigName,float eta
 const SHTrigObj& SHTrigSummary::getTrigObj(const std::vector<std::string>& trigNames,
 					   float eta,float phi,float maxDR)const
 {
-  TBits bits = filterBitsDef_.getBits(trigNames);
+  TBits bits = filterBitsDef().getBits(trigNames);
   auto allTrigObjs = getTrigObjs(eta,phi,SHTrigObj::ALL,maxDR);
   std::vector<const SHTrigObj*> passingTrigObjs;
   std::copy_if(allTrigObjs.begin(),allTrigObjs.end(),std::back_inserter(passingTrigObjs),
@@ -55,7 +77,7 @@ std::vector<const SHTrigObj*> SHTrigSummary::getTrigObjs(const std::string& trig
 
 std::vector<const SHTrigObj*> SHTrigSummary::getTrigObjs(const std::vector<std::string>& trigNames)const
 {
-  TBits bits = filterBitsDef_.getBits(trigNames);
+  TBits bits = filterBitsDef().getBits(trigNames);
   std::vector<const SHTrigObj*> passingTrigObjs;
   for(auto& trigObj : trigObjs()){
     if(trigObj.pass(bits)) passingTrigObjs.push_back(&trigObj);
@@ -98,13 +120,14 @@ void SHTrigSummary::print()const
 
 void SHTrigSummary::printTrigs()const
 {
-  std::cout <<"Menu "<<menuName()<<" process "<<processName()<<" gt "<<globalTag()<<std::endl;
-  std::cout <<"nr trigs "<<trigResults().size()<<std::endl;
+  std::cout <<"Menu "<<menuName()<<" process "<<processName()<<" gt "<<(hltMenu_ ? hltMenu_->globalTag() : "")<<std::endl;
+  std::cout <<"nr trigs "<<hltResult_.GetNbits()<<std::endl;
   std::cout <<"nr objs "<<trigObjs().size()<<std::endl;
-  for(auto& trig : trigResults()){
-    std::string trigName = pathBitsDef().getBitName(trig.bitNr());
-    std::cout <<"trig "<<trig.bitNr()<<" "<<trigName<<" pass: "<<trig.accept()<<" run: "<<trig.wasRun()<<" ps: "<<trig.preScale()<<std::endl;
-  }
+  if(hltMenu_){
+    for(auto& path : hltMenu_->paths()){
+      std::cout <<"trig "<<path.pathNr()<<" "<<path.name()<<" pass: "<<hltResult_.TestBitNumber(path.pathNr())<<" ps: "<<path.preScale(preScaleColumn())<<std::endl;
+    }
+  }else std::cout <<"no HLT menu data"<<std::endl;
 }
 void SHTrigSummary::printObjs()const{
   
@@ -121,38 +144,27 @@ void SHTrigSummary::clearEvent()
 {
   preScaleColumn_=-1;
   trigObjs_.clear();
-  trigResults_.clear();
-  l1Results_.clear();
+  l1Result_.Clear();
+  hltResult_.Clear();
+  
 }
 
 void SHTrigSummary::clearMenu()
 {
+  l1MenuName_="";
   menuName_="";
   processName_="";
-  globalTag_="";
   clearMenuData();
 }
 
 void SHTrigSummary::clearMenuData()
 {
-  pathBitsDef_.clear();
-  filterBitsDef_.clear();
-  l1Names_.clear();
-}
-
-void SHTrigSummary::addL1Result(const SHL1Result& result)
-{
-  if(l1Results_.size()!=l1Names_.size() && !l1Names_.empty()){
-    l1Results_.resize(l1Names_.size());
-  }
-  if(result.valid() && 
-     result.bitNr()<l1Results_.size()) l1Results_[result.bitNr()]=result;
+  hltMenu_=nullptr;
+  l1Menu_=nullptr;
 }
 
 void SHTrigSummary::sort()
 {
   std::sort(trigObjs_.begin(),trigObjs_.end(),SHTrigObjComp());
-  std::sort(trigResults_.begin(),trigResults_.end());
-
 }
 

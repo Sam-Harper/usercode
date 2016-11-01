@@ -6,7 +6,7 @@ namespace edm{
 }
 
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
-#include "SHarper/SHNtupliser/interface/TrigMenuDataMgr.hh"
+#include "SHarper/SHNtupliser/interface/TrigMenuMgr.hh"
 #include "TTree.h"
 
 class SHEventTreeData {
@@ -55,7 +55,7 @@ private:
   SHGenInfo* shGenInfo_;//we own this, nah just kidding, we dont
   SHTrigSummary* shTrigSum_; //we do not own this
   
-  TrigMenuDataMgr trigMenuMgr_;
+  TrigMenuMgr trigMenuMgr_;
 
 public:
   SHEventTreeData(SHEvent* & event);

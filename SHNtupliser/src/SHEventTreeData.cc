@@ -79,8 +79,11 @@ void SHEventTreeData::makeTree(const std::string& name)
 void SHEventTreeData::fill()
 {
   //menu is not already stored in the manager, add it
-  if(!trigMenuMgr_.get(shTrigSum_->menuName(),shTrigSum_->processName()).valid()) {
-    trigMenuMgr_.add(*shTrigSum_);
+  if(!trigMenuMgr_.getHLT(shTrigSum_->menuName(),shTrigSum_->processName()).valid()) {
+    trigMenuMgr_.add(*shTrigSum_->hltMenu());
+  }
+  if(!trigMenuMgr_.getL1(shTrigSum_->l1MenuName()).valid()) {
+    trigMenuMgr_.add(*shTrigSum_->l1Menu());
   }
   trigMenuMgr_.write(tree_);
   shTrigSum_->clearMenuData();

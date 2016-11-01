@@ -231,6 +231,11 @@ public:
  
   static void getHistIntegral(const TH1* theHist,double xMin,double xMax,double& nrEvents,double& nrEventsErr);  
   static double getHistIntegral(const TH1* theHist,double xMin,double xMax);
+  static std::pair<double,double> getHistIntAndErr(const TH1* theHist,double xMin,double xMax){
+    std::pair<double,double> integral;
+    getHistIntegral(theHist,xMin,xMax,integral.first,integral.second);
+    return integral;
+  }
   static void setHistAxes(TH1* hist);
 
   static TH1* getHistFromFile(const std::string& histName,const std::string& filename);

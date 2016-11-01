@@ -76,8 +76,11 @@ double MathFuncs::evtEtaToDet(TVector3 caloPos,double z0)
 
 double MathFuncs::etaToTheta(double eta)
 {
-  if(eta<0) return -2*atan(exp(eta));
-  else return 2*atan(exp(-1*eta));
+  //  if(eta<0) return -2*atan(exp(eta));
+  //  else return 2*atan(exp(-1*eta));
+  return 2*atan(exp(-1*eta));
+  //else return 2*atan(exp(-1*eta));
+
 }
 
 double MathFuncs::thetaToEta(double theta)

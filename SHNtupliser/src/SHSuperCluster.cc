@@ -5,7 +5,7 @@ ClassImp(SHSuperCluster)
 
 SHSuperCluster::SHSuperCluster():
   nrgy_(0.),preShowerNrgy_(0.),
-  pos_(0.,0.,0.),eta_(0.),
+  rho_(0.),eta_(0.),phi_(0.),
   nrCrys_(0),
   clusterArray_("SHBasicCluster",4),
   flags_(0)
@@ -16,7 +16,7 @@ SHSuperCluster::SHSuperCluster():
 
 SHSuperCluster::SHSuperCluster(const SHSuperCluster& rhs):
   nrgy_(rhs.nrgy_),preShowerNrgy_(rhs.preShowerNrgy_),
-  pos_(rhs.pos_),eta_(rhs.eta_),
+  rho_(rhs.rho_),eta_(rhs.eta_),phi_(rhs.phi_),
   nrCrys_(rhs.nrCrys_),
   clusterArray_("SHBasicCluster",4),
   flags_(rhs.flags_)
@@ -33,7 +33,7 @@ SHSuperCluster::SHSuperCluster(const SHSuperCluster& rhs):
 
 SHSuperCluster::SHSuperCluster(const std::vector<SHBasicCluster>& basicClusters):
   nrgy_(0.),preShowerNrgy_(0.),
-  pos_(0.,0.,0.),eta_(0.),
+  rho_(0.),eta_(0.),phi_(0.),
   nrCrys_(0),
   clusterArray_("SHBasicCluster",4),
   flags_(0)
@@ -42,17 +42,20 @@ SHSuperCluster::SHSuperCluster(const std::vector<SHBasicCluster>& basicClusters)
   //float etaSum=0;
   // float phiSum=0;
   //std::cout <<"start sc "<<std::endl;
+  TVector3 pos;
   for(size_t clusNr=0;clusNr<basicClusters.size();clusNr++){
     new(clusterArray_[nrClus()]) SHBasicCluster(basicClusters[clusNr]);
     nrgy_+= basicClusters[clusNr].nrgy();
-    TVector3 nrgyWeightedPos = basicClusters[clusNr].pos();
+    //TVector3 nrgyWeightedPos = basicClusters[clusNr].pos();
     //  std::cout <<"eta "<<nrgyWeightedPos.Eta()<<" phi "<<nrgyWeightedPos.Eta()<<" nrgy "<<basicClusters[clusNr].nrgy()<<std::endl;
-    nrgyWeightedPos*=basicClusters[clusNr].nrgy();
-    pos_+=nrgyWeightedPos;
+    //nrgyWeightedPos*=basicClusters[clusNr].nrgy();
+    pos+=basicClusters[clusNr].pos()*basicClusters[clusNr].nrgy();
     nrCrys_+=basicClusters[clusNr].nrCrys();
   }
-  pos_*=1./nrgy_;
-  eta_=pos_.Eta();
+  pos*=1./nrgy_;
+  rho_=pos.Mag();
+  eta_=pos.Eta();
+  phi_=pos.Phi();
   // pos_.SetPtEtaPhi(1,etaSum,phiSum);
   
 }

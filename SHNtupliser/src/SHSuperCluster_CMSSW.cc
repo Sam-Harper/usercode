@@ -9,8 +9,9 @@
 SHSuperCluster::SHSuperCluster(const reco::SuperCluster& superClus):
   nrgy_(superClus.energy()),
   preShowerNrgy_(superClus.preshowerEnergy()),
-  pos_(superClus.position().X(),superClus.position().Y(),superClus.position().Z()), 
-  eta_(pos_.Eta()),
+  rho_(superClus.position().rho()),
+  eta_(superClus.position().eta()),
+  phi_(superClus.position().phi()),
   nrCrys_(superClus.hitsAndFractions().size()),
   clusterArray_("SHBasicCluster",4),
   flags_(superClus.flags())

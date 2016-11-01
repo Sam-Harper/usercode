@@ -8,7 +8,7 @@
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
 #include "FWCore/Framework/interface/GenericHandle.h"
 
-#include "SHarper/SHNtupliser/interface/TrigMenuDataMgr.hh"
+#include "SHarper/SHNtupliser/interface/TrigMenuMgr.hh"
 
 namespace edm{
   class Event;
@@ -68,22 +68,17 @@ public:
   };
   
   
-  //our cached data (mainly L1 stuff as its really slow)
-  //changes on a menu basis
-  std::vector<PathL1Seeds> pathsL1Seeds_;
-  
-  //changes on a run basis
-  std::vector<std::vector<int> > l1PreScaleTbl_; //currently not filled due to L1 software issues
+  const SHL1Menu* l1Menu_;
+  const SHHLTMenu* hltMenu_;
+
   //changes on a lumi basis
   int currPSColumn_;
-  std::vector<int> l1Prescales_; //temporary for L1 software issues
   
   //our info to track if cache is out of date
   RunLumi lastRunLumi_;
-  std::pair<std::string,std::string> menuAndProcName_;
 
   //menu information
-  TrigMenuDataMgr menuMgr_;  
+  TrigMenuMgr menuMgr_;  
   
   //debug information
   int verboseLvl_;
@@ -113,41 +108,32 @@ public:
   static void associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs);
   
 private:
-  void fillMenu_(SHTrigSummary& shTrigSum,const HLTConfigProvider& hltConfig,
-		 l1t::L1TGlobalUtil& l1GtUtils);
-  const SHTrigMenuData& getMenuData_(const HLTConfigProvider& hltConfig,
-				 l1t::L1TGlobalUtil& l1GtUtils);
-  void addMenuData_(const HLTConfigProvider& hltConfig,
-		    l1t::L1TGlobalUtil& l1GtUtils);
-    
-  void fillSHTrigResults_(const edm::TriggerResults& trigResults,
-			  const edm::TriggerNames& trigNames,
-			  HLTPrescaleProvider& hltPSProv,
-			  SHTrigSummary& shTrigSum)const;
-
+  void fillMenu_(SHTrigSummary& shTrigSum)const;
+  TBits getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const;
+  TBits getHLTResult_(const edm::TriggerResults& trigResults)const;			  
   void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum)const;
 
-  static void fillSHL1Results_(l1t::L1TGlobalUtil& l1Util,const edm::Event& edmEvent,
-			       SHTrigSummary& shTrigSum);  
-
   
-  std::vector<std::pair<size_t,int>> 
-  getPathL1Prescales_(const std::string& pathName)const;
+  std::vector<std::string> getL1Seeds_(const HLTConfigProvider& hltConfig,const size_t pathNr,
+				       const std::string& pathName)const;
   
-  std::vector<size_t> getL1Seeds_(const std::string& pathName,
-				  const std::vector<std::string>& l1Names,
-				  const HLTConfigProvider& hltConfig)const;
-    
-
-  void updateCacheMenuChange_(const edm::Event& edmEvent,
-			      const edm::EventSetup& edmEventSetup, 			   
-			      HLTPrescaleProvider& hltPSProv);
   void updateCacheRunChange_(const edm::Event& edmEvent,
 			     const edm::EventSetup& edmEventSetup, 
 			     HLTPrescaleProvider& hltPSProv);
   void updateCacheLumiChange_(const edm::Event& edmEvent,
 			      const edm::EventSetup& edmEventSetup, 
 			      HLTPrescaleProvider& hltPSProv);
+
+  const SHL1Menu& getL1Menu_(const HLTConfigProvider& hltConfig,const l1t::L1TGlobalUtil& l1GtUtils,
+			     const std::string& l1MenuName);
+
+  const SHHLTMenu& getHLTMenu_(const HLTConfigProvider& hltConfig);
+  
+  void addL1Menu_(const HLTConfigProvider& hltConfig,const l1t::L1TGlobalUtil& l1GtUtils,
+		  const std::string& l1MenuName);
+  void addHLTMenu_(const HLTConfigProvider& hltConfig);
+	
+  
 
   static std::vector<std::string> splitL1SeedExpr_(const std::string& l1SeedExpr);
 };

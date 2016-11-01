@@ -41,13 +41,22 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
   if(!hltConfig.inited()){
     throw edm::Exception(edm::errors::LogicError,"Error, HLTConfig is not initialised, this will end poorly");
   }
+  //tempory L1 menu to work around L1 software issues, we have to invent a name
+  std::string l1MenuName("l1MenuForRun"+std::to_string(edmEvent.id().run()));
+  if(!l1Menu_ || l1Menu_->menuName()!=l1MenuName){
+    l1Menu_ = &getL1Menu_(hltConfig,hltPSProv.l1tGlobalUtil(),l1MenuName);
+  }
   //there is a small potenial bug here if the menu changes but is kept the same name
   //this can only happen for private production/studies and we will ignore this
   //we are now forcing a change if the process name changes as well
-  if(hltConfig.tableName()!=shTrigSum.menuName() || hltConfig.processName()!=shTrigSum.processName()){
-    std::cout <<"making a new menu"<<std::endl;
-    updateCacheMenuChange_(edmEvent,edmEventSetup,hltPSProv);
-  }else if(!lastRunLumi_.sameRun({edmEvent.id().run(),edmEvent.luminosityBlock()}) ){
+  if(!hltMenu_ || 
+     hltConfig.tableName()!=hltMenu_->menuName() || 
+     hltConfig.processName()!=hltMenu_->processName()){
+    std::cout <<"making a new hlt menu"<<std::endl;
+    hltMenu_ = &getHLTMenu_(hltConfig);
+  }
+ 
+  if(!lastRunLumi_.sameRun({edmEvent.id().run(),edmEvent.luminosityBlock()}) ){
     lastRunLumi_={edmEvent.id().run(),edmEvent.luminosityBlock()};
     updateCacheRunChange_(edmEvent,edmEventSetup,hltPSProv);
   }else if(!lastRunLumi_.sameLumi({edmEvent.id().run(),edmEvent.luminosityBlock()}) ){
@@ -56,15 +65,11 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
   }
 
   shTrigSum.clearEvent();
-
   shTrigSum.setPreScaleColumn(currPSColumn_); 
-
-  //fix for issue where methods in L1TGlobalUtil were not properly declared const
-  fillMenu_(shTrigSum,hltConfig,const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil()));
-  fillSHTrigResults_(trigResults,trigNames,hltPSProv,shTrigSum); 
+  fillMenu_(shTrigSum);
+  shTrigSum.setL1Result(getL1Result_(hltPSProv.l1tGlobalUtil()));
+  shTrigSum.setHLTResult(getHLTResult_(trigResults));
   fillSHTrigObjs_(trigEvt,shTrigSum);
-  fillSHL1Results_(const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil()),edmEvent,shTrigSum);
-
   shTrigSum.sort();
 }
 
@@ -156,42 +161,55 @@ void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const reco::
   
 }
 
-void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum,
-			       const HLTConfigProvider& hltConfig,
-			       l1t::L1TGlobalUtil& l1GtUtils)
+void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum)const			       
 {
-  const SHTrigMenuData& menuData = getMenuData_(hltConfig,l1GtUtils);
-  shTrigSum.setL1Names(menuData.l1Names());
-  shTrigSum.setPathBitsDef(menuData.pathBitsDef());
-  shTrigSum.setFilterBitsDef(menuData.filterBitsDef());
-  shTrigSum.setMenuName(menuData.menuName());
-  shTrigSum.setProcessName(menuData.processName());
-  shTrigSum.setGlobalTag(menuData.globalTag());  
-   
+  shTrigSum.setL1Menu(l1Menu_);
+  shTrigSum.setHLTMenu(hltMenu_);
+  shTrigSum.setL1MenuName(l1Menu_->menuName());
+  shTrigSum.setMenuName(hltMenu_->menuName());
+  shTrigSum.setProcessName(hltMenu_->processName());  
 }
 
-const SHTrigMenuData&
-SHTrigSumMaker::getMenuData_(const HLTConfigProvider& hltConfig,
-				  l1t::L1TGlobalUtil& l1GtUtils)
+const SHL1Menu&
+SHTrigSumMaker::getL1Menu_(const HLTConfigProvider& hltConfig,
+			   const l1t::L1TGlobalUtil& l1GtUtils,
+			   const std::string& l1MenuName)
 {
-  if(!menuMgr_.hasMenu(hltConfig.tableName(),hltConfig.processName())){
-    addMenuData_(hltConfig,l1GtUtils);
+  if(!menuMgr_.hasL1Menu(l1MenuName)){
+    addL1Menu_(hltConfig,l1GtUtils,l1MenuName);
   }
-  return menuMgr_.get(hltConfig.tableName(),hltConfig.processName());
+  return menuMgr_.getL1(l1MenuName);
 }
 
-void SHTrigSumMaker::addMenuData_(const HLTConfigProvider& hltConfig,
-				  l1t::L1TGlobalUtil& l1GtUtils)
+
+const SHHLTMenu&
+SHTrigSumMaker::getHLTMenu_(const HLTConfigProvider& hltConfig)
+
 {
-  
-  SHTrigMenuData menuData;
-  menuData.setProcessName(hltConfig.processName());
-  menuData.setGlobalTag(hltConfig.globalTag());
-  menuData.setMenuName(hltConfig.tableName());
-  
-  std::vector<std::string> pathNames;
-  for(auto& pathName : hltConfig.triggerNames()){
-    pathNames.emplace_back(rmTrigVersionFromName(pathName));
+  if(!menuMgr_.hasHLTMenu(hltConfig.tableName(),hltConfig.processName())){
+    addHLTMenu_(hltConfig);
+  }
+  return menuMgr_.getHLT(hltConfig.tableName(),hltConfig.processName());
+}
+
+void SHTrigSumMaker::addHLTMenu_(const HLTConfigProvider& hltConfig)
+			
+{  
+  std::vector<SHHLTMenu::Path> hltPaths;
+  std::vector<unsigned int> defaultPSes(hltConfig.prescaleSize(),1);
+  for(size_t pathNr=0;pathNr<hltConfig.triggerNames().size();pathNr++){
+    const std::string& trigName  = hltConfig.triggerNames()[pathNr];
+
+    std::vector<std::string> l1Seeds = getL1Seeds_(hltConfig,pathNr,trigName);
+    if(l1Seeds.size()>kMaxNrL1SeedsToStore_) l1Seeds.clear();
+    
+    auto psTblEntry = hltConfig.prescaleTable().find(trigName);
+    const std::vector<unsigned int>& preScales = psTblEntry!=hltConfig.prescaleTable().end() ? 
+      psTblEntry->second : defaultPSes;
+    
+    hltPaths.emplace_back(SHHLTMenu::Path(pathNr,rmTrigVersionFromName(trigName),
+					  preScales,std::move(l1Seeds)));
+    
   }
 
   std::vector<std::string> filterNames;    
@@ -204,60 +222,82 @@ void SHTrigSumMaker::addMenuData_(const HLTConfigProvider& hltConfig,
     }
   }
   
-  std::vector<std::string> l1Names(l1GtUtils.prescales().size());
-  std::transform(l1GtUtils.prescales().begin(),l1GtUtils.prescales().end(),l1Names.begin(),
-		 [](const std::pair<std::string,int>& val){return val.first;});
-  
-  menuData.setL1Names(l1Names);
-  menuData.setPathBitsDef(pathNames);
-  menuData.setFilterBitsDef(filterNames);  
+  SHHLTMenu hltMenu;
+  hltMenu.setProcessName(hltConfig.processName());
+  hltMenu.setGlobalTag(hltConfig.globalTag());
+  hltMenu.setMenuName(hltConfig.tableName());
+  hltMenu.setFilterBitsDef(filterNames);   
+  hltMenu.setPaths(std::move(hltPaths));
+  menuMgr_.add(hltMenu);
+}
 
+void SHTrigSumMaker::addL1Menu_(const HLTConfigProvider& hltConfig,
+				const l1t::L1TGlobalUtil& l1GtUtilsConst,
+				const std::string& l1MenuName)
+{
+  std::vector<SHL1Menu::Seed> seeds;
+
+  //because L1TGlobalUtil is garbage and broken
+  l1t::L1TGlobalUtil& l1GtUtils = const_cast<l1t::L1TGlobalUtil&>(l1GtUtilsConst);
+
+  std::vector<unsigned int> defaultPSes(hltConfig.prescaleSize(),1);
+  for(size_t bitNr=0;bitNr<l1GtUtils.prescales().size();bitNr++){
+    const std::string& l1Name = l1GtUtils.prescales()[bitNr].first;
+    seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Name,defaultPSes,false));
+  }
+  SHL1Menu l1Menu;
+  l1Menu.setMenuName(l1MenuName);
+  l1Menu.setSeeds(std::move(seeds));
+
+  menuMgr_.add(l1Menu);
   // like all L1 software, this is broken
   // std::cout <<"l1 "<<l1GtUtils.gtTriggerMenuName()<<" "<<
   //   l1GtUtils.gtTriggerMenuVersion()<<
   //   l1GtUtils.gtTriggerMenuComment()<<std::endl;
-  
-
-  menuMgr_.add(menuData);
+		  
+ 
 }
-
-void SHTrigSumMaker::fillSHTrigResults_(const edm::TriggerResults& trigResults,
-					const edm::TriggerNames& trigNames,
-					HLTPrescaleProvider& hltPSProv,
-					SHTrigSummary& shTrigSum)const
-					
+TBits SHTrigSumMaker::getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const
 {
-  if(trigNames.size()!=trigResults.size()){
-    std::ostringstream msg;
-    msg<<" Error trig results and trig names not the same size "<<trigNames.size()<<" "<<trigResults.size();
-    throw edm::Exception(edm::errors::LogicError,msg.str());
+  // std::cout <<"starting ps dump "<<l1Util.prescales().size()<<std::endl;
+  // for(auto& ps : l1Util.prescales()){
+  //   std::cout <<ps.first<<" "<<ps.second<<std::endl;
+  // }
+  //because L1TGlobalUtil is garbage and broken
+  l1t::L1TGlobalUtil& l1Util = const_cast<l1t::L1TGlobalUtil&>(l1UtilsConst);
+
+  if(!l1Menu_){
+    LogErr<<" Error, L1 menu not set"<<std::endl;
+    throw cms::Exception("BadSHL1Menu");
+  }
+  if(l1Menu_->l1Seeds().size()!=l1Util.decisionsFinal().size()){
+    LogErr<<"  Error SHL1Menu has "<<l1Menu_->l1Seeds().size()<<" while CMSSW L1 menu has "<<l1Util.decisionsFinal().size()<<" seeds"<<std::endl;
+    throw cms::Exception("BadSHL1Menu");
   }
 
-
-  for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
-    
-    SHTrigResult trigResult;
-    
-    const std::string& pathName = trigNames.triggerName(pathNr);
-    const std::string  pathNameWOVersion=rmTrigVersionFromName(pathName);
-    size_t bitNr=shTrigSum.pathBitsDef().getBitNr(pathNameWOVersion);
-    int prescale=hltPSProv.hltConfigProvider().inited() ? hltPSProv.hltConfigProvider().prescaleValue(currPSColumn_,pathName) : -1;
-    auto l1Prescales = getPathL1Prescales_(pathName);
-
-    SHTrigResult::Status status = static_cast<SHTrigResult::Status>(trigResults[pathNr].state());
-
-    if(pathNameWOVersion=="HLT_Photon36wdwq_v"){
-      std::cout <<"for  "<<pathNameWOVersion<<std::endl;
-      for(auto ps : l1Prescales){
-	std::cout <<"   l1 PS "<<ps.first<<" "<<ps.second<<" l1Prescale "<<std::endl;
-      }
+  TBits result(l1Util.decisionsFinal().size());
+  for(size_t bitNr=0;bitNr<l1Util.decisionsFinal().size();bitNr++){
+    bool pass = l1Util.decisionsFinal()[bitNr].second;
+    if(pass) result.SetBitNumber(bitNr);
+ 
+    const std::string& l1Name = l1Menu_->getSeed(bitNr).name();
+    if(l1Name!=l1Util.decisionsFinal()[bitNr].first ||
+       l1Name!=l1Util.masks()[bitNr].first ||
+       l1Name!=l1Util.prescales()[bitNr].first){
+      LogErr<<" Warning, algo names dont match up "<<l1Name<<" "<<l1Util.decisionsFinal()[bitNr].first <<" "<<l1Util.masks()[bitNr].first<<" "<<l1Util.prescales()[bitNr].first<<std::endl;
     }
-
-    shTrigSum.addTrigResult(SHTrigResult(bitNr,status,prescale,l1Prescales));     
-  } 
+    
+  }
+  return result;
 }
-
-
+TBits SHTrigSumMaker::getHLTResult_(const edm::TriggerResults& trigResults)const
+{
+  TBits result(trigResults.size());
+  for(size_t pathNr=0;pathNr<trigResults.size();pathNr++){
+    if(trigResults[pathNr].accept()) result.SetBitNumber(pathNr);
+  }
+  return result;
+}
 
 void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
 				     SHTrigSummary& shTrigSum)const
@@ -312,111 +352,33 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
   }
 }    
 
-void SHTrigSumMaker::fillSHL1Results_(l1t::L1TGlobalUtil& l1Util,
-				      const edm::Event& edmEvent,
-				      SHTrigSummary& shTrigSum)
+
+std::vector<std::string> 
+SHTrigSumMaker::getL1Seeds_(const HLTConfigProvider& hltConfig,
+			    const size_t pathNr,
+			    const std::string& pathName)const
 {
-  // std::cout <<"starting ps dump "<<l1Util.prescales().size()<<std::endl;
-  // for(auto& ps : l1Util.prescales()){
-  //   std::cout <<ps.first<<" "<<ps.second<<std::endl;
-  // }
-
-  for(size_t bitNr=0;bitNr<shTrigSum.l1Names().size();bitNr++){
-    bool pass = l1Util.decisionsFinal()[bitNr].second;
-    int mask = l1Util.masks()[bitNr].second;
-    int prescale = l1Util.prescales()[bitNr].second;
-    shTrigSum.addL1Result(SHL1Result(bitNr,pass,mask,prescale));
-
-    if(shTrigSum.l1Names()[bitNr]!=l1Util.decisionsFinal()[bitNr].first ||
-       shTrigSum.l1Names()[bitNr]!=l1Util.masks()[bitNr].first ||
-       shTrigSum.l1Names()[bitNr]!=l1Util.prescales()[bitNr].first){
-      LogErr<<" Warning, algo names dont match up "<<shTrigSum.l1Names()[bitNr]<<" "<<l1Util.decisionsFinal()[bitNr].first <<" "<<l1Util.masks()[bitNr].first<<" "<<l1Util.prescales()[bitNr].first<<std::endl;
-    }
-    
-
-  }
-  
-}
-
-
-std::vector<std::pair<size_t,int> > 
-SHTrigSumMaker::getPathL1Prescales_(const std::string& pathName)const
-{
-  std::vector<std::pair<size_t,int> > retVal;
-  
-  auto pathL1Seeds =  std::find(pathsL1Seeds_.begin(),
-				pathsL1Seeds_.end(),pathName); 
-
-  if(pathL1Seeds!=pathsL1Seeds_.end()){
-    for(size_t bitNr : pathL1Seeds->seeds()){
-      int prescale=-1;
-      if(bitNr<l1Prescales_.size()) prescale=l1Prescales_[bitNr];
-      else LogErr<<" L1 bit "<<bitNr<<" out of range (max = "<<l1Prescales_.size()<<" )"<<std::endl;
-      retVal.push_back(std::pair<size_t,int>(bitNr,prescale));
-    }
-  }
-  return retVal;
-}
-
-
-std::vector<size_t> SHTrigSumMaker::getL1Seeds_(const std::string& pathName,
-						const std::vector<std::string>& l1Names,
-						const HLTConfigProvider& hltConfig)const
-{
-  std::vector<size_t> retVal;
-  if(!hltConfig.inited()) return retVal;
+  if(!hltConfig.inited() || pathNr>=hltConfig.hltL1TSeeds().size()) return std::vector<std::string>();
   
   //  std::cout <<"getting L1 seeds"<<std::endl;
-  auto l1SeedMods = hltConfig.hltL1TSeeds(pathName);
+  auto l1SeedMods = hltConfig.hltL1TSeeds(pathNr);
   //  std::cout <<"got l1 seed mods"<<std::endl;
   if(l1SeedMods.size()!=1) {
     if(!l1SeedMods.empty() && pathName.find("HLT_Mu3_PFJet40_v")==std::string::npos) LogErr<<pathName<<" has more than 1 L1GTSeed "<<l1SeedMods.size()<<std::endl;
-    return retVal;
+    return std::vector<std::string>();
   }
   //std::cout <<"seed mode "<<l1SeedMods[0]<<std::endl;
-  auto seedNames = splitL1SeedExpr_(l1SeedMods[0]);
-  if(seedNames.size()>kMaxNrL1SeedsToStore_) return retVal;
-  
-  for(auto& l1SeedName : seedNames){
-    size_t bitNr=std::distance(l1Names.begin(),std::find(l1Names.begin(),l1Names.end(),l1SeedName));
-    //   std::cout <<"name "<<l1SeedName<<" "<<bitNr<<std::endl;
-    retVal.push_back(bitNr);
-  }
-  return retVal;
-  
+  return splitL1SeedExpr_(l1SeedMods[0]);
 }
-				 
-				 
-void SHTrigSumMaker::updateCacheMenuChange_(const edm::Event& edmEvent, 
-					    const edm::EventSetup& edmEventSetup, 
-					    HLTPrescaleProvider& hltPSProv)
-{
-  //std::cout <<"duming paths"<<std::endl;
-  auto& hltConfig  = hltPSProv.hltConfigProvider();
+ 
   
-  pathsL1Seeds_.clear();
-  pathsL1Seeds_.reserve(hltConfig.triggerNames().size());
-  const std::vector<std::string>& l1Names = menuMgr_.get(hltConfig.tableName(),hltConfig.processName()).l1Names();
-  
-  for(auto& pathName : hltConfig.triggerNames()  ){
-    //std::cout <<"path "<<pathName<<std::endl;
-    pathsL1Seeds_.emplace_back(PathL1Seeds(rmTrigVersionFromName(pathName),
-					   getL1Seeds_(pathName,l1Names,hltConfig)
-					   )); //name + seeds;
-  }
-  updateCacheRunChange_(edmEvent,edmEventSetup,hltPSProv);
-
-}
-
+				 
+			       
 void SHTrigSumMaker::updateCacheRunChange_(const edm::Event& edmEvent,
 					   const edm::EventSetup& edmEventSetup, 
 					   HLTPrescaleProvider& hltPSProv)
 {
-  //l1PreScaleTbl currently out of action (grr l1)
-  l1PreScaleTbl_.clear();
-  //  l1PreScaleTbl_.reserve(l1Names);
-  // for(auto& l1Name : l1Names){
- 
+  
   updateCacheLumiChange_(edmEvent,edmEventSetup,hltPSProv);
   
 }
@@ -427,13 +389,6 @@ void SHTrigSumMaker::updateCacheLumiChange_(const edm::Event& edmEvent,
 					    HLTPrescaleProvider& hltPSProv)
 {
   currPSColumn_= hltPSProv.prescaleSet(edmEvent,edmEventSetup);
-  auto& l1Util = const_cast<l1t::L1TGlobalUtil&>(hltPSProv.l1tGlobalUtil()); //because of silly L1 const issues
-  
-  l1Prescales_.clear();
-  l1Prescales_.reserve(l1Util.prescales().size());
-  for(auto& ps : l1Util.prescales()){
-    l1Prescales_.push_back(ps.second);
-  }
 }
 
 #include <boost/regex.hpp>

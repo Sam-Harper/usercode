@@ -5,9 +5,10 @@
 //its the second gen version of this call, the orginal was not great...
 
 #include "SHarper/SHNtupliser/interface/SHTrigObj.hh"
-#include "SHarper/SHNtupliser/interface/SHTrigResult.hh"
-#include "SHarper/SHNtupliser/interface/SHBitsDef.hh"
+#include "SHarper/SHNtupliser/interface/SHL1Menu.hh"
+#include "SHarper/SHNtupliser/interface/SHHLTMenu.hh"
 #include "SHarper/SHNtupliser/interface/SHL1Result.hh"
+#include "SHarper/SHNtupliser/interface/SHTrigResult.hh"
 
 #include <vector>
 #include <string>
@@ -47,39 +48,45 @@ private:
   //event level quantities
   int preScaleColumn_; 
   std::vector<SHTrigObj> trigObjs_; //to seperate by type or not, hmm
-  std::vector<SHTrigResult> trigResults_;
-  std::vector<SHL1Result> l1Results_;
+  TBits l1Result_;
+  TBits hltResult_;
+
 
   //menu level quantities
   std::string menuName_; //menu name in confdb
   std::string processName_;
-  std::string globalTag_;
-  SHBitsDef pathBitsDef_;
-  SHBitsDef filterBitsDef_; 
-  std::vector<std::string> l1Names_;//l1 names are different as they are non-unique (many empty ones) but correspond to a fixed bit, there will be 128 for S1, 512 for S2
-
+  std::string l1MenuName_; //l1 menu name
+  
+  const SHL1Menu* l1Menu_; //! we do not own this object
+  const SHHLTMenu* hltMenu_; //! we do not own this object
+  
   //null results
+  static const SHL1Result nullL1Result_;//! 
   static const SHTrigResult nullTrigResult_;//! 
   static const SHTrigObj nullTrigObj_;//!
+  static const SHBitsDef nullBitsDef_;//!
+
 
 public:
 
-  SHTrigSummary():preScaleColumn_(-1){}
+  SHTrigSummary():preScaleColumn_(-1),l1Menu_(nullptr),hltMenu_(nullptr){}
   virtual ~SHTrigSummary(){}
  
   const std::vector<SHTrigObj>& trigObjs()const{return trigObjs_;}
   //this function is mainly to be able to add in trigf objs debug  info, may go
   std::vector<SHTrigObj>& trigObjs(){return trigObjs_;}
-  const std::vector<SHTrigResult>& trigResults()const{return trigResults_;}
-  const std::vector<SHL1Result>& l1Results()const{return l1Results_;}
 
+  const std::string& l1MenuName()const{return l1MenuName_;}
   const std::string& menuName()const{return menuName_;}
   const std::string& processName()const{return processName_;}
-  const std::string& globalTag()const{return globalTag_;}
   int preScaleColumn()const{return preScaleColumn_;}
 
+  const SHL1Menu* l1Menu()const{return l1Menu_;}
+  const SHHLTMenu* hltMenu()const{return hltMenu_;}
+
   //we shall see if these stay here or migrate to an seperate class
-  const SHTrigResult& getTrig(const std::string& trigName)const;
+  SHL1Result getL1Trig(const std::string& trigName)const;
+  SHTrigResult getTrig(const std::string& trigName)const;
   const SHTrigObj& getTrigObj(const std::string& trigName,float eta,float phi,float maxDR=SHTrigObj::kStdMaxDR)const;
   const SHTrigObj& getTrigObj(const std::vector<std::string>& trigNames,float eta,float phi,float maxDR=SHTrigObj::kStdMaxDR)const;
   std::vector<const SHTrigObj*> getTrigObjs(const std::string& trigName)const;
@@ -93,9 +100,7 @@ public:
   //this function is mainly to be able to add in the trigger objects debug info, may go
   std::vector<SHTrigObj*> getTrigObjs(float eta,float phi,int type,float maxDR=SHTrigObj::kStdMaxDR);
 
-  const SHBitsDef& pathBitsDef()const{return pathBitsDef_;}
-  const SHBitsDef& filterBitsDef()const{return filterBitsDef_;}
-  const std::vector<std::string>& l1Names()const{return l1Names_;}
+  const SHBitsDef& filterBitsDef()const{return hltMenu_ ? hltMenu_->filterBitsDef() : nullBitsDef_;}
 
   void print()const;
   void printTrigs()const;
@@ -105,19 +110,18 @@ public:
   void clearMenuData();
   void clearAll(){clearEvent();clearMenu();}
 
-  void setMenuName(const std::string& name){menuName_=name;}
-  void setGlobalTag(const std::string& name){globalTag_=name;}
-  void setProcessName(const std::string& name){processName_=name;}
+  void setL1MenuName(std::string name){l1MenuName_=std::move(name);}
+  void setMenuName(std::string name){menuName_=std::move(name);}
+  void setProcessName(std::string name){processName_=std::move(name);}
   void setPreScaleColumn(int val){preScaleColumn_=val;}
-  template <typename T> void setPathBitsDef(const T& bitNames){pathBitsDef_.setBitsDef(bitNames);}
-  template <typename T> void setFilterBitsDef(const T& bitNames){filterBitsDef_.setBitsDef(bitNames);}
-  void setL1Names(std::vector<std::string> l1Names){l1Names_=std::move(l1Names);}
-  void addL1Result(const SHL1Result& result);
   void addTrigObj(const SHTrigObj& obj){trigObjs_.push_back(obj);}
-  void addTrigResult(const SHTrigResult& result){trigResults_.push_back(result);}
+  void setL1Result(const TBits& result){l1Result_=result;}
+  void setHLTResult(const TBits& result){hltResult_=result;}
+  void setL1Menu(const SHL1Menu* menu){l1Menu_=menu;}
+  void setHLTMenu(const SHHLTMenu* menu){hltMenu_=menu;}
   void sort();
 
-  ClassDef(SHTrigSummary,1)
+  ClassDef(SHTrigSummary,2)
 };
 
 
