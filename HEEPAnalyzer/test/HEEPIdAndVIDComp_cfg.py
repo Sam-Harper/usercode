@@ -92,7 +92,7 @@ switchOnVIDElectronIdProducer(process, dataFormat)
 
 # define which IDs we want to produce
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
-                # 'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV61_cff']
+              
 
 #add them to the VID producer
 for idmod in my_id_modules:
@@ -104,46 +104,12 @@ process.heepIdVIDComp = cms.EDAnalyzer("HEEPIdAndVIDComp",
                                        genPartLabel=cms.InputTag("genParticles"),
                                        heepId=cms.InputTag("heepId"),
                                        vid=cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70")
-#                                       vid=cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV61")
                                        )
 
 
 
+process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
 
-process.heepIDVarValueMaps = cms.EDProducer("ElectronHEEPIDValueMapProducer",
-                                            ebRecHits=cms.InputTag("reducedEcalRecHitsEB"),
-                                            eeRecHits=cms.InputTag("reducedEcalRecHitsEB"),
-                                            beamSpot=cms.InputTag("offlineBeamSpot"),
-                                            cands=cms.VInputTag("packedCandidates",
-                                                                "lostTracks"),
-                                            eles=cms.InputTag("gedGsfElectrons"),
-                                            trkIsoConfig= cms.PSet(
-                                               barrelCuts=cms.PSet(
-                                                  minPt=cms.double(1.0),
-                                                  maxDR=cms.double(0.3),
-                                                  minDR=cms.double(0.0),
-                                                  minDEta=cms.double(0.005),
-                                                  maxDZ=cms.double(0.1),
-                                                  maxDPtPt=cms.double(-1),
-                                                  minHits=cms.int32(8),
-                                                  minPixelHits=cms.int32(1),
-                                                  allowedQualities=cms.vstring(),
-                                                  algosToReject=cms.vstring()
-                                               ),
-                                               endcapCuts=cms.PSet(
-                                                  minPt=cms.double(1.0),
-                                                  maxDR=cms.double(0.3),
-                                                  minDR=cms.double(0.0),
-                                                  minDEta=cms.double(0.005),
-                                                  maxDZ=cms.double(0.5),
-                                                  maxDPtPt=cms.double(-1),
-                                                  minHits=cms.int32(8),
-                                                  minPixelHits=cms.int32(1),
-                                                  allowedQualities=cms.vstring(),
-                                                  algosToReject=cms.vstring()
-                                               )
-                                            )
-)
 if useAOD==False:
     process.heepId.verticesTag=cms.InputTag("offlineSlimmedPrimaryVertices")
     process.heepId.eleLabel=cms.InputTag("slimmedElectrons")
@@ -167,17 +133,7 @@ process.p = cms.Path(
 if useAOD:
     process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 
-
-    process.packedCandsForTkIso = cms.EDProducer("PATPackedCandsForTkIso",
-                                                 pfCands = cms.InputTag("particleFlow"),  
-                                                 tracks = cms.InputTag("generalTracks"),
-                                                 vertices = cms.InputTag("offlinePrimaryVertices"),
-                                                 vertAsso = cms.InputTag("primaryVertexAssociation","original"),
-                                                 vertAssoQual = cms.InputTag("primaryVertexAssociation","original"),            
-                                                 minPt = cms.double(1.0),
-                                                 minHits = cms.int32(8),
-                                                 minPixelHits = cms.int32(1)
-                                                 )
+    process.load("PhysicsTools.PatAlgos.slimming.packedCandidatesForTrkIso_cfi")
     process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
     process.p.insert(0,process.primaryVertexAssociation)
     process.p.insert(1,process.packedCandsForTkIso)
