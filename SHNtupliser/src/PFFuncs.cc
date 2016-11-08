@@ -174,8 +174,8 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 	if(pfCandVtx==-1 || pfCandVtx==0){
 	
 	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
-	  shPFCand.setVertex(0,0,0);
-	  //shPFCand.setVertex(pfCandVtx->x(),pfCandVtx->y(),pfCandVtx->z());
+	  //shPFCand.setVertex(0,0,0);
+	  shPFCand.setVertex(pfParticle.vx(),pfParticle.vy(),pfParticle.vz());
 	}
       }
     }	 
