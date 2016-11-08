@@ -140,18 +140,8 @@ void SHEventHelper::addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)
 //photons have just a H/E<0.5 cut which is fine for our needs
 void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const
 {  
-
-  if(!heepEvent.handles().gsfEle.isValid()) return; //protection when the colleciton doesnt exist
-
-  // const std::vector<heep::Ele>& electrons = heepEvent.heepEles();
-  const auto& electrons = heepEvent.gsfEles();
-
-  // for(auto& ele : electrons){
-  //   const pat::Electron* patEle = static_cast<const pat::Electron*>(&ele);
-  //   std::cout <<typeid(ele).name()<<std::endl;
-  //   std::cout <<"trk "<<patEle->pt();
-  //   std::cout <<" "<<patEle->closestCtfTrackRef()->pt()<<std::endl;
-  // }
+  auto& eleHandle = heepEvent.handles().gsfEle;
+  if(!eleHandle.isValid()) return; //protection when the colleciton doesnt exist
 
   const auto& photons = heepEvent.recoPhos();
   
@@ -162,23 +152,23 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
     const reco::SuperCluster& sc = *photons[phoNr].superCluster();
     if(std::find(usedSCs.begin(),usedSCs.end(),&sc)!=usedSCs.end()) continue;//already added this supercluster, skip it...
     usedSCs.push_back(&sc);
-    size_t eleNr = matchToEle(sc,electrons);
-    if(eleNr<electrons.size()) addElectron(heepEvent,shEvent,electrons[eleNr]);
+    size_t eleNr = matchToEle(sc,*eleHandle);
+    if(eleNr<eleHandle->size()) addElectron(heepEvent,shEvent,edm::Ptr<reco::GsfElectron>(eleHandle,eleNr));
     
     else if(sc.energy()*sin(sc.position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,photons[phoNr]);
   }
 }
 
-void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const
+void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const edm::Ptr<reco::GsfElectron>& gsfEle)const
 {
-  shEvent.addElectron(gsfEle);
+  shEvent.addElectron(*gsfEle);
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1); 
   fixTrkIsols_(heepEvent,gsfEle,*shEle);
   setNrSatCrysIn5x5_(heepEvent,*shEle);
   setCutCode_(heepEvent,gsfEle,*shEle);
   //shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
-  fillRecHitClusterMap(*gsfEle.superCluster(),shEvent);
+  fillRecHitClusterMap(*gsfEle->superCluster(),shEvent);
   //MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
  
   // if(shEle->seedId()!=0 && false){
@@ -854,8 +844,13 @@ const std::vector<int> makeSortedVec(std::vector<int> vec)
   return sorted;
 }
 
-void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
+void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const
 {
+  if(heepEvent.handles().eleIsolPtTrksValueMap.isValid()){
+    float trkIso = (*heepEvent.handles().eleIsolPtTrksValueMap)[gsfEle];
+    shEle.setTrkIsol(trkIso,-1.,-1);
+    return;
+  }
   if(!heepEvent.handles().ctfTrack.isValid()){
     shEle.setTrkIsol(-1.,-1.,-1);
     return;
@@ -870,9 +865,9 @@ void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfEle
   float isolPtTrks04=0.;
   int isolNrTrks=0;
   
-  const float gsfTrkEta = gsfEle.gsfTrack()->eta();
-  const float gsfTrkPhi = gsfEle.gsfTrack()->phi();
-  const float gsfTrkVZ = gsfEle.gsfTrack()->vz();
+  const float gsfTrkEta = gsfEle->gsfTrack()->eta();
+  const float gsfTrkPhi = gsfEle->gsfTrack()->phi();
+  const float gsfTrkVZ = gsfEle->gsfTrack()->vz();
   
   for (auto& trk  : heepEvent.ctfTracks()){
     
@@ -895,11 +890,11 @@ void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfEle
 }
 
 
-void SHEventHelper::setCutCode_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const
+void SHEventHelper::setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const
 {
   const heep::Ele* heepEle=nullptr;
   for(auto& ele : heepEvent.heepEles()){
-    if(&ele.gsfEle()==&gsfEle){
+    if(&ele.gsfEle()==&*gsfEle){
       heepEle=&ele;
       break;
     }

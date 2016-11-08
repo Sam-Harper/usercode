@@ -85,7 +85,7 @@ public:
  
   void addEventPara(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)const;
-  void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::GsfElectron& gsfEle)const;
+  void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const edm::Ptr<reco::GsfElectron>& gsfEle)const;
   void addElectron(const heep::Event& heepEvent,SHEvent& shEvent,const reco::Photon& photon)const;
   void addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addPreShowerClusters(const heep::Event& heepEvent, SHEvent& shEvent)const;
@@ -104,8 +104,6 @@ public:
   void addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addPFClusters(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
-  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<reco::GsfElectron>& eles)const;
-  size_t matchToEle(const reco::SuperCluster& superClus,const std::vector<heep::Ele>& eles)const;
   static int getVertexNr(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
   static int getVertexNrClosestZ(const reco::TrackBase& track,const std::vector<reco::Vertex>& vertices);
 
@@ -130,8 +128,8 @@ private:
   void fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE)const;
   void fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const;
   int getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const;
-  void fixTrkIsols_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
-  void setCutCode_(const heep::Event& heepEvent,const reco::GsfElectron& gsfEle,SHElectron& shEle)const;
+  void fixTrkIsols_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const;
+  void setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const;
   void setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const;
   bool isNearEle_(float eta,float phi,const SHEvent& shEvent,const float maxDR)const;
   void fillEcalHitVec_(const EcalRecHitCollection& hitColl,const SHEvent& event)const;

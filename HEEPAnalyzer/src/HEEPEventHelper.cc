@@ -60,6 +60,7 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(pfChargedIsoValEleMapTag_ , conf.getParameter<edm::InputTag>("pfChargedIsoValEleMapTag"),cc);
   getToken_(pfPhotonIsoValEleMapTag_ , conf.getParameter<edm::InputTag>("pfPhotonIsoValEleMapTag"),cc); 
   getToken_(pfNeutralIsoValEleMapTag_ , conf.getParameter<edm::InputTag>("pfNeutralIsoValEleMapTag"),cc); 
+  getToken_(eleIsolPtTrksValueMapTag_ , conf.getParameter<edm::InputTag>("eleIsolPtTrksValueMapTag"),cc); 
   getToken_(pfClustersECALTag_ , conf.getParameter<edm::InputTag>("pfClustersECALTag"),cc);
   getToken_(pfClustersHCALTag_ , conf.getParameter<edm::InputTag>("pfClustersHCALTag"),cc);
   getToken_(gsfEleToPFCandMapTag_ , conf.getParameter<edm::InputTag>("gsfEleToPFCandMapTag"),cc);
@@ -147,6 +148,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(pfChargedIsoValEleMapTag_,handles.pfChargedIsoValEleMap);
   event.getByToken(pfPhotonIsoValEleMapTag_,handles.pfPhotonIsoValEleMap);
   event.getByToken(pfNeutralIsoValEleMapTag_,handles.pfNeutralIsoValEleMap);
+  event.getByToken(eleIsolPtTrksValueMapTag_,handles.eleIsolPtTrksValueMap);
   event.getByToken(pfClustersECALTag_,handles.pfClustersECAL);
   event.getByToken(pfClustersHCALTag_,handles.pfClustersHCAL);
   event.getByToken(gsfEleToPFCandMapTag_,handles.gsfEleToPFCandMap);

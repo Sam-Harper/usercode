@@ -104,6 +104,7 @@ namespace heep {
     edm::Handle<edm::ValueMap<double> > pfChargedIsoValEleMap;
     edm::Handle<edm::ValueMap<double> > pfPhotonIsoValEleMap;
     edm::Handle<edm::ValueMap<double> > pfNeutralIsoValEleMap;
+    edm::Handle<edm::ValueMap<double> > eleIsolPtTrksValueMap;
 
     edm::Handle<std::vector<reco::PFCluster> > pfClustersHCAL;
     edm::Handle<std::vector<reco::PFCluster> > pfClustersECAL;

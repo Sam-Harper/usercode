@@ -76,6 +76,7 @@ namespace heep {
     edm::EDGetTokenT<edm::ValueMap<double>> pfChargedIsoValEleMapTag_;
     edm::EDGetTokenT<edm::ValueMap<double>> pfPhotonIsoValEleMapTag_; 
     edm::EDGetTokenT<edm::ValueMap<double>> pfNeutralIsoValEleMapTag_;
+    edm::EDGetTokenT<edm::ValueMap<double>> eleIsolPtTrksValueMapTag_;
     edm::EDGetTokenT<edm::ValueMap<std::vector<reco::PFCandidateRef>>> gsfEleToPFCandMapTag_;
     edm::EDGetTokenT<std::vector<reco::PFCluster>> pfClustersECALTag_;
     edm::EDGetTokenT<std::vector<reco::PFCluster>> pfClustersHCALTag_;
