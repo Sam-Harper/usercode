@@ -6,6 +6,7 @@
 
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateFwd.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "FWCore/Framework/interface/GenericHandle.h"
 
 #include "SHarper/SHNtupliser/interface/TrigMenuMgr.hh"
@@ -98,21 +99,35 @@ public:
 		     const edm::Event& edmEvent,
 		     const edm::EventSetup& edmEventSetup,
 		     SHTrigSummary& shTrigSum);
-  
-  
+  void makeSHTrigSum(std::vector<pat::TriggerObjectStandAlone>& trigObjs,
+		     const edm::TriggerResults& trigResults,
+		     const edm::TriggerNames& trigNames,
+		     HLTPrescaleProvider& hltPSProv, 
+		     const edm::Event& edmEvent,
+		     const edm::EventSetup& edmEventSetup,
+		     SHTrigSummary& shTrigSum);
+ 
   static int convertToSHTrigType(int cmsswTrigType);
   static std::string rmTrigVersionFromName(std::string trigname);
-
+  static int getTrigTypeFromFilternames(const std::vector<std::string>& names);
+ 
   static void associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
   static void associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum);
   static void associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs);
   
-private:
+private: 
+  void makeSHTrigSumNoFilters_(const edm::TriggerResults& trigResults,
+			       const edm::TriggerNames& trigNames,
+			       HLTPrescaleProvider& hltPSProv, 
+			       const edm::Event& edmEvent,
+			       const edm::EventSetup& edmEventSetup,
+			       SHTrigSummary& shTrigSum);
   void fillMenu_(SHTrigSummary& shTrigSum)const;
   TBits getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const;
   TBits getHLTResult_(const edm::TriggerResults& trigResults)const;			  
   void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum)const;
-
+  void fillSHTrigObjs_(const std::vector<pat::TriggerObjectStandAlone> trigObjs,
+		       SHTrigSummary& shTrigSum)const;
   
   std::vector<std::string> getL1Seeds_(const HLTConfigProvider& hltConfig,const size_t pathNr,
 				       const std::string& pathName)const;

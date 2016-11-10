@@ -37,42 +37,27 @@ void SHTrigSumMaker::makeSHTrigSum(const trigger::TriggerEvent& trigEvt,
 				   SHTrigSummary& shTrigSum)
 				
 {
-  const HLTConfigProvider& hltConfig = hltPSProv.hltConfigProvider();  
-  if(!hltConfig.inited()){
-    throw edm::Exception(edm::errors::LogicError,"Error, HLTConfig is not initialised, this will end poorly");
-  }
-  //tempory L1 menu to work around L1 software issues, we have to invent a name
-  std::string l1MenuName("l1MenuForRun"+std::to_string(edmEvent.id().run()));
-  if(!l1Menu_ || l1Menu_->menuName()!=l1MenuName){
-    std::cout <<"making a new l1 menu"<<std::endl;
-    l1Menu_ = &getL1Menu_(hltConfig,hltPSProv.l1tGlobalUtil(),l1MenuName);
-  }
-  //there is a small potenial bug here if the menu changes but is kept the same name
-  //this can only happen for private production/studies and we will ignore this
-  //we are now forcing a change if the process name changes as well
-  if(!hltMenu_ || 
-     hltConfig.tableName()!=hltMenu_->menuName() || 
-     hltConfig.processName()!=hltMenu_->processName()){
-    std::cout <<"making a new hlt menu"<<std::endl;
-    hltMenu_ = &getHLTMenu_(hltConfig);
-  }
- 
-  if(!lastRunLumi_.sameRun({edmEvent.id().run(),edmEvent.luminosityBlock()}) ){
-    lastRunLumi_={edmEvent.id().run(),edmEvent.luminosityBlock()};
-    updateCacheRunChange_(edmEvent,edmEventSetup,hltPSProv);
-  }else if(!lastRunLumi_.sameLumi({edmEvent.id().run(),edmEvent.luminosityBlock()}) ){
-    lastRunLumi_={edmEvent.id().run(),edmEvent.luminosityBlock()};
-    updateCacheLumiChange_(edmEvent,edmEventSetup,hltPSProv);
-  }
-
-  shTrigSum.clearEvent();
-  shTrigSum.setPreScaleColumn(currPSColumn_); 
-  fillMenu_(shTrigSum);
-  shTrigSum.setL1Result(getL1Result_(hltPSProv.l1tGlobalUtil()));
-  shTrigSum.setHLTResult(getHLTResult_(trigResults));
+  makeSHTrigSumNoFilters_(trigResults,trigNames,hltPSProv,edmEvent,edmEventSetup,shTrigSum);
   fillSHTrigObjs_(trigEvt,shTrigSum);
   shTrigSum.sort();
+  
 }
+
+void SHTrigSumMaker::makeSHTrigSum(std::vector<pat::TriggerObjectStandAlone>& trigObjs,
+				   const edm::TriggerResults& trigResults,
+				   const edm::TriggerNames& trigNames,
+				   HLTPrescaleProvider& hltPSProv, 
+				   const edm::Event& edmEvent,
+				   const edm::EventSetup& edmEventSetup,
+				   SHTrigSummary& shTrigSum)
+				
+{
+  makeSHTrigSumNoFilters_(trigResults,trigNames,hltPSProv,edmEvent,edmEventSetup,shTrigSum);
+  fillSHTrigObjs_(trigObjs,shTrigSum);
+  shTrigSum.sort();
+}
+
+
 
 int SHTrigSumMaker::convertToSHTrigType(int cmsswTrigType) 
 {
@@ -126,6 +111,18 @@ std::string SHTrigSumMaker::rmTrigVersionFromName(std::string pathName)
   return pathName;
 }
 
+//a rather crude function, so far just differentials L1 and HLT filters
+//always E/gamma 
+int SHTrigSumMaker::getTrigTypeFromFilternames(const std::vector<std::string>& names)
+{
+  //check for l1seeds
+  for(auto& name : names){
+    if(name.compare(0,6,"hltL1s")) return SHTrigObj::L1EG;
+  }
+  return SHTrigObj::PHOTON;
+}
+
+
 void SHTrigSumMaker::associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
 {
   if(heepEvent.handles().egHLTCands.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCands,shTrigSum);
@@ -161,6 +158,51 @@ void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const reco::
   
   
 }
+
+
+void SHTrigSumMaker::makeSHTrigSumNoFilters_(const edm::TriggerResults& trigResults,
+					     const edm::TriggerNames& trigNames,
+					     HLTPrescaleProvider& hltPSProv, 
+					     const edm::Event& edmEvent,
+					     const edm::EventSetup& edmEventSetup,
+					     SHTrigSummary& shTrigSum)
+{
+  const HLTConfigProvider& hltConfig = hltPSProv.hltConfigProvider();  
+  if(!hltConfig.inited()){
+    throw edm::Exception(edm::errors::LogicError,"Error, HLTConfig is not initialised, this will end poorly");
+  }
+
+  //tempory L1 menu to work around L1 software issues, we have to invent a name
+  std::string l1MenuName("l1MenuForRun"+std::to_string(edmEvent.id().run()));
+  if(!l1Menu_ || l1Menu_->menuName()!=l1MenuName){
+    std::cout <<"making a new l1 menu"<<std::endl;
+    l1Menu_ = &getL1Menu_(hltConfig,hltPSProv.l1tGlobalUtil(),l1MenuName);
+  }
+  //there is a small potenial bug here if the menu changes but is kept the same name
+  //this can only happen for private production/studies and we will ignore this
+  //we are now forcing a change if the process name changes as well
+  if(!hltMenu_ || 
+     hltConfig.tableName()!=hltMenu_->menuName() || 
+     hltConfig.processName()!=hltMenu_->processName()){
+    std::cout <<"making a new hlt menu"<<std::endl;
+    hltMenu_ = &getHLTMenu_(hltConfig);
+  }
+ 
+  if(!lastRunLumi_.sameRun({edmEvent.id().run(),edmEvent.luminosityBlock()}) ){
+    lastRunLumi_={edmEvent.id().run(),edmEvent.luminosityBlock()};
+    updateCacheRunChange_(edmEvent,edmEventSetup,hltPSProv);
+  }else if(!lastRunLumi_.sameLumi({edmEvent.id().run(),edmEvent.luminosityBlock()}) ){
+    lastRunLumi_={edmEvent.id().run(),edmEvent.luminosityBlock()};
+    updateCacheLumiChange_(edmEvent,edmEventSetup,hltPSProv);
+  }
+
+  shTrigSum.clearEvent();
+  shTrigSum.setPreScaleColumn(currPSColumn_); 
+  fillMenu_(shTrigSum);
+  shTrigSum.setL1Result(getL1Result_(hltPSProv.l1tGlobalUtil()));
+  shTrigSum.setHLTResult(getHLTResult_(trigResults));
+}
+
 
 void SHTrigSumMaker::fillMenu_(SHTrigSummary& shTrigSum)const			       
 {
@@ -353,6 +395,17 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
   }
 }    
 
+
+void SHTrigSumMaker::fillSHTrigObjs_(const std::vector<pat::TriggerObjectStandAlone> trigObjs,
+				     SHTrigSummary& shTrigSum)const
+{
+  for(auto& trigObj : trigObjs){
+    TBits bits = shTrigSum.filterBitsDef().getBits(trigObj.filterLabels());
+    int trigType = getTrigTypeFromFilternames(trigObj.filterLabels());
+    shTrigSum.addTrigObj(SHTrigObj(trigObj.pt(),trigObj.eta(),trigObj.phi(),
+				   trigObj.mass(),trigType,bits));
+  }
+}
 
 std::vector<std::string> 
 SHTrigSumMaker::getL1Seeds_(const HLTConfigProvider& hltConfig,
