@@ -20,7 +20,8 @@ class HEEPV70Example : public edm::EDAnalyzer {
 
 private:
  
-  edm::EDGetTokenT<edm::View<reco::GsfElectron> > eleToken_;
+  edm::EDGetTokenT<edm::View<reco::GsfElectron> > eleAODToken_;
+  edm::EDGetTokenT<edm::View<reco::GsfElectron> > eleMiniAODToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > vidToken_; //VID is versioned ID, is the standard E/gamma ID producer which we have configured for HEEP
   edm::EDGetTokenT<edm::ValueMap<float> > trkIsolMapToken_;
 
@@ -39,7 +40,8 @@ private:
 
 HEEPV70Example::HEEPV70Example(const edm::ParameterSet& iPara)
 {
-  eleToken_=consumes<edm::View<reco::GsfElectron> >(iPara.getParameter<edm::InputTag>("eles"));
+  eleAODToken_=consumes<edm::View<reco::GsfElectron> >(iPara.getParameter<edm::InputTag>("elesAOD"));
+  eleMiniAODToken_=consumes<edm::View<reco::GsfElectron> >(iPara.getParameter<edm::InputTag>("elesMiniAOD"));
   vidToken_=consumes<edm::ValueMap<bool> >(iPara.getParameter<edm::InputTag>("vid"));
   trkIsolMapToken_=consumes<edm::ValueMap<float> >(iPara.getParameter<edm::InputTag>("trkIsolMap"));
   
@@ -60,7 +62,8 @@ void HEEPV70Example::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
   edm::Handle<edm::ValueMap<bool> > vid;
   edm::Handle<edm::ValueMap<float> > trkIsolMap;
 
-  iEvent.getByToken(eleToken_,eleHandle);
+  iEvent.getByToken(eleAODToken_,eleHandle);
+  if(!eleHandle.isValid()) iEvent.getByToken(eleMiniAODToken_,eleHandle);
   iEvent.getByToken(vidToken_,vid);
   iEvent.getByToken(trkIsolMapToken_,trkIsolMap);
 
