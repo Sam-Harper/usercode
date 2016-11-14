@@ -69,7 +69,7 @@ void HEEPV70Example::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
    
     bool passHEEPV70=(*vid)[elePtr]; //passHEEPV70 = true, passes HEEP V7.0
     float trkIsol=(*trkIsolMap)[elePtr];
-    std::cout <<"ele "<<elePtr->et()<<" "<<elePtr->eta()<<" "<<elePtr->phi()<<" trk isol: "<<trkIsol<<" pass HEEP V7.0"<<passHEEPV70<<std::endl;
+    std::cout <<"ele "<<elePtr->et()<<" "<<elePtr->eta()<<" "<<elePtr->phi()<<" trk isol: "<<trkIsol<<" pass HEEP V7.0 "<<passHEEPV70<<std::endl;
   }
 }
 
