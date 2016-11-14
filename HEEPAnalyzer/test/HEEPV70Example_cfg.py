@@ -56,7 +56,7 @@ for idmod in my_id_modules:
 #this is our example analysis module reading the results
 process.heepIdVIDComp = cms.EDAnalyzer("HEEPV70Example",
                                        eles=cms.InputTag("gedGsfElectrons"),
-                                       trkIsolMap=cms.InputTag("heepIdVarValueMaps","eleTrkPtIsol"),
+                                       trkIsolMap=cms.InputTag("heepIDVarValueMaps","eleTrkPtIso"),
                                        vid=cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70")
                                        )
 
