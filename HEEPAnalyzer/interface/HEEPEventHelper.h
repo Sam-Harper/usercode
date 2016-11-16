@@ -61,7 +61,9 @@ namespace heep {
     edm::EDGetTokenT<reco::PreshowerClusterCollection> preShowerClusterYTag_;
     edm::EDGetTokenT<reco::TrackCollection> ctfTrackTag_;
     edm::EDGetTokenT<reco::GenParticleCollection> genParticleTag_;
+    edm::EDGetTokenT<std::vector<pat::PackedGenParticle> > packedGenParticleTag_;
     edm::EDGetTokenT<trigger::TriggerEvent> trigEventTag_;  
+    edm::EDGetTokenT<std::vector<pat::TriggerObjectStandAlone> > patTrigObjsTag_;
     edm::EDGetTokenT<edm::TriggerResults> trigResultsTag_;
     edm::EDGetTokenT<GenEventInfoProduct> genEventInfoTag_;
     edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileUpMCInfoTag_;
@@ -76,7 +78,7 @@ namespace heep {
     edm::EDGetTokenT<edm::ValueMap<double>> pfChargedIsoValEleMapTag_;
     edm::EDGetTokenT<edm::ValueMap<double>> pfPhotonIsoValEleMapTag_; 
     edm::EDGetTokenT<edm::ValueMap<double>> pfNeutralIsoValEleMapTag_;
-    edm::EDGetTokenT<edm::ValueMap<double>> eleIsolPtTrksValueMapTag_;
+    edm::EDGetTokenT<edm::ValueMap<float>> eleIsolPtTrksValueMapTag_;
     edm::EDGetTokenT<edm::ValueMap<std::vector<reco::PFCandidateRef>>> gsfEleToPFCandMapTag_;
     edm::EDGetTokenT<std::vector<reco::PFCluster>> pfClustersECALTag_;
     edm::EDGetTokenT<std::vector<reco::PFCluster>> pfClustersHCALTag_;

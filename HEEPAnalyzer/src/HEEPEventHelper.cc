@@ -45,7 +45,9 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(pfCandidateTag_ , conf.getParameter<edm::InputTag>("pfCandidateTag"),cc);
   getToken_(ctfTrackTag_ , conf.getParameter<edm::InputTag>("ctfTrackTag"),cc);
   getToken_(genParticleTag_ , conf.getParameter<edm::InputTag>("genParticleTag"),cc);
+  getToken_(packedGenParticleTag_ , conf.getParameter<edm::InputTag>("packedGenParticleTag"),cc);
   getToken_(trigEventTag_ , conf.getParameter<edm::InputTag>("trigEventTag"),cc);
+  getToken_(patTrigObjsTag_, conf.getParameter<edm::InputTag>("patTrigObjsTag"),cc);
   getToken_(trigResultsTag_ ,conf.getParameter<edm::InputTag>("trigResultsTag"),cc);
   getToken_(genEventInfoTag_ , conf.getParameter<edm::InputTag>("genEventInfoTag"),cc);
   getToken_(pileUpMCInfoTag_ , conf.getParameter<edm::InputTag>("pileUpMCInfoTag"),cc);
@@ -133,7 +135,9 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(preShowerClusterYTag_,handles.preShowerClusY); 
   event.getByToken(ctfTrackTag_,handles.ctfTrack);
   event.getByToken(genParticleTag_,handles.genParticle);
+  event.getByToken(packedGenParticleTag_,handles.packedGenParticle);
   event.getByToken(trigEventTag_,handles.trigEvent);
+  event.getByToken(patTrigObjsTag_,handles.patTrigObjs);
   event.getByToken(trigResultsTag_,handles.trigResults);
   event.getByToken(genEventInfoTag_,handles.genEventInfo);  
   event.getByToken(pileUpMCInfoTag_,handles.pileUpMCInfo);

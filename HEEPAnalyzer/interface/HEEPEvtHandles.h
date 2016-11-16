@@ -57,6 +57,8 @@
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h" 
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h" 
 namespace heep {
   struct EvtHandles { 
   public:   
@@ -86,7 +88,9 @@ namespace heep {
     edm::Handle<edm::View<reco::Photon> > recoPho;
     edm::Handle<reco::TrackCollection> ctfTrack;
     edm::Handle<reco::GenParticleCollection> genParticle;
+    edm::Handle<std::vector<pat::PackedGenParticle> > packedGenParticle;
     edm::Handle<trigger::TriggerEvent> trigEvent;
+    edm::Handle<std::vector<pat::TriggerObjectStandAlone> > patTrigObjs;
     edm::Handle<trigger::TriggerObjectCollection> trigObjColl;
     edm::Handle<edm::TriggerResults> trigResults;
     edm::Handle<GenEventInfoProduct> genEventInfo;
@@ -104,7 +108,7 @@ namespace heep {
     edm::Handle<edm::ValueMap<double> > pfChargedIsoValEleMap;
     edm::Handle<edm::ValueMap<double> > pfPhotonIsoValEleMap;
     edm::Handle<edm::ValueMap<double> > pfNeutralIsoValEleMap;
-    edm::Handle<edm::ValueMap<double> > eleIsolPtTrksValueMap;
+    edm::Handle<edm::ValueMap<float> > eleIsolPtTrksValueMap;
 
     edm::Handle<std::vector<reco::PFCluster> > pfClustersHCAL;
     edm::Handle<std::vector<reco::PFCluster> > pfClustersECAL;
