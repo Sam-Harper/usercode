@@ -11,9 +11,8 @@
 
 void SHTrigSumMaker::makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
 {
-  if(heepEvent.handles().trigEvent.isValid()){
-    const trigger::TriggerEvent& trigEvt = heepEvent.triggerEvent();
-    
+  if(heepEvent.handles().trigResults.isValid()){
+
     const edm::TriggerResults& trigResults = *heepEvent.handles().trigResults;
     const edm::TriggerNames& trigNames = heepEvent.event().triggerNames(trigResults);  
 
@@ -21,9 +20,15 @@ void SHTrigSumMaker::makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& s
        throw edm::Exception(edm::errors::LogicError,"Error, HLTPrescaleProvider is null, this will end poorly");
     }
     
-    makeSHTrigSum(trigEvt,trigResults,trigNames,
-		  *heepEvent.hltPSProv(),heepEvent.event(),heepEvent.eventSetup(),
-		  shTrigSum);
+    makeSHTrigSumNoFilters_(trigResults,trigNames,*heepEvent.hltPSProv(),heepEvent.event(),heepEvent.eventSetup(),
+			    shTrigSum);
+    
+    if(heepEvent.handles().trigEvent.isValid()){
+      fillSHTrigObjs_(heepEvent.triggerEvent(),shTrigSum);
+    }else if(heepEvent.handles().patTrigObjs.isValid()){
+      fillSHTrigObjs_(*heepEvent.handles().patTrigObjs,shTrigSum);
+    }
+    shTrigSum.sort();
   }
 }
 
@@ -396,7 +401,7 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
 }    
 
 
-void SHTrigSumMaker::fillSHTrigObjs_(const std::vector<pat::TriggerObjectStandAlone> trigObjs,
+void SHTrigSumMaker::fillSHTrigObjs_(const std::vector<pat::TriggerObjectStandAlone>& trigObjs,
 				     SHTrigSummary& shTrigSum)const
 {
   for(auto& trigObj : trigObjs){

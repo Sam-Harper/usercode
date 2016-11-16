@@ -9,7 +9,14 @@ process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),
-                        #    eventsToProcess = cms.untracked.VEventRange("1:1484800-1:1484810"),
+#                            eventsToProcess = cms.untracked.VEventRange("1:62978-1:62978")  
+                     #       eventsToProcess = cms.untracked.VEventRange("1:23867-1:23867"),
+#                            eventsToProcess = cms.untracked.VEventRange("1:23525-1:23525"),
+#                            eventsToProcess = cms.untracked.VEventRange("1:21289-1:21289"),
+#                            eventsToProcess = cms.untracked.VEventRange("1:19812-1:19812")
+                                                                      #  "1:20628-1:20628",
+                                                                      #  "1:20994-1:20994",
+                                                                      #  "1:21280-1:21280")
 #                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
                              )
 if isCrabJob:
@@ -20,7 +27,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=102
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -75,7 +82,7 @@ process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
-
+process.shNtupliser.addTrigSum = True
 
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
@@ -161,20 +168,57 @@ if process.shNtupliser.datasetCode.value() in [321,322]:
     process.shNtupliser.addMCParts = False
     
 
-if isCrabJob and process.shNtupliser.datasetCode.value()>10:
+if isCrabJob and process.shNtupliser.datasetCode.value()>131:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
+process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
 
 if useMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
+   
 
 process.p = cms.Path(#process.primaryVertexFilter*
 #    process.egammaFilter*
+    process.heepIDVarValueMaps*
     process.shNtupliser)
         
-if not isMC:
+if isMC==False:
     process.p.insert(0,process.skimHLTFilter)
+
+if useMiniAOD==False:
+
+    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+    process.load("PhysicsTools.PatAlgos.slimming.packedCandidatesForTrkIso_cfi")
+    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
+ 
+    process.p.insert(0,process.primaryVertexAssociation)
+    process.p.insert(1,process.packedCandsForTkIso)
+   
+ #   process.secVertSeq = cms.Sequence(
+  #      process.tightinclusiveCandidateVertexFinder*
+  #      process.tightcandidateVertexMerger*
+   #     process.tightcandidateVertexArbitrator*
+    #    process.inclusiveCandidateSecondaryVertices*
+     #
+     #   process.tightinclusiveCandidateVertexFinderCvsL
+     #   process.tightcandidateVertexMergerCvsL
+     #   process.tightcandidateVertexArbitratorCvsL
+      #  process.inclusiveCandidateSecondaryVerticesCvsL
+    
 
 #import FWCore.PythonUtilities.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
+
+#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+#    compressionAlgorithm = cms.untracked.string('LZMA'),
+#    compressionLevel = cms.untracked.int32(4),
+#    dataset = cms.untracked.PSet(
+#        dataTier = cms.untracked.string('AODSIM'),
+#        filterName = cms.untracked.string('')
+#    ),
+#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+#    fileName = cms.untracked.string('file:outputTestAOD.root'),
+#    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
+#)                                        
+#process.out = cms.EndPath(process.AODSIMoutput)

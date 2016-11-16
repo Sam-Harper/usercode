@@ -126,7 +126,7 @@ private:
   TBits getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const;
   TBits getHLTResult_(const edm::TriggerResults& trigResults)const;			  
   void fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,SHTrigSummary& shTrigSum)const;
-  void fillSHTrigObjs_(const std::vector<pat::TriggerObjectStandAlone> trigObjs,
+  void fillSHTrigObjs_(const std::vector<pat::TriggerObjectStandAlone>& trigObjs,
 		       SHTrigSummary& shTrigSum)const;
   
   std::vector<std::string> getL1Seeds_(const HLTConfigProvider& hltConfig,const size_t pathNr,
