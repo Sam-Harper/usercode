@@ -26,7 +26,7 @@ parser.add_argument('--baseOutDir',help='base output directory',default="mc")
 args = parser.parse_args()
 
 
-inputFiles=["ZToEE_NNPDF30_13TeV-powheg_M_50_120_RunIISpring16DR80-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1_RAWAODSIM.list",
+inputFiles=[
             "ZToEE_NNPDF30_13TeV-powheg_M_120_200_RunIISpring16DR80-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1_RAWAODSIM.list",
             "ZToEE_NNPDF30_13TeV-powheg_M_200_400_RunIISpring16DR80-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1_RAWAODSIM.list",
             "ZToEE_NNPDF30_13TeV-powheg_M_400_800_RunIISpring16DR80-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1_RAWAODSIM.list",
