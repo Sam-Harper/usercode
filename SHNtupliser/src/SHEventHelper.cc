@@ -37,7 +37,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
-
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 SHEventHelper::SHEventHelper():
   isMC_(false),
@@ -218,22 +218,25 @@ void SHEventHelper::addMuons(const heep::Event& heepEvent,SHEvent& shEvent)const
 }
 
 bool SHEventHelper::passMuonId(const reco::Muon& muon,const heep::Event& heepEvent)
-{
-  if(muon.isGlobalMuon() && 
-     muon.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
-     muon.numberOfMatchedStations()>1 &&
-     muon.globalTrack()->hitPattern().numberOfValidPixelHits()>0 && 
-     muon.globalTrack()->hitPattern().trackerLayersWithMeasurement() > 5 ){
-    // reco::TrackRef cktTrackRef = (muon::tevOptimized(muon, 200, 17., 40., 0.25)).first; //53X
-    reco::TrackRef cktTrackRef = (muon::tevOptimized(muon)).first; //60X
-    const reco::Track& cktTrack = *cktTrackRef;
-    const reco::Vertex& vertex = heepEvent.handles().vertices->front();
-    if(cktTrack.ptError()/cktTrack.pt()<0.3 && 
-       fabs(cktTrack.dxy(vertex.position())) < 0.2 &&
-       fabs(cktTrack.dz(vertex.position())) < 0.5) return true;
+{ 
+  const reco::Vertex& vertex = heepEvent.handles().vertices->front();
+  return muon::isHighPtMuon(muon,vertex);
+
+  // if(muon.isGlobalMuon() && 
+  //    muon.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
+  //    muon.numberOfMatchedStations()>1 &&
+  //    muon.globalTrack()->hitPattern().numberOfValidPixelHits()>0 && 
+  //    muon.globalTrack()->hitPattern().trackerLayersWithMeasurement() > 5 ){
+  //   // reco::TrackRef cktTrackRef = (muon::tevOptimized(muon, 200, 17., 40., 0.25)).first; //53X
+  //   reco::TrackRef cktTrackRef = (muon::tevOptimized(muon)).first; //60X
+  //   const reco::Track& cktTrack = *cktTrackRef;
+  //   const reco::Vertex& vertex = heepEvent.handles().vertices->front();
+  //   if(cktTrack.ptError()/cktTrack.pt()<0.3 && 
+  //      fabs(cktTrack.dxy(vertex.position())) < 0.2 &&
+  //      fabs(cktTrack.dz(vertex.position())) < 0.5) return true;
     
-  }
-  return false;
+  // }
+  //return false;
 }
 
 void SHEventHelper::addSuperClusters(const heep::Event& heepEvent, SHEvent& shEvent)const
@@ -477,25 +480,37 @@ SHIsolTrack SHEventHelper::createSHIsolTrack_(const pat::PackedCandidate& cand,
   int vertexNr=-1;
   if(heepEvent.handles().vertices.isValid()) vertexNr = getVertexNr(trk,*heepEvent.handles().vertices);
 
+  // bool debug = std::abs(trk.eta()-1.32041)<0.001;
+  // if(debug){
+  //   std::cout <<"cand "<<cand.pt()<<" "<<cand.eta()<<" "<<cand.phi()<<" id "<<cand.pdgId()<<" ";
+  //   std::cout <<"trk "<<trk.pt()<<" "<<trk.eta()<<" "<<trk.phi()<<" err "<<trk.ptError()<<std::endl;
+  // }
+    
+
   if(std::abs(cand.pdgId())==11){
-    const reco::GsfElectron* ele = matchCandToEle_(cand,heepEvent);
-    if(ele){
-      float trkP = 1./ele->eSuperClusterOverP()  / ele->superCluster()->energy();
-      float trkPt = sin(ele->p4().theta())*trkP;
+    const reco::GsfElectron* ele = matchTrkToEle_(trk,heepEvent);
+    if(ele && ele->gsfTrack().isNonnull()){
       SHIsolTrack isoTrk(cand.pseudoTrack(),vertexNr);
-      isoTrk.setPt(trkPt);
+      // if(debug) std::cout <<"   overrighting trk pt "<<ele->gsfTrack()->pt()<<std::endl;
+      isoTrk.setPt(ele->gsfTrack()->pt());
+      
       return isoTrk;
     }
   }
   return SHIsolTrack(cand.pseudoTrack(),vertexNr);
   
 }
-const reco::GsfElectron* SHEventHelper::matchCandToEle_(const pat::PackedCandidate& cand,
-						  const heep::Event& heepEvent)const
+const reco::GsfElectron* SHEventHelper::matchTrkToEle_(const reco::TrackBase& trk,
+						       const heep::Event& heepEvent)const
 {
   if(heepEvent.handles().gsfEle.isValid()){
-    for(auto& ele : *heepEvent.handles().gsfEle){
-      if(reco::deltaR2(cand.eta(),cand.phi(),ele.eta(),ele.phi())<0.01*0.01){
+    
+    auto match=[](const reco::TrackBase& trk,const reco::GsfElectron& ele){
+      return std::abs(trk.eta()-ele.gsfTrack()->eta())<0.001 &&
+      std::abs(trk.phi()-ele.gsfTrack()->phi())<0.001;// && 
+    };
+    for(auto& ele : *heepEvent.handles().gsfEle){ 
+      if(ele.gsfTrack().isNonnull() && match(trk,ele)) { 
 	return &ele;
       }
     }
@@ -851,6 +866,7 @@ void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const edm::Ptr<rec
     shEle.setTrkIsol(trkIso,-1.,-1);
     return;
   }
+   
   if(!heepEvent.handles().ctfTrack.isValid()){
     shEle.setTrkIsol(-1.,-1.,-1);
     return;
