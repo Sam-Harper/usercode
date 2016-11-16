@@ -4,6 +4,16 @@
 import sys
 import json
 import das_client
+import os
+import pwd
+def x509():
+    "Helper function to get x509 either from env or tmp file"
+    proxy = os.environ.get('X509_USER_PROXY', '')
+    if  not proxy:
+        proxy = '/tmp/x509up_u%s' % pwd.getpwuid( os.getuid() ).pw_uid
+        if  not os.path.isfile(proxy):
+            return ''
+    return proxy
 
 def dasFileQuery(dataset,runnr):
   query   = 'dataset dataset=%s' % dataset
@@ -13,8 +23,8 @@ def dasFileQuery(dataset,runnr):
   limit   = 0                             # unlimited
   debug   = 0                             # default
   thr     = 300                           # default
-  ckey    = ""                            # default
-  cert    = ""                            # default
+  ckey    = x509()                            # default
+  cert    = x509()                            # default
   jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
 
   # check if the pattern matches none, many, or one dataset
@@ -74,8 +84,8 @@ def getFileNames (event):
   limit   = 0                             # unlimited
   debug   = 0                             # default
   thr     = 300                           # default
-  ckey    = ""                            # default
-  cert    = ""                            # default
+  ckey    = x509()                            # default
+  cert    = x509()                            # default
   print "getting file containing run %(run)i lumi %(lumi)i for %(dataset)s" % event
   jsondict = [] #das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
   attemptNr=1
@@ -85,7 +95,7 @@ def getFileNames (event):
     jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
     attemptNr+=1
 
-  
+
   files=[]
   if "data" not in jsondict:
     print "tried ",attempNr," times, failed to reach das, skipping  run=%(run)i lumi=%(lumi)i" % event
@@ -115,8 +125,8 @@ def getLumis(filename):
   limit   = 0                             # unlimited
   debug   = 0                             # default
   thr     = 300                           # default
-  ckey    = ""                            # default
-  cert    = ""                            # default
+  ckey    = x509()                            # default
+  cert    = x509()                            # default
 #    print "getting file containing run %(run)i lumi %(lumi)i for %(dataset)s" % event
   jsondict = [] #das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
   attemptNr=1
