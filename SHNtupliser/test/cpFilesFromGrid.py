@@ -41,16 +41,17 @@ for event in eventList:
 for filename in filesSet:
     fileLumis = sorted(getLumis(filename)[0])
     
-    fileData={'dataset' : args.dataset.split("/")[1],'runnr' : args.runnr,'minLS' : fileLumis[0],'maxLS' : fileLumis[-1]}
+    
+    fileData={'dataset' : args.dataset.replace("/","_").lstrip("_"),'runnr' : args.runnr,'minLS' : fileLumis[0],'maxLS' : fileLumis[-1]  }
     outputFilename = "{d[dataset]}_{d[runnr]}_LS{d[minLS]}to{d[maxLS]}.root".format(d=fileData)
     print fileLumis,filename,outputFilename
     
-    cpArgs=["xrdcp root://cmsxrootd-cms.infn.it/"+filename,args.outputDir.rstrip("/")+"/"+outputFilename]
+    cpArgs="xrdcp root://xrootd-cms.infn.it//"+filename+" "+args.outputDir.rstrip("/")+"/"+outputFilename
 #    fullEOSFilename=str("/eos/cms/tier0/"+filename)
  #   eosCpArgs=['/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select','cp',fullEOSFilename,args.outputDir.rstrip("/")+"/"+outputFilename]
     print cpArgs
     import subprocess
-    out,err = subprocess.Popen(cpArgs,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+    out,err = subprocess.Popen(cpArgs.split(),stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
     print out
     print err
     #for line in err.splitline():
