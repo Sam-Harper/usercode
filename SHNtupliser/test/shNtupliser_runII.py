@@ -9,15 +9,7 @@ process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),
-#                            eventsToProcess = cms.untracked.VEventRange("1:62978-1:62978")  
-                     #       eventsToProcess = cms.untracked.VEventRange("1:23867-1:23867"),
-#                            eventsToProcess = cms.untracked.VEventRange("1:23525-1:23525"),
-#                            eventsToProcess = cms.untracked.VEventRange("1:21289-1:21289"),
-#                            eventsToProcess = cms.untracked.VEventRange("1:19812-1:19812")
-                                                                      #  "1:20628-1:20628",
-                                                                      #  "1:20994-1:20994",
-                                                                      #  "1:21280-1:21280")
-#                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
+
                              )
 if isCrabJob:
     datasetCode=DATASETCODE
@@ -27,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=0
+#    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -195,16 +187,6 @@ if useMiniAOD==False:
     process.p.insert(0,process.primaryVertexAssociation)
     process.p.insert(1,process.packedCandsForTkIso)
    
- #   process.secVertSeq = cms.Sequence(
-  #      process.tightinclusiveCandidateVertexFinder*
-  #      process.tightcandidateVertexMerger*
-   #     process.tightcandidateVertexArbitrator*
-    #    process.inclusiveCandidateSecondaryVertices*
-     #
-     #   process.tightinclusiveCandidateVertexFinderCvsL
-     #   process.tightcandidateVertexMergerCvsL
-     #   process.tightcandidateVertexArbitratorCvsL
-      #  process.inclusiveCandidateSecondaryVerticesCvsL
     
 
 #import FWCore.PythonUtilities.LumiList as LumiList

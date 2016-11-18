@@ -10,24 +10,6 @@ process = cms.Process("HEEP")
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),  
 
-                      #      eventsToProcess = cms.untracked.VEventRange("1:43530-1:43530")
-#                            eventsToProcess = cms.untracked.VEventRange("1:36531-1:36531")
-                    #        eventsToProcess = cms.untracked.VEventRange("1:23867-1:23867"),
-#                            eventsToProcess = cms.untracked.VEventRange("1:21289-1:21289"),
-
-#                            eventsToProcess = cms.untracked.VEventRange("1:19812-1:19812")
-                                                                   #     "1:20628-1:20628",
-                                                                 #       "1:20994-1:20994",
-                                                                 #       "1:21280-1:21280")
-               #             eventsToProcess = cms.untracked.VEventRange("1:1657-1:1657",
-                       #                                                 "1:1672-1:1672",
-                      #                                                  "1:1685-1:1685",
-                      #                                                  "1:1737-1:1737",
-                      #                                                  "1:1735-1:1735",
-#)
-
-                        #    eventsToProcess = cms.untracked.VEventRange("1:1484800-1:1484810"),
-#                            eventsToSkip = cms.untracked.VEventRange("1:1484806-1:1484806")
                             )
 if isCrabJob:
     datasetCode=DATASETCODE
@@ -67,7 +49,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(20000)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -77,7 +59,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 import sys
 
 #CRABHLTNAMEOVERWRITE
-hltName="HLT2"
+hltName="HLT"
 patCandID=""
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
@@ -206,6 +188,12 @@ if useMiniAOD==False:
     process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
     process.p.insert(0,process.primaryVertexAssociation)
     process.p.insert(1,process.packedCandsForTkIso)
+
+
+
+
+
+
 #import FWCore.PythonUtilities.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
 
