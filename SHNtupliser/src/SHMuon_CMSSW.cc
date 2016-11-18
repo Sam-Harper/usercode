@@ -13,7 +13,7 @@ SHMuon::SHMuon(const reco::Muon& mu,const TVector3& beamPoint):
   eta_(p4_.Eta()), //resetting this lower down
   posCharge_(mu.charge()==1),
   type_(mu.type()),
-  normChi2_(mu.globalTrack()->normalizedChi2()),
+  normChi2_(mu.globalTrack().isNonnull() && mu.globalTrack().isAvailable() ? mu.globalTrack()->normalizedChi2() : -1),
   // nrHits_(mu.globalTrack()->hitPattern().numberOfValidMuonHits()), 
   nrHits_(0),
   d0_(-999),
@@ -32,9 +32,11 @@ SHMuon::SHMuon(const reco::Muon& mu,const TVector3& beamPoint):
   }
   //reco::TrackRef cktTrackRef = (muon::tevOptimized(mu, 200., 17., 40., 0.25)).first; // 53X 
   reco::TrackRef cktTrackRef = (muon::tevOptimized(mu)).first; //60X
-  const reco::Track& cktTrack = *cktTrackRef;
-  eta_=cktTrack.eta();
-  p4_.SetPtEtaPhiM(cktTrack.pt(),cktTrack.eta(),cktTrack.phi(),0.1057);
+  if(cktTrackRef.isNonnull() && cktTrackRef.isAvailable()){
+    const reco::Track& cktTrack = *cktTrackRef;
+    eta_=cktTrack.eta();
+    p4_.SetPtEtaPhiM(cktTrack.pt(),cktTrack.eta(),cktTrack.phi(),0.1057);
+  }
 }
 
 SHMuon::MuIsolData::MuIsolData(const reco::MuonIsolation& muIso):

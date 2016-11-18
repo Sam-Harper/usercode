@@ -395,7 +395,7 @@ void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   if(heepEvent.handles().jet.isValid()){
     for(size_t jetNr=0;jetNr<heepEvent.jets().size();jetNr++){
-      if(heepEvent.jets()[jetNr].et()>15) shEvent.addJet(heepEvent.jets()[jetNr]);
+      if(heepEvent.jets()[jetNr].pt()>30) shEvent.addJet(heepEvent.jets()[jetNr]);
     }
   }
 }

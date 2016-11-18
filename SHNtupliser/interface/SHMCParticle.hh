@@ -11,18 +11,25 @@
 class SHMCParticle: public TObject {
 
 private:
+  float pt_;
+  float eta_;
+  float phi_;
+  float mass_;
+  float nrgy_; //only non zero when pt=0
+  float vx_;
+  float vy_;
+  float vz_;
+
   int index_;
   int stdhep_;
   int idhep_;//pdg id 
   int jmo1_;
   int jmo2_;
-  int nrMo_;
-  int jda1_;
+  int nrMo_; 
+  int jda1_; 
   int jda2_;
   int nrDa_;
-  TLorentzVector fourMomentum_;
-  TVector3 pos_;
- 
+  
 public:
   SHMCParticle();
   SHMCParticle(int partIndx,int partStdHep,int partIdHep,
@@ -43,13 +50,17 @@ public:
   int jmo2()const{return jmo2_;}
   int jda1()const{return jda1_;}
   int jda2()const{return jda2_;}
-  const TLorentzVector& p4()const{return fourMomentum_;}
-  double nrgy()const{return fourMomentum_.E();}
-  double mass()const{return fourMomentum_.Mag();}
-  const TVector3& pos()const{return pos_;}
+  TLorentzVector p4()const{TLorentzVector val;
+    if(pt_!=0.) val.SetPtEtaPhiM(pt_,eta_,phi_,mass_);
+    else val.SetXYZT(0,0,std::sqrt(nrgy_*nrgy_-mass_*mass_),nrgy_);
+    return val;
+  }
+  double nrgy()const{return pt_==0. ? nrgy_ :  p4().E();}
+  double mass()const{return mass_;}
+  TVector3 pos()const{TVector3 val(vx_,vy_,vz_);return val;}
   double detEta()const;
   
-  ClassDef(SHMCParticle,2)
+  ClassDef(SHMCParticle,3)
 
 };
 

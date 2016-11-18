@@ -17,74 +17,90 @@ namespace pat{
 class SHJet : public TObject {
 
 private: 
-  TLorentzVector p4_;
-  float hadFrac_;
-  float caloArea_;
-  float maxNrgyInEmTowers_;
-  float maxNrgyInHadTowers_;
-  float hadNrgyInH0_;
-  float hadNrgyInHB_;
-  float hadNrgyInHF_;
-  float hadNrgyInHE_;
-  float emNrgyInEB_;
-  float emNrgyInEE_;
-  float emNrgyInHF_;
-  float jetNrgyScale_; //new for v2
-  float trkCountHighEffBTag_;
-  float trkCountHighPureBTag_;
-  float jetBProbBTag_;
-  float jetProbBTag_;
-  int partonFlavour_; 
-  float neutralHadFrac_; //new for v4, pf id
-  float neutralEmFrac_;
-  float nrConstituents_;
-  float chargedHadFrac_;
-  int chargedMultiplicty_;
-  int muonMultiplicity_;
-  float chargedEmFrac_;
-  float unCorrNrgy_;//is what is used to produce frac quanities
-  int jetType_; //=1 CaloJet, =2 PFJet, forbidden to use outside isCaloJet and isPFJet
+  //kinematic quanities
+  float pt_;
+  float eta_;
+  float phi_;
+  float nrgy_;
+  float invNrgyCorr_;
+
+  //id quanities
+  float neutralHadNrgy_;
+  float neutralEmNrgy_;
+  float chargedHadNrgy_;
+  float chargedEmNrgy_;
+  float muonNrgy_;
+  unsigned char chargedMultiplicity_;
+  unsigned char neutralMultiplicity_;
+
+  //btag
+  float combinedSecVtxBTag_;
+  float combinedMVABTag_;
+  
+  //mc info
+  //in theory only need 4 bits for flavour so wasting 8 bits here
+  //but easier this way
+  signed char partonFlavour_; 
+  signed char hadronFlavour_; 
+
+
+  //constants for storting the flavour and multiplicity info
+  static constexpr unsigned char kMaxMultiplicity_=std::numeric_limits<unsigned char>::max();
+  static constexpr signed char kMinFlavour_=std::numeric_limits<signed char>::min();
+  static constexpr signed char kMaxFlavour_=std::numeric_limits<signed char>::max();
+
+  // //completely internal to SHJet for parton flavour storage
+  // enum class PartonType{   
+  //   NONE=0,ANTIUP,ANTIDOWN,ANTICHARM,ANTISTRANGE,ANTIBOTTOM,ANTITOP,
+  //     UP,DOWN,CHARM,STRANGE,BOTTOM,TOP,GLUON,UNDEFINED;
+  // };
+  
 
 public:
   SHJet();
-  SHJet(const pat::Jet & caloJet); //CMSSW hook
-  SHJet(const SHJet& rhs);
+  SHJet(const pat::Jet & jet); //CMSSW hook
+  SHJet(const SHJet& rhs)=default;
   ~SHJet(){}
   
-  SHJet& operator=(const SHJet& rhs);
+  SHJet& operator=(const SHJet& rhs)=default;
   bool operator==(const SHJet& rhs)const;
   bool operator!=(const SHJet& rhs)const{return !(*this==rhs);}
 
-  const TLorentzVector& p4()const{return p4_;}
-  float et()const{return p4_.Et();}	
-  float etUnCorr()const{return et()/jetNrgyScale_;}
-  float eta()const{return p4_.Eta();}
-  float nrgy()const{return p4_.E();}
-  float hadFrac()const{return hadFrac_;}
-  float caloArea()const{return caloArea_;}
-  float maxNrgyInEmTowers()const{return maxNrgyInEmTowers_;}
-  float maxNrgyInHadTowers()const{return maxNrgyInHadTowers_;}
-  float hadNrgyInH0()const{return hadNrgyInH0_;}
-  float hadNrgyInHB()const{return hadNrgyInHB_;}
-  float hadNrgyInHF()const{return hadNrgyInHF_;}
-  float hadNrgyInHE()const{return hadNrgyInHE_;}
-  float emNrgyInEB()const{return emNrgyInEB_;}
-  float emNrgyInEE()const{return emNrgyInEE_;}
-  float emNrgyInHF()const{return emNrgyInHF_;}
-  float rawHadNrgy()const{return hadNrgyInHB()+hadNrgyInHF()+hadNrgyInHE();}
-  float rawEmNrgy()const{return emNrgyInEB()+emNrgyInEE()+emNrgyInHF();}
-  float rawNrgy()const{return rawHadNrgy()+rawEmNrgy();}
+  TLorentzVector p4()const{TLorentzVector p4;p4.SetPtEtaPhiE(pt_,eta_,phi_,nrgy_);return p4;}
+  float pt()const{return pt_;}	
+  float ptUnCorr()const{return pt()*invNrgyCorr();}
+  float eta()const{return eta_;}
+  float phi()const{return phi_;}
+  float nrgy()const{return nrgy_;}
+  float nrgyUnCorr()const{return nrgy()*invNrgyCorr();}
 
-  float jetNrgyScale()const{return jetNrgyScale_;}
-  void setJetNrgyScale(float scale){jetNrgyScale_=scale;}
-   
-  float trkCountHighEffBTag()const{return trkCountHighEffBTag_;}
-  float trkCountHighPureBTag()const{return trkCountHighPureBTag_;}
-  float jetBProbBTag()const{return jetBProbBTag_;}
-  float jetProbBTag()const{return jetProbBTag_;}
-  int partonFlavour()const{return partonFlavour_;}
+  float invNrgyCorr()const{return invNrgyCorr_;}
+
+  float neutralHadNrgy()const{return neutralHadNrgy_;}
+  float neutralEmNrgy()const{return neutralEmNrgy_;}
+  float chargedHadNrgy()const{return chargedHadNrgy_;}
+  float chargedEmNrgy()const{return chargedEmNrgy_;}
+  float muonNrgy()const{return muonNrgy_;}
   
-  ClassDef(SHJet,5)
+  float neutralHadNrgyFrac()const{return neutralHadNrgy()/nrgyUnCorr();}
+  float neutralEmNrgyFrac()const{return neutralEmNrgy()/nrgyUnCorr();}
+  float chargedHadNrgyFrac()const{return chargedHadNrgy()/nrgyUnCorr();}
+  float chargedEmNrgyFrac()const{return chargedEmNrgy()/nrgyUnCorr();}
+  float muonNrgyFrac()const{return muonNrgy()/nrgyUnCorr();}
+  float hadNrgyFrac()const{return neutralHadNrgyFrac() + chargedHadNrgyFrac();}
+  float emNrgyFrac()const{return neutralEmNrgyFrac() + chargedEmNrgyFrac();}
+
+  unsigned char chargedMultiplicity()const{return chargedMultiplicity_;}
+  unsigned char neutralMultiplicity()const{return neutralMultiplicity_;}
+
+  signed char partonFlavour()const{return partonFlavour_;}
+  signed char hadronFlavour()const{return hadronFlavour_;}
+  
+private:
+  static constexpr unsigned char convertMultiplicity(int val){return val<0 ? kMaxMultiplicity_ : val>kMaxMultiplicity_ ? kMaxMultiplicity_ : val;}
+  static constexpr unsigned char convertFlavour(int val){return val<kMinFlavour_ ? kMinFlavour_ : val>kMaxFlavour_ ? kMaxFlavour_ : val;}
+  
+  ClassDef(SHJet,6)
 
 };
 
