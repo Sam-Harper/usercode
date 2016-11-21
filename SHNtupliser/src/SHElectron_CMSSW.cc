@@ -70,6 +70,7 @@ isolHadDepth2_(ele.dr03HcalDepth2TowerSumEt()),
 isolPtTrks_(ele.dr03TkSumPt()),
 isolNrTrks_(-1), //not really supported anymore
 cutCode_(-1),
+cutCodeVID_(-1),
 e1x5Over5x5_(ele.full5x5_e1x5()/ele.full5x5_e5x5()),
 e2x5Over5x5_(ele.full5x5_e2x5Max()/ele.full5x5_e5x5()),
 isEcalDriven_(ele.ecalDrivenSeed()),
@@ -172,6 +173,7 @@ isolHadDepth2_(pho.hcalDepth2TowerSumEtConeDR03()),
 isolPtTrks_(pho.trkSumPtHollowConeDR03()),
 isolNrTrks_(-1), //not really supported anymore
 cutCode_(-1),
+cutCodeVID_(-1),
 e1x5Over5x5_(pho.full5x5_e1x5()/pho.full5x5_e5x5()),
 e2x5Over5x5_(pho.full5x5_e2x5()/pho.full5x5_e5x5()),
 isEcalDriven_(1),
@@ -279,6 +281,7 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   isolPtTrks_(isol03.tkSumPt),
   isolNrTrks_(-1), //not really supported anymore
   cutCode_(-1),
+  cutCodeVID_(-1),
   e1x5Over5x5_(shape.e1x5/shape.e5x5),
   e2x5Over5x5_(shape.e2x5Max/shape.e5x5),
   isEcalDriven_(1),

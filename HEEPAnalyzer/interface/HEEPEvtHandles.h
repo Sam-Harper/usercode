@@ -116,6 +116,7 @@ namespace heep {
     edm::Handle<edm::ValueMap<std::vector<reco::PFCandidateRef> > > gsfEleToPFCandMap;
     
     edm::Handle<edm::ValueMap<bool> > heepIDVID;
+    edm::Handle<edm::ValueMap<unsigned int> >  heepIDVIDBits;
     edm::Handle<reco::RecoEcalCandidateCollection>  egHLTCands;
     edm::Handle<reco::RecoEcalCandidateCollection>  egHLTCandsUnseeded;
     

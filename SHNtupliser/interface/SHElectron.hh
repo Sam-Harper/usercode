@@ -99,6 +99,7 @@ class SHElectron : public TObject {
   float isolNrTrks_; 
 
   int cutCode_;
+  int cutCodeVID_;
   float e1x5Over5x5_;
   float e2x5Over5x5_;
 
@@ -186,6 +187,7 @@ private:
   void setD0(float d0){d0_=d0;}
   void setNrSatCrysIn5x5(int val){nrSatCrysIn5x5_=val;}
   void setCutCode(int val){cutCode_=val;}
+  void setCutCodeVID(int val){cutCodeVID_=val;}
   // void setIsolMVA(float mva){isolMVA_=mva;}
   // void setCaloIsol(double isolEm,double isolHad,double isolHadDepth1,double isolHadDepth2);
   // void setPFIsol(float charged,float neutral,float photon);
@@ -313,6 +315,7 @@ private:
   std::pair<int,float> isolTrk(double minDeltaR,double maxDeltaR,double lipCut,double ptCut)const;
 
   int cutCode()const{return cutCode_;}
+  int cutCodeVID()const{return cutCodeVID_;}
  
   int calPhiRoad()const;
 
@@ -346,7 +349,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,25) 
+  ClassDef(SHElectron,26) 
 
 };
 

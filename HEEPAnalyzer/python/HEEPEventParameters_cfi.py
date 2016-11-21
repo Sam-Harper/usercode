@@ -76,10 +76,11 @@ heepEventPara  = cms.PSet (
     pfClustersHCALTag = cms.InputTag("particleFlowClusterHCAL"), 
     gsfEleToPFCandMapTag = cms.InputTag("particleBasedIsolation","gedGsfElectrons"),
     heepIDVID = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV70"),
+    heepIDVIDBits = cms.InputTag("egmGsfElectronIDs","heepElectronID-HEEPV70Bitmap"),
     lheEventTag=cms.InputTag("externalLHEProducer"),
     genEvtInfoTag=cms.InputTag("generator"),
-    trkIsoNoJetCoreTag=cms.InputTag(""),
-    nrSatCrysIn5x5Tag=cms.InputTag(""),
+    trkIsoNoJetCoreTag=cms.InputTag("heepIDVarValueMaps","eleTrkPtIso"),
+    nrSatCrysIn5x5Tag=cms.InputTag("heepIDVarValueMaps","eleNrSaturateIn5x5"),
     beamSpotTag=cms.InputTag("offlineBeamSpot")
 )
 

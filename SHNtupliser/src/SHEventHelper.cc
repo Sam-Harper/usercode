@@ -915,9 +915,13 @@ void SHEventHelper::setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco
       break;
     }
   }
-  if(heepEle) shEle.setCutCode(heepEle->cutCode());
-    
+  if(heepEle) shEle.setCutCode(heepEle->cutCode());    
+
+  if(heepEvent.handles().heepIDVIDBits.isValid()){
+    shEle.setCutCodeVID((*heepEvent.handles().heepIDVIDBits)[gsfEle]);
+  }
 }
+
 #include "SHarper/HEEPAnalyzer/interface/HEEPEcalClusterTools.h"
 void SHEventHelper::setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const
 {

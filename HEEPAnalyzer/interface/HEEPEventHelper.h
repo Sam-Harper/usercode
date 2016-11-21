@@ -83,6 +83,7 @@ namespace heep {
     edm::EDGetTokenT<std::vector<reco::PFCluster>> pfClustersECALTag_;
     edm::EDGetTokenT<std::vector<reco::PFCluster>> pfClustersHCALTag_;
     edm::EDGetTokenT<edm::ValueMap<bool>> heepIDVIDTag_;
+    edm::EDGetTokenT<edm::ValueMap<unsigned int>> heepIDVIDBitsTag_;
     edm::EDGetTokenT<reco::RecoEcalCandidateCollection> egHLTCandsTag_;
     edm::EDGetTokenT<reco::RecoEcalCandidateCollection> egHLTCandsUnseededTag_;
     edm::EDGetTokenT<LHEEventProduct> lheEventTag_;
