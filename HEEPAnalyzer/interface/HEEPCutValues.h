@@ -73,7 +73,7 @@ namespace heep {
       return !ele.isEBEtaGap();
     }
     bool passEcalDriven(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      return ele.ecalDrivenSeed();
+      return ele.ecalDriven();
     }
     bool passDEtaIn(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
       const float dEtaInAbs = std::abs(ele.deltaEtaSuperClusterTrackAtVtx());
