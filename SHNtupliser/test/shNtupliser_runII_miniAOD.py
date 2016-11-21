@@ -163,7 +163,7 @@ if process.shNtupliser.datasetCode.value() in [321,322]:
 if isCrabJob and process.shNtupliser.datasetCode.value()>131:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
+process.load("HEEP.IDCode.heepIdVarValueMapProducer_cfi")
 
 if useMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
@@ -184,7 +184,7 @@ if not isMC:
 
 if useMiniAOD==False:
     process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.packedCandidatesForTrkIso_cfi")
+    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
     process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
     process.p.insert(0,process.primaryVertexAssociation)
     process.p.insert(1,process.packedCandsForTkIso)

@@ -1,5 +1,5 @@
 isMC=True
-useMiniAOD=False
+useMiniAOD=True
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -47,7 +47,8 @@ else:
     dataFormat = DataFormat.AOD
 switchOnVIDElectronIdProducer(process, dataFormat)
 # define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
+#my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
+my_id_modules = ['HEEP.IDCode.heepElectronID_HEEPV70_cff']
 #add them to the VID producer
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
@@ -63,7 +64,7 @@ process.heepIdVIDComp = cms.EDAnalyzer("HEEPV70Example",
 
 
 #loads in the the module to make the new track isolation
-process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
+process.load("HEEP.IDCode.heepIdVarValueMapProducer_cfi")
 
 process.p = cms.Path(
     process.heepIDVarValueMaps* #makes the new track isolation
