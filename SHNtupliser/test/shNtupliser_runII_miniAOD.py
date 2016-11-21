@@ -49,7 +49,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20000)
+    input = cms.untracked.int32(-1)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -165,6 +165,21 @@ if isCrabJob and process.shNtupliser.datasetCode.value()>131:
 
 process.load("HEEP.IDCode.heepIdVarValueMapProducer_cfi")
 
+#setup the VID with HEEP 7.0, not necessary if you dont want to use VID
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format  to be
+# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
+if useMiniAOD:
+    switchOnVIDElectronIdProducer(process,DataFormat.MiniAOD)
+else:
+    switchOnVIDElectronIdProducer(process,DataFormat.AOD)
+
+# define which IDs we want to produce and add them to VID
+my_id_modules = ['HEEP.IDCode.heepElectronID_HEEPV70_cff']
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+
+
 if useMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
@@ -177,6 +192,7 @@ if useMiniAOD:
 process.p = cms.Path(#process.primaryVertexFilter*
 #    process.egammaFilter*
     process.heepIDVarValueMaps*
+    process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
         
 if not isMC:
