@@ -110,7 +110,11 @@ public:
   static int convertToSHTrigType(int cmsswTrigType);
   static int convertToSHTrigType(const pat::TriggerObject& trigObj);
   static std::string rmTrigVersionFromName(std::string trigname);
- 
+  static bool isUnseededEG(const trigger::TriggerEvent& trigEvt,size_t trigObjNr);
+  static bool isUnseededEG(const std::string& collName){
+    return collName.compare(0,27,"hltEgammaCandidatesUnseeded")==0;
+  }
+
   static void associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
   static void associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum);
   static void associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs);

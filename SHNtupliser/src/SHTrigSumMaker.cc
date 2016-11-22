@@ -114,7 +114,7 @@ int SHTrigSumMaker::convertToSHTrigType(const pat::TriggerObject& trigObj)
   for(int cmsswType : trigObj.triggerObjectTypes()){
     trigType|=convertToSHTrigType(cmsswType);
   }
-  if(trigObj.collection().compare(0,27,"hltEgammaCandidatesUnseeded")==0)  trigType|=SHTrigObj::EGUNSEEDED;
+  if(isUnseededEG(trigObj.collection()))  trigType|=SHTrigObj::EGUNSEEDED;
      // if(trigObj.hasCollection("hltEgammaCandidatesUnseeded")) trigType&=SHTrigObj::EGUNSEEDED;
   //  std::cout <<trigObj.collection()<<" "<<trigObj.hasCollection("hltEgammaCandidatesUnseeded")<<" "<<trigObj.collection().compare(0,27,"hltEgammaCandidatesUnseeded")<<std::endl;
   return trigType;
@@ -128,6 +128,14 @@ std::string SHTrigSumMaker::rmTrigVersionFromName(std::string pathName)
   return pathName;
 }
 
+bool SHTrigSumMaker::isUnseededEG(const trigger::TriggerEvent& trigEvt,size_t trigObjNr)
+{
+  const trigger::Keys& collKeys = trigEvt.collectionKeys();
+  size_t collNr=0;
+  while(trigObjNr>=collKeys[collNr]) collNr++; 
+  auto& collName = trigEvt.collectionTagEncoded(collNr);
+  return isUnseededEG(collName);
+}
 
 void SHTrigSumMaker::associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
 {
@@ -361,9 +369,11 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
 
   std::vector<std::pair<P4Struct,std::pair<TBits,int> > > shTrigObjsTmp;
   const trigger::TriggerObjectCollection & trigObjs = trigEvt.getObjects();
-  for(auto trigObj : trigObjs){
+  for(auto& trigObj : trigObjs){
+    size_t trigObjNr = shTrigObjsTmp.size();
+    int type = isUnseededEG(trigEvt,trigObjNr) ? SHTrigObj::EGUNSEEDED : 0;
     shTrigObjsTmp.push_back({{trigObj.pt(),trigObj.eta(),trigObj.phi(),trigObj.mass()},
-	  {TBits(),0}});
+	  {TBits(),type}});
   }
 
   for(size_t filterNr=0;filterNr<trigEvt.sizeFilters();filterNr++){
@@ -384,10 +394,7 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
       auto key = trigKeys[objNr];
       auto id = convertToSHTrigType(trigIds[objNr]);
       shTrigObjsTmp[key].second.first.SetBitNumber(bitNr);
-      if(shTrigObjsTmp[key].second.second==0) shTrigObjsTmp[key].second.second=id;
-      else if(shTrigObjsTmp[key].second.second!=id && id!=0){
-	if(verboseLvl_>0) LogErr<<" Error trigger object type for filter "<<trigEvt.filterTag(filterNr).label()<<" was previously type "<<shTrigObjsTmp[key].second.second<<" but is now type "<<id<<" cmss id "<<trigIds[objNr]<<std::endl;
-      }
+      shTrigObjsTmp[key].second.second |=id;
     }
   }
   for(const auto& trigObj : shTrigObjsTmp){
