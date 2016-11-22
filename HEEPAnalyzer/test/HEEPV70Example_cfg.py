@@ -1,5 +1,5 @@
 isMC=True
-useMiniAOD=False
+useMiniAOD=True
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -42,10 +42,10 @@ from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 # turn on VID producer, indicate data format  to be
 # DataFormat.AOD or DataFormat.MiniAOD, as appropriate
 if useMiniAOD:
-    dataFormat = DataFormat.MiniAOD
+    switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
 else:
-    dataFormat = DataFormat.AOD
-switchOnVIDElectronIdProducer(process, dataFormat)
+    switchOnVIDElectronIdProducer(process, DataFormat.AOD)
+
 # define which IDs we want to produce
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
 #add them to the VID producer
@@ -61,24 +61,9 @@ process.heepIdVIDComp = cms.EDAnalyzer("HEEPV70Example",
                                        vid=cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70")
                                        )
 
-
-#loads in the the module to make the new track isolation
-process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
-
 process.p = cms.Path(
-    process.heepIDVarValueMaps* #makes the new track isolation
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.heepIdVIDComp) #our analysing example module, replace with your module
-
-#if we are running AOD, we need to make the packed candidates
-#this sequence makes them
-if useMiniAOD==False:
-    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.packedCandidatesForTrkIso_cfi")
-    process.p.insert(0,process.primaryVertexAssociation)
-    process.p.insert(1,process.packedCandsForTkIso)
-
 
 #dumps the products made for easier debugging
 process.load('Configuration.EventContent.EventContent_cff')
