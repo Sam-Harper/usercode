@@ -108,23 +108,24 @@ int SHTrigSumMaker::convertToSHTrigType(int cmsswTrigType)
   }
 }
 
+int SHTrigSumMaker::convertToSHTrigType(const pat::TriggerObject& trigObj)
+{
+  int trigType=0x0;
+  for(int cmsswType : trigObj.triggerObjectTypes()){
+    trigType|=convertToSHTrigType(cmsswType);
+  }
+  if(trigObj.collection().compare(0,27,"hltEgammaCandidatesUnseeded")==0)  trigType|=SHTrigObj::EGUNSEEDED;
+     // if(trigObj.hasCollection("hltEgammaCandidatesUnseeded")) trigType&=SHTrigObj::EGUNSEEDED;
+  //  std::cout <<trigObj.collection()<<" "<<trigObj.hasCollection("hltEgammaCandidatesUnseeded")<<" "<<trigObj.collection().compare(0,27,"hltEgammaCandidatesUnseeded")<<std::endl;
+  return trigType;
+}
+
 std::string SHTrigSumMaker::rmTrigVersionFromName(std::string pathName)
 {
   size_t versionIndex = pathName.rfind("_v");
   
   if(versionIndex!=std::string::npos) pathName.erase(versionIndex+2);
   return pathName;
-}
-
-//a rather crude function, so far just differentials L1 and HLT filters
-//always E/gamma 
-int SHTrigSumMaker::getTrigTypeFromFilternames(const std::vector<std::string>& names)
-{
-  //check for l1seeds
-  for(auto& name : names){
-    if(name.compare(0,6,"hltL1s")) return SHTrigObj::L1EG;
-  }
-  return SHTrigObj::PHOTON;
 }
 
 
@@ -405,8 +406,9 @@ void SHTrigSumMaker::fillSHTrigObjs_(const std::vector<pat::TriggerObjectStandAl
 				     SHTrigSummary& shTrigSum)const
 {
   for(auto& trigObj : trigObjs){
+    //    std::cout <<trigObj.collection()<<std::endl;
     TBits bits = shTrigSum.filterBitsDef().getBits(trigObj.filterLabels());
-    int trigType = getTrigTypeFromFilternames(trigObj.filterLabels());
+    int trigType = convertToSHTrigType(trigObj);
     shTrigSum.addTrigObj(SHTrigObj(trigObj.pt(),trigObj.eta(),trigObj.phi(),
 				   trigObj.mass(),trigType,bits));
   }

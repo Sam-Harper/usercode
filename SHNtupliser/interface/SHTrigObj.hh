@@ -9,10 +9,10 @@
 class SHTrigObj {
 public:
  
-  enum Type{
+  enum Type{                
     UNDEFINED=0x80000000,
-    PHOTON=0x1,ELECTRON=0x2,EGAMMA=0x3,JET=0x4,TAU=0x8,MUON=0x10,SUM=0x20,MISC=0x40,
-    HLT=0x7F,
+    PHOTON=0x1,ELECTRON=0x2,EGAMMA=0x3,JET=0x4,TAU=0x8,MUON=0x10,SUM=0x20,MISC=0x40,EGUNSEEDED=0x80,//EGUNSEEDED new for V3 (version bump for our book keeping, root doesnt care about this change)
+    HLT=0x7F, //note, the EGUNSEEDED is not included here as it must EGUNSEEDED + TYPE
     L1EGISO=0x100,L1EGNONISO=0x200,L1EG=0x300,L1JET=0x400,L1TAU=0x800,L1MUON=0x1000,L1SUM=0x2000,L1MISC=0x4000,
     L1=0x7F00,
     L1S1EGISO=0x10000,L1S1EGNONISO=0x20000,L1S1EG=0x30000,L1S1JET=0x40000,L1S1TAU=0x80000,L1S1MUON=0x100000,L1S1SUM=0x200000,L1S1MISC=0x400000,
@@ -85,7 +85,7 @@ private:
   //private for now as the vector should always be sorted
   void sort_(){std::sort(vars_.begin(),vars_.end(),VarSorter());}
 
-  ClassDef(SHTrigObj,2)
+  ClassDef(SHTrigObj,3)
 };
 
 
