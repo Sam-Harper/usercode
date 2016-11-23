@@ -85,6 +85,11 @@ process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
+
+if useMiniAOD:
+    from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
+    swapHEEPToMiniAOD(process.shNtupliser)
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
@@ -138,8 +143,8 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     scEtCut=cms.double(-1),
                                     eleTag=process.shNtupliser.gsfEleTag,
                                     phoTag=process.shNtupliser.recoPhoTag,
-                                    superClusEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel"),
-                                    superClusEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower"),
+                                    superClusEBTag = process.shNtupliser.superClusterEBTag,
+                                    superClusEETag = process.shNtupliser.superClusterEETag,
                                     caloTowerTag = cms.InputTag("towerMaker"),
                                     genEvtInfoTag=cms.InputTag("generator"),
                                     requireEcalDriven=cms.bool(True)
@@ -180,17 +185,11 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 
-if useMiniAOD:
-    from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
-    swapHEEPToMiniAOD(process.shNtupliser)
-   # process.heepIDVarValueMaps.eles=cms.InputTag("slimmedElectrons")
-   # process.heepIDVarValueMaps.ebRecHits=cms.InputTag("reducedEgamma","reducedEBRecHits")
-   # process.heepIDVarValueMaps.eeRecHits=cms.InputTag("reducedEgamma","reducedEERecHits")
-  #  process.heepIDVarValueMaps.cands=cms.VInputTag("packedCandsForTkIso",)
 
+ 
 
 process.p = cms.Path(#process.primaryVertexFilter*
-#    process.egammaFilter*
+    process.egammaFilter*
     process.heepIDVarValueMaps*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)

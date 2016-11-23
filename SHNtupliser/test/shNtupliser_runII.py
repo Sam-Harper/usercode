@@ -8,9 +8,9 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(),
+                            fileNames = cms.untracked.vstring(),  
 
-                             )
+                            )
 if isCrabJob:
     datasetCode=DATASETCODE
 else:
@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-#    datasetCode=0
+  #  datasetCode=102
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -68,7 +68,7 @@ process.shNtupliser.sampleWeight = 1
 process.shNtupliser.addMet = True
 process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = False
-process.shNtupliser.applyMuonId = False
+process.shNtupliser.applyMuonId = True
 process.shNtupliser.addCaloTowers = True
 process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
@@ -85,6 +85,11 @@ process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
+
+if useMiniAOD:
+    from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
+    swapHEEPToMiniAOD(process.shNtupliser)
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
@@ -138,8 +143,8 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     scEtCut=cms.double(-1),
                                     eleTag=process.shNtupliser.gsfEleTag,
                                     phoTag=process.shNtupliser.recoPhoTag,
-                                    superClusEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel"),
-                                    superClusEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower"),
+                                    superClusEBTag = process.shNtupliser.superClusterEBTag,
+                                    superClusEETag = process.shNtupliser.superClusterEETag,
                                     caloTowerTag = cms.InputTag("towerMaker"),
                                     genEvtInfoTag=cms.InputTag("generator"),
                                     requireEcalDriven=cms.bool(True)
@@ -163,31 +168,46 @@ if process.shNtupliser.datasetCode.value() in [321,322]:
 if isCrabJob and process.shNtupliser.datasetCode.value()>131:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
+process.load("HEEP.IDCode.heepIdVarValueMapProducer_cfi")
 
+#setup the VID with HEEP 7.0, not necessary if you dont want to use VID
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format  to be
+# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
 if useMiniAOD:
-    from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
-    swapHEEPToMiniAOD(process.shNtupliser)
-   
+    switchOnVIDElectronIdProducer(process,DataFormat.MiniAOD)
+else:
+    switchOnVIDElectronIdProducer(process,DataFormat.AOD)
+
+# define which IDs we want to produce and add them to VID
+my_id_modules = ['HEEP.IDCode.heepElectronID_HEEPV70_cff']
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+
+
+
+ 
 
 process.p = cms.Path(#process.primaryVertexFilter*
-#    process.egammaFilter*
+    process.egammaFilter*
     process.heepIDVarValueMaps*
+    process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
         
-if isMC==False:
+if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
 if useMiniAOD==False:
-
     process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.packedCandidatesForTrkIso_cfi")
+    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
     process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
- 
     process.p.insert(0,process.primaryVertexAssociation)
     process.p.insert(1,process.packedCandsForTkIso)
-   
-    
+
+
+
+
+
 
 #import FWCore.PythonUtilities.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
