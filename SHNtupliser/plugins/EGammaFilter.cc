@@ -21,10 +21,10 @@
 class EGammaFilter : public edm::EDFilter {
 
 private:
-  edm::EDGetTokenT<reco::PhotonCollection> phoTag_;
+  edm::EDGetTokenT<edm::View<reco::Photon> > phoTag_;
   int nrPhosRequired_;
   float phoEtCut_;
-  edm::EDGetTokenT<reco::GsfElectronCollection> eleTag_;
+  edm::EDGetTokenT<edm::View<reco::GsfElectron> > eleTag_;
   edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoTag_;
   int nrElesRequired_;
   float eleEtCut_;
@@ -56,8 +56,8 @@ public:
 EGammaFilter::EGammaFilter(const edm::ParameterSet& para):nrPass_(0),nrTot_(0)
 
 {
-  eleTag_=consumes<reco::GsfElectronCollection>(para.getParameter<edm::InputTag>("eleTag"));
-  phoTag_=consumes<reco::PhotonCollection>(para.getParameter<edm::InputTag>("phoTag"));
+  eleTag_=consumes<edm::View<reco::GsfElectron> >(para.getParameter<edm::InputTag>("eleTag"));
+  phoTag_=consumes<edm::View<reco::Photon> >(para.getParameter<edm::InputTag>("phoTag"));
   superClusEBTag_=consumes<reco::SuperClusterCollection>(para.getParameter<edm::InputTag>("superClusEBTag"));
   superClusEETag_=consumes<reco::SuperClusterCollection>(para.getParameter<edm::InputTag>("superClusEETag"));
   caloTowerTag_=consumes<CaloTowerCollection>(para.getParameter<edm::InputTag>("caloTowerTag"));
@@ -115,7 +115,7 @@ bool EGammaFilter::passPho(edm::Event& event)const
 {
   if(nrPhosRequired_<=0) return true; //automatically passes
   
-  edm::Handle<reco::PhotonCollection> phoHandle;
+  edm::Handle<edm::View<reco::Photon> > phoHandle;
   event.getByToken(phoTag_,phoHandle);
   
   int nrPhos=0;
@@ -131,7 +131,7 @@ bool EGammaFilter::passEle(edm::Event& event)const
 {
   if(nrElesRequired_<=0) return true; //automatically passes
   
-  edm::Handle<reco::GsfElectronCollection> eleHandle;
+  edm::Handle<edm::View<reco::GsfElectron> > eleHandle;
   event.getByToken(eleTag_,eleHandle);
   
   int nrEles=0;
@@ -142,8 +142,8 @@ bool EGammaFilter::passEle(edm::Event& event)const
     }else{
       if(ele.et()>eleEtCut_) nrEles++;
     }
-  }
-  
+  } 
+    
   return nrEles>=nrElesRequired_;
 }
 
