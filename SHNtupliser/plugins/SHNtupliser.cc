@@ -120,6 +120,7 @@ bool SHNtupliser::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iS
   nrTot_++;
   evtHelper_.makeHeepEvent(iEvent,iSetup,heepEvt_);
   shEvtHelper_.makeSHEvent(heepEvt_,*shEvt_);
+  nrPass_++;
     
   return true;
 
