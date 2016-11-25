@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-  #  datasetCode=102
+   # datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -39,10 +39,13 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.autoCond import autoCond
+from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
-    process.GlobalTag.globaltag = autoCond['run2_mc'] 
+    #process.GlobalTag.globaltag = autoCond['run2_mc']
+    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '') 
 else:
-    process.GlobalTag.globaltag = autoCond['run2_data']
+#    process.GlobalTag.globaltag = autoCond['run2_data']
+    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v4','')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -224,3 +227,4 @@ if useMiniAOD==False:
 #    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
 #)                                        
 #process.out = cms.EndPath(process.AODSIMoutput)
+print process.GlobalTag.globaltag
