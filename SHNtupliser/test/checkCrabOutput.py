@@ -48,7 +48,7 @@ def get_grid_output_dir(base_dir,timestamp):
             return base_dir+"/"+subdir
     return base_dir+"/"+timestamp
 
-def check_crab_output(crab_dir):
+def check_crab_output(crab_dir,resubmit_failed,verbose):
     
     #first get the config file to figure out where the data was written too
     job_data =tarfile.open(crab_dir+"/inputs/debugFiles.tgz")    
@@ -66,24 +66,43 @@ def check_crab_output(crab_dir):
     #right time to build the output dir
     timestamp = datetime.datetime.fromtimestamp(int(status['submissionTime'])).strftime('%y%m%d_%H%M%S')
     grid_output_dir = get_grid_output_dir("/pnfs/pp.rl.ac.uk/data/cms"+config.Data.outLFNDirBase+"/"+config.Data.inputDataset.split("/")[1]+"/"+config.Data.outputDatasetTag+"/",timestamp)
-    print grid_output_dir
+#    print grid_output_dir
     missing_jobs = find_missing_jobs(grid_output_dir,nrjobs)
 
     if not missing_jobs:
         print crab_dir," : all jobs completed"
     else:
         print crab_dir," : jobs missing"
+        job_states={'failed' : [],'running' : [],'finished' : [],'idle' : []}
+        
         for jobnr in missing_jobs:
-            print "   ",jobnr,status['jobs'][str(jobnr)]['State']
-            
+            job_states[ status['jobs'][str(jobnr)]['State'] ].append(jobnr)
+            #print "   ",jobnr,status['jobs'][str(jobnr)]['State']
+        for state in job_states.keys():
+            print state,":",job_states[state]
+
+        if resubmit_failed and job_states['failed']:
+            print "resubmiting jobs",job_states['failed'] 
+            crabCommand('resubmit',sitewhitelist="T2_UK_SGrid_RALPP",dir = crab_dir)
+
+        if verbose:
+            for jobnr in job_states['failed']:
+                print  status['jobs'][str(jobnr)]
+
+       # print crabCommand('report',dir = crab_dir)
 
 
 if __name__ == "__main__":
-    
     import argparse
     parser = argparse.ArgumentParser(description='checks if the crab output is ')
     parser.add_argument('crab_dirs',nargs='+',help='list of crab directories to check')
+    parser.add_argument('--resub_failed',action="store_true",help='resubmits failed jobs')
+    parser.add_argument('--verbose','-v',action="store_true",help='outputs a lot of infp')
+    
     args = parser.parse_args()
 
     for crab_dir in args.crab_dirs:
-        check_crab_output(crab_dir)
+        check_crab_output(crab_dir=crab_dir,resubmit_failed=args.resub_failed,verbose=args.verbose)
+
+
+

@@ -1,5 +1,7 @@
 
 import argparse
+import json
+import os
 
 parser = argparse.ArgumentParser(description='gives the files and optional picks the events given')
 parser.add_argument('--dataset',help='name of dataset')
@@ -11,12 +13,24 @@ print args
 
 from SHarper.SHNtupliser.dasFileQuery import *
 
-lumis=args.lumis
-if len(args.lumis.split("-"))==2:
-    lumis=""
-    for lumiNr in range(int(args.lumis.split("-")[0]),int(args.lumis.split("-")[1])+1):
-        lumis+=str(lumiNr)+":"
+lumis=""
+if os.path.isfile(args.lumis):
+    with open(args.lumis) as data_file:    
+        lumi_data = json.load(data_file)
+    for lumi_range in lumi_data[args.runnr]:
+        for lumi in range(lumi_range[0],lumi_range[1]+1):
+            lumis+=str(lumi)+":"
     lumis=lumis.rstrip(":")
+    print lumis
+   
+else:
+
+    lumis=args.lumis
+    if len(args.lumis.split("-"))==2:
+        lumis=""
+        for lumiNr in range(int(args.lumis.split("-")[0]),int(args.lumis.split("-")[1])+1):
+            lumis+=str(lumiNr)+":"
+            lumis=lumis.rstrip(":")
 
 print lumis
 
