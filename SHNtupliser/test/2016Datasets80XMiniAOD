@@ -9,4 +9,28 @@
 /ZToEE_NNPDF30_13TeV-powheg_M_3500_4500/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0& 118 & 1000 &
 /ZToEE_NNPDF30_13TeV-powheg_M_4500_6000/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0& 119 & 1000 &
 /ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0& 120 & 1000 &
+IM
 
+
+/TTTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 322 & 1600 & core2
+/TTToLL_MLL_500To800_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 323 & 1600 & core2
+/TTToLL_MLL_800To1200_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 324 & 1600 & core2
+/TTToLL_MLL_1200To1800_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 325 & 1600 & core2
+/TTToLL_MLL_1800ToInf_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 326 & 1600 & core2
+
+
+/WW_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM  & -1 & -1 & 1.0 & 1.0 & 261 & 1600 & core2
+/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 262 & 1600 & core2
+/WWTo2L2Nu_Mll_200To600_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 265 & 1600 & core2
+/WWTo2L2Nu_Mll_600To1200_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 266 & 1600 & core2
+/WWTo2L2Nu_Mll_1200To2500_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 267 & 1600 & core2
+/WWTo2L2Nu_Mll_2500ToInf_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 268 & 1600 & core2
+
+/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 181 & 800 & core2
+
+/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 191 & 8000 & core2
+
+/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM  & -1 & -1 & 1.0 & 1.0 & 341 & 1600 & core2
+/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM  & -1 & -1 & 1.0 & 1.0 & 342 & 1600 & core2
+/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM  & -1 & -1 & 1.0 & 1.0 & 343 & 1600 & core2
+/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM  & -1 & -1 & 1.0 & 1.0 & 344 & 1600 & core2
