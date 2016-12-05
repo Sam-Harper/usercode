@@ -31,7 +31,7 @@ process.options = cms.untracked.PSet(
 #process.setName_('HLT3')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.autoCond import autoCond
-process.GlobalTag.globaltag = 'POSTLS161_V12::All'
+#process.GlobalTag.globaltag = 'POSTLS161_V12::All'
 #process.GlobalTag.globaltag = autoCond['com10']
 
 #setup input /output modules, feel free to replace with your input/output settings

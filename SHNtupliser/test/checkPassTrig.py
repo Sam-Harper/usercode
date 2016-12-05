@@ -42,7 +42,9 @@ trigData={"HLT_PFMET110_PFMHT110_IDTight_v" : [0,0],
           "HLT_MET200_v" : [0,0],
           "HLT_MET250_v" : [0,0],
           "HLT_MET300_v" : [0,0],
-          "HLT_Photon175_v" : [0,0]}
+          "HLT_Photon175_v" : [0,0],
+          "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v" : [0,0],
+          "HLT_DoubleEle33_CaloIdL_MW_v" : [0,0]}
           
 
 for event in events:
