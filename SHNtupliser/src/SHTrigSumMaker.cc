@@ -189,7 +189,7 @@ void SHTrigSumMaker::makeSHTrigSumNoFilters_(const edm::TriggerResults& trigResu
   //tempory L1 menu to work around L1 software issues, we have to invent a name
   std::string l1MenuName("l1MenuForRun"+std::to_string(edmEvent.id().run()));
   if(!l1Menu_ || l1Menu_->menuName()!=l1MenuName){
-    std::cout <<"making a new l1 menu"<<std::endl;
+    std::cout <<"making a new l1 menu "<<l1MenuName<<std::endl;
     l1Menu_ = &getL1Menu_(hltConfig,hltPSProv.l1tGlobalUtil(),l1MenuName);
   }
   //there is a small potenial bug here if the menu changes but is kept the same name
@@ -198,7 +198,7 @@ void SHTrigSumMaker::makeSHTrigSumNoFilters_(const edm::TriggerResults& trigResu
   if(!hltMenu_ || 
      hltConfig.tableName()!=hltMenu_->menuName() || 
      hltConfig.processName()!=hltMenu_->processName()){
-    std::cout <<"making a new hlt menu"<<std::endl;
+    std::cout <<"making a new hlt menu "<<hltConfig.tableName()<<std::endl;
     hltMenu_ = &getHLTMenu_(hltConfig);
   }
  
@@ -298,8 +298,8 @@ void SHTrigSumMaker::addL1Menu_(const HLTConfigProvider& hltConfig,
   l1t::L1TGlobalUtil& l1GtUtils = const_cast<l1t::L1TGlobalUtil&>(l1GtUtilsConst);
 
   std::vector<unsigned int> defaultPSes(hltConfig.prescaleSize(),1);
-  for(size_t bitNr=0;bitNr<l1GtUtils.prescales().size();bitNr++){
-    const std::string& l1Name = l1GtUtils.prescales()[bitNr].first;
+  for(size_t bitNr=0;bitNr<l1GtUtils.decisionsFinal().size();bitNr++){
+    const std::string& l1Name = l1GtUtils.decisionsFinal()[bitNr].first;
     seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Name,defaultPSes,false));
   }
   SHL1Menu l1Menu;
@@ -308,9 +308,9 @@ void SHTrigSumMaker::addL1Menu_(const HLTConfigProvider& hltConfig,
 
   menuMgr_.add(l1Menu);
   // like all L1 software, this is broken
-  // std::cout <<"l1 "<<l1GtUtils.gtTriggerMenuName()<<" "<<
-  //   l1GtUtils.gtTriggerMenuVersion()<<
-  //   l1GtUtils.gtTriggerMenuComment()<<std::endl;
+  //  std::cout <<"l1 "<<l1GtUtils.gtTriggerMenuName()<<" "<<
+  // l1GtUtils.gtTriggerMenuVersion()<<
+  // l1GtUtils.gtTriggerMenuComment()<<std::endl;
 		  
  
 }
@@ -337,11 +337,13 @@ TBits SHTrigSumMaker::getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const
     bool pass = l1Util.decisionsFinal()[bitNr].second;
     if(pass) result.SetBitNumber(bitNr);
  
+    //  if(l1Menu_->getSeed(bitNr).name()!="NULL") std::cout <<"bit nr "<<bitNr<<" "<<l1Menu_->getSeed(bitNr).name()<<" prescale "<<l1Util.prescales()[bitNr].first<<" "<<l1Util.prescales()[bitNr].second<<std::endl;
+
     const std::string& l1Name = l1Menu_->getSeed(bitNr).name();
-    if(l1Name!=l1Util.decisionsFinal()[bitNr].first ||
-       l1Name!=l1Util.masks()[bitNr].first ||
-       l1Name!=l1Util.prescales()[bitNr].first){
-      LogErr<<" Warning, algo names dont match up "<<l1Name<<" "<<l1Util.decisionsFinal()[bitNr].first <<" "<<l1Util.masks()[bitNr].first<<" "<<l1Util.prescales()[bitNr].first<<std::endl;
+    if(l1Name!=l1Util.decisionsFinal()[bitNr].first){
+          // l1Name!=l1Util.masks()[bitNr].first ||  //masks are screwed
+       // l1Name!=l1Util.prescales()[bitNr].first){
+      LogErr<<" Warning, algo names dont match up for bit "<<bitNr<<" SHL1MenuName "<<l1Name<<" L1DecisionName "<<l1Util.decisionsFinal()[bitNr].first <<" L1MaskName "<<l1Util.masks()[bitNr].first<<" L1PSName "<<l1Util.prescales()[bitNr].first<<std::endl;
     }
     
   }
