@@ -38,13 +38,14 @@ def find_missing_jobs(output_dir,nrjobs):
 #so we need to figure it out
 #we know its the format YYMMDD_HHMMSS
 #so we compare YYMMDD_HHMM 
+#with more knowledge, this can be 30 seconds out
 def get_grid_output_dir(base_dir,timestamp):
     subdirs = [p.split("/")[-2] for p in glob.glob(base_dir+"/*/")]
 #    print timestamp
     for subdir in subdirs:
 #        help(datetime.datetime.strptime(subdir,"%y%m%d_%H%M%S"))
 #        print datetime.datetime.strptime(subdir,"%y%m%d_%H%M%S").time().time()
-        if timestamp[:-2]==subdir[:-2] and abs(int(timestamp[-2:])-int(subdir[-2:])<=2):
+        if timestamp[:-2]==subdir[:-2] and abs(int(timestamp[-2:])-int(subdir[-2:])<=30):
             return base_dir+"/"+subdir
     return base_dir+"/"+timestamp
 
@@ -73,7 +74,7 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
         print crab_dir," : all jobs completed"
     else:
         print crab_dir," : jobs missing"
-        job_states={'failed' : [],'running' : [],'finished' : [],'idle' : []}
+        job_states={'failed' : [],'running' : [],'finished' : [],'idle' : [],'transferring' : []}
         
         for jobnr in missing_jobs:
             job_states[ status['jobs'][str(jobnr)]['State'] ].append(jobnr)
@@ -97,6 +98,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='checks if the crab output is ')
     parser.add_argument('crab_dirs',nargs='+',help='list of crab directories to check')
     parser.add_argument('--resub_failed',action="store_true",help='resubmits failed jobs')
+    parser.add_argument('--resub_finished',action="store_true",help='resubmits finished jobs')
+
     parser.add_argument('--verbose','-v',action="store_true",help='outputs a lot of infp')
     
     args = parser.parse_args()
