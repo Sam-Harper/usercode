@@ -69,7 +69,7 @@ SHMCParticle::SHMCParticle(const SHMCParticle& rhs):
 
 }
 
-double SHMCParticle::detEta()const
+float SHMCParticle::detEta()const
 {
   return MathFuncs::detEtaFromEvnt(p4().Eta(),vz_);
 }

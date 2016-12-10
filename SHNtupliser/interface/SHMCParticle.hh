@@ -41,6 +41,9 @@ public:
   friend std::ostream &operator <<(std::ostream& output,const SHMCParticle &mcPart);
   std::ostream &print(std::ostream& output)const;
   // std::ostream &print()const ;
+  
+  
+  
   int index()const{return index_;}
   int stdhep()const{return stdhep_;}
   int status()const{return stdhep_;}
@@ -55,10 +58,14 @@ public:
     else val.SetXYZT(0,0,std::sqrt(nrgy_*nrgy_-mass_*mass_),nrgy_);
     return val;
   }
-  double nrgy()const{return pt_==0. ? nrgy_ :  p4().E();}
-  double mass()const{return mass_;}
+  float nrgy()const{return pt_==0. ? nrgy_ :  p4().E();}
+  float pt()const{return pt_;}
+  float eta()const{return eta_;}
+  float phi()const{return phi_;}
+  
+  float mass()const{return mass_;}
   TVector3 pos()const{TVector3 val(vx_,vy_,vz_);return val;}
-  double detEta()const;
+  float detEta()const;
   
   ClassDef(SHMCParticle,3)
 
