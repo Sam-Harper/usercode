@@ -278,6 +278,8 @@ void SHEventHelper::addPreShowerClusters(const heep::Event& heepEvent, SHEvent& 
 
 void SHEventHelper::addCaloHits(const heep::Event& heepEvent, SHEvent& shEvent)const
 {
+  shEvent.getCaloHits().setADCToGeVEB(heepEvent.handles().ecalADCToGeV->getEBValue());
+  shEvent.getCaloHits().setADCToGeVEE(heepEvent.handles().ecalADCToGeV->getEEValue());
   addEcalHits(heepEvent,shEvent);
   addHcalHits(heepEvent,shEvent);
 }
@@ -294,8 +296,8 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
   const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : 
     heepEvent.handles().eeReducedRecHits.isValid() ? &(*heepEvent.handles().eeReducedRecHits) : NULL;
   
-  if(ebHits) fillEcalHitVec_(*ebHits,shEvent);
-  if(eeHits) fillEcalHitVec_(*eeHits,shEvent);
+  if(ebHits) fillEcalHitVec_(heepEvent,*ebHits,shEvent);
+  if(eeHits) fillEcalHitVec_(heepEvent,*eeHits,shEvent);
 
   shEvent.addEcalHits(ecalHitVec_);
 
@@ -949,7 +951,7 @@ bool SHEventHelper::isNearEle_(float eta,float phi,const SHEvent& shEvent,const 
   return false;
 
 }
-void SHEventHelper::fillEcalHitVec_(const EcalRecHitCollection& hitColl,const SHEvent& shEvent)const 
+void SHEventHelper::fillEcalHitVec_(const heep::Event& heepEvt,const EcalRecHitCollection& hitColl,const SHEvent& shEvent)const 
 {
   for(auto& hit : hitColl){
     if(!branches_.filterEcalHits || 
@@ -959,13 +961,36 @@ void SHEventHelper::fillEcalHitVec_(const EcalRecHitCollection& hitColl,const SH
       SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hit.detid())];
       shHit.setNrgy(hit.energy());
       shHit.setTime(hit.time());
-      //shHit.setFlag(hit.flags());
-      shHit.setFlag(0);//temp fix
       shHit.setFlagBits(getEcalFlagBits_(hit));     
+      shHit.setTimeErr(hit.timeError());
+      shHit.setNrgyErr(hit.energyError());
+      shHit.setChi2(hit.chi2());
+      shHit.setAmplitude(getEcalRecHitAmplitude(heepEvt,hit.detid(),hit.energy()));
+      
+      if(shHit.nrgy()!=hit.energy() || shHit.chi2()!=hit.chi2() || shHit.timeErr()!=hit.timeError() ||
+	 shHit.nrgyErr()!=hit.energyError() || shHit.time()!=hit.time()){
+	std::cout <<"miss match nrgy : "<<shHit.nrgy()<<" "<<hit.energy()<<" chi2 "<<shHit.chi2()<<" "<<hit.chi2()<<" timeErr "<<shHit.timeErr()<<" "<<hit.timeError()<<" nrgyErr "<<shHit.nrgyErr()<<" "<<hit.energyError()<<" time "<<shHit.time()<<" "<<hit.time()<<std::endl;
+      }// else{	
+      // 	std::cout <<"match nrgy : "<<shHit.nrgy()<<" "<<hit.energy()<<" chi2 "<<shHit.chi2()<<" "<<hit.chi2()<<" timeErr "<<shHit.timeErr()<<" "<<hit.timeError()<<" nrgyErr "<<shHit.nrgyErr()<<" "<<hit.energyError()<<" time "<<shHit.time()<<" "<<hit.time()<<std::endl;
+      // }
     }
   }
 }
 
+float SHEventHelper::getEcalRecHitAmplitude(const heep::Event& heepEvent,int detId,float calibNrgy)const
+{
+  float calibConst = heepEvent.getEcalRecHitCalibConst(detId);
+  float adcToGeVConst = heepEvent.getADCToGeVConst(detId);
+  
+  
+
+  if(calibConst*adcToGeVConst!=0) return calibNrgy/(calibConst*adcToGeVConst);
+  else{
+    std::cout <<"error calib is zero for "<<detId<<" "<<calibNrgy<<" calib "<<calibConst<<" adc "<<adcToGeVConst<<std::endl;
+
+    return std::numeric_limits<float>::max();
+  }
+}
 
 bool SHEventHelper::passCaloHitFilter_(int hitId,const SHEvent& shEvent,const float maxDR)const
 {

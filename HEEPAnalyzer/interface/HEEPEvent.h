@@ -10,7 +10,7 @@
 //   it is intentionally not stored anywhere and is expected to grow as needed
 //   it contains a link the edm::Event to add backwards compatiblity
 //   its almost a struct but it trys to hide a little of the complexity so its a class for now
-//   header only, no need for .cc file
+
 #include "SHarper/HEEPAnalyzer/interface/HEEPEle.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvtHandles.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPTrigCodes.h"
@@ -56,6 +56,7 @@ namespace heep{
     int bx()const{return edmEvent_->bunchCrossing();}
     int lumiSec()const{return edmEvent_->luminosityBlock();}
     unsigned long long time()const{return edmEvent_->time().value();}
+    const edm::Timestamp timeStamp()const{return edmEvent_->time();}
     int orbitNumber()const{return edmEvent_->orbitNumber();}
 
     const heep::TrigCodes::TrigBitSet& trigBits()const{return trigBits_;}
@@ -103,6 +104,10 @@ namespace heep{
     //really for heep::EventHelper to make the HLTPSProvider object
     bool validHLTPSProvider()const{return hltPSProvider_!=nullptr;}
     HLTPrescaleProvider* hltPSProv()const{return hltPSProvider_.get();}
+
+    float getEcalRecHitCalibConst(int detId)const;
+    float getADCToGeVConst(int detId)const;
+
 
      //our four set methods   
     void setEvent(const edm::Event& event){edmEvent_ = &event;}

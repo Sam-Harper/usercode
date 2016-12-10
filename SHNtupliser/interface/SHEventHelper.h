@@ -132,7 +132,8 @@ private:
   void setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const;
   void setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const;
   bool isNearEle_(float eta,float phi,const SHEvent& shEvent,const float maxDR)const;
-  void fillEcalHitVec_(const EcalRecHitCollection& hitColl,const SHEvent& event)const;
+  void fillEcalHitVec_(const heep::Event& heepEvent,const EcalRecHitCollection& hitColl,const SHEvent& event)const;
+  float getEcalRecHitAmplitude(const heep::Event& heepEvent,int detId,float calibNrgy)const;
   bool passCaloHitFilter_(int hitId,const SHEvent& shEvent,const float maxDR)const;
   static bool isEcalBarrel_(const DetId& id);
   static bool isEcalEndcap_(const DetId& id);

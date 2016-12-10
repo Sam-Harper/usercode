@@ -29,6 +29,9 @@ class SHCaloHitContainer : public TObject {
   TClonesArray ecalEndcapHitArray_;
   TClonesArray hcalHitArray_;
 
+  float adcToGeVEB_;
+  float adcToGeVEE_;
+
   mutable std::vector<int> hitIndxTable_; //! transient allows fast indexing to the hits
  
   SHCaloHit nullHit_; //! returning when hit isnt found
@@ -46,7 +49,10 @@ class SHCaloHitContainer : public TObject {
 
   //void addEcalHit(int detId,float nrgy);
   //  void addHcalHit(int detId,float nrgy);
-  void addHit(int detId,float nrgy,float time=-999,uint32_t flag=0,uint32_t flagBits=0);
+  void addHit(int detId,float nrgy,float time=0,uint32_t flagBits=0,
+	      float chi2=0,float nrgyErr=0,float timeErr=0,
+	      float amplitude=0);
+    
   void addHit(const SHCaloHit& hit);
   
   const SHCaloHit& getHit(int detId)const;
@@ -58,6 +64,12 @@ class SHCaloHitContainer : public TObject {
   float getHitNrgyEcalBarrel(int detId)const;
   float getHitNrgyEcalEndcap(int detId)const;
   float getHitNrgyHcal(int detId)const;
+
+  float adcToGeVEB()const{return adcToGeVEB_;}
+  float adcToGeVEE()const{return adcToGeVEE_;}
+
+  void setADCToGeVEB(float val){adcToGeVEB_=val;}
+  void setADCToGeVEE(float val){adcToGeVEE_=val;}
 
   const SHCaloHit& getEcalBarrelHitByIndx(unsigned indx)const{return *((SHCaloHit*) ecalBarrelHitArray_[indx]);}
   const SHCaloHit& getEcalEndcapHitByIndx(unsigned indx)const{return *((SHCaloHit*) ecalEndcapHitArray_[indx]);}
@@ -81,7 +93,7 @@ class SHCaloHitContainer : public TObject {
   //void unpackHits_()const;
   void createHitIndxTable_()const;
 
-  ClassDef(SHCaloHitContainer,3)
+  ClassDef(SHCaloHitContainer,4)
 
 };
   

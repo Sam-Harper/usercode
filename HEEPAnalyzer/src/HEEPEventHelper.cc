@@ -19,6 +19,10 @@
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
+#include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
+#include "CondFormats/DataRecord/interface/EcalIntercalibConstantsRcd.h"
+#include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
+
 void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollector & cc)
 {
   cuts_.setup(conf);
@@ -170,7 +174,11 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   //setup.get<L1GtTriggerMenuRcd>().get(handles.l1Menu);
   //setup.get<TrackerDigiGeometryRecord>().get(handles.trackGeom);
   setup.get<IdealMagneticFieldRecord>().get(handles.bField);
+  setup.get<EcalADCToGeVConstantRcd>().get(handles.ecalADCToGeV);
+  setup.get<EcalLaserDbRecord>().get(handles.ecalLaser);
+  setup.get<EcalIntercalibConstantsRcd>().get(handles.ecalInterCalib);
   
+
   gsfEleExtraFiller_.getEvtContent(event,setup);
 }
 

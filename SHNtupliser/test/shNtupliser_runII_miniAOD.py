@@ -24,6 +24,8 @@ else:
 if datasetCode==0: isMC=False
 else: isMC=True
 
+datasetVersion="TOSED:DATASETVERSION"
+
 print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD
 
 # initialize MessageLogger and output report
@@ -45,6 +47,8 @@ if isMC:
     process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '') 
 else:
 #    process.GlobalTag.globaltag = autoCond['run2_data']
+    from SHarper.SHNtupliser.globalTags import getGlobalTagNameData
+    globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v4','')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
@@ -120,6 +124,7 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.skimHLTFilter.throw=cms.bool(False)
 datasetName="TOSED:DATASETNAME"
+
 
 if datasetName=="DoubleEG":
     print "setting up HLT skim for DoubleEG"

@@ -9,6 +9,8 @@ SHCaloHitContainer::SHCaloHitContainer():
   ecalBarrelHitArray_("SHCaloHit",100000),
   ecalEndcapHitArray_("SHCaloHit",100000),
   hcalHitArray_("SHCaloHit",10000),
+  adcToGeVEB_(0.),
+  adcToGeVEE_(0.),
   hitIndxTable_()
 {
 
@@ -32,19 +34,20 @@ SHCaloHitContainer& SHCaloHitContainer::operator=(const SHCaloHitContainer& rhs)
   return *this;
 }
 
-void SHCaloHitContainer::addHit(int detId,float nrgy,float time,uint32_t flag,uint32_t flagBits)
+void SHCaloHitContainer::addHit(int detId,float nrgy,float time,uint32_t flagBits,
+				float chi2,float nrgyErr,float timeErr,float amplitude)
 {
   if(DetIdTools::isEcal(detId)){
     if(DetIdTools::isBarrel(detId)){
-      new(ecalBarrelHitArray_[nrEcalBarrelHitsStored()]) SHCaloHit(detId,nrgy,time,flag,flagBits);
+      new(ecalBarrelHitArray_[nrEcalBarrelHitsStored()]) SHCaloHit(detId,nrgy,time,flagBits,chi2,nrgyErr,timeErr,amplitude);
     }
     else if(DetIdTools::isEndcap(detId)){
-      new(ecalEndcapHitArray_[nrEcalEndcapHitsStored()]) SHCaloHit(detId,nrgy,time,flag,flagBits);
+      new(ecalEndcapHitArray_[nrEcalEndcapHitsStored()]) SHCaloHit(detId,nrgy,time,flagBits,chi2,nrgyErr,timeErr,amplitude);
     }
     else std::cout <<"SHCaloHitContainer::addHit Ecal Hit "<<std::hex<<detId<<std::dec<<" not in barrel or endcap"<<std::endl;
   }
   else if(DetIdTools::isHcal(detId)){
-    new (hcalHitArray_[nrHcalHitsStored()]) SHCaloHit(detId,nrgy,time,flag,flagBits);
+    new (hcalHitArray_[nrHcalHitsStored()]) SHCaloHit(detId,nrgy,time,flagBits,chi2,nrgyErr,timeErr,amplitude);
   }else{ 
     std::cout <<"SHCaloHitContainer::addHit "<<std::hex<<detId<<std::dec<<" not recognisefd"<<std::endl;
   }
@@ -64,7 +67,7 @@ void SHCaloHitContainer::addHit(int detId,float nrgy,float time,uint32_t flag,ui
 
 void SHCaloHitContainer::addHit(const SHCaloHit& hit)
 {
-  addHit(hit.detId(),hit.nrgy(),hit.time(),hit.flag(),hit.flagBits());
+  addHit(hit.detId(),hit.nrgy(),hit.time(),hit.flagBits(),hit.chi2(),hit.nrgyErr(),hit.timeErr(),hit.amplitude());
 }
 
 const SHCaloHit& SHCaloHitContainer::getHit(int detId)const
@@ -145,6 +148,9 @@ void SHCaloHitContainer::clear()
   ecalEndcapHitArray_.Delete();
   hcalHitArray_.Delete();
   hitIndxTable_.clear();
+  adcToGeVEB_=0;
+  adcToGeVEE_=0;
+  
 }
 
 //this function fills the temporary vector with a size equal to all crystals in the calorimeter

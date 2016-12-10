@@ -59,6 +59,12 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h" 
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h" 
+#include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbService.h"
+#include "CondFormats/EcalObjects/interface/EcalIntercalibConstants.h"
+#include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
+
+
+
 namespace heep {
   struct EvtHandles { 
   public:   
@@ -124,6 +130,12 @@ namespace heep {
     edm::Handle<GenEventInfoProduct> genEvtInfo;
     edm::ESHandle<MagneticField> bField;
     edm::ESHandle<TrackerGeometry> trackGeom;
+
+    //calibrations for the ECAL
+    edm::ESHandle<EcalADCToGeVConstant> ecalADCToGeV;
+    edm::ESHandle<EcalLaserDbService> ecalLaser;
+    edm::ESHandle<EcalIntercalibConstants> ecalInterCalib;
+    
   };
 }
 

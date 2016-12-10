@@ -30,7 +30,7 @@ for line in datasetDefFile:
     splitLine = line.split("&")
     datasetPath = splitLine[0].rstrip(" ")
     datasetFormat = datasetPath.split("/")[-1]
-    
+     
 
  #   print datasetPath,nrJobs,datasetCode
     dataset=datasetPath.split("/")[1]
@@ -70,6 +70,7 @@ for line in datasetDefFile:
             line=line.replace("isCrabJob=False","isCrabJob=True");
             line=line.replace("DATASETCODE",str(datasetCode))
             line=line.replace("TOSED:DATASETNAME",str(dataset))
+            line=line.replace("TOSED:DATASETVERSION",str(datasetPath.split("/")[2]))
             tempConfigFile.write(line)
 
   
