@@ -68,8 +68,6 @@ namespace heep {
     edm::EDGetTokenT<GenEventInfoProduct> genEventInfoTag_;
     edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileUpMCInfoTag_;
     edm::EDGetTokenT<L1GlobalTriggerReadoutRecord> l1RecordTag_;
-    edm::EDGetTokenT<l1extra::L1EmParticleCollection> l1EmNonIsoTag_;
-    edm::EDGetTokenT<l1extra::L1EmParticleCollection> l1EmIsoTag_;
     edm::EDGetTokenT<reco::VertexCollection> verticesTag_;
     edm::EDGetTokenT<CaloTowerCollection> caloTowersTag_;
     edm::EDGetTokenT<double> eleRhoCorrTag_;

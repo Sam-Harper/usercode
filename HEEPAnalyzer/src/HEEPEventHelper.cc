@@ -56,8 +56,6 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(genEventInfoTag_ , conf.getParameter<edm::InputTag>("genEventInfoTag"),cc);
   getToken_(pileUpMCInfoTag_ , conf.getParameter<edm::InputTag>("pileUpMCInfoTag"),cc);
   getToken_(l1RecordTag_ , conf.getParameter<edm::InputTag>("l1RecordTag"),cc);
-  getToken_(l1EmNonIsoTag_ , conf.getParameter<edm::InputTag>("l1EmNonIsoTag"),cc);
-  getToken_(l1EmIsoTag_ , conf.getParameter<edm::InputTag>("l1EmIsoTag"),cc);
   getToken_(verticesTag_ , conf.getParameter<edm::InputTag>("verticesTag"),cc);
   getToken_(caloTowersTag_ , conf.getParameter<edm::InputTag>("caloTowersTag"),cc);
   getToken_(eleRhoCorrTag_ , conf.getParameter<edm::InputTag>("eleRhoCorrTag"),cc);
@@ -147,8 +145,6 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(genEventInfoTag_,handles.genEventInfo);  
   event.getByToken(pileUpMCInfoTag_,handles.pileUpMCInfo);
   event.getByToken(l1RecordTag_,handles.l1Record);
-  event.getByToken(l1EmNonIsoTag_,handles.l1EmNonIso);
-  event.getByToken(l1EmIsoTag_,handles.l1EmIso);
   event.getByToken(verticesTag_,handles.vertices);
   event.getByToken(caloTowersTag_,handles.caloTowers);
   event.getByToken(eleRhoCorrTag_,handles.eleRhoCorr);

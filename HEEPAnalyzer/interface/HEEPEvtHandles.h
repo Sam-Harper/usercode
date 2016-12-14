@@ -102,8 +102,6 @@ namespace heep {
     edm::Handle<GenEventInfoProduct> genEventInfo;
     edm::Handle<std::vector<PileupSummaryInfo> > pileUpMCInfo;
     edm::Handle<L1GlobalTriggerReadoutRecord> l1Record;
-    edm::Handle<l1extra::L1EmParticleCollection> l1EmNonIso;
-    edm::Handle<l1extra::L1EmParticleCollection> l1EmIso;
     edm::Handle<reco::VertexCollection> vertices;
     edm::Handle<reco::BeamSpot> beamSpot;
     edm::Handle<double> eleRhoCorr;
