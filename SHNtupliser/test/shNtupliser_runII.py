@@ -19,10 +19,12 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-   # datasetCode=0
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
+
+datasetVersion="TOSED:DATASETVERSION"
 
 print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD
 
@@ -45,7 +47,9 @@ if isMC:
     process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '') 
 else:
 #    process.GlobalTag.globaltag = autoCond['run2_data']
-    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v4','')
+    from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
+    globalTagName = getGlobalTagNameData(datasetVersion)
+    process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -121,6 +125,7 @@ process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone
 process.skimHLTFilter.throw=cms.bool(False)
 datasetName="TOSED:DATASETNAME"
 
+
 if datasetName=="DoubleEG":
     print "setting up HLT skim for DoubleEG"
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle37*","HLT_DoublePhoton60_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*")
@@ -163,9 +168,9 @@ if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetC
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
 
-if process.shNtupliser.datasetCode.value() in [321,322]:
-    print "TTbar detected, disabling mc particles"
-    process.shNtupliser.addMCParts = False
+#if process.shNtupliser.datasetCode.value() in [321,322]:
+#    print "TTbar detected, disabling mc particles"
+#    process.shNtupliser.addMCParts = False
     
 
 if isCrabJob and process.shNtupliser.datasetCode.value()>131:
@@ -193,19 +198,19 @@ for idmod in my_id_modules:
 
 process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
-    process.heepIDVarValueMaps*
-    process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
+   # process.heepIDVarValueMaps*
+  #  process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
         
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-if useMiniAOD==False:
-    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-    process.p.insert(0,process.primaryVertexAssociation)
-    process.p.insert(1,process.packedCandsForTkIso)
+#if useMiniAOD==False:
+#    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+#    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
+#    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
+#    process.p.insert(0,process.primaryVertexAssociation)
+#    process.p.insert(1,process.packedCandsForTkIso)
 
 
 

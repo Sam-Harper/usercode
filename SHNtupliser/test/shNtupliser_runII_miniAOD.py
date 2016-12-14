@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-   # datasetCode=0
+    datasetCode=322
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -47,9 +47,9 @@ if isMC:
     process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '') 
 else:
 #    process.GlobalTag.globaltag = autoCond['run2_data']
-    from SHarper.SHNtupliser.globalTags import getGlobalTagNameData
+    from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
-    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v4','')
+    process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -168,9 +168,9 @@ if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetC
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
 
-if process.shNtupliser.datasetCode.value() in [321,322]:
-    print "TTbar detected, disabling mc particles"
-    process.shNtupliser.addMCParts = False
+#if process.shNtupliser.datasetCode.value() in [321,322]:
+#    print "TTbar detected, disabling mc particles"
+#    process.shNtupliser.addMCParts = False
     
 
 if isCrabJob and process.shNtupliser.datasetCode.value()>131:
