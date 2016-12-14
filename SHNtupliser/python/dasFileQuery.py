@@ -147,6 +147,15 @@ def getLumis(filename):
       print "file not found ",filename
   return lumis
     
+
+def getFilename(dataset,runnr,lumi):
+    
+    filename= getFileNames({"dataset":dataset,"run" : int(runnr),"lumi":int(lumi)})[0]
+    lumis = getLumis(filename)
+
+    return filename,lumis
+ 
+
 def getFileNamesCache(event,fileCache):
 
   
