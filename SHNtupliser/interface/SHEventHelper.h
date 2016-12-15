@@ -92,6 +92,7 @@ public:
   void addCaloHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addCaloTowers(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addEcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addEcalWeightsHits(const heep::Event& heepEvent, SHEvent& shEvent)const;
   void addHcalHits(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addJets(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const;
@@ -135,6 +136,7 @@ private:
   void fillEcalHitVec_(const heep::Event& heepEvent,const EcalRecHitCollection& hitColl,const SHEvent& event)const;
   float getEcalRecHitAmplitude(const heep::Event& heepEvent,int detId,float calibNrgy)const;
   bool passCaloHitFilter_(int hitId,const SHEvent& shEvent,const float maxDR)const;
+  void setRecHit(SHCaloHit& shHit,const EcalRecHit& hit,const heep::Event& heepEvent)const;
   static bool isEcalBarrel_(const DetId& id);
   static bool isEcalEndcap_(const DetId& id);
   static bool isEcalBarrel_(const reco::SuperCluster& sc){return isEcalBarrel_(sc.seed()->seed());}

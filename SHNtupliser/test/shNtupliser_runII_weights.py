@@ -31,7 +31,7 @@ print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMi
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(10000),
+    reportEvery = cms.untracked.int32(1000),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -194,8 +194,8 @@ for idmod in my_id_modules:
 
 
 process.load('RecoLocalCalo.EcalRecProducers.ecalWeightUncalibRecHit_cfi')
-process.ecalUncalibRecHit.EBdigiCollection = cms.InputTag("selectDigi","selectedEcalEBDigiCollection")
-process.ecalUncalibRecHit.EEdigiCollection = cms.InputTag("selectDigi","selectedEcalEEDigiCollection")
+process.ecalWeightUncalibRecHit.EBdigiCollection = cms.InputTag("selectDigi","selectedEcalEBDigiCollection")
+process.ecalWeightUncalibRecHit.EEdigiCollection = cms.InputTag("selectDigi","selectedEcalEEDigiCollection")
 process.load('RecoLocalCalo.EcalRecProducers.ecalRecHit_cfi')
 process.ecalWeightsRecHit = process.ecalRecHit.clone()
 process.ecalWeightsRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalWeightUncalibRecHit","EcalUncalibRecHitsEE")
@@ -207,19 +207,19 @@ process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
     process.ecalWeightUncalibRecHit*
     process.ecalWeightsRecHit*
-   # process.heepIDVarValueMaps*
-  #  process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
+    process.heepIDVarValueMaps*
+    process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
         
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-#if useMiniAOD==False:
-#    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-#    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
-#    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-#    process.p.insert(0,process.primaryVertexAssociation)
-#    process.p.insert(1,process.packedCandsForTkIso)
+if useMiniAOD==False:
+    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
+    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
+    process.p.insert(0,process.primaryVertexAssociation)
+    process.p.insert(1,process.packedCandsForTkIso)
 
 
 
@@ -229,16 +229,16 @@ if not isMC:
 #import FWCore.PythonUtilities.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
 
-process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-    compressionAlgorithm = cms.untracked.string('LZMA'),
-    compressionLevel = cms.untracked.int32(4),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('AODSIM'),
-        filterName = cms.untracked.string('')
-    ),
-    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    fileName = cms.untracked.string('file:outputTestAOD.root'),
-    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
-)                                        
-process.out = cms.EndPath(process.AODSIMoutput)
+#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+#    compressionAlgorithm = cms.untracked.string('LZMA'),
+#    compressionLevel = cms.untracked.int32(4),
+#    dataset = cms.untracked.PSet(
+#        dataTier = cms.untracked.string('AODSIM'),
+#        filterName = cms.untracked.string('')
+#    ),
+#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+#    fileName = cms.untracked.string('file:outputTestAOD.root'),
+#    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
+#)                                        
+#process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag

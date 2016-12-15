@@ -87,6 +87,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   if(branches_.addPFCands) addPFCands(heepEvent,shEvent);
   if(branches_.addPFClusters) addPFClusters(heepEvent,shEvent);
   if(branches_.addCaloHits) addCaloHits(heepEvent,shEvent);
+  if(branches_.addCaloHits) addEcalWeightsHits(heepEvent,shEvent);
   if(branches_.addCaloTowers) addCaloTowers(heepEvent,shEvent);
 
 
@@ -304,6 +305,26 @@ void SHEventHelper::addEcalHits(const heep::Event& heepEvent, SHEvent& shEvent)c
 }
 
 
+void SHEventHelper::addEcalWeightsHits(const heep::Event& heepEvent, SHEvent& shEvent)const
+{
+
+  if(heepEvent.handles().ebWeightsRecHits.isValid()){
+    for(auto& hit : *heepEvent.handles().ebWeightsRecHits){
+      SHCaloHit shHit;
+      setRecHit(shHit,hit,heepEvent);
+      shEvent.getCaloHits().addExtraHit("ecalWeights",shHit);
+    }
+  }
+  if(heepEvent.handles().eeWeightsRecHits.isValid()){
+    for(auto& hit : *heepEvent.handles().eeWeightsRecHits){
+      SHCaloHit shHit;
+      setRecHit(shHit,hit,heepEvent);
+      shEvent.getCaloHits().addExtraHit("ecalWeights",shHit);
+    }
+  }
+}
+
+    
 
 void SHEventHelper::addHcalHits(const heep::Event& heepEvent, SHEvent& shEvent)const
 {
@@ -957,22 +978,8 @@ void SHEventHelper::fillEcalHitVec_(const heep::Event& heepEvt,const EcalRecHitC
     if(!branches_.filterEcalHits || 
        passCaloHitFilter_(hit.detid(),shEvent,kMaxDREcalHits_) ){
       
-      
       SHCaloHit& shHit = ecalHitVec_[ecalHitHash_(hit.detid())];
-      shHit.setNrgy(hit.energy());
-      shHit.setTime(hit.time());
-      shHit.setFlagBits(getEcalFlagBits_(hit));     
-      shHit.setTimeErr(hit.timeError());
-      shHit.setNrgyErr(hit.energyError());
-      shHit.setChi2(hit.chi2());
-      shHit.setAmplitude(getEcalRecHitAmplitude(heepEvt,hit.detid(),hit.energy()));
-      
-      if(shHit.nrgy()!=hit.energy() || shHit.chi2()!=hit.chi2() || shHit.timeErr()!=hit.timeError() ||
-	 shHit.nrgyErr()!=hit.energyError() || shHit.time()!=hit.time()){
-	std::cout <<"miss match nrgy : "<<shHit.nrgy()<<" "<<hit.energy()<<" chi2 "<<shHit.chi2()<<" "<<hit.chi2()<<" timeErr "<<shHit.timeErr()<<" "<<hit.timeError()<<" nrgyErr "<<shHit.nrgyErr()<<" "<<hit.energyError()<<" time "<<shHit.time()<<" "<<hit.time()<<std::endl;
-      }// else{	
-      // 	std::cout <<"match nrgy : "<<shHit.nrgy()<<" "<<hit.energy()<<" chi2 "<<shHit.chi2()<<" "<<hit.chi2()<<" timeErr "<<shHit.timeErr()<<" "<<hit.timeError()<<" nrgyErr "<<shHit.nrgyErr()<<" "<<hit.energyError()<<" time "<<shHit.time()<<" "<<hit.time()<<std::endl;
-      // }
+      setRecHit(shHit,hit,heepEvt);
     }
   }
 }
@@ -1003,6 +1010,25 @@ bool SHEventHelper::passCaloHitFilter_(int hitId,const SHEvent& shEvent,const fl
     if(MathFuncs::calDeltaR2(ele.detEta(),ele.detPhi(),cellEta,cellPhi)<maxDR2) return true;    
   }
   return false;
+
+}
+
+
+void SHEventHelper::setRecHit(SHCaloHit& shHit,const EcalRecHit& hit,const heep::Event& heepEvent)const
+{
+  shHit.setDetId(hit.detid());
+  shHit.setNrgy(hit.energy());
+  shHit.setTime(hit.time());
+  shHit.setFlagBits(getEcalFlagBits_(hit));     
+  shHit.setTimeErr(hit.timeError());
+  shHit.setNrgyErr(hit.energyError());
+  shHit.setChi2(hit.chi2());
+  shHit.setAmplitude(getEcalRecHitAmplitude(heepEvent,hit.detid(),hit.energy()));
+  
+  if(shHit.nrgy()!=hit.energy() || shHit.chi2()!=hit.chi2() || shHit.timeErr()!=hit.timeError() ||
+     shHit.nrgyErr()!=hit.energyError() || shHit.time()!=hit.time()){
+    std::cout <<"miss match nrgy : "<<shHit.nrgy()<<" "<<hit.energy()<<" chi2 "<<shHit.chi2()<<" "<<hit.chi2()<<" timeErr "<<shHit.timeErr()<<" "<<hit.timeError()<<" nrgyErr "<<shHit.nrgyErr()<<" "<<hit.energyError()<<" time "<<shHit.time()<<" "<<hit.time()<<std::endl;
+  }
 
 }
 

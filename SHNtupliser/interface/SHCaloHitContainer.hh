@@ -17,6 +17,7 @@
 #include "TClonesArray.h"
 
 #include <vector>
+#include <map>
 #include <iostream>
 
 class SHCaloHitContainer : public TObject {
@@ -31,6 +32,9 @@ class SHCaloHitContainer : public TObject {
 
   float adcToGeVEB_;
   float adcToGeVEE_;
+
+  //extra rec-hit collections, should be small in theory
+  std::map<std::string,std::vector<SHCaloHit> >extraHits_;
 
   mutable std::vector<int> hitIndxTable_; //! transient allows fast indexing to the hits
  
@@ -54,8 +58,11 @@ class SHCaloHitContainer : public TObject {
 	      float amplitude=0);
     
   void addHit(const SHCaloHit& hit);
+
+  void addExtraHit(const std::string& collName,const SHCaloHit& hit);
   
   const SHCaloHit& getHit(int detId)const;
+  const SHCaloHit& getExtraHit(const std::string& collName,int detId)const;
   // const SHCaloHit& getEcalBarrelHit(unsigned indx)const;
   // const SHCaloHit& getEcalEndcapHit(unsigned indx)const;
   // const SHHcalHit& getHcalhit(unsigned indx)const;
@@ -93,7 +100,7 @@ class SHCaloHitContainer : public TObject {
   //void unpackHits_()const;
   void createHitIndxTable_()const;
 
-  ClassDef(SHCaloHitContainer,4)
+  ClassDef(SHCaloHitContainer,5)
 
 };
   

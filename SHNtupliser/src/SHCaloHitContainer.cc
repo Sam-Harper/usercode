@@ -53,6 +53,12 @@ void SHCaloHitContainer::addHit(int detId,float nrgy,float time,uint32_t flagBit
   }
 }
 
+void SHCaloHitContainer::addExtraHit(const std::string& collName,const SHCaloHit& hit)
+{
+  extraHits_[collName].push_back(hit);
+}
+
+
 // const SHCaloHit& SHCaloHitContainer::getEcalBarrelHit(unsigned indx)const
 // {
 //   SHCaloHit *hit = (SHCaloHit*) ecalBarrelHitArray_[indx];
@@ -82,6 +88,17 @@ const SHCaloHit& SHCaloHitContainer::getHit(int detId)const
     if(indx!=-1) return getHcalHitByIndx(indx);
   }
   return nullHit_; //no hit found, returns null hit
+}
+
+const SHCaloHit& SHCaloHitContainer::getExtraHit(const std::string& collName,int detId)const
+{
+  auto collIt = extraHits_.find(collName);
+  if(collIt!=extraHits_.end()){
+    for(auto& hit : collIt->second){
+      if(detId==hit.detId()) return hit;
+    }
+  }
+  return nullHit_;
 }
 
 float SHCaloHitContainer::getHitNrgy(int detId)const
@@ -147,6 +164,7 @@ void SHCaloHitContainer::clear()
   ecalBarrelHitArray_.Delete();
   ecalEndcapHitArray_.Delete();
   hcalHitArray_.Delete();
+  extraHits_.clear();
   hitIndxTable_.clear();
   adcToGeVEB_=0;
   adcToGeVEE_=0;
