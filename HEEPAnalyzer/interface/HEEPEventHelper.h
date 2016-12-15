@@ -49,6 +49,8 @@ namespace heep {
     edm::EDGetTokenT<std::vector<pat::PackedCandidate> > lostTrackTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsEBTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsEETag_;
+    edm::EDGetTokenT<EcalRecHitCollection> ecalWeightsRecHitsEBTag_;
+    edm::EDGetTokenT<EcalRecHitCollection> ecalWeightsRecHitsEETag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalReducedRecHitsEBTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalReducedRecHitsEETag_;
     edm::EDGetTokenT<HBHERecHitCollection> hcalRecHitsTag_;

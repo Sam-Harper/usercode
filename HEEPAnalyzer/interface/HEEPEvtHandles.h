@@ -74,6 +74,8 @@ namespace heep {
     edm::Handle<EcalRecHitCollection> eeRecHits;
     edm::Handle<EcalRecHitCollection> ebReducedRecHits;
     edm::Handle<EcalRecHitCollection> eeReducedRecHits;
+    edm::Handle<EcalRecHitCollection> ebWeightsRecHits;
+    edm::Handle<EcalRecHitCollection> eeWeightsRecHits;    
     edm::Handle<HBHERecHitCollection> hbheRecHits;
     edm::Handle<CaloTowerCollection> caloTowers;
     edm::Handle<edm::View<pat::Muon> > muon;

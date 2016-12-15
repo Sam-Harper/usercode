@@ -37,6 +37,8 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(lostTrackTag_ , conf.getParameter<edm::InputTag>("lostTrackTag"),cc);
   getToken_(ecalRecHitsEBTag_ , conf.getParameter<edm::InputTag>("barrelRecHitTag"),cc);
   getToken_(ecalRecHitsEETag_ , conf.getParameter<edm::InputTag>("endcapRecHitTag"),cc);
+  getToken_(ecalWeightsRecHitsEBTag_ , conf.getParameter<edm::InputTag>("barrelWeightsRecHitTag"),cc);
+  getToken_(ecalWeightsRecHitsEETag_ , conf.getParameter<edm::InputTag>("endcapWeightsRecHitTag"),cc);
   getToken_(ecalReducedRecHitsEBTag_  ,conf.getParameter<edm::InputTag>("reducedBarrelRecHitTag"),cc);
   getToken_(ecalReducedRecHitsEETag_  ,conf.getParameter<edm::InputTag>("reducedEndcapRecHitTag"),cc);
   getToken_(hcalRecHitsTag_ , conf.getParameter<edm::InputTag>("hbheRecHitsTag"),cc);
@@ -126,6 +128,8 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(lostTrackTag_,handles.lostTrack);
   event.getByToken(ecalRecHitsEBTag_,handles.ebRecHits);
   event.getByToken(ecalRecHitsEETag_,handles.eeRecHits);
+  event.getByToken(ecalWeightsRecHitsEBTag_,handles.ebWeightsRecHits);
+  event.getByToken(ecalWeightsRecHitsEETag_,handles.eeWeightsRecHits);
   event.getByToken(ecalReducedRecHitsEBTag_,handles.ebReducedRecHits);
   event.getByToken(ecalReducedRecHitsEETag_,handles.eeReducedRecHits);
   event.getByToken(hcalRecHitsTag_,handles.hbheRecHits);
