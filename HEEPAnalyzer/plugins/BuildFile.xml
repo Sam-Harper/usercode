@@ -1,5 +1,5 @@
 <export>
 </export>
-<library   name="SHarperHEEPAnalyzer_plugins" file="HEEPAnalyzer.cc,HEEPAnalyzerBarePAT.cc,HEEPAnalyzerHEEPPAT.cc,HEEPAttStatusToPAT.cc,HEEPIdValueMapProducer.cc,HEEPGsfEleEnergyCorrector.cc,HEEPAnalyzerPATHEEPId.cc,HEEPFilter.cc,HEEPIdAndVIDComp.cc,HEEPV70Example.cc">
+<library   name="SHarperHEEPAnalyzer_plugins" file="HEEPAnalyzer.cc,HEEPAnalyzerBarePAT.cc,HEEPAnalyzerHEEPPAT.cc,HEEPAttStatusToPAT.cc,HEEPIdValueMapProducer.cc,HEEPGsfEleEnergyCorrector.cc,HEEPAnalyzerPATHEEPId.cc,HEEPFilter.cc,HEEPIdAndVIDComp.cc,HEEPV70Example.cc,HEEPVIDFilter.cc">
   <use   name="SHarper/HEEPAnalyzer"/>
 </library>
