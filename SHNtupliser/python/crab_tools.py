@@ -18,7 +18,8 @@ def make_job_data(job_lumis,dataset):
                     filesSet.add(filename)
                                                                 
 
-    print filesSet
+#    print filesSet
+    return filesSet
 #    print filename,lumis
                 
 class CrabJobInputs(SubCommand):
@@ -31,6 +32,7 @@ class CrabJobInputs(SubCommand):
         
         SubCommand.__init__(self, logger,["--dir",crab_dir])
         self.crab_dir=crab_dir
+        
     
     def __call__(self):
         serverFactory = CRABClient.Emulator.getEmulator('rest')
@@ -54,23 +56,37 @@ class CrabJobInputs(SubCommand):
 
         try:
             job_lumis = dictresult['result'][0]['lumisToProcess']
-            print job_lumis
-            job_data = {}
-            for key in job_lumis.keys():
-                job_data[key] = make_job_data(job_lumis=job_lumis[key],dataset=config.Data.inputDataset)
+            return job_lumis,config.Data.inputDataset
             
 
         except KeyError:
             print "error"
-            return {}
+            return {},config.Data.inputDataset
 
 if __name__ == "__main__":
     import argparse
+    import json
     parser = argparse.ArgumentParser(description='checks if the crab output is ')
-    parser.add_argument('crab_dirs',nargs='+',help='list of crab directories to check')
+    parser.add_argument('crab_dir',help='crab directory')
+    parser.add_argument('--jobids','-j',help='job ids to print json and files for',required=True)
+    
     args = parser.parse_args()
 
-    for crab_dir in args.crab_dirs:
-        tblogger, logger, memhandler = initLoggers()
-        obj = CrabJobInputs(logger,crab_dir)
-        res = obj()
+    tblogger, logger, memhandler = initLoggers()
+    obj = CrabJobInputs(logger,args.crab_dir)
+    job_lumis,dataset = obj()
+
+
+    for jobnr in args.jobids.split(","):
+        files = make_job_data(job_lumis=job_lumis[jobnr],dataset=dataset)
+        with open(args.crab_dir.rstrip("/")+"_lumis_job"+jobnr+'.json','w') as f:
+            json.dump(job_lumis[jobnr],f,sort_keys = True)
+        with open(args.crab_dir.rstrip("/")+"_files_job"+jobnr+'.list','w') as f:
+            for file_ in files:
+                f.write(file_+"\n")
+        
+        print "job ",jobnr
+        print "    lumis: ",job_lumis[jobnr]
+        print "    files: ",files
+            
+        
