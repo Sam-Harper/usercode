@@ -86,7 +86,7 @@ def getFileNames (event):
   thr     = 300                           # default
   ckey    = x509()                            # default
   cert    = x509()                            # default
-  print "getting file containing run %(run)i lumi %(lumi)i for %(dataset)s" % event
+  #print "getting file containing run %(run)i lumi %(lumi)i for %(dataset)s" % event
   jsondict = [] #das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
   attemptNr=1
   while "data" not in jsondict and attemptNr<=3:
