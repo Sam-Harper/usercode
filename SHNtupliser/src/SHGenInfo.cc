@@ -153,6 +153,19 @@ float SHGenInfo::lheBosonPt()const
   return -1;
 }
 
+float SHGenInfo::lheDiLeptonMass()const
+{
+  //  float pt=0;
+  std::vector<const SHMCParticle*> leptons;
+  for(const auto& part : lheParticles_){
+    if(std::abs(part.pid())==15 || std::abs(part.pid())==13 || std::abs(part.pid())==11){
+      leptons.push_back(&part);
+    }
+  }
+  if(leptons.size()>=2) return (leptons[0]->p4()+leptons[1]->p4()).Mag();
+  return -1;
+}
+
 
 void SHGenInfo::printMCParts(size_t nrLines)const
 {

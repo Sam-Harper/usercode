@@ -14,6 +14,7 @@
 <use   name="SHarper/HEEPAnalyzer"/>
 <use   name="PhysicsTools/IsolationAlgos"/>
 <use   name="PhysicsTools/PatAlgos"/>
+<use   name="CommonTools/CandAlgos"/> 
 <use   name="RecoEgamma/EgammaIsolationAlgos"/>
 <use   name="RecoEgamma/EgammaTools"/>
 <use   name="DataFormats/RecoCandidate"/>

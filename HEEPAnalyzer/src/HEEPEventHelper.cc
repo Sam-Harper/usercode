@@ -47,6 +47,7 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(preShowerClusterXTag_ ,conf.getParameter<edm::InputTag>("preShowerClusterXTag"),cc);
   getToken_(preShowerClusterYTag_ ,conf.getParameter<edm::InputTag>("preShowerClusterYTag"),cc);
   getToken_(gsfEleTag_ , conf.getParameter<edm::InputTag>("gsfEleTag"),cc);
+  getToken_(oldGsfEleTag_ , conf.getParameter<edm::InputTag>("oldGsfEleTag"),cc);
   getToken_(recoPhoTag_ , conf.getParameter<edm::InputTag>("recoPhoTag"),cc);
   getToken_(pfCandidateTag_ , conf.getParameter<edm::InputTag>("pfCandidateTag"),cc);
   getToken_(ctfTrackTag_ , conf.getParameter<edm::InputTag>("ctfTrackTag"),cc);
@@ -134,6 +135,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(ecalReducedRecHitsEETag_,handles.eeReducedRecHits);
   event.getByToken(hcalRecHitsTag_,handles.hbheRecHits);
   event.getByToken(gsfEleTag_,handles.gsfEle);
+  event.getByToken(oldGsfEleTag_,handles.oldGsfEle);
   event.getByToken(recoPhoTag_,handles.recoPho);
   event.getByToken(pfCandidateTag_,handles.pfCandidate);
   event.getByToken(superClusterEBTag_,handles.superClusEB);

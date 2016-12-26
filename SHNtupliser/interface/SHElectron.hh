@@ -50,10 +50,15 @@ class SHElectron : public TObject {
   //kinematic quantities
   TLorentzVector p4_; //p4 stores energy
   float et_; //only exist so I can see what the et is in a tree->Show(0)
-  float nrgy_; //only exist so I can see what the nrgy is in a tree->Show(0)
+  float nrgy_; 
+  float nrgyErr_;  
   float rawNrgy_;
   float preShowerNrgy_;
-  float nrgyErr_;  
+  float epCombNrgy_; //the e-p combined energy 
+  float phoNrgy_; //not set by the electron
+  float oldNrgy_; //not set by the electron
+  float oldNrgyErr_; //not set by the electron
+  float oldEPCombNrgy_; //not set by the electron
   TVector3 posCal_;
   float e5x5_; 
   float eta_;
@@ -110,7 +115,6 @@ class SHElectron : public TObject {
   float isolHadDepth1DR04_;
   float isolHadDepth2DR04_;
   float isolPtTrksDR04_;
-  float epCombNrgy_; //the e-p combined energy 
   int seedId_;
   bool isBarrel_;
   bool isEBEEGap_;   // true if particle is in the crack between EB and EE
@@ -198,6 +202,9 @@ private:
   // void setPassPFlowPreSel(bool pass){passPFlowPreSel_=pass;}
   // void setPassMVAPreSel(bool pass){passMVAPreSel_=pass;}
   void setTrkIsol(float isolPt03,float isolPt04,float isolNrTrks){isolPtTrks_=isolPt03;isolPtTrksDR04_=isolPt04;isolNrTrks_=isolNrTrks;}
+  void setNrgyExtra(float iOldNrgy,float iOldNrgyErr,float iOldEPCombNrgy,float iPhoNrgy){
+    oldNrgy_=iOldNrgy;oldNrgyErr_=iOldNrgyErr;oldEPCombNrgy_=iOldEPCombNrgy;phoNrgy_=iPhoNrgy;
+  }
 
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
@@ -223,13 +230,21 @@ private:
 
   bool hasTrack()const{return dEtaIn_<900;}
   //kinematic quantities
-  float nrgy()const{return p4_.E();}
+  float nrgy()const{return nrgy_;}
+  float nrgyErr()const{return nrgyErr_;}
+  float rawNrgy()const{return rawNrgy_;}
+  float epCombNrgy()const{return epCombNrgy_;}
+  float phoNrgy()const{return phoNrgy_;}
+  float oldNrgy()const{return oldNrgy_;}
+  float oldNrgyErr()const{return oldNrgyErr_;}
+  float oldEPCombNrgy()const{return oldEPCombNrgy_;}
+  
   float et()const;
   float clusEt()const{return posCal().Pt()/posCal().Mag()*clusNrgy();}
   float clusNrgy()const{return superClus()!=NULL ? superClus()->nrgy() : -999.;}
-  float rawNrgy()const{return rawNrgy_;}
+  
   float rawEt()const{return posCal().Pt()/posCal().Mag()*rawNrgy();}
-  float nrgyErr()const{return nrgyErr_;}
+
   float preShowerNrgy()const{return preShowerNrgy_;}
   const TLorentzVector& p4()const{return p4_;}
   const TVector3& posCal()const{return posCal_;}
@@ -300,7 +315,6 @@ private:
   float isolHadDepth1DR04()const{return isolHadDepth1DR04_;}
   float isolHadDepth2DR04()const{return isolHadDepth2DR04_;}
   float isolPtTrksDR04()const{return isolPtTrksDR04_;}
-  float epCombNrgy()const{return epCombNrgy_;}
   bool isEcalDriven()const{return isEcalDriven_;}
   bool isTrackerDriven()const{return isTrackerDriven_;}
   bool passCutPreSel()const{return passCutPreSel_;}
@@ -349,7 +363,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,26) 
+  ClassDef(SHElectron,27) 
 
 };
 

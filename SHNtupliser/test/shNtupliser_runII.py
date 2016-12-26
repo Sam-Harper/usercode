@@ -50,6 +50,7 @@ else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
+    
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -92,6 +93,9 @@ process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
+#process.shNtupliser.gsfEleTag = cms.InputTag("modifiedGsfElectrons")
+#process.shNtupliser.oldGsfEleTag = cms.InputTag("gedGsfElectrons")
+#process.shNtupliser.gsfEleToPFCandMapTag = cms.InputTag("")
 
 if useMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
@@ -192,25 +196,30 @@ my_id_modules = ['HEEP.IDCode.heepElectronID_HEEPV70_cff']
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
+from EgammaAnalysis.ElectronTools.regressionWeights_local_cfi import GBRDWrapperRcd
+GBRDWrapperRcd.connect = cms.string("sqlite_file:"+os.getenv("CMSSW_BASE")+"/src/SHarper/SHNtupliser/data/ged_regression_20161208.db")
+process.regressions           = GBRDWrapperRcd
+process.es_prefer_regressions = cms.ESPrefer('PoolDBESSource','regressions')
 
-
+process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
  
 
 process.p = cms.Path(#process.primaryVertexFilter*
+    process.regressionApplicationAOD*
     process.egammaFilter*
-   # process.heepIDVarValueMaps*
-  #  process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
+    process.heepIDVarValueMaps*
+    process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
         
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-#if useMiniAOD==False:
-#    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-#    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
-#    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-#    process.p.insert(0,process.primaryVertexAssociation)
-#    process.p.insert(1,process.packedCandsForTkIso)
+if useMiniAOD==False:
+    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
+    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
+    process.p.insert(0,process.primaryVertexAssociation)
+    process.p.insert(1,process.packedCandsForTkIso)
 
 
 
@@ -219,17 +228,19 @@ if not isMC:
 
 #import FWCore.PythonUtilities.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
+outputCMSSWFormat=False
+if outputCMSSWFormat:
+    process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+                                            compressionAlgorithm = cms.untracked.string('LZMA'),
+                                            compressionLevel = cms.untracked.int32(4),
+                                            dataset = cms.untracked.PSet(
+            dataTier = cms.untracked.string('AODSIM'),
+            filterName = cms.untracked.string('')
+            ),
+                                            eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+                                            fileName = cms.untracked.string('file:outputTestAOD.root'),
+                                            outputCommands = cms.untracked.vstring("keep *_*_*_*",)
+                                            )                                        
+    process.out = cms.EndPath(process.AODSIMoutput)
 
-#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-#    compressionAlgorithm = cms.untracked.string('LZMA'),
-#    compressionLevel = cms.untracked.int32(4),
-#    dataset = cms.untracked.PSet(
-#        dataTier = cms.untracked.string('AODSIM'),
-#        filterName = cms.untracked.string('')
-#    ),
-#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-#    fileName = cms.untracked.string('file:outputTestAOD.root'),
-#    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
-#)                                        
-#process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag
