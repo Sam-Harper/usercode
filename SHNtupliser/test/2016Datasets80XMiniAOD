@@ -11,6 +11,7 @@
 /ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0& 120 & 1000 &
 IM
 
+/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 130 & 800 & core2
 
 /TTTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 322 & 1600 & core2
 /TTToLL_MLL_500To800_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM & -1 & -1 & 1.0 & 1.0 & 323 & 1600 & core2
