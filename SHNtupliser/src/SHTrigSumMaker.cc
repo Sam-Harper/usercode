@@ -4,6 +4,11 @@
 #include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 
+#include "CondFormats/DataRecord/interface/L1TUtmTriggerMenuRcd.h"
+#include "CondFormats/L1TObjects/interface/L1TUtmTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1TGlobalPrescalesVetosRcd.h"
+#include "CondFormats/L1TObjects/interface/L1TGlobalPrescalesVetos.h"
+
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
@@ -190,7 +195,8 @@ void SHTrigSumMaker::makeSHTrigSumNoFilters_(const edm::TriggerResults& trigResu
   std::string l1MenuName("l1MenuForRun"+std::to_string(edmEvent.id().run()));
   if(!l1Menu_ || l1Menu_->menuName()!=l1MenuName){
     std::cout <<"making a new l1 menu "<<l1MenuName<<std::endl;
-    l1Menu_ = &getL1Menu_(hltConfig,hltPSProv.l1tGlobalUtil(),l1MenuName);
+    //    l1Menu_ = &getL1Menu_(hltConfig,hltPSProv.l1tGlobalUtil(),l1MenuName);
+    l1Menu_ = &getL1Menu_(edmEventSetup,l1MenuName);
   }
   //there is a small potenial bug here if the menu changes but is kept the same name
   //this can only happen for private production/studies and we will ignore this
@@ -238,6 +244,15 @@ SHTrigSumMaker::getL1Menu_(const HLTConfigProvider& hltConfig,
   return menuMgr_.getL1(l1MenuName);
 }
 
+const SHL1Menu&
+SHTrigSumMaker::getL1Menu_(const edm::EventSetup& edmEventSetup,
+			   const std::string& l1MenuName)
+{
+  if(!menuMgr_.hasL1Menu(l1MenuName)){
+    addL1Menu_(edmEventSetup,l1MenuName);
+  }
+  return menuMgr_.getL1(l1MenuName);
+}
 
 const SHHLTMenu&
 SHTrigSumMaker::getHLTMenu_(const HLTConfigProvider& hltConfig)
@@ -311,9 +326,56 @@ void SHTrigSumMaker::addL1Menu_(const HLTConfigProvider& hltConfig,
   //  std::cout <<"l1 "<<l1GtUtils.gtTriggerMenuName()<<" "<<
   // l1GtUtils.gtTriggerMenuVersion()<<
   // l1GtUtils.gtTriggerMenuComment()<<std::endl;
-		  
+ 		  
  
 }
+
+void SHTrigSumMaker::addL1Menu_(const edm::EventSetup& edmEventSetup,
+				const std::string& l1MenuName)
+{
+  std::vector<SHL1Menu::Seed> seeds;
+
+  
+  edm::ESHandle<L1TUtmTriggerMenu> l1GtMenu;
+  edmEventSetup.get<L1TUtmTriggerMenuRcd>().get(l1GtMenu);
+
+  edm::ESHandle<L1TGlobalPrescalesVetos> psAndVetos;
+  edmEventSetup.get<L1TGlobalPrescalesVetosRcd>().get(psAndVetos);
+  
+  
+  std::array<std::string,kNrL1Seeds_> l1Names;
+  l1Names.fill("NULL");
+  for(auto& entry : l1GtMenu->getAlgorithmMap()){
+    if(entry.first!=entry.second.getName()){
+      LogErr<<l1MenuName<<" inconsistant l1AlgoMap, "<<entry.first<<" should equal "<<entry.second.getName()<<std::endl;
+      throw cms::Exception("LogicError");
+    }
+    if(entry.second.getIndex()<l1Names.size()){
+      l1Names[entry.second.getIndex()]=entry.second.getName();
+    }else{
+      LogErr<<l1MenuName<<" inconsistant l1AlgoMap, "<<entry.first<<" with index "<<entry.second.getIndex()<<" is out of range "<<l1Names.size()<<std::endl;
+      throw cms::Exception("LogicError");
+    }
+  }
+  
+  if(psAndVetos->veto_.size()!=kNrL1Seeds_){
+    LogErr<<l1MenuName<<" vetos has "<<psAndVetos->veto_.size()<<" not "<<kNrL1Seeds_<<std::endl;
+  }
+
+  for(size_t bitNr=0;bitNr<l1Names.size();bitNr++){
+    auto preScales = getSeedPreScales(bitNr,psAndVetos->prescale_table_);
+    bool veto = bitNr<psAndVetos->veto_.size() ? psAndVetos->veto_[bitNr] : true;
+    seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Names[bitNr],std::move(preScales),veto));
+  }
+  SHL1Menu l1Menu;
+  l1Menu.setMenuName(l1MenuName);
+  l1Menu.setSeeds(std::move(seeds));
+
+  menuMgr_.add(l1Menu);
+ 
+}
+
+
 TBits SHTrigSumMaker::getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const
 {
   // std::cout <<"starting ps dump "<<l1Util.prescales().size()<<std::endl;
@@ -337,7 +399,7 @@ TBits SHTrigSumMaker::getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const
     bool pass = l1Util.decisionsFinal()[bitNr].second;
     if(pass) result.SetBitNumber(bitNr);
  
-    //  if(l1Menu_->getSeed(bitNr).name()!="NULL") std::cout <<"bit nr "<<bitNr<<" "<<l1Menu_->getSeed(bitNr).name()<<" prescale "<<l1Util.prescales()[bitNr].first<<" "<<l1Util.prescales()[bitNr].second<<std::endl;
+    if(l1Menu_->getSeed(bitNr).name()!="NULL") std::cout <<"bit nr "<<bitNr<<" "<<l1Menu_->getSeed(bitNr).name()<<" prescale "<<l1Util.prescales()[bitNr].first<<" "<<l1Util.prescales()[bitNr].second<<" mine "<<l1Menu_->getSeed(bitNr).preScale(currPSColumn_)<<std::endl;
 
     const std::string& l1Name = l1Menu_->getSeed(bitNr).name();
     if(l1Name!=l1Util.decisionsFinal()[bitNr].first){
@@ -472,6 +534,33 @@ std::vector<std::string> SHTrigSumMaker::splitL1SeedExpr_(const std::string& l1S
   return seedNames; 
 }
 
+
+//converts vector[columnNr][bitNr] -> vector[columnNr] for a given bitNr 
+std::vector<unsigned int> 
+SHTrigSumMaker::getSeedPreScales(size_t bitNr,const std::vector<std::vector<int> >& psTbl)
+{
+  if(psTbl.empty()) return std::vector<unsigned int>();
+
+  bool badTbl=false;
+  for(size_t colNr=1;colNr<psTbl.size() && !badTbl;colNr++){
+    if(psTbl[0].size()!=psTbl[colNr].size()) badTbl=true;    
+  }
+  
+  if(badTbl){
+    LogErr<<" Error, prescale columns have different number of bits:";
+    for(size_t colNr=0;colNr<psTbl.size();colNr++) std::cout <<" "<<colNr<<":"<<psTbl[colNr].size();
+    std::cout <<std::endl;
+  }
+
+  if(badTbl || bitNr>=psTbl[0].size()) return std::vector<unsigned int>(psTbl.size(),1);
+  else {
+    std::vector<unsigned int> preScales;
+    for(size_t colNr=0;colNr<psTbl.size();colNr++){
+      preScales.push_back(psTbl[colNr][bitNr]);
+    }
+    return preScales;
+  }  
+}
 
 // void SHTrigSumMaker::fillFilterTypeCodes(const HLTConfigProvider& config)
 // {

@@ -84,7 +84,8 @@ public:
   //debug information
   int verboseLvl_;
 
-  static const size_t kMaxNrL1SeedsToStore_=20;
+  static constexpr size_t kMaxNrL1SeedsToStore_=20;
+  static constexpr size_t kNrL1Seeds_=512;//this is hardcoded everywhere in the L1 code, its a bad idea but even when there are 256 seeds, it still things theres 512 so we do it this way for now
 public:
   SHTrigSumMaker():l1Menu_(nullptr),hltMenu_(nullptr),verboseLvl_(0){}
   ~SHTrigSumMaker(){}
@@ -145,16 +146,23 @@ private:
 
   const SHL1Menu& getL1Menu_(const HLTConfigProvider& hltConfig,const l1t::L1TGlobalUtil& l1GtUtils,
 			     const std::string& l1MenuName);
-
+  const SHL1Menu& getL1Menu_(const edm::EventSetup& edmEventSetup,
+			     const std::string& l1MenuName);
   const SHHLTMenu& getHLTMenu_(const HLTConfigProvider& hltConfig);
   
   void addL1Menu_(const HLTConfigProvider& hltConfig,const l1t::L1TGlobalUtil& l1GtUtils,
 		  const std::string& l1MenuName);
+  void addL1Menu_(const edm::EventSetup& edmEventSetup,
+		  const std::string& l1MenuName);
+    
   void addHLTMenu_(const HLTConfigProvider& hltConfig);
 	
   
 
   static std::vector<std::string> splitL1SeedExpr_(const std::string& l1SeedExpr);
+  //converts vector[columnNr][bitNr] -> vector[columnNr] for a given bitNr 
+  static std::vector<unsigned int> getSeedPreScales(size_t bitNr,const std::vector<std::vector<int> >& psTbl);
+
 };
   
 
