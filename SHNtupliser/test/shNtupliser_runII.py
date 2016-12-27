@@ -210,16 +210,21 @@ process.p = cms.Path(#process.primaryVertexFilter*
     process.heepIDVarValueMaps*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
-        
+
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
 if useMiniAOD==False:
+    
+    from SHarper.SHNtupliser.addEcalWeightsReco import addEcalWeightsReco
+    addEcalWeightsReco(process,process.p,process.p.index(process.egammaFilter)+1)
+
     process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
     process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
     process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-    process.p.insert(0,process.primaryVertexAssociation)
-    process.p.insert(1,process.packedCandsForTkIso)
+    idVarIndex = process.p.index(process.heepIDVarValueMaps)
+    process.p.insert(idVarIndex,process.primaryVertexAssociation)
+    process.p.insert(idVarIndex+1,process.packedCandsForTkIso)
 
 
 if not isMC:
