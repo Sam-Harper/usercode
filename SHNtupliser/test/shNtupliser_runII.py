@@ -57,7 +57,7 @@ process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(-1)
 )
 
 process.load("Configuration.StandardSequences.Services_cff")
