@@ -22,4 +22,4 @@ egamma_modifications.append( regressionModifier )
 gedGsfElectrons.modifierConfig.modifications = egamma_modifications
 gedPhotons.modifierConfig.modifications   = egamma_modifications
 
-regressionApplicationAOD = cms.Sequence( gedGsfElectrons * gedPhotons )
+regressionApplication = cms.Sequence( gedGsfElectrons * gedPhotons )
