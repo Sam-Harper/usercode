@@ -339,12 +339,9 @@ void SHTrigSumMaker::addL1Menu_(const edm::EventSetup& edmEventSetup,
   edm::ESHandle<L1TUtmTriggerMenu> l1GtMenu;
   edmEventSetup.get<L1TUtmTriggerMenuRcd>().get(l1GtMenu);
   
-  std::cout <<"getting record"<<std::endl;
   edm::ESHandle<L1TGlobalPrescalesVetos> psAndVetos;
   auto psRcd = edmEventSetup.tryToGet<L1TGlobalPrescalesVetosRcd>();
   if(psRcd) psRcd->get(psAndVetos);
-  //get(psAndVetos);
-  std::cout <<"got record "<<std::endl;
   
   std::array<std::string,kNrL1Seeds_> l1Names;
   l1Names.fill("NULL");
