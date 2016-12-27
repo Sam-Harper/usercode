@@ -338,10 +338,13 @@ void SHTrigSumMaker::addL1Menu_(const edm::EventSetup& edmEventSetup,
   
   edm::ESHandle<L1TUtmTriggerMenu> l1GtMenu;
   edmEventSetup.get<L1TUtmTriggerMenuRcd>().get(l1GtMenu);
-
-  edm::ESHandle<L1TGlobalPrescalesVetos> psAndVetos;
-  edmEventSetup.get<L1TGlobalPrescalesVetosRcd>().get(psAndVetos);
   
+  std::cout <<"getting record"<<std::endl;
+  edm::ESHandle<L1TGlobalPrescalesVetos> psAndVetos;
+  auto psRcd = edmEventSetup.tryToGet<L1TGlobalPrescalesVetosRcd>();
+  if(psRcd) psRcd->get(psAndVetos);
+  //get(psAndVetos);
+  std::cout <<"got record "<<std::endl;
   
   std::array<std::string,kNrL1Seeds_> l1Names;
   l1Names.fill("NULL");
@@ -358,15 +361,22 @@ void SHTrigSumMaker::addL1Menu_(const edm::EventSetup& edmEventSetup,
     }
   }
   
-  if(psAndVetos->veto_.size()!=kNrL1Seeds_){
-    LogErr<<l1MenuName<<" vetos has "<<psAndVetos->veto_.size()<<" not "<<kNrL1Seeds_<<std::endl;
+  if(psAndVetos.isValid()){
+    if(psAndVetos->veto_.size()!=kNrL1Seeds_){
+      LogErr<<l1MenuName<<" vetos has "<<psAndVetos->veto_.size()<<" not "<<kNrL1Seeds_<<std::endl;
+    }
+
+    for(size_t bitNr=0;bitNr<l1Names.size();bitNr++){
+      auto preScales = getSeedPreScales(bitNr,psAndVetos->prescale_table_);
+      bool veto = bitNr<psAndVetos->veto_.size() ? psAndVetos->veto_[bitNr] : true;
+      seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Names[bitNr],std::move(preScales),veto));
+    }
+  }else{
+    for(size_t bitNr=0;bitNr<l1Names.size();bitNr++){
+      seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Names[bitNr],std::vector<unsigned int>(),false));
+    }
   }
 
-  for(size_t bitNr=0;bitNr<l1Names.size();bitNr++){
-    auto preScales = getSeedPreScales(bitNr,psAndVetos->prescale_table_);
-    bool veto = bitNr<psAndVetos->veto_.size() ? psAndVetos->veto_[bitNr] : true;
-    seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Names[bitNr],std::move(preScales),veto));
-  }
   SHL1Menu l1Menu;
   l1Menu.setMenuName(l1MenuName);
   l1Menu.setSeeds(std::move(seeds));
@@ -399,7 +409,7 @@ TBits SHTrigSumMaker::getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const
     bool pass = l1Util.decisionsFinal()[bitNr].second;
     if(pass) result.SetBitNumber(bitNr);
  
-    if(l1Menu_->getSeed(bitNr).name()!="NULL") std::cout <<"bit nr "<<bitNr<<" "<<l1Menu_->getSeed(bitNr).name()<<" prescale "<<l1Util.prescales()[bitNr].first<<" "<<l1Util.prescales()[bitNr].second<<" mine "<<l1Menu_->getSeed(bitNr).preScale(currPSColumn_)<<std::endl;
+    //    if(l1Menu_->getSeed(bitNr).name()!="NULL") std::cout <<"bit nr "<<bitNr<<" "<<l1Menu_->getSeed(bitNr).name()<<" prescale "<<l1Util.prescales()[bitNr].first<<" "<<l1Util.prescales()[bitNr].second<<" mine "<<l1Menu_->getSeed(bitNr).preScale(currPSColumn_)<<std::endl;
 
     const std::string& l1Name = l1Menu_->getSeed(bitNr).name();
     if(l1Name!=l1Util.decisionsFinal()[bitNr].first){

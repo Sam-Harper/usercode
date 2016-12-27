@@ -222,17 +222,16 @@ if useMiniAOD==False:
     process.p.insert(1,process.packedCandsForTkIso)
 
 
-
-from CondCore.DBCommon.CondDBSetup_cfi import *
-process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                        connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
-                                       toGet = cms.VPSet(cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
-                                                                   tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt")),
-                                                          cms.PSet(record = cms.string("L1TUtmTriggerMenuRcd"),
-                                                                   tag = cms.string("L1TUtmTriggerMenu_Stage2v0_hlt"))
-                                                          )
-                              )
-process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
+if not isMC:
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
+                                  connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                                  toGet = cms.VPSet(cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
+                                                             tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt")),
+                                                    cms.PSet(record = cms.string("L1TUtmTriggerMenuRcd"),
+                                                             tag = cms.string("L1TUtmTriggerMenu_Stage2v0_hlt"))
+                                                    )                              )
+    process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
 
 
 #import FWCore.PythonUtilities.LumiList as LumiList
