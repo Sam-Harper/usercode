@@ -201,11 +201,13 @@ GBRDWrapperRcd.connect = cms.string("sqlite_file:"+os.getenv("CMSSW_BASE")+"/src
 process.regressions           = GBRDWrapperRcd
 process.es_prefer_regressions = cms.ESPrefer('PoolDBESSource','regressions')
 
-process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
- 
+if useMiniAOD==False:
+    process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
+else:
+    process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 
 process.p = cms.Path(#process.primaryVertexFilter*
-    process.regressionApplicationAOD*
+    process.regressionApplication*
     process.egammaFilter*
     process.heepIDVarValueMaps*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID

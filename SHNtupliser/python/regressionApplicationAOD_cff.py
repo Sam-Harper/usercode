@@ -10,8 +10,7 @@ gedGsfElectrons = cms.EDProducer("ModifiedGsfElectronProducer",
 gedPhotons = cms.EDProducer("ModifiedRecoPhotonProducer",
     src = cms.InputTag("gedPhotons",processName=cms.InputTag.skipCurrentProcess()),
     modifierConfig = cms.PSet( modifications = cms.VPSet() )
-)
-    
+)    
 
 regressionModifier.ecalrechitsEB = cms.InputTag("reducedEcalRecHitsEB")
 regressionModifier.ecalrechitsEE = cms.InputTag("reducedEcalRecHitsEE")
@@ -19,12 +18,6 @@ regressionModifier.useLocalFile  = cms.bool(False)
 
 egamma_modifications = cms.VPSet( )
 egamma_modifications.append( regressionModifier )
-
-#modifiedGsfElectrons.modifierConfig.modifications = egamma_modifications
-#modifiedPhotons.modifierConfig.modifications   = egamma_modifications
-
-#regressionApplicationAOD = cms.Sequence( modifiedGsfElectrons * modifiedPhotons )
-
 
 gedGsfElectrons.modifierConfig.modifications = egamma_modifications
 gedPhotons.modifierConfig.modifications   = egamma_modifications
