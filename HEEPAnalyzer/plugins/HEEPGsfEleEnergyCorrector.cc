@@ -21,7 +21,7 @@ void HEEPGsfEleEnergyCorrector::produce(edm::Event& iEvent,const edm::EventSetup
   const reco::GsfElectronCollection& eles = *(eleHandle.product());
   
 
-  std::auto_ptr<reco::GsfElectronCollection> outEles(new reco::GsfElectronCollection);
+  auto outEles = std::make_unique<reco::GsfElectronCollection>();
 
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
     reco::GsfElectron ele(eles[eleNr]);  
@@ -33,7 +33,7 @@ void HEEPGsfEleEnergyCorrector::produce(edm::Event& iEvent,const edm::EventSetup
     outEles->push_back(ele);
   }
 
-  iEvent.put(outEles);
+  iEvent.put(std::move(outEles));
 }
     
 float HEEPGsfEleEnergyCorrector::fEtCorr(float et,int type)

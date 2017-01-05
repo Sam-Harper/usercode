@@ -64,17 +64,17 @@ void HEEPIdValueMapProducer::produce(edm::Event& iEvent,const edm::EventSetup& i
   }
   
   if(writeIdAsInt_){
-    std::auto_ptr<edm::ValueMap<int> > out(new edm::ValueMap<int>());
+    auto out = std::make_unique<edm::ValueMap<int>>();
     edm::ValueMap<int>::Filler filler(*out);
     filler.insert(eleHandle,cutResults.begin(),cutResults.end());
     filler.fill();
-    iEvent.put(out);
+    iEvent.put(std::move(out));
   }else{
-    std::auto_ptr<edm::ValueMap<float> > out(new edm::ValueMap<float>());
+    auto out = std::make_unique<edm::ValueMap<float>>();
     edm::ValueMap<float>::Filler filler(*out);
     filler.insert(eleHandle,cutResults.begin(),cutResults.end());
     filler.fill();
-    iEvent.put(out);
+    iEvent.put(std::move(out));
   }
 }
 

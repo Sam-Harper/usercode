@@ -44,9 +44,9 @@ public:
 
   static void globalEndRunProduce(edm::Run& run,const edm::EventSetup& setup,const RunContext* context ){
     int value = context->run()->value.load();
-    std::auto_ptr<edm::MergeableCounter> nrEventsForRun(new edm::MergeableCounter);
+    auto nrEventsForRun = std::make_unique<edm::MergeableCounter>();
     nrEventsForRun->value=value;
-    run.put(nrEventsForRun,"nrEventsRun");
+    run.put(std::move(nrEventsForRun),"nrEventsRun");
   }
 
   //this resets the lumi count to zero for this module
@@ -79,9 +79,9 @@ public:
 					      const LuminosityBlockContext* context,
 					      const Count* count){
     int value = count->value.load();
-    std::auto_ptr<edm::MergeableCounter> nrEventsForLumi(new edm::MergeableCounter);
+    auto nrEventsForLumi = std::make_unique<edm::MergeableCounter>();
     nrEventsForLumi->value=value;
-    lumi.put(nrEventsForLumi,"nrEventsLumi");
+    lumi.put(std::move(nrEventsForLumi),"nrEventsLumi");
   }
 
 };

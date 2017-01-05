@@ -29,7 +29,7 @@ public:
   ~DeCalibEcalRecHitProducer(){}
   void produce(edm::Event & iEvent, const edm::EventSetup& iSetup);
   
-  void makeNewRecHitCollection(const edm::Handle<EcalRecHitCollection>& recHitHandle,edm::ESHandle<EcalLaserDbService>& laserHandle,const EcalIntercalibConstantMap& interCalibMap,float adcToGeVCorr,const edm::Timestamp& time,std::auto_ptr<EcalRecHitCollection>& newRecHitCollection);
+  void makeNewRecHitCollection(const edm::Handle<EcalRecHitCollection>& recHitHandle,edm::ESHandle<EcalLaserDbService>& laserHandle,const EcalIntercalibConstantMap& interCalibMap,float adcToGeVCorr,const edm::Timestamp& time,std::unique_ptr<EcalRecHitCollection>& newRecHitCollection);
   float getLaserCorr(const DetId& id,const edm::ESHandle<EcalLaserDbService>& laserHandle,const edm::Timestamp& time)const;
 };
 
@@ -67,17 +67,17 @@ void DeCalibEcalRecHitProducer::produce(edm::Event & iEvent, const edm::EventSet
   edm::ESHandle<EcalADCToGeVConstant> adcToGeVHandle;
   iSetup.get<EcalADCToGeVConstantRcd>().get(adcToGeVHandle);
 
-  std::auto_ptr<EcalRecHitCollection> newEBHits(new EcalRecHitCollection);
-  std::auto_ptr<EcalRecHitCollection> newEEHits(new EcalRecHitCollection);  
+  auto newEBHits = std::make_unique<EcalRecHitCollection>();
+  auto newEEHits = std::make_unique<EcalRecHitCollection>();  
   
   makeNewRecHitCollection(ebRecHitHandle,laserHandle,interCalibMap,adcToGeVHandle->getEBValue(),iEvent.time(),newEBHits);
   makeNewRecHitCollection(eeRecHitHandle,laserHandle,interCalibMap,adcToGeVHandle->getEEValue(),iEvent.time(),newEEHits);
 
-  iEvent.put(newEBHits,"EcalRecHitsEB");  
-  iEvent.put(newEEHits,"EcalRecHitsEE");
+  iEvent.put(std::move(newEBHits),"EcalRecHitsEB");  
+  iEvent.put(std::move(newEEHits),"EcalRecHitsEE");
 }
 
-void DeCalibEcalRecHitProducer::makeNewRecHitCollection(const edm::Handle<EcalRecHitCollection>& recHitHandle,edm::ESHandle<EcalLaserDbService>& laserHandle,const EcalIntercalibConstantMap& interCalibMap,float adcToGeVCorr,const edm::Timestamp& time,std::auto_ptr<EcalRecHitCollection>& newRecHitCollection)
+void DeCalibEcalRecHitProducer::makeNewRecHitCollection(const edm::Handle<EcalRecHitCollection>& recHitHandle,edm::ESHandle<EcalLaserDbService>& laserHandle,const EcalIntercalibConstantMap& interCalibMap,float adcToGeVCorr,const edm::Timestamp& time,std::unique_ptr<EcalRecHitCollection>& newRecHitCollection)
 {
   for(EcalRecHitCollection::const_iterator recHit = recHitHandle->begin(); recHit != recHitHandle->end(); ++recHit) {
     DetId id = recHit->id();

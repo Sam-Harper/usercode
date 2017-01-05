@@ -51,7 +51,7 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   
 
   //prepare output collection
-  std::auto_ptr<pat::ElectronCollection> outEle(new pat::ElectronCollection());
+  auto outEle = std::make_unique<pat::ElectronCollection>();
 
   //clone electrons, reset energy to the ecal energy and add info
   for(size_t eleNr=0;eleNr<eles.size();eleNr++){
@@ -64,7 +64,7 @@ void HEEPAttStatusToPAT::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   }
 
   //store the output
-  iEvent.put(outEle);
+  iEvent.put(std::move(outEle));
 }
 
 

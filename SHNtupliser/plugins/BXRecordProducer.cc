@@ -25,8 +25,8 @@ public:
 private:
   
   void produce( edm::Event & event, const edm::EventSetup & ) override{
-     std::auto_ptr<int> bunchSpacingP(new int(bunchSpacing_));
-     event.put(bunchSpacingP,"bunchSpacing");
+    auto bunchSpacingP = std::make_unique<int>(bunchSpacing_);
+    event.put(std::move(bunchSpacingP),"bunchSpacing");
   }
 
 };

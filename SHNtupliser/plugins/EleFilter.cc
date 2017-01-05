@@ -43,11 +43,11 @@ void EleFilter::produce(edm::Event& event,const edm::EventSetup& setup)
   edm::Handle<reco::GsfElectronCollection> eles;
   event.getByLabel(eleTag_,eles);
   
-  std::auto_ptr<reco::GsfElectronCollection> newEles(new reco::GsfElectronCollection);
+  auto newEles = std::make_unique<reco::GsfElectronCollection>();
   for(const auto& ele : *eles){
     if(ele.et()>100) newEles->push_back(ele);
   }
-  event.put(newEles);
+  event.put(std::move(newEles));
 }
 
 
