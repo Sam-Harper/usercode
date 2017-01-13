@@ -197,7 +197,9 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 from EgammaAnalysis.ElectronTools.regressionWeights_local_cfi import GBRDWrapperRcd
-GBRDWrapperRcd.connect = cms.string("sqlite_file:"+os.getenv("CMSSW_BASE")+"/src/SHarper/SHNtupliser/data/ged_regression_20161208.db")
+GBRDWrapperRcd.connect = cms.string("sqlite_file:"+os.getenv("CMSSW_BASE")+"/src/SHarper/SHNtupliser/test/ged_regression_20161208.db")
+if isCrabJob==True:
+    GBRDWrapperRcd.connect = cms.string('sqlite_file:ged_regression_20161208.db')
 process.regressions           = GBRDWrapperRcd
 process.es_prefer_regressions = cms.ESPrefer('PoolDBESSource','regressions')
 
