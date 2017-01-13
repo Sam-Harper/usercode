@@ -56,9 +56,9 @@ class SHElectron : public TObject {
   float preShowerNrgy_;
   float epCombNrgy_; //the e-p combined energy 
   float phoNrgy_; //not set by the electron
-  float oldNrgy_; //not set by the electron
-  float oldNrgyErr_; //not set by the electron
-  float oldEPCombNrgy_; //not set by the electron
+  float altNrgy_; //not set by the electron
+  float altNrgyErr_; //not set by the electron
+  float altEPCombNrgy_; //not set by the electron
   TVector3 posCal_;
   float e5x5_; 
   float eta_;
@@ -77,6 +77,7 @@ class SHElectron : public TObject {
   int nrDof_;
   bool posCharge_;
   float d0_;
+  float trkMomErr_;
 
   //id quantities
   float epIn_;
@@ -202,8 +203,8 @@ private:
   // void setPassPFlowPreSel(bool pass){passPFlowPreSel_=pass;}
   // void setPassMVAPreSel(bool pass){passMVAPreSel_=pass;}
   void setTrkIsol(float isolPt03,float isolPt04,float isolNrTrks){isolPtTrks_=isolPt03;isolPtTrksDR04_=isolPt04;isolNrTrks_=isolNrTrks;}
-  void setNrgyExtra(float iOldNrgy,float iOldNrgyErr,float iOldEPCombNrgy,float iPhoNrgy){
-    oldNrgy_=iOldNrgy;oldNrgyErr_=iOldNrgyErr;oldEPCombNrgy_=iOldEPCombNrgy;phoNrgy_=iPhoNrgy;
+  void setNrgyExtra(float iAltNrgy,float iAltNrgyErr,float iAltEPCombNrgy,float iPhoNrgy){
+    altNrgy_=iAltNrgy;altNrgyErr_=iAltNrgyErr;altEPCombNrgy_=iAltEPCombNrgy;phoNrgy_=iPhoNrgy;
   }
 
   //get the seed + super clusters
@@ -235,9 +236,9 @@ private:
   float rawNrgy()const{return rawNrgy_;}
   float epCombNrgy()const{return epCombNrgy_;}
   float phoNrgy()const{return phoNrgy_;}
-  float oldNrgy()const{return oldNrgy_;}
-  float oldNrgyErr()const{return oldNrgyErr_;}
-  float oldEPCombNrgy()const{return oldEPCombNrgy_;}
+  float altNrgy()const{return altNrgy_;}
+  float altNrgyErr()const{return altNrgyErr_;}
+  float altEPCombNrgy()const{return altEPCombNrgy_;}
   
   float et()const;
   float clusEt()const{return posCal().Pt()/posCal().Mag()*clusNrgy();}
@@ -271,7 +272,7 @@ private:
   float dzTrkVtx()const;
   const TVector3& posTrackInnToSeed()const{return posTrackInnToSeed_;}
   const TVector3& posTrackOutToSeed()const{return posTrackOutToSeed_;}
-
+  float trkMomErr()const{return trkMomErr_;}
   //id quantities
   float epIn()const{return epIn_;}
   float epOut()const{return epOut_;}
