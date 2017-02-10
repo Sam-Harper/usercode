@@ -1,9 +1,4 @@
 
-/SinglePhoton/Run2016B-23Sep2016-v3/AOD & 273158 & 275376 & 120 & doThis 
-/SinglePhoton/Run2016C-23Sep2016-v1/AOD & 275656 & 276384 & 120 & 
-/SinglePhoton/Run2016D-23Sep2016-v1/AOD & 276315 & 276811 & 120 & 
- 
-
 
 /DoubleEG/Run2016B-23Sep2016-v3/AOD & 273158 & 275376 & 120 & 
 /DoubleEG/Run2016C-23Sep2016-v1/AOD & 275656 & 276384 & 120 & 
@@ -14,3 +9,25 @@
 /DoubleEG/Run2016H-PromptReco-v1/AOD & 281085 & 281201 & 120 &
 /DoubleEG/Run2016H-PromptReco-v2/AOD & 281207 & 284035 & 120 &
 /DoubleEG/Run2016H-PromptReco-v3/AOD & 284036 & 284068 & 120 &
+
+
+/SinglePhoton/Run2016B-23Sep2016-v3/AOD & 273158 & 275376 & 120 & 
+/SinglePhoton/Run2016C-23Sep2016-v1/AOD & 275656 & 276384 & 120 & 
+/SinglePhoton/Run2016D-23Sep2016-v1/AOD & 276315 & 276811 & 120 & 
+/SinglePhoton/Run2016E-23Sep2016-v1/AOD & 276831 & 277420 & 120 &
+/SinglePhoton/Run2016F-23Sep2016-v1/AOD & 277932 & 278808 & 120 &
+/SinglePhoton/Run2016G-23Sep2016-v1/AOD & 278820 & 280385 & 120 &
+/SinglePhoton/Run2016H-PromptReco-v1/AOD & 281085 & 281201 & 120 &
+/SinglePhoton/Run2016H-PromptReco-v2/AOD & 281207 & 284035 & 120 &
+/SinglePhoton/Run2016H-PromptReco-v3/AOD & 284036 & 284068 & 120 &
+
+
+/SingleElectron/Run2016B-23Sep2016-v3/AOD & 273158 & 275376 & 120 & 
+/SingleElectron/Run2016C-23Sep2016-v1/AOD & 275656 & 276384 & 120 & 
+/SingleElectron/Run2016D-23Sep2016-v1/AOD & 276315 & 276811 & 120 & 
+/SingleElectron/Run2016E-23Sep2016-v1/AOD & 276831 & 277420 & 120 &
+/SingleElectron/Run2016F-23Sep2016-v1/AOD & 277932 & 278808 & 120 &
+/SingleElectron/Run2016G-23Sep2016-v1/AOD & 278820 & 280385 & 120 &
+/SingleElectron/Run2016H-PromptReco-v1/AOD & 281085 & 281201 & 120 &
+/SingleElectron/Run2016H-PromptReco-v2/AOD & 281207 & 284035 & 120 &
+/SingleElectron/Run2016H-PromptReco-v3/AOD & 284036 & 284068 & 120 &
