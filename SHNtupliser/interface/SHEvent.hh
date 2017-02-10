@@ -26,7 +26,7 @@
 #include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHRecHitsToClustersMap.hh"
-
+#include "SHarper/SHNtupliser/interface/SHGainSwitchInfo.hh"
 #include "TObject.h"
 #include "TClonesArray.h"
 #include "TBits.h"
@@ -113,6 +113,7 @@ class SHEvent : public TObject {
   SHTrigSummary trigSum_;//! stored on a seperate branch
   SHPileUpSummary puSum_;//! stored on a seperate branch 
   SHRecHitsToClustersMap recHitClusMap_;//! stored on a seperate branch 
+  SHGainSwitchInfo gainSwitchInfo_;//! stored on a seperate branch 
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -254,6 +255,9 @@ class SHEvent : public TObject {
   const SHPileUpSummary& getPUSum()const{return puSum_;}
   SHPileUpSummary& getPUSum(){return puSum_;}
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
+  SHGainSwitchInfo& getGSInfo(){return gainSwitchInfo_;} 
+  const SHGainSwitchInfo& getGSInfo()const{return gainSwitchInfo_;} 
+
   TClonesArray& getPreShowerClusters(){return preShowerClusArray_;}
   const SHRecHitsToClustersMap& getRecHitClusMap()const{return recHitClusMap_;}
   SHRecHitsToClustersMap& getRecHitClusMap(){return recHitClusMap_;}

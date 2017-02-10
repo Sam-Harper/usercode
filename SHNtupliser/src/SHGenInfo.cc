@@ -137,20 +137,7 @@ float SHGenInfo::lheHT()const
 
 float SHGenInfo::lheBosonPt()const
 {
-  //  float pt=0;
-  for(const auto& part : lheParticles_){
-    if(part.pid()==22 || part.pid()==23 || std::abs(part.pid())==24){
-      //if(part.p4().Pt()<-100){
-	//std::cout <<"pt of "<<part.p4().Pt()<<std::endl;
-	//for(const auto& p : lheParticles_) std::cout <<p<<std::endl;
-	//  }
-      return part.p4().Pt();
-    }
-  }
-  //std::cout <<"no W "<<std::endl;
-  //for(const auto& p : lheParticles_) std::cout <<p<<std::endl;
- 
-  return -1;
+  return lheDiLeptonP4().Pt();
 }
 
 float SHGenInfo::lheDiLeptonMass()const
@@ -166,6 +153,18 @@ float SHGenInfo::lheDiLeptonMass()const
   return -1;
 }
 
+TLorentzVector SHGenInfo::lheDiLeptonP4()const
+{
+  //  float pt=0;
+  std::vector<const SHMCParticle*> leptons;
+  for(const auto& part : lheParticles_){
+    if(std::abs(part.pid())>=11 && std::abs(part.pid())<=16){
+      leptons.push_back(&part);
+    }
+  }
+  if(leptons.size()>=2) return leptons[0]->p4()+leptons[1]->p4();
+  return TLorentzVector();
+}
 
 void SHGenInfo::printMCParts(size_t nrLines)const
 {

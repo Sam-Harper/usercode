@@ -89,6 +89,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   if(branches_.addCaloHits) addCaloHits(heepEvent,shEvent);
   if(branches_.addCaloHits) addEcalWeightsHits(heepEvent,shEvent);
   if(branches_.addCaloTowers) addCaloTowers(heepEvent,shEvent);
+  if(branches_.addGainSwitchInfo) addGSFixInfo(heepEvent,shEvent);
 
 
 }
@@ -437,6 +438,62 @@ void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const
       if(heepEvent.jets()[jetNr].pt()>30) shEvent.addJet(heepEvent.jets()[jetNr]);
     }
   }
+}
+
+
+void SHEventHelper::addGSFixInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  SHGainSwitchInfo& gsInfo = shEvent.getGSInfo();
+  gsInfo.clear();
+  auto handles = heepEvent.handles();
+  
+  //first get general event 
+  if(handles.gsFixDupECALClusters.isValid() && handles.gsFixHitsNotReplaced.isValid()){
+    
+    std::vector<int> detIdsNotFixed;
+    for(const DetId& id : *handles.gsFixHitsNotReplaced){
+      detIdsNotFixed.push_back(id.rawId());
+    }
+    bool hasEBGS=false;
+    if(handles.ebReducedRecHits.isValid()){
+      hasEBGS |= hasGSIn5x5_(handles.recoPho,*handles.ebReducedRecHits,*handles.caloTopology);
+      hasEBGS |= hasGSIn5x5_(handles.gsfEle,*handles.ebReducedRecHits,*handles.caloTopology);
+    }
+    bool dupSC = *handles.gsFixDupECALClusters;
+    gsInfo.setFixInfo(dupSC,hasEBGS,detIdsNotFixed);
+  } 
+  
+  //add the orginal multi fit hits
+  if(handles.gsFixOrgReducedEGEBHits.isValid()){
+    auto gsHits = getGainSwitchedHits(*handles.gsFixOrgReducedEGEBHits);
+    for(const EcalRecHit* hit : gsHits){
+      SHCaloHit shHit;
+      setRecHit(shHit,*hit,heepEvent);
+      shEvent.getCaloHits().addExtraHit("ebGSMultiFit",shHit);
+    }
+  }
+
+  //now mets
+  if(handles.gsFixMETOrg.isValid() && !handles.gsFixMETOrg->empty()){
+    auto& met = handles.gsFixMETOrg->front();
+    gsInfo.setMETOrg(met.et(),met.phi());
+  }
+  if(handles.gsFixMETEGClean.isValid() && !handles.gsFixMETEGClean->empty()){
+    auto& met = handles.gsFixMETEGClean->front();
+    gsInfo.setMETJustEGFix(met.et(),met.phi());
+  }
+    
+}
+
+  
+std::vector<const EcalRecHit*> SHEventHelper::getGainSwitchedHits(const EcalRecHitCollection& hits)
+{
+  std::vector<const EcalRecHit*> gsHits;
+  const std::vector<int> flags={EcalRecHit::kHasSwitchToGain6,EcalRecHit::kHasSwitchToGain1};
+  for(auto& hit : hits){
+    if(hit.checkFlags(flags)) gsHits.push_back(&hit);
+  }
+  return gsHits;
 }
 
 void SHEventHelper::addIsolTrks(const heep::Event& heepEvent,SHEvent& shEvent)const

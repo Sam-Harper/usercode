@@ -85,7 +85,7 @@ heepEventPara  = cms.PSet (
     beamSpotTag=cms.InputTag("offlineBeamSpot"),
     gsFixDupECALClusters = cms.InputTag("particleFlowEGammaGSFixed","dupECALClusters"),
     gsFixHitsNotReplaced = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","hitsNotReplaced"),
-    gsFixOrgReducedEGEBHits = cms.InputTag("reducedEgammaBeforeGSFix"),
+    gsFixOrgReducedEGEBHits = cms.InputTag("reducedEgammaBeforeGSFix","reducedEBRecHits"),
     gsFixMETOrg = cms.InputTag("slimmedMETs"),
     gsFixMETEGClean = cms.InputTag("slimmedMETsEGClean")
     

@@ -22,6 +22,7 @@ shNtupPara = cms.PSet(
     addTrigSum = cms.bool(True),
     addHLTDebug = cms.bool(False),
     addMCParts = cms.bool(True),
+    addGainSwitchInfo = cms.bool(False),
     filterIsolTrks=cms.bool(True),
     filterEcalHits=cms.bool(True),
     filterHcalHits=cms.bool(True),

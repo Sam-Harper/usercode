@@ -63,6 +63,7 @@ public:
   float lheHT()const;
   float lheBosonPt()const;
   float lheDiLeptonMass()const;
+  TLorentzVector lheDiLeptonP4()const;
   void printMCParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
   void printLHEParts(size_t nrLines=std::numeric_limits<size_t>::max())const;
   

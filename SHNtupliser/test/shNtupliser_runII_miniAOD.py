@@ -84,6 +84,8 @@ process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
 process.shNtupliser.addTrigSum = True
+if not isMC:
+    process.shNtupliser.addGainSwitchInfo = True
 
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
