@@ -9,6 +9,7 @@ process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),  
+#                            eventsToProcess = cms.untracked.VEventRange("281707:47701394-281707:47701394")
 
                             )
 if isCrabJob:
@@ -19,14 +20,16 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=322
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
 
 datasetVersion="TOSED:DATASETVERSION"
-
-print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD
+if not isCrabJob:
+    datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
+    
+print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD,"datasetVersion = ",datasetVersion
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -100,7 +103,8 @@ if useMiniAOD:
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-#process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsTrkIsoCorr")
+process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
+process.shNtupliser.metTag = cms.untracked.InputTag("slimmedMETsEGClean")
 import os
 
 
@@ -176,7 +180,7 @@ if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetC
 if isCrabJob and process.shNtupliser.datasetCode.value()>131:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-process.load("HEEP.IDCode.heepIdVarValueMapProducer_cfi")
+
 
 #setup the VID with HEEP 7.0, not necessary if you dont want to use VID
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
@@ -188,7 +192,7 @@ else:
     switchOnVIDElectronIdProducer(process,DataFormat.AOD)
 
 # define which IDs we want to produce and add them to VID
-my_id_modules = ['HEEP.IDCode.heepElectronID_HEEPV70_cff']
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
