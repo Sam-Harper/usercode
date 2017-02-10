@@ -93,6 +93,7 @@ namespace heep {
     edm::Handle<reco::PreshowerClusterCollection> preShowerClusX;
     edm::Handle<reco::PreshowerClusterCollection> preShowerClusY; 
     edm::Handle<edm::View<reco::GsfElectron> > gsfEle; 
+    edm::Handle<edm::View<reco::GsfElectron> > oldGsfEle; 
     edm::Handle<edm::View<reco::Photon> > recoPho;
     edm::Handle<reco::TrackCollection> ctfTrack;
     edm::Handle<reco::GenParticleCollection> genParticle;

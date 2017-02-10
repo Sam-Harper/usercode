@@ -152,6 +152,10 @@ private:
 				 const heep::Event& heepEvent)const;
   const reco::GsfElectron* matchTrkToEle_(const reco::TrackBase& cand,
 					  const heep::Event& heepEvent)const;
+  
+  
+  static const reco::Photon* getPhoMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent);
+  static const reco::GsfElectron* getOldEleMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent);
 };
 
 #endif

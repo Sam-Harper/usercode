@@ -39,6 +39,8 @@ class SHCaloHit : public TObject {
   int detId()const{return detId_;}
   float time()const{return time_;}
   uint32_t flagBits()const{return flagBits_;}
+  bool anyFlagSet(const uint32_t mask=~0x0)const{return (flagBits()&mask)!=0;}
+  bool allFlagsSet(const uint32_t flags)const{return (flagBits()&flags)!=flags;}
   float chi2()const;
   float nrgyErr()const;
   float timeErr()const;

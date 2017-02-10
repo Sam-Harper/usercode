@@ -60,6 +60,8 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
    #     print line,
     with nostdout():
         status = crabCommand('status',dir = crab_dir)
+#    print status
+
 
     #jobsPerStatus
     nrjobs = len(status['jobList'])
@@ -69,8 +71,12 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
     grid_output_dir = get_grid_output_dir("/pnfs/pp.rl.ac.uk/data/cms"+config.Data.outLFNDirBase+"/"+config.Data.inputDataset.split("/")[1]+"/"+config.Data.outputDatasetTag+"/",timestamp)
 #    print grid_output_dir
     missing_jobs = find_missing_jobs(grid_output_dir,nrjobs)
-
-    if not missing_jobs:
+    
+    if status["taskWarningMsg"]!=[]:
+        print crab_dir, ":",status["taskWarningMsg"][0]
+    elif status['jobsPerStatus']=={}:
+        print crab_dir, ": no jobs created"
+    elif not missing_jobs:
         print crab_dir," : all jobs completed"
     else:
         print crab_dir," : jobs missing"

@@ -170,6 +170,12 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   //shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle->superCluster(),shEvent);
+  const reco::Photon* phoMatch = getPhoMatch_(gsfEle,heepEvent);
+  const reco::GsfElectron* oldEleMatch = getOldEleMatch_(gsfEle,heepEvent);
+  const float phoNrgy = phoMatch ? phoMatch->energy() : 0.;
+  if(oldEleMatch) shEle->setNrgyExtra(oldEleMatch->ecalEnergy(),oldEleMatch->ecalEnergyError(),oldEleMatch->energy(),phoNrgy);
+  else shEle->setNrgyExtra(0.,0.,0.,phoNrgy);
+		    
   //MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
  
   // if(shEle->seedId()!=0 && false){
@@ -383,7 +389,7 @@ void SHEventHelper::addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)con
       PFFuncs::fillPFCands(&shEvent,kMaxDRPFCands_,shEvent.getPFCands(),heepEvent.handles().pfCandidate,
 			   mainVtx,heepEvent.handles().vertices,
 			   *(heepEvent.handles().gsfEleToPFCandMap.product()),
-			   heepEvent.handles().gsfEle);
+			   heepEvent.handles().oldGsfEle);
     }
   }
 }
@@ -1040,4 +1046,34 @@ bool SHEventHelper::isEcalBarrel_(const DetId& id)
 bool SHEventHelper::isEcalEndcap_(const DetId& id)
 {
   return id.det()==DetId::Ecal && id.subdetId()==EcalEndcap;
+}
+
+const reco::Photon* 
+SHEventHelper::getPhoMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent)
+{
+  const reco::Photon* bestMatch = nullptr;
+  if(heepEvent.handles().recoPho.isValid()) {
+    for(auto& pho : *heepEvent.handles().recoPho){
+      if(pho.superCluster()->seed()->seed() == gsfEle->superCluster()->seed()->seed()){
+	if(bestMatch) std::cout <<"already matched photon "<<bestMatch->energy()<<" "<<pho.energy()<<std::endl;
+	bestMatch = &pho;
+      }
+    }
+  }
+  return bestMatch;
+}
+
+const reco::GsfElectron* 
+SHEventHelper::getOldEleMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent)
+{
+  const reco::GsfElectron* bestMatch = nullptr;
+  if(heepEvent.handles().oldGsfEle.isValid()) {
+    for(auto& ele : *heepEvent.handles().oldGsfEle){
+      if(ele.superCluster()->seed()->seed() == gsfEle->superCluster()->seed()->seed()){
+	if(bestMatch) std::cout <<"already matched ele "<<bestMatch->superCluster()->energy()<<" "<<ele.superCluster()->energy()<<std::endl;
+	bestMatch = &ele;
+      }
+    }
+  }
+  return bestMatch;
 }

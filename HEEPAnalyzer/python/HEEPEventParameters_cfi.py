@@ -35,6 +35,7 @@ heepEventPara  = cms.PSet (
     reducedEndcapRecHitTag = cms.InputTag("reducedEcalRecHitsEE"),
     hbheRecHitsTag = cms.InputTag("hbhereco"),
     gsfEleTag = cms.InputTag("gedGsfElectrons"),
+    oldGsfEleTag = cms.InputTag("gedGsfElectrons",processName=cms.InputTag.skipCurrentProcess()),
     recoPhoTag = cms.InputTag("gedPhotons"),
     pfCandidateTag = cms.InputTag("particleFlow"),
     packedPFCandTag = cms.InputTag("packedPFCandidates"),
