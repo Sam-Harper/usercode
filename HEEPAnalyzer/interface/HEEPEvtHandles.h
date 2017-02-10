@@ -62,7 +62,7 @@
 #include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbService.h"
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstants.h"
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
-
+#include "DataFormats/DetId/interface/DetIdCollection.h"
 
 
 namespace heep {
@@ -136,7 +136,12 @@ namespace heep {
     edm::ESHandle<EcalADCToGeVConstant> ecalADCToGeV;
     edm::ESHandle<EcalLaserDbService> ecalLaser;
     edm::ESHandle<EcalIntercalibConstants> ecalInterCalib;
-    
+
+    edm::Handle<bool> gsFixDupECALClusters;
+    edm::Handle<DetIdCollection> gsFixHitsNotReplaced;
+    edm::Handle<EcalRecHitCollection> gsFixOrgReducedEGEBHits;
+    edm::Handle<edm::View<pat::MET> > gsFixMETOrg;
+    edm::Handle<edm::View<pat::MET> > gsFixMETEGClean;
   };
 }
 

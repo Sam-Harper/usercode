@@ -77,8 +77,12 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(genEvtInfoTag_ ,conf.getParameter<edm::InputTag>("genEvtInfoTag"),cc); 
   getToken_(egHLTCandsTag_ ,conf.getParameter<edm::InputTag>("egHLTCandsTag"),cc); 
   getToken_(egHLTCandsUnseededTag_ ,conf.getParameter<edm::InputTag>("egHLTCandsUnseededTag"),cc); 
+  getToken_(gsFixDupECALClustersTag_,conf.getParameter<edm::InputTag>("gsFixDupECALClusters"),cc);
+  getToken_(gsFixHitsNotReplacedTag_,conf.getParameter<edm::InputTag>("gsFixHitsNotReplaced"),cc);
+  getToken_(gsFixOrgReducedEGEBHitsTag_,conf.getParameter<edm::InputTag>("gsFixOrgReducedEGEBHits"),cc);
+  getToken_(gsFixMETOrgTag_,conf.getParameter<edm::InputTag>("gsFixMETOrg"),cc);
+  getToken_(gsFixMETEGCleanTag_,conf.getParameter<edm::InputTag>("gsFixMETEGClean"),cc);
   
-
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
   maxDRTrigMatch_ = conf.getParameter<double>("maxDRTrigMatch");
@@ -170,6 +174,12 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(egHLTCandsTag_,handles.egHLTCands);
   event.getByToken(egHLTCandsUnseededTag_,handles.egHLTCandsUnseeded);
   //event.getByType(handles.beamSpot);
+
+  event.getByToken(gsFixDupECALClustersTag_,handles.gsFixDupECALClusters);
+  event.getByToken(gsFixHitsNotReplacedTag_,handles.gsFixHitsNotReplaced);
+  event.getByToken(gsFixOrgReducedEGEBHitsTag_,handles.gsFixOrgReducedEGEBHits);
+  event.getByToken(gsFixMETOrgTag_,handles.gsFixMETOrg); 
+  event.getByToken(gsFixMETEGCleanTag_,handles.gsFixMETEGClean); 
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);

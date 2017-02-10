@@ -89,6 +89,12 @@ namespace heep {
     edm::EDGetTokenT<reco::RecoEcalCandidateCollection> egHLTCandsUnseededTag_;
     edm::EDGetTokenT<LHEEventProduct> lheEventTag_;
     edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoTag_;
+    edm::EDGetTokenT<bool> gsFixDupECALClustersTag_;
+    edm::EDGetTokenT<DetIdCollection> gsFixHitsNotReplacedTag_;
+    edm::EDGetTokenT<EcalRecHitCollection> gsFixOrgReducedEGEBHitsTag_;
+    edm::EDGetTokenT<edm::View<pat::MET> > gsFixMETOrgTag_;
+    edm::EDGetTokenT<edm::View<pat::MET> > gsFixMETEGCleanTag_;
+    
     
     std::shared_ptr<HLTPrescaleProvider> hltPSProvider_;
 

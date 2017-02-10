@@ -82,7 +82,13 @@ heepEventPara  = cms.PSet (
     genEvtInfoTag=cms.InputTag("generator"),
     trkIsoNoJetCoreTag=cms.InputTag("heepIDVarValueMaps","eleTrkPtIso"),
     nrSatCrysIn5x5Tag=cms.InputTag("heepIDVarValueMaps","eleNrSaturateIn5x5"),
-    beamSpotTag=cms.InputTag("offlineBeamSpot")
+    beamSpotTag=cms.InputTag("offlineBeamSpot"),
+    gsFixDupECALClusters = cms.InputTag("particleFlowEGammaGSFixed","dupECALClusters"),
+    gsFixHitsNotReplaced = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","hitsNotReplaced"),
+    gsFixOrgReducedEGEBHits = cms.InputTag("reducedEgammaBeforeGSFix"),
+    gsFixMETOrg = cms.InputTag("slimmedMETs"),
+    gsFixMETEGClean = cms.InputTag("slimmedMETsEGClean")
+    
 )
 
 
