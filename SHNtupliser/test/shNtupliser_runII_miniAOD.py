@@ -3,7 +3,8 @@ useMiniAOD=True
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
-
+import os
+import sys
 # set up process
 process = cms.Process("HEEP")
 
@@ -15,26 +16,28 @@ process.source = cms.Source("PoolSource",
 if isCrabJob:
     datasetCode=DATASETCODE
 else:
-    import sys
     from SHarper.SHNtupliser.addInputFiles import addInputFiles
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=0
+
 
 if datasetCode==0: isMC=False
 else: isMC=True
 
 datasetVersion="TOSED:DATASETVERSION"
 if not isCrabJob:
-    datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
-    
+    try:
+        datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
+    except IndexError:
+        pass
+
 print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD,"datasetVersion = ",datasetVersion
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(10000),
+    reportEvery = cms.untracked.int32(100000),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -47,7 +50,8 @@ from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
     #process.GlobalTag.globaltag = autoCond['run2_mc']
-    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '') 
+    #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v6', '')
 else:
 #    process.GlobalTag.globaltag = autoCond['run2_data']
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
@@ -56,21 +60,16 @@ else:
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
+process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.load("Configuration.StandardSequences.Services_cff")
-
-
-
-import sys
-
 #CRABHLTNAMEOVERWRITE
 hltName="HLT"
-patCandID=""
+
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
@@ -103,9 +102,9 @@ if useMiniAOD:
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
-process.shNtupliser.metTag = cms.untracked.InputTag("slimmedMETsEGClean")
-import os
+if not isMC:
+    process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
+    process.shNtupliser.metTag = cms.InputTag("slimmedMETsMuEGClean")
 
 
 #if 1, its a crab job...
@@ -172,15 +171,8 @@ if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetC
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
 
-#if process.shNtupliser.datasetCode.value() in [321,322]:
-#    print "TTbar detected, disabling mc particles"
-#    process.shNtupliser.addMCParts = False
-    
-
-if isCrabJob and process.shNtupliser.datasetCode.value()>131:
+if isCrabJob and process.shNtupliser.datasetCode.value()>140:
     process.shNtupliser.addTrigSum = cms.bool(False)
-
-
 
 #setup the VID with HEEP 7.0, not necessary if you dont want to use VID
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
@@ -196,28 +188,13 @@ my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronI
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
-
-
- 
-
 process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
-    process.heepIDVarValueMaps*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
         
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
-
-if useMiniAOD==False:
-    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-    process.p.insert(0,process.primaryVertexAssociation)
-    process.p.insert(1,process.packedCandsForTkIso)
-
-
-
 
 
 
