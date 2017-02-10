@@ -27,12 +27,12 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
 {
   cuts_.setup(conf);
   gsfEleExtraFiller_.setup(conf,cc);
-  getToken_(eleTag_,conf.getUntrackedParameter<edm::InputTag>("electronTag"),cc);
-  getToken_(muonTag_ , conf.getUntrackedParameter<edm::InputTag>("muonTag"),cc);
-  getToken_(jetTag_ , conf.getUntrackedParameter<edm::InputTag>("jetTag"),cc);
-  getToken_(tauTag_ , conf.getUntrackedParameter<edm::InputTag>("tauTag"),cc);
-  getToken_(metTag_ , conf.getUntrackedParameter<edm::InputTag>("metTag"),cc);
-  getToken_(phoTag_ , conf.getUntrackedParameter<edm::InputTag>("photonTag"),cc);
+  getToken_(eleTag_,conf.getParameter<edm::InputTag>("electronTag"),cc);
+  getToken_(muonTag_ , conf.getParameter<edm::InputTag>("muonTag"),cc);
+  getToken_(jetTag_ , conf.getParameter<edm::InputTag>("jetTag"),cc);
+  getToken_(tauTag_ , conf.getParameter<edm::InputTag>("tauTag"),cc);
+  getToken_(metTag_ , conf.getParameter<edm::InputTag>("metTag"),cc);
+  getToken_(phoTag_ , conf.getParameter<edm::InputTag>("photonTag"),cc);
   getToken_(packedPFCandTag_ , conf.getParameter<edm::InputTag>("packedPFCandTag"),cc);
   getToken_(lostTrackTag_ , conf.getParameter<edm::InputTag>("lostTrackTag"),cc);
   getToken_(ecalRecHitsEBTag_ , conf.getParameter<edm::InputTag>("barrelRecHitTag"),cc);

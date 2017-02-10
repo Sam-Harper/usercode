@@ -3,12 +3,12 @@ import FWCore.ParameterSet.Config as cms
 from SHarper.HEEPAnalyzer.HEEPSelectionCuts_cfi import *
 
 def swapHEEPToMiniAOD(heepPara):
-    heepPara.electronTag = cms.untracked.InputTag("slimmedElectrons")
-    heepPara.tauTag = cms.untracked.InputTag("slimmedTaus")
-    heepPara.muonTag = cms.untracked.InputTag("slimmedMuons")
-    heepPara.jetTag = cms.untracked.InputTag("slimmedJets")
-    heepPara.photonTag = cms.untracked.InputTag("slimmedPhotons")
-    heepPara.metTag = cms.untracked.InputTag("slimmedMETs")
+    heepPara.electronTag = cms.InputTag("slimmedElectrons")
+    heepPara.tauTag = cms.InputTag("slimmedTaus")
+    heepPara.muonTag = cms.InputTag("slimmedMuons")
+    heepPara.jetTag = cms.InputTag("slimmedJets")
+    heepPara.photonTag = cms.InputTag("slimmedPhotons")
+    heepPara.metTag = cms.InputTag("slimmedMETs")
     heepPara.gsfEleTag = cms.InputTag("slimmedElectrons")
     heepPara.recoPhoTag = cms.InputTag("slimmedPhotons")
     heepPara.reducedBarrelRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
@@ -21,12 +21,12 @@ def swapHEEPToMiniAOD(heepPara):
     heepPara.pileUpMCInfoTag = cms.InputTag("slimmedAddPileupInfo")
     heepPara.genParticleTag = cms.InputTag("prunedGenParticles")
 heepEventPara  = cms.PSet (
-    electronTag = cms.untracked.InputTag("patElectrons"),
-    tauTag = cms.untracked.InputTag("patTaus"),
-    muonTag = cms.untracked.InputTag("patMuons"),
-    jetTag = cms.untracked.InputTag("patJets"),
-    photonTag = cms.untracked.InputTag("patPhotons"),
-    metTag = cms.untracked.InputTag("patMETs"),
+    electronTag = cms.InputTag("patElectrons"),
+    tauTag = cms.InputTag("patTaus"),
+    muonTag = cms.InputTag("patMuons"),
+    jetTag = cms.InputTag("patJets"),
+    photonTag = cms.InputTag("patPhotons"),
+    metTag = cms.InputTag("patMETs"),
     barrelRecHitTag = cms.InputTag("ecalRecHit","EcalRecHitsEB"),
     endcapRecHitTag = cms.InputTag("ecalRecHit","EcalRecHitsEE"),
     barrelWeightsRecHitTag = cms.InputTag("ecalGlobalRecHitSelectedDigis","EcalRecHitsEB"),
