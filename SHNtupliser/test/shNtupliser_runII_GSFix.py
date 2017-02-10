@@ -1,5 +1,5 @@
 isCrabJob=False #script seds this if its a crab job
-useMiniAOD=True
+useMiniAOD=False
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -9,7 +9,6 @@ process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),  
-#                            eventsToProcess = cms.untracked.VEventRange("281707:47701394-281707:47701394")
 
                             )
 if isCrabJob:
@@ -28,8 +27,8 @@ else: isMC=True
 datasetVersion="TOSED:DATASETVERSION"
 if not isCrabJob:
     datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
-    
-print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD,"datasetVersion = ",datasetVersion
+
+print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD, "datasetVersion = ",datasetVersion
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -53,6 +52,7 @@ else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
+    
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -82,7 +82,7 @@ process.shNtupliser.applyMuonId = True
 process.shNtupliser.addCaloTowers = True
 process.shNtupliser.addCaloHits = True
 process.shNtupliser.addIsolTrks = True
-process.shNtupliser.addPFCands = True
+process.shNtupliser.addPFCands = False
 process.shNtupliser.addPFClusters = True
 process.shNtupliser.addTrigSum = True
 
@@ -96,6 +96,10 @@ process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
 
+
+#process.shNtupliser.oldGsfEleTag = cms.InputTag("gedGsfElectrons")
+#process.shNtupliser.gsfEleToPFCandMapTag = cms.InputTag("")
+
 if useMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
@@ -103,8 +107,7 @@ if useMiniAOD:
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
-process.shNtupliser.metTag = cms.untracked.InputTag("slimmedMETsEGClean")
+#process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsTrkIsoCorr")
 import os
 
 
@@ -164,7 +167,7 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
 
 print "dataset code: ",process.shNtupliser.datasetCode.value()
 
-if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetCode.value()<1000:
+if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetCode.value()<1000:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
@@ -179,7 +182,6 @@ if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetC
 
 if isCrabJob and process.shNtupliser.datasetCode.value()>131:
     process.shNtupliser.addTrigSum = cms.bool(False)
-
 
 
 #setup the VID with HEEP 7.0, not necessary if you dont want to use VID
@@ -197,43 +199,79 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 
+if useMiniAOD:
+    process.egGSFixSequence = cms.Sequence()
+else:
+    process.load("RecoLuminosity.LumiProducer.bunchSpacingProducer_cfi")
+    process.bunchSpacingProducerSequence = cms.Sequence(process.bunchSpacingProducer)
 
- 
+    process.load("RecoEgamma.EgammaTools.egammaGainSwitchFixForPAT_cff")
+    process.load("RecoParticleFlow.PFProducer.pfGSFixLinkerForPAT_cff")
+    process.load("RecoEgamma.EgammaIsolationAlgos.pfClusterIsolationRemapForPAT_cff")
+    process.load("RecoEgamma.ElectronIdentification.idExternalRemapForPAT_cff")
+    
+    process.egGSFixSequence = cms.Sequence(process.bunchSpacingProducerSequence * 
+                                           process.egammaGainSwitchFixSequence*
+                                           process.particleFlowLinks *
+                                           process.pfClusterIsolationSequence *
+                                           process.ElectronIDExternalProducerRemapSequence *
+                                           process.PhotonIDExternalProducerRemapSequence)
+    process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsGSFixed") 
+    process.shNtupliser.recoPhoTag = cms.InputTag("gedPhotonsGSFixed")
+    process.shNtupliser.superClusterEBTag = cms.InputTag("particleFlowSuperClusterECALGSFixed","particleFlowSuperClusterECALBarrel")
+    process.shNtupliser.superClusterEETag = cms.InputTag("particleFlowSuperClusterECALGSFixed","particleFlowSuperClusterECALEndcapWithPreshower")
+                        
+    process.shNtupliser.gsfEleToPFCandMapTag  = cms.InputTag("particleBasedIsolationGSFixed","gedGsfElectrons")
+    process.shNtupliser.pfChargedIsoValEleMapTag = cms.InputTag("elPFIsoValueCharged03PFIdPFIsoGSFixed")
+    process.shNtupliser.pfNeutralIsoValEleMapTag = cms.InputTag("elPFIsoValueNeutral03PFIdPFIsoGSFixed")
+    process.shNtupliser.pfPhotonIsoValEleMapTag = cms.InputTag("elPFIsoValueGamma03PFIdPFIsoGSFixed")
+    process.shNtupliser.pfCandidateTag = cms.InputTag("particleFlowGSFixed")
+#    process.egmGsfElectronIDs.src  = cms.InputTag("gedGsfElectronsGSFixed")
+    process.egmGsfElectronIDs.physicsObjectSrc  = cms.InputTag("gedGsfElectronsGSFixed")
+    process.heepIDVarValueMaps.elesAOD = cms.InputTag("gedGsfElectronsGSFixed")
+    process.electronMVAValueMapProducer.src = cms.InputTag("gedGsfElectronsGSFixed")
+    process.electronRegressionValueMapProducer.src = cms.InputTag("gedGsfElectronsGSFixed")
+    process.electronRegressionValueMapProducer.ebReducedRecHitCollection = cms.InputTag("ecalMultiAndGSGlobalRecHitEB")
 
 process.p = cms.Path(#process.primaryVertexFilter*
+    process.egGSFixSequence*
     process.egammaFilter*
-    process.heepIDVarValueMaps*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
-        
+
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-if useMiniAOD==False:
-    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-    process.p.insert(0,process.primaryVertexAssociation)
-    process.p.insert(1,process.packedCandsForTkIso)
 
 
 
-
+if not isMC:
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
+                                  connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                                  toGet = cms.VPSet(cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
+                                                             tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt")),
+                                                    cms.PSet(record = cms.string("L1TUtmTriggerMenuRcd"),
+                                                             tag = cms.string("L1TUtmTriggerMenu_Stage2v0_hlt"))
+                                                    )                              )
+    process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
 
 
 #import FWCore.PythonUtilities.LumiList as LumiList
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
+outputCMSSWFormat=False
+if outputCMSSWFormat:
+    process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+                                            compressionAlgorithm = cms.untracked.string('LZMA'),
+                                            compressionLevel = cms.untracked.int32(4),
+                                            dataset = cms.untracked.PSet(
+            dataTier = cms.untracked.string('AODSIM'),
+            filterName = cms.untracked.string('')
+            ),
+                                            eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+                                            fileName = cms.untracked.string('file:outputTestAOD.root'),
+                                            outputCommands = cms.untracked.vstring("keep *_*_*_*",)
+                                            )                                        
+    process.out = cms.EndPath(process.AODSIMoutput)
 
-#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-#    compressionAlgorithm = cms.untracked.string('LZMA'),
-#    compressionLevel = cms.untracked.int32(4),
-#    dataset = cms.untracked.PSet(
-#        dataTier = cms.untracked.string('AODSIM'),
-#        filterName = cms.untracked.string('')
-#    ),
-#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-#    fileName = cms.untracked.string('file:outputTestAOD.root'),
-#    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
-#)                                        
-#process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag

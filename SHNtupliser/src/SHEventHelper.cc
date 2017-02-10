@@ -145,18 +145,28 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   if(!eleHandle.isValid()) return; //protection when the colleciton doesnt exist
 
   const auto& photons = heepEvent.recoPhos();
+  //  std::cout <<"start event "<<std::endl;
+  std::vector<int> usedSCSeedIds;
+  for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
+    edm::Ptr<reco::GsfElectron> elePtr(eleHandle,eleNr);
+    if(elePtr->superCluster().isNonnull()) usedSCSeedIds.push_back(elePtr->superCluster()->seed()->seed().rawId());  
+    //  std::cout <<"adding electron "<<eleNr<<" / "<<eleHandle->size()<<" ele "<<elePtr->energy()<<" "<<elePtr->eta()<<" "<<elePtr->phi()<<" hadem "<<elePtr->hcalOverEcal()<<" ecal driven "<<elePtr->ecalDriven()<<" sc energy " <<elePtr->superCluster()->energy()<<std::endl;
+
+    addElectron(heepEvent,shEvent,elePtr);
+  }
   
-  //so turns out the same supercluster can be used for multiple photons
-  //happyness, so we protect against this
-  std::vector<const reco::SuperCluster*> usedSCs;
   for(size_t phoNr=0;phoNr<photons.size();phoNr++){
+    //const reco::Photon& pho = photons[phoNr];
+    //   std::cout <<"photon "<<phoNr<<" / "<<photons.size()<<" pho "<<pho.energy()<<" "<<pho.eta()<<" "<<pho.phi()<<" sc energy " <<pho.superCluster()->energy()<<std::endl;
+
     const reco::SuperCluster& sc = *photons[phoNr].superCluster();
-    if(std::find(usedSCs.begin(),usedSCs.end(),&sc)!=usedSCs.end()) continue;//already added this supercluster, skip it...
-    usedSCs.push_back(&sc);
-    size_t eleNr = matchToEle(sc,*eleHandle);
-    if(eleNr<eleHandle->size()) addElectron(heepEvent,shEvent,edm::Ptr<reco::GsfElectron>(eleHandle,eleNr));
-    
-    else if(sc.energy()*sin(sc.position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000) addElectron(heepEvent,shEvent,photons[phoNr]);
+    if(std::find(usedSCSeedIds.begin(),usedSCSeedIds.end(),sc.seed()->seed().rawId())==usedSCSeedIds.end()){
+      //did not add if by electrons, so add it now
+      if(sc.energy()*sin(sc.position().theta())>minEtToPromoteSC_ && minEtToPromoteSC_<10000){
+	//	std::cout <<"adding photon as electron "<<std::endl;
+	addElectron(heepEvent,shEvent,photons[phoNr]);
+      }
+    }
   }
 }
 
@@ -167,14 +177,14 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   fixTrkIsols_(heepEvent,gsfEle,*shEle);
   setNrSatCrysIn5x5_(heepEvent,*shEle);
   setCutCode_(heepEvent,gsfEle,*shEle);
-  //shEle->setPassMVAPreSel(shEle->isolMVA()>=-0.1);
+  //shEle- >setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle->superCluster(),shEvent);
-  const reco::Photon* phoMatch = getPhoMatch_(gsfEle,heepEvent);
+  //const reco::Photon* phoMatch = getPhoMatch_(gsfEle,heepEvent);
   const reco::GsfElectron* oldEleMatch = getOldEleMatch_(gsfEle,heepEvent);
-  const float phoNrgy = phoMatch ? phoMatch->energy() : 0.;
-  if(oldEleMatch) shEle->setNrgyExtra(oldEleMatch->ecalEnergy(),oldEleMatch->ecalEnergyError(),oldEleMatch->energy(),phoNrgy);
-  else shEle->setNrgyExtra(0.,0.,0.,phoNrgy);
+  //  const float phoNrgy = phoMatch ? phoMatch->energy() : 0.;
+  if(oldEleMatch) shEle->setNrgyExtra(oldEleMatch->ecalEnergy(),oldEleMatch->ecalEnergyError(),oldEleMatch->energy(),oldEleMatch->superCluster()->energy());
+  else shEle->setNrgyExtra(0.,0.,0.,0.);
 		    
   //MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
  
@@ -1063,15 +1073,65 @@ SHEventHelper::getPhoMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep
   return bestMatch;
 }
 
+
+
+namespace{
+  int calDIEta(int lhs,int rhs)
+  {
+    int retVal = lhs - rhs;
+    if(lhs*rhs<0){ //crossing zero
+    if(retVal<0) retVal++;
+    else retVal--;
+    }
+    return retVal;
+  }
+
+  int calDIPhi(int lhs,int rhs)
+  {
+    int retVal = lhs-rhs;
+    while(retVal>180) retVal-=360;
+    while(retVal<-180) retVal+=360;
+    return retVal;
+  }
+
+  int calDIR2(const DetId lhs,const DetId rhs)
+  {
+    if(lhs.subdetId()!=rhs.subdetId()) return std::numeric_limits<int>::max();
+    else if(lhs.subdetId()==EcalBarrel){
+      
+      EBDetId lhsEB(lhs);
+      EBDetId rhsEB(rhs); 
+      int dIEta = calDIEta(lhsEB.ieta(),rhsEB.ieta());
+      int dIPhi = calDIPhi(lhsEB.iphi(),rhsEB.iphi());
+      int dIR2 = dIEta*dIEta+dIPhi*dIPhi;
+      return dIR2;
+    }else if(lhs.subdetId()==EcalEndcap){
+      EEDetId lhsEE(lhs);
+      EEDetId rhsEE(rhs); 
+      if(lhsEE.zside()!=rhsEE.zside()){
+	return std::numeric_limits<int>::max();
+      }else{
+	int dIX = std::abs(lhsEE.ix()-rhsEE.ix());
+	int dIY = std::abs(lhsEE.iy()-rhsEE.iy());
+	int dIR2 = dIX*dIX+dIY*dIY;
+	return dIR2;
+      }
+    }else return std::numeric_limits<int>::max();
+    
+  }
+}
+  
 const reco::GsfElectron* 
 SHEventHelper::getOldEleMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent)
 {
   const reco::GsfElectron* bestMatch = nullptr;
+  int bestDIR2=gsfEle->isEB() ?  2  : 0; //seed in 3x3 barrel, exact match endcap
   if(heepEvent.handles().oldGsfEle.isValid()) {
     for(auto& ele : *heepEvent.handles().oldGsfEle){
-      if(ele.superCluster()->seed()->seed() == gsfEle->superCluster()->seed()->seed()){
-	if(bestMatch) std::cout <<"already matched ele "<<bestMatch->superCluster()->energy()<<" "<<ele.superCluster()->energy()<<std::endl;
+      int dIR2 = calDIR2(ele.superCluster()->seed()->seed(),gsfEle->superCluster()->seed()->seed());
+      if(dIR2<=bestDIR2){
 	bestMatch = &ele;
+	bestDIR2 = dIR2;
       }
     }
   }

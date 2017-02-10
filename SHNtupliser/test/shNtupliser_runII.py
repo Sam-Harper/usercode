@@ -25,6 +25,8 @@ if datasetCode==0: isMC=False
 else: isMC=True
 
 datasetVersion="TOSED:DATASETVERSION"
+if not isCrabJob:
+    datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
 
 print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD
 
@@ -164,7 +166,7 @@ process.egammaFilter = cms.EDFilter("EGammaFilter",
 
 print "dataset code: ",process.shNtupliser.datasetCode.value()
 
-if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetCode.value()<1000:
+if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetCode.value()<1000:
     print "applying filter for 1 ele and disabling large collections"
     process.egammaFilter.nrElesRequired=cms.int32(1)
     process.shNtupliser.nrGenPartToStore = cms.int32(0)
@@ -180,8 +182,6 @@ if process.shNtupliser.datasetCode.value()>=130 and process.shNtupliser.datasetC
 if isCrabJob and process.shNtupliser.datasetCode.value()>131:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-process.load("HEEP.IDCode.heepIdVarValueMapProducer_cfi")
-
 #setup the VID with HEEP 7.0, not necessary if you dont want to use VID
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 # turn on VID producer, indicate data format  to be
@@ -192,45 +192,19 @@ else:
     switchOnVIDElectronIdProducer(process,DataFormat.AOD)
 
 # define which IDs we want to produce and add them to VID
-my_id_modules = ['HEEP.IDCode.heepElectronID_HEEPV70_cff']
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
-from EgammaAnalysis.ElectronTools.regressionWeights_local_cfi import GBRDWrapperRcd
-GBRDWrapperRcd.connect = cms.string("sqlite_file:"+os.getenv("CMSSW_BASE")+"/src/SHarper/SHNtupliser/test/ged_regression_20161208.db")
-if isCrabJob==True:
-    GBRDWrapperRcd.connect = cms.string('sqlite_file:ged_regression_20161208.db')
-process.regressions           = GBRDWrapperRcd
-process.es_prefer_regressions = cms.ESPrefer('PoolDBESSource','regressions')
-
-if useMiniAOD==False:
-    process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
-else:
-    process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
-
 process.p = cms.Path(#process.primaryVertexFilter*
-    process.regressionApplication*
     process.egammaFilter*
-    process.heepIDVarValueMaps*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
 
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
-
-if useMiniAOD==False:
     
-    from SHarper.SHNtupliser.addEcalWeightsReco import addEcalWeightsReco
-    addEcalWeightsReco(process,process.p,process.p.index(process.egammaFilter)+1)
-
-    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-    process.load("HEEP.IDCode.packedCandidatesForTrkIso_cfi")
-    process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
-    idVarIndex = process.p.index(process.heepIDVarValueMaps)
-    process.p.insert(idVarIndex,process.primaryVertexAssociation)
-    process.p.insert(idVarIndex+1,process.packedCandsForTkIso)
-
-
+ 
 if not isMC:
     from CondCore.DBCommon.CondDBSetup_cfi import *
     process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
