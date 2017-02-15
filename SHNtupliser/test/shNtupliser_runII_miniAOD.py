@@ -198,10 +198,10 @@ process.p = cms.Path(#process.primaryVertexFilter*
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-
-
-#import FWCore.PythonUtilities.LumiList as LumiList
-#process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
+if not isCrabJob:
+    import FWCore.PythonUtilities.LumiList as LumiList
+#    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_276831-277420_MINIAOD_03Feb2017-v1_20170210_133745_lumis_job69.json').getVLuminosityBlockRange()
+#    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_281207-284035_MINIAOD_03Feb2017_ver2-v1_20170212_180554_lumis_job172.json').getVLuminosityBlockRange()
 
 #process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
 #    compressionAlgorithm = cms.untracked.string('LZMA'),
