@@ -35,6 +35,7 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(phoTag_ , conf.getParameter<edm::InputTag>("photonTag"),cc);
   getToken_(packedPFCandTag_ , conf.getParameter<edm::InputTag>("packedPFCandTag"),cc);
   getToken_(lostTrackTag_ , conf.getParameter<edm::InputTag>("lostTrackTag"),cc);
+  getToken_(lostEleTrackTag_ , conf.getParameter<edm::InputTag>("lostEleTrackTag"),cc);
   getToken_(ecalRecHitsEBTag_ , conf.getParameter<edm::InputTag>("barrelRecHitTag"),cc);
   getToken_(ecalRecHitsEETag_ , conf.getParameter<edm::InputTag>("endcapRecHitTag"),cc);
   getToken_(ecalWeightsRecHitsEBTag_ , conf.getParameter<edm::InputTag>("barrelWeightsRecHitTag"),cc);
@@ -131,6 +132,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(tauTag_,handles.tau);
   event.getByToken(packedPFCandTag_,handles.packedPFCand);
   event.getByToken(lostTrackTag_,handles.lostTrack);
+  event.getByToken(lostEleTrackTag_,handles.lostEleTrack);
   event.getByToken(ecalRecHitsEBTag_,handles.ebRecHits);
   event.getByToken(ecalRecHitsEETag_,handles.eeRecHits);
   event.getByToken(ecalWeightsRecHitsEBTag_,handles.ebWeightsRecHits);

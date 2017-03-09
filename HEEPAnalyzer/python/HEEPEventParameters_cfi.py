@@ -40,6 +40,7 @@ heepEventPara  = cms.PSet (
     pfCandidateTag = cms.InputTag("particleFlow"),
     packedPFCandTag = cms.InputTag("packedPFCandidates"),
     lostTrackTag = cms.InputTag("lostTracks"),
+    lostEleTrackTag = cms.InputTag("lostTracks:eleTracks"),
     superClusterEBTag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALBarrel"),
     superClusterEETag = cms.InputTag("particleFlowSuperClusterECAL","particleFlowSuperClusterECALEndcapWithPreshower"),
     preShowerClusterXTag = cms.InputTag("multi5x5SuperClustersWithPreshower","preshowerXClusters"),

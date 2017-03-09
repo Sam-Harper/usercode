@@ -47,6 +47,7 @@ namespace heep {
     //non physics objects
     edm::EDGetTokenT<std::vector<pat::PackedCandidate> > packedPFCandTag_;
     edm::EDGetTokenT<std::vector<pat::PackedCandidate> > lostTrackTag_;
+    edm::EDGetTokenT<std::vector<pat::PackedCandidate> > lostEleTrackTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsEBTag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsEETag_;
     edm::EDGetTokenT<EcalRecHitCollection> ecalWeightsRecHitsEBTag_;

@@ -86,6 +86,7 @@ namespace heep {
     edm::Handle<edm::View<pat::Tau> > tau;
     edm::Handle<std::vector<pat::PackedCandidate> > packedPFCand;
     edm::Handle<std::vector<pat::PackedCandidate> > lostTrack;
+    edm::Handle<std::vector<pat::PackedCandidate> > lostEleTrack;
 
     edm::Handle<reco::PFCandidateCollection> pfCandidate;
     edm::Handle<reco::SuperClusterCollection> superClusEB;
