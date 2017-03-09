@@ -3,37 +3,41 @@ useMiniAOD=False
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
-
+import os
+import sys
 # set up process
 process = cms.Process("HEEP")
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(),  
+#                            eventsToProcess = cms.untracked.VEventRange("281707:47701394-281707:47701394")
 
                             )
 if isCrabJob:
     datasetCode=DATASETCODE
 else:
-    import sys
     from SHarper.SHNtupliser.addInputFiles import addInputFiles
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=0
+
 
 if datasetCode==0: isMC=False
 else: isMC=True
 
 datasetVersion="TOSED:DATASETVERSION"
 if not isCrabJob:
-    datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
+    try:
+        datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
+    except IndexError:
+        pass
 
-print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD
+print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD,"datasetVersion = ",datasetVersion
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(10000),
+    reportEvery = cms.untracked.int32(100000),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -46,31 +50,26 @@ from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
     #process.GlobalTag.globaltag = autoCond['run2_mc']
-    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '') 
+    #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v6', '')
 else:
 #    process.GlobalTag.globaltag = autoCond['run2_data']
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
-    
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
+process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.load("Configuration.StandardSequences.Services_cff")
-
-
-
-import sys
-
 #CRABHLTNAMEOVERWRITE
 hltName="HLT"
-patCandID=""
+
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
@@ -85,6 +84,8 @@ process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
 process.shNtupliser.addTrigSum = True
+if not isMC:
+    process.shNtupliser.addGainSwitchInfo = True
 
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
@@ -95,9 +96,6 @@ process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-#process.shNtupliser.gsfEleTag = cms.InputTag("modifiedGsfElectrons")
-#process.shNtupliser.oldGsfEleTag = cms.InputTag("gedGsfElectrons")
-#process.shNtupliser.gsfEleToPFCandMapTag = cms.InputTag("")
 
 if useMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
@@ -106,8 +104,9 @@ if useMiniAOD:
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-#process.shNtupliser.gsfEleTag = cms.InputTag("gedGsfElectronsTrkIsoCorr")
-import os
+if not isMC:
+    process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
+    process.shNtupliser.metTag = cms.InputTag("slimmedMETsMuEGClean")
 
 
 #if 1, its a crab job...
@@ -174,12 +173,7 @@ if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetC
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
 
-#if process.shNtupliser.datasetCode.value() in [321,322]:
-#    print "TTbar detected, disabling mc particles"
-#    process.shNtupliser.addMCParts = False
-    
-
-if isCrabJob and process.shNtupliser.datasetCode.value()>131:
+if isCrabJob and process.shNtupliser.datasetCode.value()>140:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
 #setup the VID with HEEP 7.0, not necessary if you dont want to use VID
@@ -200,11 +194,10 @@ process.p = cms.Path(#process.primaryVertexFilter*
     process.egammaFilter*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
-
+        
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
-    
- 
+
 if not isMC:
     from CondCore.DBCommon.CondDBSetup_cfi import *
     process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
@@ -216,22 +209,21 @@ if not isMC:
                                                     )                              )
     process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
 
+if not isCrabJob:
+    import FWCore.PythonUtilities.LumiList as LumiList
+#    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_276831-277420_MINIAOD_03Feb2017-v1_20170210_133745_lumis_job69.json').getVLuminosityBlockRange()
+#    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_281207-284035_MINIAOD_03Feb2017_ver2-v1_20170212_180554_lumis_job172.json').getVLuminosityBlockRange()
 
-#import FWCore.PythonUtilities.LumiList as LumiList
-#process.source.lumisToProcess = LumiList.LumiList(filename = 'notFinishedLumis.json').getVLuminosityBlockRange()
-outputCMSSWFormat=False
-if outputCMSSWFormat:
-    process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-                                            compressionAlgorithm = cms.untracked.string('LZMA'),
-                                            compressionLevel = cms.untracked.int32(4),
-                                            dataset = cms.untracked.PSet(
-            dataTier = cms.untracked.string('AODSIM'),
-            filterName = cms.untracked.string('')
-            ),
-                                            eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-                                            fileName = cms.untracked.string('file:outputTestAOD.root'),
-                                            outputCommands = cms.untracked.vstring("keep *_*_*_*",)
-                                            )                                        
-    process.out = cms.EndPath(process.AODSIMoutput)
-
+#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+#    compressionAlgorithm = cms.untracked.string('LZMA'),
+#    compressionLevel = cms.untracked.int32(4),
+#    dataset = cms.untracked.PSet(
+#        dataTier = cms.untracked.string('AODSIM'),
+#        filterName = cms.untracked.string('')
+#    ),
+#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+#    fileName = cms.untracked.string('file:outputTestAOD.root'),
+#    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
+#)                                        
+#process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag

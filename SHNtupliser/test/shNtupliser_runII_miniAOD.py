@@ -198,6 +198,17 @@ process.p = cms.Path(#process.primaryVertexFilter*
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
+if not isMC:
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
+                                  connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                                  toGet = cms.VPSet(cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
+                                                             tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt")),
+                                                    cms.PSet(record = cms.string("L1TUtmTriggerMenuRcd"),
+                                                             tag = cms.string("L1TUtmTriggerMenu_Stage2v0_hlt"))
+                                                    )                              )
+    process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
+
 if not isCrabJob:
     import FWCore.PythonUtilities.LumiList as LumiList
 #    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_276831-277420_MINIAOD_03Feb2017-v1_20170210_133745_lumis_job69.json').getVLuminosityBlockRange()
