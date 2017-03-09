@@ -71,9 +71,9 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
 {   
  
   shEvent.clear(); //reseting the event 
-  
-  addEventPara(heepEvent,shEvent); //this must be filled before (ele + mu need beam spot info)
 
+  addEventPara(heepEvent,shEvent); //this must be filled before (ele + mu need beam spot info)
+ 
   if(branches_.addSuperClus) addSuperClusters(heepEvent,shEvent);
   if(branches_.addEles) addElectrons(heepEvent,shEvent);
   if(branches_.addPreShowerClusters) addPreShowerClusters(heepEvent,shEvent);
@@ -181,11 +181,11 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   //shEle- >setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle->superCluster(),shEvent);
-  //const reco::Photon* phoMatch = getPhoMatch_(gsfEle,heepEvent);
+  const reco::Photon* phoMatch = getPhoMatch_(gsfEle,heepEvent);
   const reco::GsfElectron* oldEleMatch = getOldEleMatch_(gsfEle,heepEvent);
-  //  const float phoNrgy = phoMatch ? phoMatch->energy() : 0.;
-  if(oldEleMatch) shEle->setNrgyExtra(oldEleMatch->ecalEnergy(),oldEleMatch->ecalEnergyError(),oldEleMatch->energy(),oldEleMatch->superCluster()->energy());
-  else shEle->setNrgyExtra(0.,0.,0.,0.);
+  const float phoNrgy = phoMatch ? phoMatch->energy() : 0.;
+  if(oldEleMatch) shEle->setNrgyExtra(oldEleMatch->ecalEnergy(),oldEleMatch->ecalEnergyError(),oldEleMatch->energy(),phoNrgy);//oldEleMatch->superCluster()->energy());
+  else shEle->setNrgyExtra(0.,0.,0.,phoNrgy);
 		    
   //MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
  
@@ -212,7 +212,8 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   //     shEle->setPosTrackInnToSeed(innToSeedPos);  
   //   }else shEle->setPosTrackInnToSeed(dummy);
    
-  // }
+  // }  
+ 
 }
 
 
@@ -400,7 +401,7 @@ void SHEventHelper::addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)con
       PFFuncs::fillPFCands(&shEvent,kMaxDRPFCands_,shEvent.getPFCands(),heepEvent.handles().pfCandidate,
 			   mainVtx,heepEvent.handles().vertices,
 			   *(heepEvent.handles().gsfEleToPFCandMap.product()),
-			   heepEvent.handles().oldGsfEle);
+			   heepEvent.handles().gsfEle);
     }
   }
 }
@@ -532,20 +533,27 @@ void SHEventHelper::addIsolTrksFromTrks_(const heep::Event& heepEvent,SHEvent& s
 
 void SHEventHelper::addIsolTrksFromCands_(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  if(heepEvent.handles().packedPFCand.isValid() &&
-     heepEvent.handles().lostTrack.isValid()){
-    
-    addIsolTrksFromCands_(*heepEvent.handles().packedPFCand,heepEvent,shEvent);
-    addIsolTrksFromCands_(*heepEvent.handles().lostTrack,heepEvent,shEvent);
+  if(heepEvent.handles().packedPFCand.isValid()){
+    bool rejectEles = heepEvent.handles().lostEleTrack.isValid(); //if this valid, we'll add them in later
+    addIsolTrksFromCands_(*heepEvent.handles().packedPFCand,heepEvent,shEvent,rejectEles);
   }
+  if(heepEvent.handles().lostTrack.isValid()){
+    addIsolTrksFromCands_(*heepEvent.handles().lostTrack,heepEvent,shEvent,false);
+  }
+  if(heepEvent.handles().lostEleTrack.isValid()){
+    addIsolTrksFromCands_(*heepEvent.handles().lostEleTrack,heepEvent,shEvent,false);
+  }
+
 }
 
 void SHEventHelper::addIsolTrksFromCands_(const std::vector<pat::PackedCandidate>& cands,
-					  const heep::Event& heepEvent,SHEvent& shEvent)const
+					  const heep::Event& heepEvent,SHEvent& shEvent,
+					  bool rejectEles)const
 {
   float minPtCut = 1.; 
   for(auto& cand : cands){
     const int absPdgId = std::abs(cand.pdgId());
+    if(rejectEles && absPdgId==11) continue;
     //ensure its a charged object
     //in theory charge()!=0 should work
     if(cand.charge()!=0){
@@ -582,17 +590,17 @@ SHIsolTrack SHEventHelper::createSHIsolTrack_(const pat::PackedCandidate& cand,
   //   std::cout <<"trk "<<trk.pt()<<" "<<trk.eta()<<" "<<trk.phi()<<" err "<<trk.ptError()<<std::endl;
   // }
     
-
-  if(std::abs(cand.pdgId())==11){
-    const reco::GsfElectron* ele = matchTrkToEle_(trk,heepEvent);
-    if(ele && ele->gsfTrack().isNonnull()){
-      SHIsolTrack isoTrk(cand.pseudoTrack(),vertexNr);
-      // if(debug) std::cout <<"   overrighting trk pt "<<ele->gsfTrack()->pt()<<std::endl;
-      isoTrk.setPt(ele->gsfTrack()->pt());
+  //not necessary with new lost tracks
+  // if(std::abs(cand.pdgId())==11){
+  //   const reco::GsfElectron* ele = matchTrkToEle_(trk,heepEvent);
+  //   if(ele && ele->gsfTrack().isNonnull()){
+  //     SHIsolTrack isoTrk(cand.pseudoTrack(),vertexNr);
+  //     // if(debug) std::cout <<"   overrighting trk pt "<<ele->gsfTrack()->pt()<<std::endl;
+  //     isoTrk.setPt(ele->gsfTrack()->pt());
       
-      return isoTrk;
-    }
-  }
+  //     return isoTrk;
+  //   }
+  // }
   return SHIsolTrack(cand.pseudoTrack(),vertexNr);
   
 }
@@ -1027,6 +1035,7 @@ void SHEventHelper::setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& 
   const EcalRecHitCollection* eeHits =heepEvent.handles().eeRecHits.isValid() ? heepEvent.eeHitsFull() : 
     heepEvent.handles().eeReducedRecHits.isValid() ? &(*heepEvent.handles().eeReducedRecHits) : nullptr;
   auto recHits = id.subdetId()==EcalBarrel ? ebHits : eeHits;
+
   shEle.setNrSatCrysIn5x5(heep::EcalClusterTools::nrSaturatedCrysIn5x5(id,recHits,heepEvent.handles().caloTopology.product()));
   
 

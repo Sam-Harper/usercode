@@ -129,7 +129,7 @@ private:
   void addIsolTrksFromTrks_(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrksFromCands_(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addIsolTrksFromCands_(const std::vector<pat::PackedCandidate>& cands,
-			     const heep::Event& heepEvent,SHEvent& shEvent)const;
+			     const heep::Event& heepEvent,SHEvent& shEvent,bool rejectEles)const;
   
   void fillPFClustersECAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters,const std::vector<reco::SuperCluster>& scEB,const std::vector<reco::SuperCluster>& scEE)const;
   void fillPFClustersHCAL_(const SHEvent* event,double maxDR,SHPFClusterContainer& shPFClusters,const std::vector<reco::PFCluster>& pfClusters)const;
