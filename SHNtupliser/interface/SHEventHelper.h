@@ -18,7 +18,7 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-//#include "RecoEgamma/EgammaTools/interface/GainSwitchTools.h"
+#include "RecoEgamma/EgammaTools/interface/GainSwitchTools.h"
 
 #include <vector>
 #include <memory>
@@ -171,11 +171,11 @@ template<typename T>
 bool SHEventHelper::
 hasGSIn5x5_(edm::Handle<edm::View<T> > handle,const EcalRecHitCollection& recHits,const CaloTopology& caloTopo)
 { 
-  // if(handle.isValid()){ 
-  //   for(auto& obj : *handle){
-  //     if(GainSwitchTools::hasEBGainSwitchIn5x5(*obj.superCluster(),&recHits,&caloTopo) ) return true;
-  //   }
-  // }
+  if(handle.isValid()){ 
+    for(auto& obj : *handle){
+      if(GainSwitchTools::hasEBGainSwitchIn5x5(*obj.superCluster(),&recHits,&caloTopo) ) return true;
+    }
+  }
   return false;
 }
 #endif
