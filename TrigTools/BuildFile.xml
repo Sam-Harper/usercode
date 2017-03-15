@@ -12,7 +12,8 @@
 <use   name="Geometry/TrackerGeometryBuilder"/>
 <use   name="DataFormats/VertexReco"/>
 <use   name="DataFormats/EgammaReco"/>
-#<use   name="SimDataFormats/SLHC"/>
+<use   name="DataFormats/PatCandidates"/> 
+<use   name="FWCore/Utilities"/> 
 <use   name="Geometry/CaloGeometry"/>
 <use   name="DataFormats/CaloTowers"/>
 <export>
