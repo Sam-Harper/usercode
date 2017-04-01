@@ -1,11 +1,11 @@
-# /users/sharper/2017/egamma/skimmingMenu/V10 (CMSSW_9_0_0)
+# /users/sharper/2017/egamma/skimmingMenu/V11 (CMSSW_9_0_0)
 
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process( "HLTSkim" )
 
 process.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/users/sharper/2017/egamma/skimmingMenu/V10')
+  tableName = cms.string('/users/sharper/2017/egamma/skimmingMenu/V11')
 )
 
 process.transferSystem = cms.PSet( 
@@ -4245,7 +4245,7 @@ process.hltHcalDigisL1EGSeeded = cms.EDProducer( "HLTHcalDigisInRegionsProducer"
 process.hltHbhePhase1RecoMethod2L1EGSeeded = cms.EDProducer( "HBHEPhase1Reconstructor",
     tsFromDB = cms.bool( False ),
     setPulseShapeFlagsQIE8 = cms.bool( True ),
-    digiLabelQIE11 = cms.InputTag( "" ),
+    digiLabelQIE11 = cms.InputTag( "hltHcalDigis" ),
     saveDroppedInfos = cms.bool( False ),
     setNoiseFlagsQIE8 = cms.bool( True ),
     digiLabelQIE8 = cms.InputTag( "hltHcalDigisL1EGSeeded" ),
@@ -5295,7 +5295,7 @@ process.hltHcalDigisL1EGUnseeded = cms.EDProducer( "HLTHcalDigisInRegionsProduce
 process.hltHbhePhase1RecoMethod2L1EGUnseeded = cms.EDProducer( "HBHEPhase1Reconstructor",
     tsFromDB = cms.bool( False ),
     setPulseShapeFlagsQIE8 = cms.bool( True ),
-    digiLabelQIE11 = cms.InputTag( "" ),
+    digiLabelQIE11 = cms.InputTag( "hltHcalDigis" ),
     saveDroppedInfos = cms.bool( False ),
     setNoiseFlagsQIE8 = cms.bool( True ),
     digiLabelQIE8 = cms.InputTag( "hltHcalDigisL1EGUnseeded" ),
@@ -5565,7 +5565,7 @@ process.source = cms.Source( "PoolSource",
 
 # run the Full L1T emulator, then repack the data into a new RAW collection, to be used by the HLT
 from HLTrigger.Configuration.CustomConfigs import L1REPACK
-process = L1REPACK(process,"FullMC")
+process = L1REPACK(process,"FullSimHcalTP")
 
 # adapt HLT modules to the correct process name
 if 'hltTrigReport' in process.__dict__:
@@ -5601,7 +5601,7 @@ if 'hltDQML1SeedLogicScalers' in process.__dict__:
 
 # limit the number of events to be processed
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32( 100 )
+    input = cms.untracked.int32( -1 )
 )
 
 # enable TrigReport, TimeReport and MultiThreading
@@ -5615,7 +5615,7 @@ process.options = cms.untracked.PSet(
 # override the GlobalTag, connection string and pfnPrefix
 if 'GlobalTag' in process.__dict__:
     from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
-    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = '90X_upgrade2017_realistic_v6_C1')
+    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = '90X_upgrade2017_TSG_Hcal_V2')
     process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_CONDITIONS'
 
 if 'MessageLogger' in process.__dict__:
@@ -5644,8 +5644,8 @@ _customInfo['globalTags'][False] = "auto:run2_mc_GRun"
 _customInfo['inputFiles']={}
 _customInfo['inputFiles'][True]  = "file:RelVal_Raw_GRun_DATA.root"
 _customInfo['inputFiles'][False] = "file:RelVal_Raw_GRun_MC.root"
-_customInfo['maxEvents' ]=  100
-_customInfo['globalTag' ]= "90X_upgrade2017_realistic_v6_C1"
+_customInfo['maxEvents' ]=  -1
+_customInfo['globalTag' ]= "90X_upgrade2017_TSG_Hcal_V2"
 _customInfo['inputFile' ]=  ['/store/mc/PhaseIFall16DR/ZToEE_NNPDF30_13TeV-powheg_M_50_120/GEN-SIM-RAW/FlatPU28to62HcalNZSRAW_EXO40_90X_upgrade2017_realistic_v6_C1-v1/80000/002BF7E7-9710-E711-A183-5065F38122A1.root']
 _customInfo['realData'  ]=  False
 from HLTrigger.Configuration.customizeHLTforALL import customizeHLTforAll
@@ -5657,6 +5657,7 @@ process = customizeHLTforCMSSW(process,"GRun")
 # Eras-based customisations
 from HLTrigger.Configuration.Eras import modifyHLTforEras
 modifyHLTforEras(process)
+
 
 
 #>>>From hltFragment <<<#
