@@ -1,11 +1,11 @@
-# /users/sharper/2017/egamma/skimmingMenu/V10 (CMSSW_9_0_0)
+# /users/sharper/2017/egamma/skimmingMenu/V11 (CMSSW_9_0_0)
 
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process( "HLTSkim" )
+process = cms.Process( "HLTX" )
 
 process.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/users/sharper/2017/egamma/skimmingMenu/V10')
+  tableName = cms.string('/users/sharper/2017/egamma/skimmingMenu/V11')
 )
 
 process.transferSystem = cms.PSet( 
@@ -4245,7 +4245,7 @@ process.hltHcalDigisL1EGSeeded = cms.EDProducer( "HLTHcalDigisInRegionsProducer"
 process.hltHbhePhase1RecoMethod2L1EGSeeded = cms.EDProducer( "HBHEPhase1Reconstructor",
     tsFromDB = cms.bool( False ),
     setPulseShapeFlagsQIE8 = cms.bool( True ),
-    digiLabelQIE11 = cms.InputTag( "" ),
+    digiLabelQIE11 = cms.InputTag( "hltHcalDigis" ),
     saveDroppedInfos = cms.bool( False ),
     setNoiseFlagsQIE8 = cms.bool( True ),
     digiLabelQIE8 = cms.InputTag( "hltHcalDigisL1EGSeeded" ),
@@ -5295,7 +5295,7 @@ process.hltHcalDigisL1EGUnseeded = cms.EDProducer( "HLTHcalDigisInRegionsProduce
 process.hltHbhePhase1RecoMethod2L1EGUnseeded = cms.EDProducer( "HBHEPhase1Reconstructor",
     tsFromDB = cms.bool( False ),
     setPulseShapeFlagsQIE8 = cms.bool( True ),
-    digiLabelQIE11 = cms.InputTag( "" ),
+    digiLabelQIE11 = cms.InputTag( "hltHcalDigis" ),
     saveDroppedInfos = cms.bool( False ),
     setNoiseFlagsQIE8 = cms.bool( True ),
     digiLabelQIE8 = cms.InputTag( "hltHcalDigisL1EGUnseeded" ),
@@ -5565,39 +5565,39 @@ process.source = cms.Source( "PoolSource",
 
 # run the Full L1T emulator, then repack the data into a new RAW collection, to be used by the HLT
 from HLTrigger.Configuration.CustomConfigs import L1REPACK
-process = L1REPACK(process,"FullMC")
+process = L1REPACK(process,"FullSimHcalTP")
 
 # adapt HLT modules to the correct process name
 if 'hltTrigReport' in process.__dict__:
-    process.hltTrigReport.HLTriggerResults                    = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltTrigReport.HLTriggerResults                    = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltPreExpressCosmicsOutputSmart' in process.__dict__:
-    process.hltPreExpressCosmicsOutputSmart.hltResults = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltPreExpressCosmicsOutputSmart.hltResults = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltPreExpressOutputSmart' in process.__dict__:
-    process.hltPreExpressOutputSmart.hltResults        = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltPreExpressOutputSmart.hltResults        = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltPreDQMForHIOutputSmart' in process.__dict__:
-    process.hltPreDQMForHIOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltPreDQMForHIOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltPreDQMForPPOutputSmart' in process.__dict__:
-    process.hltPreDQMForPPOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltPreDQMForPPOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltPreHLTDQMResultsOutputSmart' in process.__dict__:
-    process.hltPreHLTDQMResultsOutputSmart.hltResults  = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltPreHLTDQMResultsOutputSmart.hltResults  = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltPreHLTDQMOutputSmart' in process.__dict__:
-    process.hltPreHLTDQMOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltPreHLTDQMOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltPreHLTMONOutputSmart' in process.__dict__:
-    process.hltPreHLTMONOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
+    process.hltPreHLTMONOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTX' )
 
 if 'hltDQMHLTScalers' in process.__dict__:
-    process.hltDQMHLTScalers.triggerResults                   = cms.InputTag( 'TriggerResults', '', 'HLTSkim' )
-    process.hltDQMHLTScalers.processname                      = 'HLTSkim'
+    process.hltDQMHLTScalers.triggerResults                   = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltDQMHLTScalers.processname                      = 'HLTX'
 
 if 'hltDQML1SeedLogicScalers' in process.__dict__:
-    process.hltDQML1SeedLogicScalers.processname              = 'HLTSkim'
+    process.hltDQML1SeedLogicScalers.processname              = 'HLTX'
 
 # limit the number of events to be processed
 process.maxEvents = cms.untracked.PSet(
@@ -5615,7 +5615,7 @@ process.options = cms.untracked.PSet(
 # override the GlobalTag, connection string and pfnPrefix
 if 'GlobalTag' in process.__dict__:
     from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
-    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = '90X_upgrade2017_realistic_v6_C1')
+    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = '90X_upgrade2017_TSG_Hcal_V2')
     process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_CONDITIONS'
 
 if 'MessageLogger' in process.__dict__:
@@ -5645,7 +5645,7 @@ _customInfo['inputFiles']={}
 _customInfo['inputFiles'][True]  = "file:RelVal_Raw_GRun_DATA.root"
 _customInfo['inputFiles'][False] = "file:RelVal_Raw_GRun_MC.root"
 _customInfo['maxEvents' ]=  100
-_customInfo['globalTag' ]= "90X_upgrade2017_realistic_v6_C1"
+_customInfo['globalTag' ]= "90X_upgrade2017_TSG_Hcal_V2"
 _customInfo['inputFile' ]=  ['/store/mc/PhaseIFall16DR/ZToEE_NNPDF30_13TeV-powheg_M_50_120/GEN-SIM-RAW/FlatPU28to62HcalNZSRAW_EXO40_90X_upgrade2017_realistic_v6_C1-v1/80000/002BF7E7-9710-E711-A183-5065F38122A1.root']
 _customInfo['realData'  ]=  False
 from HLTrigger.Configuration.customizeHLTforALL import customizeHLTforAll
@@ -5657,49 +5657,4 @@ process = customizeHLTforCMSSW(process,"GRun")
 # Eras-based customisations
 from HLTrigger.Configuration.Eras import modifyHLTforEras
 modifyHLTforEras(process)
-
-
-#>>>From hltFragment <<<#
-from SHarper.TrigTools.hltConfigTools import *
-#process.maxEvents.input=-1
-rmAllEndPathsWithOutput(process)
-addOutputMod(process)
-
-import FWCore.ParameterSet.VarParsing as VarParsing
-options = VarParsing.VarParsing ('analysis')
-options.parseArguments()
-
-isCrabJob=False #script seds this if its a crab job
-#if 1, its a crab job...
-if isCrabJob:
-    process.hltOutputTot.fileName=cms.untracked.string("OUTPUTFILE")
-else:
-    process.hltOutputTot.fileName=cms.untracked.string(options.outputFile)
-
-process.MessageLogger.suppressWarning.extend(["hltEgammaGsfTracks","hltEgammaGsfTracksUnseeded"])
-
-process.nrEventsStorer = cms.EDProducer("NrInputEventsStorer")
-process.HLTriggerFirstPath.insert(0,process.nrEventsStorer)
-process.hltOutputTot.SelectEvents.SelectEvents = cms.vstring("HLT_Ele27_WPTight_Gsf_NoPM_v1","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_NoPM_v1","HLT_DoubleEle33_CaloIdL_NoPM_v1")
-process.hltOutputTot.outputCommands = cms.untracked.vstring("keep *",)
-from Configuration.EventContent.EventContent_cff import RAWSIMEventContent
-process.hltOutputTot.outputCommands = RAWSIMEventContent.outputCommands
-process.hltOutputTot.outputCommands.append('keep *_nrEventsStorer_*_*')
-process.hltOutputTot.outputCommands.extend(['keep recoRecoEcalCandidatesToValuefloatAssociation_*_*_*',
-                                            "keep *_hltEgammaCandidates_*_*",
-                                            "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
-                                            "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
-                                            "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
-                                            "keep *_hltEgammaCandidatesUnseeded_*_*",
-                                            "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
-                                            "keep *_hltParticleFlowClusterECALUnseeded_*_*",
-                                            "keep *_hltParticleFlowClusterPSUnseeded_*_*",
-                                            "keep *_hlt*Method2*_*_*",
-                                            "keep *_hltTowerMaker*_*_*",
-                                            "drop *_g4SimHits_*_*",
-                                            "drop FEDRawDataCollection_rawDataCollector_*_HLT",]
-                                            )
-                                            
-process.hltOutputTot.eventAutoFlushCompressedSize = cms.untracked.int32(5*1024*1024)
-print  "global tag : ",process.GlobalTag.globaltag
 
