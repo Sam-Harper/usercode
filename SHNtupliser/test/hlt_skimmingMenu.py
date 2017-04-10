@@ -5550,8 +5550,15 @@ process.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_NoPM_v1 = cms.Path( process.HLTBe
 process.HLT_DoubleEle33_CaloIdL_NoPM_v1 = cms.Path( process.HLTBeginSequence + process.hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau + process.hltPreDoubleEle33CaloIdLNoPM + process.HLTEle33CaloIdLNoPMSequence + process.HLTDoubleEle33CaloIdLNoPMUnseededSequence + process.HLTEndSequence )
 process.HLTriggerFinalPath = cms.Path( process.hltGtStage2Digis + process.hltScalersRawToDigi + process.hltFEDSelector + process.hltTriggerSummaryAOD + process.hltTriggerSummaryRAW + process.hltBoolFalse )
 
+process.RemovePileUpDominatedEventsGen = cms.EDFilter("RemovePileUpDominatedEventsGen",
+     generatorInfo = cms.InputTag("generator"),
+     pileupSummaryInfos = cms.InputTag("addPileupInfo"),
+     )
+process.nrEventsStorerPostPUFilter = cms.EDProducer("NrInputEventsStorer")
+process.HLT_RemovePileUpDominatedEventsGen_v1 = cms.Path( process.HLTBeginSequence + process.RemovePileUpDominatedEventsGen +process.nrEventsStorerPostPUFilter + process.HLTEndSequence )
+process.HLTriggerFinalPath = cms.Path( process.hltGtStage2Digis + process.hltScalersRawToDigi + process.hltFEDSelector + process.hltTriggerSummaryAOD + process.hltTriggerSummaryRAW + process.hltBoolFalse )
 
-process.HLTSchedule = cms.Schedule( *(process.HLTriggerFirstPath, process.HLT_Ele27_WPTight_Gsf_NoPM_v1, process.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_NoPM_v1, process.HLT_DoubleEle33_CaloIdL_NoPM_v1, process.HLTriggerFinalPath ))
+process.HLTSchedule = cms.Schedule( *(process.HLTriggerFirstPath, process.HLT_Ele27_WPTight_Gsf_NoPM_v1, process.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_NoPM_v1, process.HLT_DoubleEle33_CaloIdL_NoPM_v1,process.HLT_RemovePileUpDominatedEventsGen_v1, process.HLTriggerFinalPath ))
 
 
 process.source = cms.Source( "PoolSource",
@@ -5679,28 +5686,47 @@ else:
 
 process.MessageLogger.suppressWarning.extend(["hltEgammaGsfTracks","hltEgammaGsfTracksUnseeded"])
 
-process.nrEventsStorer = cms.EDProducer("NrInputEventsStorer")
+process.nrEventsStorer = cms.EDProducer("NrInputEventsStorer") 
+process.nrEventsStorerPostPUFilter = cms.EDProducer("NrInputEventsStorer") 
 process.HLTriggerFirstPath.insert(0,process.nrEventsStorer)
+
+
+
 process.hltOutputTot.SelectEvents.SelectEvents = cms.vstring("HLT_Ele27_WPTight_Gsf_NoPM_v1","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_NoPM_v1","HLT_DoubleEle33_CaloIdL_NoPM_v1")
-process.hltOutputTot.outputCommands = cms.untracked.vstring("keep *",)
-from Configuration.EventContent.EventContent_cff import RAWSIMEventContent
-process.hltOutputTot.outputCommands = RAWSIMEventContent.outputCommands
-process.hltOutputTot.outputCommands.append('keep *_nrEventsStorer_*_*')
-process.hltOutputTot.outputCommands.extend(['keep recoRecoEcalCandidatesToValuefloatAssociation_*_*_*',
-                                            "keep *_hltEgammaCandidates_*_*",
-                                            "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
-                                            "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
-                                            "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
-                                            "keep *_hltEgammaCandidatesUnseeded_*_*",
-                                            "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
-                                            "keep *_hltParticleFlowClusterECALUnseeded_*_*",
-                                            "keep *_hltParticleFlowClusterPSUnseeded_*_*",
-                                            "keep *_hlt*Method2*_*_*",
-                                            "keep *_hltTowerMaker*_*_*",
-                                            "drop *_g4SimHits_*_*",
-                                            "drop FEDRawDataCollection_rawDataCollector_*_HLT",]
-                                            )
+#process.hltOutputTot.outputCommands = cms.untracked.vstring("keep *",)
+#from Configuration.EventContent.EventContent_cff import RAWSIMEventContent
+#process.hltOutputTot.outputCommands = RAWSIMEventContent.outputCommands
+#process.hltOutputTot.outputCommands.append('keep *_nrEventsStorer_*_*')
+#process.hltOutputTot.outputCommands.extend(['keep recoRecoEcalCandidatesToValuefloatAssociation_*_*_*',
+#                                            "keep *_hltEgammaCandidates_*_*",
+#                                            "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
+ #                                           "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
+ #                                           "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
+ #                                           "keep *_hltEgammaCandidatesUnseeded_*_*",
+ #                                           "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
+ #                                           "keep *_hltParticleFlowClusterECALUnseeded_*_*",
+  #                                          "keep *_hltParticleFlowClusterPSUnseeded_*_*",
+  #                                          "keep *_hlt*Method2*_*_*",
+  #                                          "keep *_hltTowerMaker*_*_*",
+  #                                          "drop *_g4SimHits_*_*",
+   #                                         "drop FEDRawDataCollection_rawDataCollector_*_HLT",]
+  #                                         )
+                                           
+process.hltOutputTot.outputCommands=cms.untracked.vstring('drop *',
+                                                          'keep *_*_*_SIM',
+                                                          "drop edmHepMCProduct_generatorSmeared__SIM",
+                                                          "drop *_g4SimHits_*_*",
+                                                          "keep *_addPileupInfo_*_*", 
+                                                          "keep FEDRawDataCollection_rawDataCollector_*_HLTSkim",
+#                                                          "keep *_mix_*AffectedAPVList_*",
+                                                          'keep *_nrEventsStorer_*_*',
+                                                          'keep *_nrEventsStorerPostPUFilter_*_*',
+                                                          'keep *_hltTriggerSummaryAOD_*_HLTSkim',
+                                                          'keep *_TriggerResults_*_HLTSkim',
                                             
+                                                          )
+
+ 
 process.hltOutputTot.eventAutoFlushCompressedSize = cms.untracked.int32(5*1024*1024)
 print  "global tag : ",process.GlobalTag.globaltag
 
