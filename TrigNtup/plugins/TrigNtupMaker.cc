@@ -147,6 +147,9 @@ bool TrigNtupMaker::fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& 
 
 void TrigNtupMaker::endJob()
 { 
+  TrigBitsDef::write(outFile_);
+ 
+  
   // outFile_->cd();
   // //quick and dirty hack as writing ints directly isnt working
   // TTree* tree = new TTree("eventCountTree","Event count");

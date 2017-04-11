@@ -99,18 +99,18 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   pmDPhi2=cand.var(pmProd+tag+"dPhi2");
   pmDPhi3=cand.var(pmProd+tag+"dPhi3");
   pmDPhi4=cand.var(pmProd+tag+"dPhi4");
-  pmDPhiInfo1=cand.var(pmProd+tag+"dPhi1Info");
-  pmDPhiInfo2=cand.var(pmProd+tag+"dPhi2Info");
-  pmDPhiInfo3=cand.var(pmProd+tag+"dPhi3Info");
-  pmDPhiInfo4=cand.var(pmProd+tag+"dPhi4Info");
+  pmDPhi1Info=cand.var(pmProd+tag+"dPhi1Info");
+  pmDPhi2Info=cand.var(pmProd+tag+"dPhi2Info");
+  pmDPhi3Info=cand.var(pmProd+tag+"dPhi3Info");
+  pmDPhi4Info=cand.var(pmProd+tag+"dPhi4Info");
   pmDRZ1=cand.var(pmProd+tag+"dRZ1");
   pmDRZ2=cand.var(pmProd+tag+"dRZ2");
   pmDRZ3=cand.var(pmProd+tag+"dRZ3");
   pmDRZ4=cand.var(pmProd+tag+"dRZ4");
-  pmDRZInfo1=cand.var(pmProd+tag+"dRZ1Info");
-  pmDRZInfo2=cand.var(pmProd+tag+"dRZ2Info");
-  pmDRZInfo3=cand.var(pmProd+tag+"dRZ3Info");
-  pmDRZInfo4=cand.var(pmProd+tag+"dRZ4Info");
+  pmDRZ1Info=cand.var(pmProd+tag+"dRZ1Info");
+  pmDRZ2Info=cand.var(pmProd+tag+"dRZ2Info");
+  pmDRZ3Info=cand.var(pmProd+tag+"dRZ3Info");
+  pmDRZ4Info=cand.var(pmProd+tag+"dRZ4Info");
 
   nrClus = cand.var(pmProd+tag+"nrClus");
   seedClusEFrac = cand.var(pmProd+tag+"seedClusEFrac");

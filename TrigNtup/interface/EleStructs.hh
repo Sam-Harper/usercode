@@ -90,14 +90,12 @@ namespace EleStructs {
   };
 
    struct HLTEgammaStruct {
-    float et,nrgy,eta,phi,hadem,sigmaIEtaIEta,dEtaIn,dPhiIn,nrMissHits,nrClus,seedClusEFrac,pmDPhi1,pmDPhi2,pmDPhi3,pmDPhi4,pmDPhiInfo1,pmDPhiInfo2,pmDPhiInfo3,pmDPhiInfo4,pmDRZ1,pmDRZ2,pmDRZ3,pmDRZ4,pmDRZInfo1,pmDRZInfo2,pmDRZInfo3,pmDRZInfo4;
+    float et,nrgy,eta,phi,hadem,sigmaIEtaIEta,dEtaIn,dPhiIn,nrMissHits,nrClus,seedClusEFrac,pmDPhi1,pmDPhi2,pmDPhi3,pmDPhi4,pmDPhi1Info,pmDPhi2Info,pmDPhi3Info,pmDPhi4Info,pmDRZ1,pmDRZ2,pmDRZ3,pmDRZ4,pmDRZ1Info,pmDRZ2Info,pmDRZ3Info,pmDRZ4Info;
    
-    static std::string contents(){return "et/F:nrgy:eta:phi:hadem:sigmaIEtaIEta:dEtaIn:dPhiIn:nrMissHits:nrClus:seedClusEFrac:pmDPhi1:pmDPhi2:pmDPhi3:pmDPhi4:pmDPhiInfo1:pmDPhiInfo2:pmDPhiInfo3:pmDPhiInfo4:pmDRZ1:pmDRZ2:pmDRZ3:pmDRZ4:pmDRZInfo1:pmDRZInfo2:pmDRZInfo3:pmDRZInfo4";}
+    static std::string contents(){return "et/F:nrgy:eta:phi:hadem:sigmaIEtaIEta:dEtaIn:dPhiIn:nrMissHits:nrClus:seedClusEFrac:pmDPhi1:pmDPhi2:pmDPhi3:pmDPhi4:pmDPhi1Info:pmDPhi2Info:pmDPhi3Info:pmDPhi4Info:pmDRZ1:pmDRZ2:pmDRZ3:pmDRZ4:pmDRZ1Info:pmDRZ2Info:pmDRZ3Info:pmDRZ4Info";}
     void fill(const SHTrigObj& cand,const std::string& tag=""); 
-    void clear(){et=nrgy=eta=phi=hadem=sigmaIEtaIEta=dEtaIn=dPhiIn=nrMissHits=nrClus=seedClusEFrac=pmDPhi1=pmDPhi2=pmDPhi3=pmDPhi4=pmDPhiInfo1=pmDPhiInfo2=pmDPhiInfo3=pmDPhiInfo4=pmDRZ1=pmDRZ2=pmDRZ3=pmDRZ4=pmDRZInfo1=pmDRZInfo2=pmDRZInfo3=pmDRZInfo4=-999.;}
+    void clear(){et=nrgy=eta=phi=hadem=sigmaIEtaIEta=dEtaIn=dPhiIn=nrMissHits=nrClus=seedClusEFrac=pmDPhi1=pmDPhi2=pmDPhi3=pmDPhi4=pmDPhi1Info=pmDPhi2Info=pmDPhi3Info=pmDPhi4Info=pmDRZ1=pmDRZ2=pmDRZ3=pmDRZ4=pmDRZ1Info=pmDRZ2Info=pmDRZ3Info=pmDRZ4Info=-999.;}
   };
-
-  
 }
 
 #endif
