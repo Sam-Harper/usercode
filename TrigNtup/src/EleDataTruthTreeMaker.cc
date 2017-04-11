@@ -1,6 +1,7 @@
 #include "SHarper/TrigNtup/interface/EleDataTruthTreeMaker.hh"
 
 #include "SHarper/TrigNtup/interface/TrigFuncs.hh"
+#include "SHarper/TrigNtup/interface/CaloTools.hh"
 #include "SHarper/SHNtupliser/interface/MathFuncs.hh"
 
 
@@ -48,6 +49,7 @@ void EleDataTruthTreeMaker::fill_(const SHEvent* event,const SHMCParticle& truth
   data_.eleTruthPhi = truthEle.p4().Phi();
   data_.eleTruthDetEta = truthEle.detEta();
   data_.eleTruthZ = truthEle.pos().Z();
+  data_.eleTruthRegion = CaloTools::region(truthEle.detEta());
   data_.pid = truthEle.pid();
   data_.evt.fill(event);
   data_.weight = event->weight();

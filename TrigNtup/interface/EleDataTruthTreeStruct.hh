@@ -30,6 +30,7 @@ public:
   float eleTruthDetEta;
   float eleTruthEt;
   float eleTruthZ;
+  int eleTruthRegion;
   int pid;
   
   EleStructs::P4Struct hltP4;

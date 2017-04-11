@@ -82,9 +82,10 @@ bool EleStructs::EvtInfoStruct::operator<(const EleStructs::EvtInfoStruct& rhs)c
     }
   }
 }
-
 void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string& tag)
 {
+  static const std::string pmProd("hltEgammaPixelMatchVars");
+
   et=cand.p4().Et();
   nrgy=cand.p4().E();
   eta=cand.eta();
@@ -94,26 +95,31 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   dEtaIn=cand.var("hltEgammaGsfTrackVars"+tag+"DetaSeed");
   dPhiIn=cand.var("hltEgammaGsfTrackVars"+tag+"Dphi");
   nrMissHits=cand.var("hltEgammaGsfTrackVars"+tag+"MissingHits");
-  pmDPhi1=cand.var("hltEgammaPixelMatchVars"+tag+"dPhi1");
-  pmDPhi2=cand.var("hltEgammaPixelMatchVars"+tag+"dPhi2");
-  pmDZ=cand.var("hltEgammaPixelMatchVars"+tag+"dRZ2");
+  pmDPhi1=cand.var(pmProd+tag+"dPhi1");
+  pmDPhi2=cand.var(pmProd+tag+"dPhi2");
+  pmDPhi3=cand.var(pmProd+tag+"dPhi3");
+  pmDPhi4=cand.var(pmProd+tag+"dPhi4");
+  pmDPhiInfo1=cand.var(pmProd+tag+"dPhi1Info");
+  pmDPhiInfo2=cand.var(pmProd+tag+"dPhi2Info");
+  pmDPhiInfo3=cand.var(pmProd+tag+"dPhi3Info");
+  pmDPhiInfo4=cand.var(pmProd+tag+"dPhi4Info");
+  pmDRZ1=cand.var(pmProd+tag+"dRZ1");
+  pmDRZ2=cand.var(pmProd+tag+"dRZ2");
+  pmDRZ3=cand.var(pmProd+tag+"dRZ3");
+  pmDRZ4=cand.var(pmProd+tag+"dRZ4");
+  pmDRZInfo1=cand.var(pmProd+tag+"dRZ1Info");
+  pmDRZInfo2=cand.var(pmProd+tag+"dRZ2Info");
+  pmDRZInfo3=cand.var(pmProd+tag+"dRZ3Info");
+  pmDRZInfo4=cand.var(pmProd+tag+"dRZ4Info");
 
-  pmDPhi1S2=cand.var("hltEgammaPixelMatchVars"+tag+"dPhi1BestS2");
-  pmDPhi2S2=cand.var("hltEgammaPixelMatchVars"+tag+"dPhi2BestS2");
-  pmDZS2=cand.var("hltEgammaPixelMatchVars"+tag+"dzBestS2");
-  pmS2 = cand.var("hltEgammaPixelMatchVars"+tag+"s2");
-
-  pmDPhi1SubDet=cand.var("hltEgammaPixelMatchVars"+tag+"dPhi1SubDet");
-  pmDPhi2SubDet=cand.var("hltEgammaPixelMatchVars"+tag+"dPhi2SubDet");
-  pmDZSubDet=cand.var("hltEgammaPixelMatchVars"+tag+"dzSubDet");
-  nrClus = cand.var("hltEgammaPixelMatchVars"+tag+"nrClus");
-  seedClusEFrac = cand.var("hltEgammaPixelMatchVars"+tag+"seedClusEFrac");
+  nrClus = cand.var(pmProd+tag+"nrClus");
+  seedClusEFrac = cand.var(pmProd+tag+"seedClusEFrac");
 
 
-  auto convertBackToInt=[](int part1,int part2){
-    return part1 | (part2<<16);
-  };
-  hit1DetId = convertBackToInt(cand.var("hltEgammaPixelMatchVars"+tag+"seedHit1DetId1"),cand.var("hltEgammaPixelMatchVars"+tag+"seedHit1DetId2"));
-  hit2DetId = convertBackToInt(cand.var("hltEgammaPixelMatchVars"+tag+"seedHit2DetId1"),cand.var("hltEgammaPixelMatchVars"+tag+"seedHit2DetId2"));
+  // auto convertBackToInt=[](int part1,int part2){
+  //   return part1 | (part2<<16);
+  // };
+  // hit1DetId = convertBackToInt(cand.var(pmProd+tag+"seedHit1DetId1"),cand.var(pmProd+tag+"seedHit1DetId2"));
+  // hit2DetId = convertBackToInt(cand.var(pmProd+tag+"seedHit2DetId1"),cand.var(pmProd+tag+"seedHit2DetId2"));
   
 }

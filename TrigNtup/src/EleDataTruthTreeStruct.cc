@@ -18,6 +18,7 @@ void EleDataTruthTreeStruct::createBranches(TTree* tree)
   tree->Branch("eleTruthEta",&eleTruthEta,"eleTruthEta/F",buffSize); 
   tree->Branch("eleTruthDetEta",&eleTruthDetEta,"eleTruthDetEta/F",buffSize); 
   tree->Branch("eleTruthEt",&eleTruthEt,"eleTruthEt/F",buffSize);
+  tree->Branch("eleTruthRegion",&eleTruthRegion,"eleTruthRegion/I",buffSize);
   addBranch(tree,"eleTruthZ",eleTruthZ,buffSize);
   addBranch(tree,"pid",pid,buffSize);
   addBranch(tree,"eleTrigs",eleTrigs,buffSize);
@@ -44,6 +45,7 @@ void EleDataTruthTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("eleTruthDetEta",&eleTruthDetEta); 
   tree->SetBranchAddress("eleTruthEt",&eleTruthEt); 
   tree->SetBranchAddress("eleTruthZ",&eleTruthZ);
+  tree->SetBranchAddress("eleTruthRegion",&eleTruthRegion);
   tree->SetBranchAddress("pid",&pid);
   tree->SetBranchAddress("hlt",&hltP4); 
   tree->SetBranchAddress("eleTrigs",&eleTrigs); 

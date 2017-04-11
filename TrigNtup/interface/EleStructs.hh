@@ -89,14 +89,12 @@ namespace EleStructs {
     static std::string contents(){return "nrTruePUInt/I:nrPUInt:nrPUIntPos:nrPUIntNeg";}
   };
 
-  
-  struct HLTEgammaStruct {
-    float et,nrgy,eta,phi,hadem,sigmaIEtaIEta,dEtaIn,dPhiIn,nrMissHits,pmDPhi1,pmDPhi2,pmDZ,pmDPhi1S2,pmDPhi2S2,pmDZS2,pmS2,pmDPhi1SubDet,pmDPhi2SubDet,pmDZSubDet,nrClus,seedClusEFrac;
-    int hit1DetId,hit2DetId;
+   struct HLTEgammaStruct {
+    float et,nrgy,eta,phi,hadem,sigmaIEtaIEta,dEtaIn,dPhiIn,nrMissHits,nrClus,seedClusEFrac,pmDPhi1,pmDPhi2,pmDPhi3,pmDPhi4,pmDPhiInfo1,pmDPhiInfo2,pmDPhiInfo3,pmDPhiInfo4,pmDRZ1,pmDRZ2,pmDRZ3,pmDRZ4,pmDRZInfo1,pmDRZInfo2,pmDRZInfo3,pmDRZInfo4;
    
-    static std::string contents(){return "et/F:nrgy:eta:phi:hadem:sigmaIEtaIEta:dEtaIn:dPhiIn:nrMissHits:pmDPhi1:pmDPhi2:pmDZ:pmDPhi1S2:pmDPhi2S2:pmDZS2:pmS2:pmDPhi1SubDet:pmDPhi2SubDet:pmDZSubDet:nrClus:seedClusEFrac:hit1DetId/I:hit2DetId";}
+    static std::string contents(){return "et/F:nrgy:eta:phi:hadem:sigmaIEtaIEta:dEtaIn:dPhiIn:nrMissHits:nrClus:seedClusEFrac:pmDPhi1:pmDPhi2:pmDPhi3:pmDPhi4:pmDPhiInfo1:pmDPhiInfo2:pmDPhiInfo3:pmDPhiInfo4:pmDRZ1:pmDRZ2:pmDRZ3:pmDRZ4:pmDRZInfo1:pmDRZInfo2:pmDRZInfo3:pmDRZInfo4";}
     void fill(const SHTrigObj& cand,const std::string& tag=""); 
-    void clear(){et=nrgy=eta=phi=hadem=sigmaIEtaIEta=dEtaIn=dPhiIn=nrMissHits=pmDPhi1=pmDPhi2=pmDZ=pmDPhi1S2=pmDPhi2S2=pmDZS2=pmS2=pmDPhi1SubDet=pmDPhi2SubDet=pmDZSubDet=nrClus=seedClusEFrac=hit1DetId=hit2DetId-999.;}
+    void clear(){et=nrgy=eta=phi=hadem=sigmaIEtaIEta=dEtaIn=dPhiIn=nrMissHits=nrClus=seedClusEFrac=pmDPhi1=pmDPhi2=pmDPhi3=pmDPhi4=pmDPhiInfo1=pmDPhiInfo2=pmDPhiInfo3=pmDPhiInfo4=pmDRZ1=pmDRZ2=pmDRZ3=pmDRZ4=pmDRZInfo1=pmDRZInfo2=pmDRZInfo3=pmDRZInfo4=-999.;}
   };
 
   
