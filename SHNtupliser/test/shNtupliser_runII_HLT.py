@@ -19,7 +19,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-#    datasetCode=100
+    datasetCode=100
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -108,9 +108,13 @@ else:
     process.shNtupliser.sampleWeight = 1
 
 
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.skimHLTFilter.throw=cms.bool(False)
+process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLTSkim")
+process.skimHLTFilter.HLTPaths = cms.vstring("HLT_RemovePileUpDominatedEventsGen_v1",)
 
-
-
+#process.p = cms.Path(process.skimHLTFilter*process.shNtupliser)
 process.p = cms.Path(process.shNtupliser)
 
 #from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
