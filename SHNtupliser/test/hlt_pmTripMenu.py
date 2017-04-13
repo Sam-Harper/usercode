@@ -8693,17 +8693,17 @@ process.hltEgammaElectronPixelSeeds = cms.EDProducer("ElectronNSeedProducer",
  #       ),
                                                      useRecoVertex=cms.bool(False),
                                                      matchingCuts=cms.VPSet(
-        cms.PSet(dPhiMax=cms.double(0.04),
+        cms.PSet(dPhiMax=cms.double(0.2),
                  dZMax=cms.double(999999),
                  dRIMax=cms.double(999999),
                  dRFMax=cms.double(999999)
                  ),
-        cms.PSet(dPhiMax=cms.double(0.004),
-                 dZMax=cms.double(0.09),
+        cms.PSet(dPhiMax=cms.double(0.2),
+                 dZMax=cms.double(0.2),
                  dRIMax=cms.double(0.2),
                  dRFMax=cms.double(0.15)
                  ),
-        cms.PSet(dPhiMax=cms.double(0.04),
+        cms.PSet(dPhiMax=cms.double(0.2),
                  dZMax=cms.double(0.2),
                  dRIMax=cms.double(0.2),
                  dRFMax=cms.double(0.2)
