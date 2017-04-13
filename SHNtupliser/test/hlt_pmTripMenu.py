@@ -1,11 +1,11 @@
-# /users/sharper/2017/egamma/newPMMenu/V5 (CMSSW_9_0_0)
+# /users/sharper/2017/egamma/newPMMenu/V6 (CMSSW_9_0_0)
 
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process( "HLTX" )
 
 process.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/users/sharper/2017/egamma/newPMMenu/V5')
+  tableName = cms.string('/users/sharper/2017/egamma/newPMMenu/V6')
 )
 
 process.transferSystem = cms.PSet( 
@@ -4721,6 +4721,113 @@ process.hltEgammaElectronPixelSeeds = cms.EDProducer( "ElectronSeedProducer",
     ),
     barrelSuperClusters = cms.InputTag( 'hltParticleFlowSuperClusterECALL1Seeded','hltParticleFlowSuperClusterECALBarrel' )
 )
+process.hltEgammaPixelMatchVars = cms.EDProducer( "EgammaHLTPixelMatchVarProducer",
+    productsToWrite = cms.int32( 2 ),
+    dRZ2SParams = cms.PSet(  bins = cms.VPSet( 
+  cms.PSet(  yMin = cms.int32( 1 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00317, -0.00337, 0.00395, 0.0034, 4.0 ),
+    xMin = cms.double( 0.0 ),
+    yMax = cms.int32( 99999 ),
+    xMax = cms.double( 1.5 ),
+    funcType = cms.string( "TF2:=0+1*x+2*x*x+3*std::max(y-4,0.)" )
+  ),
+  cms.PSet(  yMin = cms.int32( 1 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00435, 0.00289, 1.65, 0.22 ),
+    xMin = cms.double( 1.5 ),
+    yMax = cms.int32( 1 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=0+1*TMath::Gaus(x,2,3,1)" )
+  ),
+  cms.PSet(  yMin = cms.int32( 2 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00541, 0.00404, 1.76, 0.22 ),
+    xMin = cms.double( 1.5 ),
+    yMax = cms.int32( 2 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=0+1*TMath::Gaus(x,2,3,1)" )
+  ),
+  cms.PSet(  yMin = cms.int32( 3 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00856, 0.00351, 1.79, 0.138 ),
+    xMin = cms.double( 1.5 ),
+    yMax = cms.int32( 3 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=0+1*TMath::Gaus(x,2,3,1)" )
+  ),
+  cms.PSet(  yMin = cms.int32( 4 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00669, 0.0123, 1.75, 0.236 ),
+    xMin = cms.double( 1.5 ),
+    yMax = cms.int32( 99999 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=0+1*TMath::Gaus(x,2,3,1)" )
+  )
+) ),
+    pixelSeedsProducer = cms.InputTag( "hltEgammaElectronPixelSeeds" ),
+    dPhi2SParams = cms.PSet(  bins = cms.VPSet( 
+  cms.PSet(  yMin = cms.int32( 1 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 1.1E-4 ),
+    xMin = cms.double( 0.0 ),
+    yMax = cms.int32( 99999 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=pol0" )
+  )
+) ),
+    recoEcalCandidateProducer = cms.InputTag( "hltEgammaCandidates" ),
+    dPhi1SParams = cms.PSet(  bins = cms.VPSet( 
+  cms.PSet(  yMin = cms.int32( 1 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 9.81E-4, 8.98E-4, -0.00128, 8.97E-4 ),
+    xMin = cms.double( 0.0 ),
+    yMax = cms.int32( 1 ),
+    xMax = cms.double( 1.5 ),
+    funcType = cms.string( "TF1:=pol3" )
+  ),
+  cms.PSet(  yMin = cms.int32( 2 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00222, 1.96E-4, -2.03E-4, 4.47E-4 ),
+    xMin = cms.double( 0.0 ),
+    yMax = cms.int32( 2 ),
+    xMax = cms.double( 1.5 ),
+    funcType = cms.string( "TF1:=pol3" )
+  ),
+  cms.PSet(  yMin = cms.int32( 3 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00236, 6.91E-4, 1.99E-4, 4.16E-4 ),
+    xMin = cms.double( 0.0 ),
+    yMax = cms.int32( 99999 ),
+    xMax = cms.double( 1.5 ),
+    funcType = cms.string( "TF1:=pol3" )
+  ),
+  cms.PSet(  yMin = cms.int32( 1 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00562, -0.00166 ),
+    xMin = cms.double( 1.5 ),
+    yMax = cms.int32( 1 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=pol1" )
+  ),
+  cms.PSet(  yMin = cms.int32( 2 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.00866, -0.00271 ),
+    xMin = cms.double( 1.5 ),
+    yMax = cms.int32( 2 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=pol1" )
+  ),
+  cms.PSet(  yMin = cms.int32( 3 ),
+    binType = cms.string( "AbsEtaClus" ),
+    funcParams = cms.vdouble( 0.0132, -0.0048 ),
+    xMin = cms.double( 1.5 ),
+    yMax = cms.int32( 99999 ),
+    xMax = cms.double( 3.0 ),
+    funcType = cms.string( "TF1:=pol1" )
+  )
+) )
+)
 process.hltEle33CaloIdLPixelMatchFilter = cms.EDFilter( "HLTElectronPixelMatchFilter",
     s_a_rF = cms.double( 0.04 ),
     saveTags = cms.bool( True ),
@@ -8359,7 +8466,7 @@ process.HLTDoLocalHcalWithTowerL1EGSeededSequence = cms.Sequence( process.hltHca
 process.HLTFastJetForEgamma = cms.Sequence( process.hltFixedGridRhoFastjetAllCaloForMuons )
 process.HLTDoLocalPixelSequence = cms.Sequence( process.hltSiPixelDigis + process.hltSiPixelClusters + process.hltSiPixelClustersCache + process.hltSiPixelRecHits )
 process.HLTDoLocalStripSequence = cms.Sequence( process.hltSiStripExcludedFEDListProducer + process.hltSiStripRawToClustersFacility + process.hltSiStripClusters )
-process.HLTEgammaPixelMatchingSequence = cms.Sequence( process.HLTDoLocalPixelSequence + process.HLTDoLocalStripSequence + process.hltEgammaSuperClustersToPixelMatch + process.hltEleSeedsTrackingRegions + process.hltPixelLayerTriplets + process.hltPixelLayerQuadruplets + process.hltEleSeedsHitDoublets + process.hltEleSeedsHitTriplets + process.hltEleSeedsHitQuadruplets + process.hltElePixelSeedsNew + process.hltEgammaElectronPixelSeeds )
+process.HLTEgammaPixelMatchingSequence = cms.Sequence( process.HLTDoLocalPixelSequence + process.HLTDoLocalStripSequence + process.hltEgammaSuperClustersToPixelMatch + process.hltEleSeedsTrackingRegions + process.hltPixelLayerTriplets + process.hltPixelLayerQuadruplets + process.hltEleSeedsHitDoublets + process.hltEleSeedsHitTriplets + process.hltEleSeedsHitQuadruplets + process.hltElePixelSeedsNew + process.hltEgammaElectronPixelSeeds + process.hltEgammaPixelMatchVars )
 process.HLTEle33CaloIdLSequence = cms.Sequence( process.HLTDoFullUnpackingEgammaEcalSequence + process.HLTPFClusteringForEgamma + process.hltEgammaCandidates + process.hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter + process.hltEG33EtFilter + process.HLTDoLocalHcalWithTowerL1EGSeededSequence + process.HLTFastJetForEgamma + process.hltEgammaHoverE + process.hltEG33HEFilter + process.hltEgammaClusterShape + process.hltEG33CaloIdLClusterShapeFilter + process.HLTEgammaPixelMatchingSequence + process.hltEle33CaloIdLPixelMatchFilter )
 process.HLTEndSequence = cms.Sequence( process.hltBoolEnd )
 process.HLTDoFullUnpackingEgammaEcalWithoutPreshowerSequence = cms.Sequence( process.hltEcalDigis + process.hltEcalUncalibRecHit + process.hltEcalDetIdToBeRecovered + process.hltEcalRecHit )
@@ -8455,7 +8562,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # enable TrigReport, TimeReport and MultiThreading
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool( True ),
+    wantSummary = cms.untracked.bool( False ),
     numberOfThreads = cms.untracked.uint32( 4 ),
     numberOfStreams = cms.untracked.uint32( 0 ),
     sizeOfStackForThreadsInKB = cms.untracked.uint32( 10*1024 )
@@ -8596,12 +8703,13 @@ process.hltEgammaElectronPixelSeeds = cms.EDProducer("ElectronNSeedProducer",
                  dRIMax=cms.double(0.2),
                  dRFMax=cms.double(0.15)
                  ),
-        cms.PSet(dPhiMax=cms.double(0.004),
-                 dZMax=cms.double(0.09),
+        cms.PSet(dPhiMax=cms.double(0.04),
+                 dZMax=cms.double(0.2),
                  dRIMax=cms.double(0.2),
-                 dRFMax=cms.double(0.15)
+                 dRFMax=cms.double(0.2)
                  ),
         )
 )
 
                                                      
+process.hltEgammaPixelMatchVars.productsToWrite = cms.int32( 2 )

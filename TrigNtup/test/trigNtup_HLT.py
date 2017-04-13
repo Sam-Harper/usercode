@@ -61,7 +61,7 @@ import sys
 #CRABHLTNAMEOVERWRITE
 hltName="HLTX"
 patCandID=""
-process.load("SHarper.SHNtupliser.shNtupliser_cfi")
+process.load("SHarper.TrigNtup.trigNtupMaker_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
 

@@ -22,7 +22,7 @@ process.transferSystem = cms.PSet(
     default = cms.vstring( 'Tier0' ),
     test = cms.vstring( 'Lustre' ),
     emulator = cms.vstring( 'Lustre' )
-  ),
+  ),  
   streamCalibration = cms.PSet( 
     default = cms.vstring( 'Tier0' ),
     test = cms.vstring( 'Lustre' ),
