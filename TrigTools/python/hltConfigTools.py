@@ -114,3 +114,35 @@ def addOutputMod(process):
     process.HLTOutput = cms.EndPath(process.hltOutputTot)
     process.HLTSchedule.insert(len(process.HLTSchedule),process.HLTOutput)
    
+
+def outputCmdsSimpleSkim():
+    res = cms.untracked.vstring('drop *',
+                                'keep *_*_*_SIM',
+                                "drop edmHepMCProduct_generatorSmeared__SIM",
+                                "drop *_g4SimHits_*_*",
+                                "keep *_addPileupInfo_*_*", 
+                                "keep FEDRawDataCollection_rawDataCollector_*_HLTSkim",
+                                #                                                          "keep *_mix_*AffectedAPVList_*",
+                                'keep *_nrEventsStorer_*_*',
+                                'keep *_nrEventsStorerPostPUFilter_*_*',
+                                'keep *_hltTriggerSummaryAOD_*_HLTSkim',
+                                'keep *_TriggerResults_*_HLTSkim',
+                                
+                                )
+    return res
+
+def outputCmdsRePixelLight():
+    res = cms.untracked.vstring('keep recoRecoEcalCandidatesToValuefloatAssociation_*_*_*',
+                                "keep *_hltEgammaCandidates_*_*",
+                                "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
+                                "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
+                                "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
+                                "keep *_hltEgammaCandidatesUnseeded_*_*",
+                                "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
+                                "keep *_hltParticleFlowClusterECALUnseeded_*_*",
+                                "keep *_hltParticleFlowClusterPSUnseeded_*_*",
+                                "keep *_hlt*Method2*_*_*",
+                                "keep *_hltTowerMaker*_*_*",
+                                "keep *_hltSiPixelRecHits*_*",
+                                )
+    return res
