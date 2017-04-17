@@ -132,17 +132,80 @@ def outputCmdsSimpleSkim():
     return res
 
 def outputCmdsRePixelLight():
-    res = cms.untracked.vstring('keep recoRecoEcalCandidatesToValuefloatAssociation_*_*_*',
-                                "keep *_hltEgammaCandidates_*_*",
-                                "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
-                                "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
-                                "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
-                                "keep *_hltEgammaCandidatesUnseeded_*_*",
-                                "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
-                                "keep *_hltParticleFlowClusterECALUnseeded_*_*",
-                                "keep *_hltParticleFlowClusterPSUnseeded_*_*",
-                                "keep *_hlt*Method2*_*_*",
-                                "keep *_hltTowerMaker*_*_*",
-                                "keep *_hltSiPixelRecHits*_*",
-                                )
+    res = cms.untracked.vstring(
+        "drop *",
+        'keep recoRecoEcalCandidatesToValuefloatAssociation_*_*_*',
+        "keep *_hltEgammaCandidates_*_*",
+        "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
+        "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
+        "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
+        "keep *_hltEgammaCandidatesUnseeded_*_*",
+        "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
+        "keep *_hltParticleFlowClusterECALUnseeded_*_*",
+        "keep *_hltParticleFlowClusterPSUnseeded_*_*",
+        "keep *_hlt*Method2*_*_*",
+        "keep *_hltTowerMaker*_*_*",
+#        "keep *_hltSiPixelRecHits_*_*",
+        "keep *_hltSiPixelClusters_*_*", 
+        "keep *_hltSiPixelClustersCache_*_*", 
+        "keep *_hltGtStage2Digis_*_*",
+        "keep *_hltGtStage2ObjectMap_*_*",
+        "keep *_hltScalersRawToDigi_*_*",
+        "keep *_hltOnlineBeamSpot_*_*",
+       # "keep *",
+        )
+    return res
+
+
+def outputCmdsRePixelMedium():
+    res = cms.untracked.vstring(
+        "drop *",
+        "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
+        "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
+        "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
+        "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
+        "keep *_hltParticleFlowClusterECALUnseeded_*_*",
+        "keep *_hltParticleFlowClusterPSUnseeded_*_*",
+        "keep *_hlt*Method2*_*_*",
+        "keep *_hltTowerMaker*_*_*",
+        "keep *_hltFixedGridRhoFastjetAllCaloForMuons_*_*",
+        "keep *_hltRechitInRegionsECAL_*_*",
+#        "keep *_hltSiPixelRecHits_*_*",
+        "keep *_hltSiPixelClusters_*_*", 
+        "keep *_hltSiPixelClustersCache_*_*", 
+        "keep *_hltGtStage2Digis_*_*",
+        "keep *_hltGtStage2ObjectMap_*_*",
+        "keep *_hltScalersRawToDigi_*_*",
+        "keep *_hltOnlineBeamSpot_*_*",
+        "keep *_addPileupInfo_*_*",
+        "keep *_genParticles_*_*", 
+        "keep *_externalLHEProducer_*_*",
+       # "keep *",
+        )
+    return res
+def outputCmdsRePixelMediumWithGen():
+    res = cms.untracked.vstring(
+        "drop *",
+        "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
+        "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
+        "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
+        "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
+        "keep *_hltParticleFlowClusterECALUnseeded_*_*",
+        "keep *_hltParticleFlowClusterPSUnseeded_*_*",
+        "keep *_hlt*Method2*_*_*",
+        "keep *_hltTowerMaker*_*_*",
+        "keep *_hltFixedGridRhoFastjetAllCaloForMuons_*_*",
+        "keep *_hltRechitInRegionsECAL_*_*",
+#        "keep *_hltSiPixelRecHits_*_*",
+        "keep *_hltSiPixelClusters_*_*", 
+        "keep *_hltSiPixelClustersCache_*_*", 
+        "keep *_hltGtStage2Digis_*_*",
+        "keep *_hltGtStage2ObjectMap_*_*",
+        "keep *_hltScalersRawToDigi_*_*",
+        "keep *_hltOnlineBeamSpot_*_*",
+        "keep *_addPileupInfo_*_*",
+        "keep *_genParticles_*_*", 
+        "keep *_externalLHEProducer_*_*",
+       # "keep *",
+        )
     return res
