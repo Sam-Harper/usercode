@@ -113,231 +113,11 @@ void TrigBitsDef::outOfBoundsErr(const std::string& funcStr)
   exit(0);
 }
 
-
-void TrigBitsDef::setTrigNamesRun2016WPLoose()
-{
-  setTrigNamesRun2016();
-  trigFilterNames_.clear();
-  trigFilterNames_.push_back("hltEGL1SingleEG40OR35OR30OR25OR20ORDoubleEG2210ORSingleJet200Filter");
-  trigFilterNames_.push_back("hltEG33EtFilter");
-  trigFilterNames_.push_back("hltDiEG33EtUnseededFilter");
-  trigFilterNames_.push_back("hltL1sL1SingleEG40");
-  trigFilterNames_.push_back("hltEle33CaloIdLPixelMatchFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLGsfTrkIdVLDPhiFilter");
-  trigFilterNames_.push_back("hltEG33CaloIdLMWPMS2Filter");
-  trigFilterNames_.push_back("hltEle33CaloIdLGsfTrkIdVLMWPMS2Filter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLPixelMatchUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLMWPMS2UnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLGsfTrkIdVLMWPMS2UnseededFilter");
-
-  trigFilterNames_.push_back("hltEG85HEFilter");
-  trigFilterNames_.push_back("hltDiEG85HEUnseededFilter");
-  trigFilterNames_.push_back("hltEGL1SingleEG40ORSingleIsoEG22erOrSingleIsoEG24erORSingleIsoEG24OrSingleIsoEG26Filter");
-  trigFilterNames_.push_back("hltEG27L1IsoEG22erORIsoEG24erORIsoEG24ORIsoEG26OREG40EtFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseClusterShapeFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseHEFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseEcalIsoFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseHcalIsoFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLoosePixelMatchFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseGsfOneOEMinusOneOPFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseGsfChi2Filter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseGsfMissingHitsFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseGsfDetaFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseGsfDphiFilter");
-  trigFilterNames_.push_back("hltEle27noerWPLooseGsfTrackIsoFilter");
- 
-
-  
-}
-
-void TrigBitsDef::setTrigNames2012()
-{
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v");
-  trigPathNames_.push_back("HLT_DoublePhoton70_v");
-  trigPathNames_.push_back("HLT_DoublePhoton80_v");
-  trigPathNames_.push_back("HLT_Photon30_CaloIdVL_v");  
-  trigPathNames_.push_back("HLT_Photon50_CaloIdVL_v"); 
-  trigPathNames_.push_back("HLT_Photon75_CaloIdVL_v"); 
-  trigPathNames_.push_back("HLT_Photon90_CaloIdVL_v"); 
-  trigPathNames_.push_back("HLT_Photon125_v");
-  trigPathNames_.push_back("HLT_Photon135_v");
-  trigPathNames_.push_back("HLT_Photon150_v");
-  trigPathNames_.push_back("HLT_Photon160_v");
-  trigPathNames_.push_back("HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_Mass50_v");
-  trigPathNames_.push_back("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdT_v");
-  trigPathNames_.push_back("HLT_Photon26_Photon18_v");
-  trigPathNames_.push_back("HLT_Photon36_Photon22_v");
-  trigPathNames_.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-  trigPathNames_.push_back("HLT_Jet370_NoJetID_v");
-  trigPathNames_.push_back("HLT_Jet400_NoJetID_v");
-  trigPathNames_.push_back("HLT_HT750_v");
-  
-  trigFilterNames_.push_back("hltEG70HEFilter");
-  trigFilterNames_.push_back("hltDoubleEG70HEDoubleFilter");
-  trigFilterNames_.push_back("hltEG80HEFilter");
-  trigFilterNames_.push_back("hltDoubleEG80HEDoubleFilter");
-  trigFilterNames_.push_back("hltEG30CaloIdVLHEFilter");
-  trigFilterNames_.push_back("hltPhoton50CaloIdVLHEFilter");
-  trigFilterNames_.push_back("hltPhoton75CaloIdVLHEFilter");
-  trigFilterNames_.push_back("hltPhoton90CaloIdVLHEFilter");
-  trigFilterNames_.push_back("hltPhoton135HEFilter");
-  trigFilterNames_.push_back("hltPhoton150HEFilter");
-  trigFilterNames_.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17TrackIsoFilter"); 
-  trigFilterNames_.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilter");
-  trigFilterNames_.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"); 
-  trigFilterNames_.push_back("hltPhoton26Photon18EgammaLHEFilter");
-  trigFilterNames_.push_back("hltPhoton26Photon18EgammaLHELastFilter");
-  trigFilterNames_.push_back("hltEG36HE10LastFilter");
-  trigFilterNames_.push_back("hltEG22HE10DoubleLastFilterUnseeded");
-  trigFilterNames_.push_back("hltEle33CaloIdLPixelMatchFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLPixelMatchDoubleFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLGsfTrkIdVLDPhiDoubleFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdTPixelMatchFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdTPixelMatchDoubleFilter");  
-  trigFilterNames_.push_back("hltEle80CaloIdVTTrkIdTDphiFilter");
-  trigFilterNames_.push_back("hltEle80CaloIdVTGsfTrkIdTDPhiFilter");
-  trigFilterNames_.push_back("hltL1sL1SingleEG22");
-  trigFilterNames_.push_back("hltEle27WP80TrackIsoFilter");
-  trigFilterNames_.push_back("l1UTC2015Iso");
-  trigFilterNames_.push_back("l1UTC2015Relaxed");
-  trigFilterNames_.push_back("hltSingleJet370RegionalNoJetID");
-  //trigFilterNames_.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17TrackIsoFilterNewNrgy"); 
-  //trigFilterNames_.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilterNewNrgy");
-  //trigFilterNames_.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTTrackIsoFilterNewNrgy"); 
-
-
-  
-}
 void TrigBitsDef::setTrigNames()
 {
   setTrigNamesRun2016();
 }
 
-void TrigBitsDef::setTrigNamesDebug()
-{
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_MW_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v");
-  trigFilterNames_.push_back("hltEG33EtFilter");
-  trigFilterNames_.push_back("hltEG33HEFilter");
-  trigFilterNames_.push_back("hltEG33CaloIdLClusterShapeFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLPixelMatchFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLPixelMatchS2Filter"); 
-  trigFilterNames_.push_back("hltEle33CaloIdLNewPixelMatchFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLGsfTrkIdVLDEtaFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLGsfTrkIdVLDPhiFilter");
-  trigFilterNames_.push_back("hltDoubleEG33EtDoubleFilter");
-  trigFilterNames_.push_back("hltDoubleEG33HEDoubleFilter");
-  trigFilterNames_.push_back("hltDoubleEG33CaloIdLClusterShapeDoubleFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLPixelMatchUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLNewPixelMatchUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLPixelMatchS2UnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLGsfTrkIdVLDEtaUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter");
-  trigFilterNames_.push_back("hltEle27WP80NewPixelMatchFilter");
-  trigFilterNames_.push_back("hltEle27WP80GsfTrackIsoFilter");
-  trigFilterNames_.push_back("hltEle80CaloIdVTGsfTrkIdTGsfDphiFilter");
-  trigFilterNames_.push_back("hltEle80CaloIdVTNewPixelMatchFilter");
-  trigFilterNames_.push_back("hltEG175HEFilter");
-
-}
-  
-void TrigBitsDef::setTrigNamesPHYS14()
-{
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v");
-  trigPathNames_.push_back("HLT_DoublePhoton85_v");
-  trigPathNames_.push_back("HLT_Photon175_v");
-  trigPathNames_.push_back("HLT_ECALHT800_v");
-  trigPathNames_.push_back("HLT_CaloJet500_NoJetID_v");
-  trigPathNames_.push_back("HLT_Ele32_eta2p1_WP75_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele25_WP60_SC4_Mass55");
- 
-  trigFilterNames_.push_back("hltL1sL1SingleEG40ORL1SingleEG35ORL1DoubleEG2210ORL1DoubleEG1510");
-  trigFilterNames_.push_back("hltEle33CaloIdLPixelMatchFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLGsfTrkIdVLDPhiFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLNewPixelMatchFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLPixelMatchUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLNewPixelMatchUnseededFilter");
-  trigFilterNames_.push_back("hltL1sL1SingleEG40");
-  trigFilterNames_.push_back("hltEG85HEFilter");
-  trigFilterNames_.push_back("hltDiEG85HEUnseededFilter");
-  trigFilterNames_.push_back("hltEG175HEFilter");
-  trigFilterNames_.push_back("hltSingleCaloJet500");
-  trigFilterNames_.push_back("hltL1sL1SingleIsoEG30er");
-  trigFilterNames_.push_back("hltEle32WP75GsfTrackIsoFilter");
-  trigFilterNames_.push_back("hltL1sL1SingleEG20");
-  trigFilterNames_.push_back("hltEle25WP60SC4TrackIsoFilter");
-  trigFilterNames_.push_back("hltEle25WP60SC4EtUnseededFilter");
-  trigFilterNames_.push_back("hltEG135HEFilter");
-  trigFilterNames_.push_back("hltEG300erEtFilter");
-  trigFilterNames_.push_back("hltEG165HE10Filter");
-  trigFilterNames_.push_back("hltEle105CaloIdVTGsfTrkIdTGsfDphiFilter");
-}
-void TrigBitsDef::setTrigNamesRun2015()
-{
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v");
-  trigPathNames_.push_back("HLT_DoublePhoton85_v");
-  trigPathNames_.push_back("HLT_Photon175_v");
-  trigPathNames_.push_back("HLT_ECALHT800_v");
-  trigPathNames_.push_back("HLT_CaloJet500_NoJetID_v");
-  trigPathNames_.push_back("HLT_Ele23_WPLoose_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele32_eta2p1_WPLoose_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele32_eta2p1_WPTight_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele25_WP60_SC4_Mass55");
-  trigPathNames_.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-  trigPathNames_.push_back("HLT_Photon22_v");
-  trigPathNames_.push_back("HLT_Photon30_v");
-  trigPathNames_.push_back("HLT_Photon36_v");
-  trigPathNames_.push_back("HLT_Photon50_v"); 
-  trigPathNames_.push_back("HLT_Photon75_v"); 
-  trigPathNames_.push_back("HLT_Photon90_v"); 
-  trigPathNames_.push_back("HLT_Photon120_v"); 
-  trigPathNames_.push_back("HLT_Photon175_v"); 
-  trigPathNames_.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-  trigPathNames_.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
-  trigPathNames_.push_back("HLT_DoublePhoton60_v");
-
-  trigFilterNames_.push_back("hltL1sL1SingleEG40OR35OR30OR25OR20ORL1DoubleEG2210ORL1SingleJet200");
-  trigFilterNames_.push_back("hltEle33CaloIdLPixelMatchFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLGsfTrkIdVLDPhiFilter");
-  trigFilterNames_.push_back("hltEle33CaloIdLNewPixelMatchFilter");
-  trigFilterNames_.push_back("hltDiEG33EtUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLPixelMatchUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter");
-  trigFilterNames_.push_back("hltDiEle33CaloIdLNewPixelMatchUnseededFilter");
-  trigFilterNames_.push_back("hltL1sL1SingleEG40");
-  trigFilterNames_.push_back("hltEG85HEFilter");
-  trigFilterNames_.push_back("hltDiEG85HEUnseededFilter");
-  trigFilterNames_.push_back("hltSingleCaloJet500");
-  trigFilterNames_.push_back("hltL1sL1SingleEG20ORL1SingleEG15");
-  trigFilterNames_.push_back("hltEle23WPLooseGsfTrackIsoFilter");
-  trigFilterNames_.push_back("hltL1sL1SingleIsoEG22erOrSingleEG25");
-  trigFilterNames_.push_back("hltEle27WPLooseGsfTrackIsoFilter");
-  trigFilterNames_.push_back("hltL1sL1SingleIsoEG30erOrSingleEG40");
-  trigFilterNames_.push_back("hltEle32WPLooseGsfTrackIsoFilter");
-  trigFilterNames_.push_back("hltEle32WPTightGsfTrackIsoFilter");
-  trigFilterNames_.push_back("hltEG30HEFilter");
-  trigFilterNames_.push_back("hltEG36HEFilter");
-  trigFilterNames_.push_back("hltEG50HEFilter");
-  trigFilterNames_.push_back("hltEG75HEFilter");
-  trigFilterNames_.push_back("hltEG90HEFilter");
-  trigFilterNames_.push_back("hltEG120HEFilter");
-  trigFilterNames_.push_back("hltEG175HEFilter");
-  trigFilterNames_.push_back("hltEG300erEtFilter");
-  trigFilterNames_.push_back("hltEle105CaloIdVTGsfTrkIdTGsfDphiFilter");
-  trigFilterNames_.push_back("hltEle17Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter");
-  trigFilterNames_.push_back("hltEle17Ele12CaloIdLTrackIdLIsoVLDZFilter");
-  trigFilterNames_.push_back("hltEle17Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter");
-  trigFilterNames_.push_back("hltL1sL1DoubleEG1510");
-}
 
 void TrigBitsDef::setTrigNamesRun2016()
 {
@@ -371,7 +151,7 @@ void TrigBitsDef::setTrigNamesRun2016()
   //trigFilterNames_.push_back("hltL1sSingleEG40IorSingleEG30IorSingleEG26IorDoubleEG2210IorDoubleEG2417IorSingleJet200");
 
   trigFilterNames_.assign(32*4,"");
-  trigFilterNames_[0] = "hltEGL1SingleEG40OR35OR30OR25OR20ORDoubleEG2210ORSingleJet200Filter";
+  trigFilterNames_[0]="hltEGL1SingleEG40OR35OR30OR25OR20ORDoubleEG2210ORSingleJet200Filter";
   trigFilterNames_[1]="hltEG33EtFilter";
   trigFilterNames_[2]="hltDiEG33EtUnseededFilter";
   trigFilterNames_[3]="hltL1sL1SingleEG40";
@@ -398,16 +178,16 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigFilterNames_[23]="hltEle27noerWPLooseGsfTrackIsoFilter";
   trigFilterNames_[24]="hltSingleCaloJet500";
 
-  trigFilterNames_[32]="hltEG30HEFilter";
-  trigFilterNames_[33]="hltEG36HEFilter";
-  trigFilterNames_[34]="hltEG50HEFilter";
-  trigFilterNames_[35]="hltEG75HEFilter";
-  trigFilterNames_[36]="hltEG90HEFilter";
-  trigFilterNames_[37]="hltEG120HEFilter";
-  trigFilterNames_[38]="hltEG175HEFilter";
-  trigFilterNames_[39]="hltEG300erEtFilter";
-  trigFilterNames_[40]="hltEG85HEFilter";
-  trigFilterNames_[41]="hltDiEG85HEUnseededFilter";
+  trigFilterNames_[0+1*32]="hltEG30HEFilter";
+  trigFilterNames_[1+1*32]="hltEG36HEFilter";
+  trigFilterNames_[2+1*32]="hltEG50HEFilter";
+  trigFilterNames_[3+1*32]="hltEG75HEFilter";
+  trigFilterNames_[4+1*32]="hltEG90HEFilter";
+  trigFilterNames_[5+1*32]="hltEG120HEFilter";
+  trigFilterNames_[6+1*32]="hltEG175HEFilter";
+  trigFilterNames_[7+1*32]="hltEG300erEtFilter";
+  trigFilterNames_[8+1*32]="hltEG85HEFilter";
+  trigFilterNames_[9+1*32]="hltDiEG85HEUnseededFilter";
 
   trigFilterNames_[12+2*32]="hltEGL1SingleEGOrFilter";
   trigFilterNames_[13+2*32]="hltEle27WPTightClusterShapeFilter";
