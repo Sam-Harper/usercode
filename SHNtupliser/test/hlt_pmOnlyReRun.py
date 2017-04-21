@@ -1,11 +1,11 @@
-# /users/sharper/2017/egamma/pmTest/newPMOnSkim/V3 (CMSSW_9_0_0)
+# /users/sharper/2017/egamma/pmTest/newPMOnSkim/V5 (CMSSW_9_0_0)
 
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process( "HLTX" )
+process = cms.Process( "HLTX2" )
 
 process.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/users/sharper/2017/egamma/pmTest/newPMOnSkim/V3')
+  tableName = cms.string('/users/sharper/2017/egamma/pmTest/newPMOnSkim/V5')
 )
 
 process.transferSystem = cms.PSet( 
@@ -3294,8 +3294,8 @@ process.hltBoolFalse = cms.EDFilter( "HLTBool",
 process.hltTriggerType = cms.EDFilter( "HLTTriggerTypeFilter",
     SelectedTriggerType = cms.int32( 1 )
 )
-process.hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau = cms.EDFilter( "HLTL1TSeed",
-    L1SeedsLogicalExpression = cms.string( "L1_SingleEG26 OR L1_SingleEG30 OR L1_SingleEG32 OR L1_SingleEG34 OR L1_SingleEG36 OR L1_SingleEG38 OR L1_SingleEG40 OR L1_DoubleEG_18_17 OR L1_DoubleEG_20_18 OR L1_DoubleEG_22_10 OR L1_DoubleEG_22_12 OR L1_DoubleEG_22_12 OR L1_DoubleEG_22_15 OR L1_DoubleEG_23_10 OR L1_DoubleEG_24_17 OR L1_DoubleEG_25_12 OR L1_SingleJet170 OR L1_SingleJet180 OR L1_SingleJet200 OR L1_SingleTau100er OR L1_SingleTau120er" ),
+process.hltL1sSingleEG5WithJetAndTau = cms.EDFilter( "HLTL1TSeed",
+    L1SeedsLogicalExpression = cms.string( "L1_SingleEG5 OR L1_SingleJet170 OR L1_SingleJet180 OR L1_SingleJet200 OR L1_SingleTau100er OR L1_SingleTau120er" ),
     L1EGammaInputTag = cms.InputTag( 'hltGtStage2Digis','EGamma' ),
     L1JetInputTag = cms.InputTag( 'hltGtStage2Digis','Jet' ),
     saveTags = cms.bool( True ),
@@ -3305,7 +3305,7 @@ process.hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau = cms.EDFilter( "HL
     L1MuonInputTag = cms.InputTag( 'hltGtStage2Digis','Muon' ),
     L1GlobalInputTag = cms.InputTag( "hltGtStage2Digis" )
 )
-process.hltPreEle33CaloIdL = cms.EDFilter( "HLTPrescaler",
+process.hltPreEle5CaloIdL = cms.EDFilter( "HLTPrescaler",
     L1GtReadoutRecordTag = cms.InputTag( "hltGtStage2Digis" ),
     offset = cms.uint32( 0 )
 )
@@ -3314,7 +3314,7 @@ process.hltEgammaCandidates = cms.EDProducer( "EgammaHLTRecoEcalCandidateProduce
     scHybridBarrelProducer = cms.InputTag( 'hltParticleFlowSuperClusterECALL1Seeded','hltParticleFlowSuperClusterECALBarrel' ),
     recoEcalCandidateCollection = cms.string( "" )
 )
-process.hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter = cms.EDFilter( "HLTEgammaL1TMatchFilterRegional",
+process.hltEGL1SingleEG5WithJetAndTauFilter = cms.EDFilter( "HLTEgammaL1TMatchFilterRegional",
     doIsolated = cms.bool( False ),
     endcap_end = cms.double( 2.65 ),
     region_phi_size = cms.double( 1.044 ),
@@ -3325,15 +3325,15 @@ process.hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter = cms.EDFilt
     candIsolatedTag = cms.InputTag( "hltEgammaCandidates" ),
     l1CenJetsTag = cms.InputTag( 'hltGtStage2Digis','Jet' ),
     region_eta_size = cms.double( 0.522 ),
-    L1SeedFilterTag = cms.InputTag( "hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau" ),
+    L1SeedFilterTag = cms.InputTag( "hltL1sSingleEG5WithJetAndTau" ),
     candNonIsolatedTag = cms.InputTag( "" ),
     l1NonIsolatedTag = cms.InputTag( 'hltGtStage2Digis','EGamma' ),
     ncandcut = cms.int32( 1 ),
     l1TausTag = cms.InputTag( 'hltGtStage2Digis','Tau' )
 )
-process.hltEG33EtFilter = cms.EDFilter( "HLTEgammaEtFilter",
+process.hltEG5EtFilter = cms.EDFilter( "HLTEgammaEtFilter",
     saveTags = cms.bool( True ),
-    inputTag = cms.InputTag( "hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter" ),
+    inputTag = cms.InputTag( "hltEGL1SingleEG5WithJetAndTauFilter" ),
     l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
     etcutEE = cms.double( 33.0 ),
     etcutEB = cms.double( 33.0 ),
@@ -3355,7 +3355,7 @@ process.hltEgammaHoverE = cms.EDProducer( "EgammaHLTBcHcalIsolationProducersRegi
     rhoScale = cms.double( 1.0 ),
     doEtSum = cms.bool( False )
 )
-process.hltEG33HEFilter = cms.EDFilter( "HLTEgammaGenericFilter",
+process.hltEG5HEFilter = cms.EDFilter( "HLTEgammaGenericFilter",
     thrOverE2EE = cms.double( -1.0 ),
     saveTags = cms.bool( True ),
     useEt = cms.bool( False ),
@@ -3368,7 +3368,7 @@ process.hltEG33HEFilter = cms.EDFilter( "HLTEgammaGenericFilter",
     lessThan = cms.bool( True ),
     l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
     ncandcut = cms.int32( 1 ),
-    candTag = cms.InputTag( "hltEG33EtFilter" )
+    candTag = cms.InputTag( "hltEG5EtFilter" )
 )
 process.hltEgammaClusterShape = cms.EDProducer( "EgammaHLTClusterShapeProducer",
     recoEcalCandidateProducer = cms.InputTag( "hltEgammaCandidates" ),
@@ -3376,7 +3376,7 @@ process.hltEgammaClusterShape = cms.EDProducer( "EgammaHLTClusterShapeProducer",
     ecalRechitEE = cms.InputTag( 'hltRechitInRegionsECAL','EcalRecHitsEE' ),
     isIeta = cms.bool( True )
 )
-process.hltEG33CaloIdLClusterShapeFilter = cms.EDFilter( "HLTEgammaGenericFilter",
+process.hltEG5CaloIdLClusterShapeFilter = cms.EDFilter( "HLTEgammaGenericFilter",
     thrOverE2EE = cms.double( -1.0 ),
     saveTags = cms.bool( True ),
     useEt = cms.bool( False ),
@@ -3389,7 +3389,7 @@ process.hltEG33CaloIdLClusterShapeFilter = cms.EDFilter( "HLTEgammaGenericFilter
     lessThan = cms.bool( True ),
     l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
     ncandcut = cms.int32( 1 ),
-    candTag = cms.InputTag( "hltEG33HEFilter" )
+    candTag = cms.InputTag( "hltEG5HEFilter" )
 )
 process.hltSiPixelRecHits = cms.EDProducer( "SiPixelRecHitConverter",
     VerboseLevel = cms.untracked.int32( 0 ),
@@ -3710,6 +3710,102 @@ process.hltEgammaPixelMatchVars = cms.EDProducer( "EgammaHLTPixelMatchVarProduce
   )
 ) )
 )
+process.hltEle5CaloIdLPixelMatchFilter = cms.EDFilter( "HLTElectronPixelMatchFilter",
+    s_a_rF = cms.double( 0.04 ),
+    saveTags = cms.bool( True ),
+    s_a_phi1B = cms.double( 0.0069 ),
+    l1PixelSeedsTag = cms.InputTag( "hltEgammaElectronPixelSeeds" ),
+    s_a_phi1F = cms.double( 0.0076 ),
+    s_a_phi1I = cms.double( 0.0088 ),
+    pixelVeto = cms.bool( False ),
+    s2_threshold = cms.double( 0.4 ),
+    s_a_rI = cms.double( 0.027 ),
+    npixelmatchcut = cms.double( 1.0 ),
+    tanhSO10InterThres = cms.double( 1.0 ),
+    l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
+    useS = cms.bool( False ),
+    candTag = cms.InputTag( "hltEG5CaloIdLClusterShapeFilter" ),
+    ncandcut = cms.int32( 1 ),
+    s_a_phi2B = cms.double( 3.7E-4 ),
+    tanhSO10BarrelThres = cms.double( 0.35 ),
+    s_a_zB = cms.double( 0.012 ),
+    tanhSO10ForwardThres = cms.double( 1.0 ),
+    s_a_phi2F = cms.double( 0.00906 ),
+    s_a_phi2I = cms.double( 7.0E-4 )
+)
+process.hltBoolEnd = cms.EDFilter( "HLTBool",
+    result = cms.bool( True )
+)
+process.hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau = cms.EDFilter( "HLTL1TSeed",
+    L1SeedsLogicalExpression = cms.string( "L1_SingleEG26 OR L1_SingleEG30 OR L1_SingleEG32 OR L1_SingleEG34 OR L1_SingleEG36 OR L1_SingleEG38 OR L1_SingleEG40 OR L1_DoubleEG_18_17 OR L1_DoubleEG_20_18 OR L1_DoubleEG_22_10 OR L1_DoubleEG_22_12 OR L1_DoubleEG_22_12 OR L1_DoubleEG_22_15 OR L1_DoubleEG_23_10 OR L1_DoubleEG_24_17 OR L1_DoubleEG_25_12 OR L1_SingleJet170 OR L1_SingleJet180 OR L1_SingleJet200 OR L1_SingleTau100er OR L1_SingleTau120er" ),
+    L1EGammaInputTag = cms.InputTag( 'hltGtStage2Digis','EGamma' ),
+    L1JetInputTag = cms.InputTag( 'hltGtStage2Digis','Jet' ),
+    saveTags = cms.bool( True ),
+    L1ObjectMapInputTag = cms.InputTag( "hltGtStage2ObjectMap" ),
+    L1EtSumInputTag = cms.InputTag( 'hltGtStage2Digis','EtSum' ),
+    L1TauInputTag = cms.InputTag( 'hltGtStage2Digis','Tau' ),
+    L1MuonInputTag = cms.InputTag( 'hltGtStage2Digis','Muon' ),
+    L1GlobalInputTag = cms.InputTag( "hltGtStage2Digis" )
+)
+process.hltPreEle33CaloIdL = cms.EDFilter( "HLTPrescaler",
+    L1GtReadoutRecordTag = cms.InputTag( "hltGtStage2Digis" ),
+    offset = cms.uint32( 0 )
+)
+process.hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter = cms.EDFilter( "HLTEgammaL1TMatchFilterRegional",
+    doIsolated = cms.bool( False ),
+    endcap_end = cms.double( 2.65 ),
+    region_phi_size = cms.double( 1.044 ),
+    saveTags = cms.bool( True ),
+    region_eta_size_ecap = cms.double( 1.0 ),
+    barrel_end = cms.double( 1.4791 ),
+    l1IsolatedTag = cms.InputTag( 'hltGtStage2Digis','EGamma' ),
+    candIsolatedTag = cms.InputTag( "hltEgammaCandidates" ),
+    l1CenJetsTag = cms.InputTag( 'hltGtStage2Digis','Jet' ),
+    region_eta_size = cms.double( 0.522 ),
+    L1SeedFilterTag = cms.InputTag( "hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau" ),
+    candNonIsolatedTag = cms.InputTag( "" ),
+    l1NonIsolatedTag = cms.InputTag( 'hltGtStage2Digis','EGamma' ),
+    ncandcut = cms.int32( 1 ),
+    l1TausTag = cms.InputTag( 'hltGtStage2Digis','Tau' )
+)
+process.hltEG33EtFilter = cms.EDFilter( "HLTEgammaEtFilter",
+    saveTags = cms.bool( True ),
+    inputTag = cms.InputTag( "hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter" ),
+    l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
+    etcutEE = cms.double( 33.0 ),
+    etcutEB = cms.double( 33.0 ),
+    ncandcut = cms.int32( 1 )
+)
+process.hltEG33HEFilter = cms.EDFilter( "HLTEgammaGenericFilter",
+    thrOverE2EE = cms.double( -1.0 ),
+    saveTags = cms.bool( True ),
+    useEt = cms.bool( False ),
+    thrOverE2EB = cms.double( -1.0 ),
+    thrRegularEE = cms.double( -1.0 ),
+    thrOverEEE = cms.double( 0.1 ),
+    varTag = cms.InputTag( "hltEgammaHoverE" ),
+    thrOverEEB = cms.double( 0.15 ),
+    thrRegularEB = cms.double( -1.0 ),
+    lessThan = cms.bool( True ),
+    l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
+    ncandcut = cms.int32( 1 ),
+    candTag = cms.InputTag( "hltEG33EtFilter" )
+)
+process.hltEG33CaloIdLClusterShapeFilter = cms.EDFilter( "HLTEgammaGenericFilter",
+    thrOverE2EE = cms.double( -1.0 ),
+    saveTags = cms.bool( True ),
+    useEt = cms.bool( False ),
+    thrOverE2EB = cms.double( -1.0 ),
+    thrRegularEE = cms.double( 0.035 ),
+    thrOverEEE = cms.double( -1.0 ),
+    varTag = cms.InputTag( 'hltEgammaClusterShape','sigmaIEtaIEta5x5' ),
+    thrOverEEB = cms.double( -1.0 ),
+    thrRegularEB = cms.double( 0.014 ),
+    lessThan = cms.bool( True ),
+    l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
+    ncandcut = cms.int32( 1 ),
+    candTag = cms.InputTag( "hltEG33HEFilter" )
+)
 process.hltEle33CaloIdLPixelMatchFilter = cms.EDFilter( "HLTElectronPixelMatchFilter",
     s_a_rF = cms.double( 0.04 ),
     saveTags = cms.bool( True ),
@@ -3732,9 +3828,6 @@ process.hltEle33CaloIdLPixelMatchFilter = cms.EDFilter( "HLTElectronPixelMatchFi
     tanhSO10ForwardThres = cms.double( 1.0 ),
     s_a_phi2F = cms.double( 0.00906 ),
     s_a_phi2I = cms.double( 7.0E-4 )
-)
-process.hltBoolEnd = cms.EDFilter( "HLTBool",
-    result = cms.bool( True )
 )
 process.hltGtStage2Digis = cms.EDProducer( "L1TRawToDigi",
     lenSlinkTrailer = cms.untracked.int32( 8 ),
@@ -3772,15 +3865,17 @@ process.hltTriggerSummaryRAW = cms.EDProducer( "TriggerSummaryProducerRAW",
 process.HLTBeginSequence = cms.Sequence( process.hltTriggerType + process.hltGtStage2Digis )
 process.HLTDoLocalPixelSequence = cms.Sequence( process.hltSiPixelRecHits )
 process.HLTEgammaPixelMatchingSequence = cms.Sequence( process.HLTDoLocalPixelSequence + process.hltEgammaSuperClustersToPixelMatch + process.hltEleSeedsTrackingRegions + process.hltPixelLayerTriplets + process.hltPixelLayerQuadruplets + process.hltEleSeedsHitDoublets + process.hltEleSeedsHitTriplets + process.hltEleSeedsHitQuadruplets + process.hltElePixelSeedsNew + process.hltEgammaElectronPixelSeeds + process.hltEgammaPixelMatchVars )
-process.HLTEle33CaloIdLSequence = cms.Sequence( process.hltEgammaCandidates + process.hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter + process.hltEG33EtFilter + process.hltEgammaHoverE + process.hltEG33HEFilter + process.hltEgammaClusterShape + process.hltEG33CaloIdLClusterShapeFilter + process.HLTEgammaPixelMatchingSequence + process.hltEle33CaloIdLPixelMatchFilter )
+process.HLTEle5CaloIdLSequence = cms.Sequence( process.hltEgammaCandidates + process.hltEGL1SingleEG5WithJetAndTauFilter + process.hltEG5EtFilter + process.hltEgammaHoverE + process.hltEG5HEFilter + process.hltEgammaClusterShape + process.hltEG5CaloIdLClusterShapeFilter + process.HLTEgammaPixelMatchingSequence + process.hltEle5CaloIdLPixelMatchFilter )
 process.HLTEndSequence = cms.Sequence( process.hltBoolEnd )
+process.HLTEle33CaloIdLSequence = cms.Sequence( process.hltEgammaCandidates + process.hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter + process.hltEG33EtFilter + process.hltEgammaHoverE + process.hltEG33HEFilter + process.hltEgammaClusterShape + process.hltEG33CaloIdLClusterShapeFilter + process.HLTEgammaPixelMatchingSequence + process.hltEle33CaloIdLPixelMatchFilter )
 
 process.HLTriggerFirstPath = cms.Path( process.hltGetConditions + process.hltGetRaw + process.hltBoolFalse )
+process.HLT_Ele5_CaloIdL_v1 = cms.Path( process.HLTBeginSequence + process.hltL1sSingleEG5WithJetAndTau + process.hltPreEle5CaloIdL + process.HLTEle5CaloIdLSequence + process.HLTEndSequence )
 process.HLT_Ele33_CaloIdL_v1 = cms.Path( process.HLTBeginSequence + process.hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau + process.hltPreEle33CaloIdL + process.HLTEle33CaloIdLSequence + process.HLTEndSequence )
-process.HLTriggerFinalPath = cms.Path( process.hltTriggerSummaryAOD + process.hltTriggerSummaryRAW + process.hltBoolFalse )
+process.HLTriggerFinalPath = cms.Path( process.hltGtStage2Digis + process.hltTriggerSummaryAOD + process.hltTriggerSummaryRAW + process.hltBoolFalse )
 
 
-process.HLTSchedule = cms.Schedule( *(process.HLTriggerFirstPath, process.HLT_Ele33_CaloIdL_v1, process.HLTriggerFinalPath ))
+process.HLTSchedule = cms.Schedule( *(process.HLTriggerFirstPath, process.HLT_Ele5_CaloIdL_v1, process.HLT_Ele33_CaloIdL_v1, process.HLTriggerFinalPath ))
 
 
 process.source = cms.Source( "PoolSource",
@@ -3794,35 +3889,35 @@ process.source = cms.Source( "PoolSource",
 
 # adapt HLT modules to the correct process name
 if 'hltTrigReport' in process.__dict__:
-    process.hltTrigReport.HLTriggerResults                    = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltTrigReport.HLTriggerResults                    = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltPreExpressCosmicsOutputSmart' in process.__dict__:
-    process.hltPreExpressCosmicsOutputSmart.hltResults = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltPreExpressCosmicsOutputSmart.hltResults = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltPreExpressOutputSmart' in process.__dict__:
-    process.hltPreExpressOutputSmart.hltResults        = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltPreExpressOutputSmart.hltResults        = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltPreDQMForHIOutputSmart' in process.__dict__:
-    process.hltPreDQMForHIOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltPreDQMForHIOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltPreDQMForPPOutputSmart' in process.__dict__:
-    process.hltPreDQMForPPOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltPreDQMForPPOutputSmart.hltResults       = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltPreHLTDQMResultsOutputSmart' in process.__dict__:
-    process.hltPreHLTDQMResultsOutputSmart.hltResults  = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltPreHLTDQMResultsOutputSmart.hltResults  = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltPreHLTDQMOutputSmart' in process.__dict__:
-    process.hltPreHLTDQMOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltPreHLTDQMOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltPreHLTMONOutputSmart' in process.__dict__:
-    process.hltPreHLTMONOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTX' )
+    process.hltPreHLTMONOutputSmart.hltResults         = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
 
 if 'hltDQMHLTScalers' in process.__dict__:
-    process.hltDQMHLTScalers.triggerResults                   = cms.InputTag( 'TriggerResults', '', 'HLTX' )
-    process.hltDQMHLTScalers.processname                      = 'HLTX'
+    process.hltDQMHLTScalers.triggerResults                   = cms.InputTag( 'TriggerResults', '', 'HLTX2' )
+    process.hltDQMHLTScalers.processname                      = 'HLTX2'
 
 if 'hltDQML1SeedLogicScalers' in process.__dict__:
-    process.hltDQML1SeedLogicScalers.processname              = 'HLTX'
+    process.hltDQML1SeedLogicScalers.processname              = 'HLTX2'
 
 # limit the number of events to be processed
 process.maxEvents = cms.untracked.PSet(
@@ -3882,6 +3977,7 @@ process = customizeHLTforCMSSW(process,"GRun")
 # Eras-based customisations
 from HLTrigger.Configuration.Eras import modifyHLTforEras
 modifyHLTforEras(process)
+
 
 
 
