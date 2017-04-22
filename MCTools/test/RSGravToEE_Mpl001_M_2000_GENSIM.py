@@ -47,7 +47,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.RAWSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('TOSED:OUTPUTFILE'),
+    fileName = cms.untracked.string('OUTPUTFILE.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM')
@@ -56,8 +56,8 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         SelectEvents = cms.vstring('generation_step')
     )
 )
-if process.RAWSIMoutput.fileName.value()=="TOSED:OUTPUTFILE":
-	process.RAWSIMoutput.fileName=cms.untracked.string("genSim.root")
+#if process.RAWSIMoutput.fileName.value()=="TOSED:OUTPUTFILE":
+#	process.RAWSIMoutput.fileName=cms.untracked.string("genSim.root")
 # Additional output definition
 
 # Other statements

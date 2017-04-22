@@ -11,53 +11,17 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 import os
 
 options = VarParsing.VarParsing ('analysis')
-options.register ('minMass',
-                  -1,
-                  VarParsing.VarParsing.multiplicity.singleton,
-                  VarParsing.VarParsing.varType.float,          
-                  "min mass")
-options.register ('maxMass',
-                   -1, 
-                  VarParsing.VarParsing.multiplicity.singleton,
-                  VarParsing.VarParsing.varType.float,          
-                  "max mass")
-
-options.register ('mass',
-                   1000, 
-                  VarParsing.VarParsing.multiplicity.singleton,
-                  VarParsing.VarParsing.varType.float,          
-                  "mass")
-options.register ('comEnergy',
-                   13, 
-                  VarParsing.VarParsing.multiplicity.singleton,
-                  VarParsing.VarParsing.varType.float,          
-                  "Centre of Mass Energy")
+from SHarper.MCTools.mcCmdLineOptions_cfi import registerDefaultMCOptions
+registerDefaultMCOptions(options)
 options.register ('kMpl',
                    0.1, 
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.float,          
                   "k/Mpl")
-options.register ('outFile',
-                   "output.root", 
-                  VarParsing.VarParsing.multiplicity.singleton,
-                  VarParsing.VarParsing.varType.string,          
-                  "output filename (without tags)")
-options.register ('cmsswOutput',
-                  False,
-                  VarParsing.VarParsing.multiplicity.singleton,
-                  VarParsing.VarParsing.varType.bool,          
-                  "output in CMSSW format")
-options.register ('pdfSet',
-                  13, 
-                  VarParsing.VarParsing.multiplicity.singleton,
-                  VarParsing.VarParsing.varType.int,          
-                  "pythia pdf set")
-#options.parseArguments()
 options.parseArguments()
 
 print options.mass,options.minMass,options.maxMass
 
-#print mass,minMass,maxMass,comEnergy,kMpl
 
 import FWCore.ParameterSet.Config as cms
 
@@ -109,7 +73,9 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
                         'ParticleDecays:tauMax = 10',
                         'Tune:pp 5',
                         'Tune:ee 3',
-                        'PDF:pSet '+str(options.pdfSet),
+                      #  'PDF:pSet '+str(options.pdfSet),
+                        'PDF:useHard = on',
+                        'PDF:pHardSet = '+str(options.pdfSet),
                         'ExtraDimensionsG*:all = on',
                         'ExtraDimensionsG*:kappaMG = '+str(5.4*options.kMpl),
                         '5100039:m0 = '+str(options.mass),

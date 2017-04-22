@@ -7,10 +7,12 @@ def genZPrime(args,masses):
         minMass=mass-massWin
 	if minMass<0: minMass=0
         maxMass=mass+massWin
-        outputFilename=args.model+"_"+str(args.com)+"TeV_M-"+str(mass)+"_"+str(minMass)+"to"+str(maxMass)+"_pdfSet"+str(args.pdfSet)+".root"
+	pdfSetName=args.pdfSet.replace(":","-").replace("/","-")
+        outputFilename=args.model+"_"+str(args.com)+"TeV_pdfSetHard"+pdfSetName+"_M-"+str(mass)+"_"+str(minMass)+"to"+str(maxMass)+".root"
         cmsRunArgs=["cmsRun",args.configFile,"zPrimeModel="+args.model,"maxEvents="+str(args.nrEvents),
                     "mass="+str(mass),"minMass="+str(minMass),"maxMass="+str(maxMass),
                     "outFile="+outputFilename,"comEnergy="+str(args.com),
+		    "cmsswOutput=False",
 	            "pdfSet="+str(args.pdfSet)]
         runStr=""
         
@@ -46,7 +48,7 @@ parser.add_argument('--model',required=True,help='Z model')
 parser.add_argument('--nrEvents',default=1000,help='nrEvents to gen for each point')
 parser.add_argument('--nrThreads',default=1,type=int,help='number of threads to run')
 parser.add_argument('--com',default=13,type=int,help='sqrt(s) (int in TeV)')
-parser.add_argument('--pdfSet',default=13,type=int,help='pdfset')
+parser.add_argument('--pdfSet',default="13",type=str,help='pdfset')
 args = parser.parse_args()
 
 masses=[]

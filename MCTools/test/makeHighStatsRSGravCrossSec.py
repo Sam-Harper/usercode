@@ -13,7 +13,8 @@ def genRSGrav(args,jobNr):
     maxMass=mass+massWin
 
     kMplStr="kMpl"+args.kMpl.replace(".","")
-    outputFilename=args.resultsDir.rstrip("/")+"/RSGrav_"+kMplStr+"_"+str(args.com)+"TeV_pdfSet"+str(args.pdfSet)+"_M-"+str(mass)+"_"+str(minMass)+"to"+str(maxMass)+".root"
+    pdfSetName=args.pdfSet.replace(":","-").replace("/","-")
+    outputFilename=args.resultsDir.rstrip("/")+"/RSGrav_"+kMplStr+"_"+str(args.com)+"TeV_pdfSetHard"+pdfSetName+"_M-"+str(mass)+"_"+str(minMass)+"to"+str(maxMass)+".root"
     cmsRunArgs=["cmsRun",args.configFile,"kMpl="+args.kMpl,"maxEvents="+str(args.nrEvents),
                 "mass="+str(mass),"minMass="+str(minMass),"maxMass="+str(maxMass),
                 "outFile="+outputFilename,
@@ -50,7 +51,7 @@ parser.add_argument('--nrEvents',default=50000,help='nrEvents to gen for each po
 parser.add_argument('--nrThreads',default=1,type=int,help='number of threads to run')
 parser.add_argument('--com',default=13,type=int,help='sqrt(s) (int in TeV)')
 parser.add_argument('--resultsDir',default="./",help='results directory')
-parser.add_argument('--pdfSet',default=13,type=int,help='pdfset')
+parser.add_argument('--pdfSet',default="13",type=str,help='pdfset')
 args = parser.parse_args()
 
 if not os.path.exists(args.resultsDir):
