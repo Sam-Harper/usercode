@@ -164,19 +164,12 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigFilterNames_[10]="hltDiEle33CaloIdLMWPMS2UnseededFilter";
   trigFilterNames_[11]="hltDiEle33CaloIdLGsfTrkIdVLMWPMS2UnseededFilter";
 
-  trigFilterNames_[12]="hltEG27L1IsoEG22erORIsoEG24erORIsoEG24ORIsoEG26OREG40EtFilter";
-  trigFilterNames_[13]="hltEle27noerWPLooseClusterShapeFilter";
-  trigFilterNames_[14]="hltEle27noerWPLooseHEFilter";
-  trigFilterNames_[15]="hltEle27noerWPLooseEcalIsoFilter";
-  trigFilterNames_[16]="hltEle27noerWPLooseHcalIsoFilter";
-  trigFilterNames_[17]="hltEle27noerWPLoosePixelMatchFilter";
-  trigFilterNames_[18]="hltEle27noerWPLooseGsfOneOEMinusOneOPFilter";
-  trigFilterNames_[19]="hltEle27noerWPLooseGsfChi2Filter";
-  trigFilterNames_[20]="hltEle27noerWPLooseGsfMissingHitsFilter";
-  trigFilterNames_[21]="hltEle27noerWPLooseGsfDetaFilter";
-  trigFilterNames_[22]="hltEle27noerWPLooseGsfDphiFilter";
-  trigFilterNames_[23]="hltEle27noerWPLooseGsfTrackIsoFilter";
-  trigFilterNames_[24]="hltSingleCaloJet500";
+  trigFilterNames_[12]="hltEGL1SingleEGFilter";
+  trigFilterNames_[13]="hltEG5EtFilter";
+  trigFilterNames_[14]="hltEG5HEFilter";
+  trigFilterNames_[15]="hltEG5CaloIdLClusterShapeFilter";
+  trigFilterNames_[16]="hltEle5CaloIdLPixelMatchFilter";
+  trigFilterNames_[17]="hltEle5CaloIdLGsfTrkIdVLDEtaFilter";
 
   trigFilterNames_[0+1*32]="hltEG30HEFilter";
   trigFilterNames_[1+1*32]="hltEG36HEFilter";
