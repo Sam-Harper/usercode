@@ -3335,8 +3335,8 @@ process.hltEG5EtFilter = cms.EDFilter( "HLTEgammaEtFilter",
     saveTags = cms.bool( True ),
     inputTag = cms.InputTag( "hltEGL1SingleEG5WithJetAndTauFilter" ),
     l1EGCand = cms.InputTag( "hltEgammaCandidates" ),
-    etcutEE = cms.double( 33.0 ),
-    etcutEB = cms.double( 33.0 ),
+    etcutEE = cms.double( 5.0 ),
+    etcutEB = cms.double( 5.0 ),
     ncandcut = cms.int32( 1 )
 )
 process.hltEgammaHoverE = cms.EDProducer( "EgammaHLTBcHcalIsolationProducersRegional",
