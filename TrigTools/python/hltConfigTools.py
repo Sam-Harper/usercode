@@ -109,7 +109,8 @@ def addOutputMod(process):
                                                                                      'keep *_generator_*_*',
                                                                                      'keep *_hltEgammaGsfTracks*_*_*',
                                                                                      'keep recoElectronSeeds_*_*_*',
-                                                                                     'keep *_nrEventsStorer_*_*')
+                                                                                     'keep *_nrEventsStorer*_*_*')
+
                                              )
     process.HLTOutput = cms.EndPath(process.hltOutputTot)
     process.HLTSchedule.insert(len(process.HLTSchedule),process.HLTOutput)
