@@ -6588,24 +6588,26 @@ process.HLTriggerFirstPath.insert(0,process.nrEventsStorer)
                                             
 process.hltOutputTot.eventAutoFlushCompressedSize = cms.untracked.int32(5*1024*1024)
 print  "global tag : ",process.GlobalTag.globaltag
-
 if True:
     process.hltEgammaElectronPixelSeeds.matchingCuts=cms.VPSet(
         cms.PSet(dPhiMax=cms.double(0.2),
-                 dZMax=cms.double(999999),
-                 dRIMax=cms.double(999999),
-                 dRFMax=cms.double(999999)
+                 dRZMax=cms.double(-1),
+                 dRZMaxLowEtThres=cms.double(-1),
+                 dRZMaxLowEtEtaBins=cms.vdouble(),
+                 dRZMaxLowEt=cms.vdouble(-1),
                  ),
         cms.PSet(dPhiMax=cms.double(0.2),
-                 dZMax=cms.double(0.2),
-                 dRIMax=cms.double(0.2),
-                 dRFMax=cms.double(0.15)
+                 dRZMax=cms.double(0.2),
+                 dRZMaxLowEtThres=cms.double(-1),
+                 dRZMaxLowEtEtaBins=cms.vdouble(),
+                 dRZMaxLowEt=cms.vdouble(0.2),
                  ),
         cms.PSet(dPhiMax=cms.double(0.2),
-                 dZMax=cms.double(0.2),
-                 dRIMax=cms.double(0.2),
-                 dRFMax=cms.double(0.2)
-                 )
+                 dRZMax=cms.double(0.2),
+                 dRZMaxLowEtThres=cms.double(-1),
+                 dRZMaxLowEtEtaBins=cms.vdouble(),
+                 dRZMaxLowEt=cms.vdouble(0.2),
+                 ),
         )
                        
 process.hltEgammaPixelMatchVars.productsToWrite = cms.int32( 2 )
