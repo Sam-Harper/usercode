@@ -111,9 +111,11 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   pmDRZ2Info=cand.var(pmProd+tag+"dRZ2Info");
   pmDRZ3Info=cand.var(pmProd+tag+"dRZ3Info");
   pmDRZ4Info=cand.var(pmProd+tag+"dRZ4Info");
-
+  
   nrClus = cand.var(pmProd+tag+"nrClus");
   seedClusEFrac = cand.var(pmProd+tag+"seedClusEFrac");
+  phiWidth = cand.var(pmProd+tag+"phiWidth");
+  etaWidth = cand.var(pmProd+tag+"etaWidth");
 
 
   // auto convertBackToInt=[](int part1,int part2){

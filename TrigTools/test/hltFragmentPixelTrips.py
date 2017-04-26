@@ -16,21 +16,17 @@ if isCrabJob:
 else:
     process.hltOutputTot.fileName=cms.untracked.string(options.outputFile)
 
-process.MessageLogger.suppressWarning.extend(["hltEgammaGsfTracks","hltEgammaGsfTracksUnseeded"])
-process.MessageLogger.suppressInfo.extend(["hltEgammaGsfTracks","hltEgammaGsfTracksUnseeded"])
+process.MessageLogger.suppressWarning.extend(["hltEgammaGsfTracks","hltEgammaGsfTracksUnseeded","hltIter2ElectronsCtfWithMaterialTracks"])
+process.MessageLogger.suppressInfo.extend(["hltEgammaGsfTracks","hltEgammaGsfTracksUnseeded","hltIter2ElectronsCtfWithMaterialTracks"])
 process.nrEventsStorer = cms.EDProducer("NrInputEventsStorer")
 process.HLTriggerFirstPath.insert(0,process.nrEventsStorer)
 #process.hltOutputTot.SelectEvents.SelectEvents = cms.vstring("HLT_Ele27_WPTight_Gsf_NoPM_v1","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_NoPM_v1","HLT_DoubleEle33_CaloIdL_NoPM_v1")
 #process.hltOutputTot.outputCommands = cms.untracked.vstring("keep *",)
 
-                                            
+#process.hltOutputTot.outputCommands = outputCmdsRePixelMediumWithGen()                                            
 process.hltOutputTot.eventAutoFlushCompressedSize = cms.untracked.int32(5*1024*1024)
 print  "global tag : ",process.GlobalTag.globaltag
-#process.hltEle33CaloIdLPixelMatchFilter.l1PixelSeedsTag =  cms.InputTag( "hltEgammaElectronPixelSeedsNew" )
-process.hltElePixelSeedsNew.seedingHitSets =cms.InputTag( "hltEleSeedsHitTriplets" )
-process.hltEleSeedsHitDoublets.seedingLayers = cms.InputTag( "hltPixelLayerTriplets" )
-process.hltEleSeedsHitDoublets.layerPairs = cms.vuint32( 0, 1 )
-process.hltEleSeedsHitQuadruplets = process.hltEleSeedsHitTriplets.clone()
+
 process.hltEgammaSuperClustersToPixelMatch = cms.EDProducer("EgammaHLTFilteredSuperClusterProducer",
                                                             cands = cms.InputTag("hltEgammaCandidates"),
                                                             cuts = cms.VPSet(
@@ -67,33 +63,51 @@ process.hltEleSeedsTrackingRegions = cms.EDProducer("TrackingRegionsFromSuperClu
 
 
 process.hltEgammaElectronPixelSeeds = cms.EDProducer("ElectronNSeedProducer",
-                                                     initialSeeds = cms.InputTag("hltElePixelSeedsNew"),
+                                                     initialSeeds = cms.InputTag("hltElePixelSeedsCombined"),
                                                      vertices = cms.InputTag(""),
+                                                     navSchool = cms.string("SimpleNavigationSchool"),
+                                                     detLayerGeom = cms.string("hltESPGlobalDetLayerGeometry"),
                                                      beamSpot = cms.InputTag("hltOnlineBeamSpot"),
-                                                     superClusters=cms.VInputTag('hltEgammaSuperClustersToPixelMatch'),
-                                                     #superClusters=cms.VInputTag(
-#        'hltParticleFlowSuperClusterECALL1Seeded:hltParticleFlowSuperClusterECALBarrel',
-#        'hltParticleFlowSuperClusterECALL1Seeded:hltParticleFlowSuperClusterECALEndcapWithPreshower'
- #       ),
+                                                     measTkEvt = cms.InputTag( "hltSiStripClusters" ),
+                                                     superClusters=cms.VInputTag('hltEgammaSuperClustersToPixelMatch'),                                                    
                                                      useRecoVertex=cms.bool(False),
                                                      matchingCuts=cms.VPSet(
-        cms.PSet(dPhiMax=cms.double(0.04),
+        cms.PSet(dPhiMax=cms.double(0.08),
                  dZMax=cms.double(999999),
                  dRIMax=cms.double(999999),
                  dRFMax=cms.double(999999)
                  ),
         cms.PSet(dPhiMax=cms.double(0.004),
                  dZMax=cms.double(0.09),
-                 dRIMax=cms.double(0.2),
-                 dRFMax=cms.double(0.15)
+                 dRIMax=cms.double(0.09),
+                 dRFMax=cms.double(0.09)
                  ),
-        cms.PSet(dPhiMax=cms.double(0.04),
-                 dZMax=cms.double(0.2),
-                 dRIMax=cms.double(0.2),
-                 dRFMax=cms.double(0.2)
+        cms.PSet(dPhiMax=cms.double(0.004),
+                 dZMax=cms.double(0.09),
+                 dRIMax=cms.double(0.09),
+                 dRFMax=cms.double(0.09)
                  ),
         )
 )
+relaxPMCutsForStudies=True
 
-                                                     
+if relaxPMCutsForStudies:
+    process.hltEgammaElectronPixelSeeds.matchingCuts=cms.VPSet(
+        cms.PSet(dPhiMax=cms.double(0.2),
+                 dZMax=cms.double(999999),
+                 dRIMax=cms.double(999999),
+                 dRFMax=cms.double(999999)
+                 ),
+        cms.PSet(dPhiMax=cms.double(0.2),
+                 dZMax=cms.double(0.2),
+                 dRIMax=cms.double(0.2),
+                 dRFMax=cms.double(0.15)
+                 ),
+        cms.PSet(dPhiMax=cms.double(0.2),
+                 dZMax=cms.double(0.2),
+                 dRIMax=cms.double(0.2),
+                 dRFMax=cms.double(0.2)
+                 )
+        )
+                                             
 process.hltEgammaPixelMatchVars.productsToWrite = cms.int32( 2 )

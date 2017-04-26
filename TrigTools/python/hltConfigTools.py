@@ -174,10 +174,13 @@ def outputCmdsRePixelMedium():
 #        "keep *_hltSiPixelRecHits_*_*",
         "keep *_hltSiPixelClusters_*_*", 
         "keep *_hltSiPixelClustersCache_*_*", 
+        "keep *_hltSiStripRawToClustersFacility_*_*",
+        "keep *_hltSiStripExcludedFEDListProducer_*_*",
         "keep *_hltGtStage2Digis_*_*",
         "keep *_hltGtStage2ObjectMap_*_*",
         "keep *_hltScalersRawToDigi_*_*",
         "keep *_hltOnlineBeamSpot_*_*",
+        "keep *_hltSiStripClusters_*_*",
         "keep *_addPileupInfo_*_*",
         "keep *_genParticles_*_*", 
         "keep *_externalLHEProducer_*_*",
@@ -200,6 +203,8 @@ def outputCmdsRePixelMediumWithGen():
 #        "keep *_hltSiPixelRecHits_*_*",
         "keep *_hltSiPixelClusters_*_*", 
         "keep *_hltSiPixelClustersCache_*_*", 
+        "keep *_hltSiStripRawToClustersFacility_*_*",
+        "keep *_hltSiStripExcludedFEDListProducer_*_*",
         "keep *_hltGtStage2Digis_*_*",
         "keep *_hltGtStage2ObjectMap_*_*",
         "keep *_hltScalersRawToDigi_*_*",
@@ -207,6 +212,6 @@ def outputCmdsRePixelMediumWithGen():
         "keep *_addPileupInfo_*_*",
         "keep *_genParticles_*_*", 
         "keep *_externalLHEProducer_*_*",
-       # "keep *",
+       
         )
     return res
