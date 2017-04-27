@@ -19,7 +19,6 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=100
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -60,7 +59,7 @@ process.trigRateTree = cms.EDAnalyzer("TrigRateTree",
                                       triggerResultsPUFilter=cms.InputTag("TriggerResults","","HLTSkim"),
                                       pileupInfo = cms.InputTag("addPileupInfo"),
                                       pileupFilterPath = cms.string("HLT_RemovePileUpDominatedEventsGen_v1"),
-                                      triggerPaths= cms.vstring("HLT_Ele33_CaloIdL_v1",
+                                      triggerPaths= cms.vstring("HLT_DoubleEle33_CaloIdL",
                                                                 "HLT_Ele27_WPTight_Gsf_v7",
                                                                 "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9"),
                                       datasetCode=cms.int32(datasetCode)
