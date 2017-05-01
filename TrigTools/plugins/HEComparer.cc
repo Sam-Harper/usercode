@@ -188,7 +188,10 @@ bool HEComparer::compareHE(CandSeedVec& candsAndSeeds,
   for(auto& candSeed : candsAndSeeds){
     candP4_.fill(candSeed.first->p4());
     hademCand_ = getHadem(candSeed.first,hademValues);
-    hademSeed_ = candSeed.second ? candSeed.second->hoe1()+ candSeed.second->hoe2() : -1;
+    //2017 update, seeds no longer have H/E making this imposible
+    //also the reason they no longer have H/E renders this check redundant as its always the candidates one
+    //by construction
+    hademSeed_ = -1;//candSeed.second ? candSeed.second->hoe1()+ candSeed.second->hoe2() : -1;
     tree_->Fill();
     if(std::abs(hademCand_-hademSeed_)>0.00001){
       //auto cand = candSeed.first;
