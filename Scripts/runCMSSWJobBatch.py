@@ -36,6 +36,9 @@ def copyReleaseFiles(newRelease):
     if os.path.exists(swArea+"/python"):
         shutil.rmtree(newRelease+"/python");
         shutil.copytree(swArea+"/python",newRelease+"/python")
+    if os.path.exists(swArea+"/cfipython"):
+        shutil.rmtree(newRelease+"/cfipython");
+        shutil.copytree(swArea+"/cfipython",newRelease+"/cfipython")
     for package in os.listdir(swArea+"/src"):
         if os.path.isdir(swArea+"/src/"+package):
             for subPackage in os.listdir(swArea+"/src/"+package):
