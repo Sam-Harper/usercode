@@ -9,6 +9,7 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPEventHelper.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 #include "SHarper/TrigNtup/interface/EleDataTruthTreeMaker.hh"
+#include "SHarper/TrigNtup/interface/EgHLTBkgTreeMaker.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloGeom.hh"
 #include "SHarper/SHNtupliser/interface/GeomFuncs.hh"
 #include "SHarper/SHNtupliser/interface/SHGeomFiller.h"
@@ -38,6 +39,7 @@ private:
   bool outputGeom_; //write out geom to file
   
   std::unique_ptr<EleDataTruthTreeMaker> genTreeMaker_;
+  std::unique_ptr<EgHLTBkgTreeMaker> hltTreeMaker_;
 
   TrigNtupMaker(const TrigNtupMaker& rhs)=delete;
   TrigNtupMaker& operator=(const TrigNtupMaker& rhs)=delete;
@@ -73,6 +75,7 @@ void TrigNtupMaker::initSHEvent()
 void TrigNtupMaker::fillTree()
 {
   genTreeMaker_->fill(shEvt_);
+  hltTreeMaker_->fill(shEvt_);
 }
 
 TrigNtupMaker::TrigNtupMaker(const edm::ParameterSet& iPara):
@@ -101,6 +104,7 @@ void TrigNtupMaker::beginJob()
   outFile_ = &fs->file();
   outFile_->cd();
   genTreeMaker_ = std::make_unique<EleDataTruthTreeMaker>("hltGenTree","");
+  hltTreeMaker_ = std::make_unique<EgHLTBkgTreeMaker>("hltTree","");
   //  shEvtTree_.makeTree("evtTree");
 } 
 
