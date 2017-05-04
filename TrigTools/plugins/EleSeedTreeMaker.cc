@@ -88,10 +88,8 @@ void EleSeedTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& i
     const auto& eleSeed = (*eleSeedsHandle)[seedNr];
     seedInfo_.fill(eleSeed);
     seedNr_ = seedNr;
+    tree_->Fill(); 
   }
-  tree_->Fill();
-  
-
 }
 void EleSeedTreeMaker::SeedInfo::fill(const reco::ElectronSeed& seed)
 {
