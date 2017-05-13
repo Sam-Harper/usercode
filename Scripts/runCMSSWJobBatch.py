@@ -35,7 +35,10 @@ def copyReleaseFiles(newRelease):
         #print "added"
     if os.path.exists(swArea+"/python"):
         shutil.rmtree(newRelease+"/python");
-        shutil.copytree(swArea+"/python",newRelease+"/python")
+        shutil.copytree(swArea+"/python",newRelease+"/python") 
+    if os.path.exists(swArea+"/cfipython"):
+        shutil.rmtree(newRelease+"/cfipython");
+        shutil.copytree(swArea+"/cfipython",newRelease+"/cfipython")
     for package in os.listdir(swArea+"/src"):
         if os.path.isdir(swArea+"/src/"+package):
             for subPackage in os.listdir(swArea+"/src/"+package):
@@ -54,7 +57,9 @@ def splitInput(inputFilesRAW,nrJobs):
     import glob
 
     if ".list" in inputFilesRAW:
-        inputFiles= [line.strip() for line in open(inputFilesRAW)]
+#        inputFiles= [line.strip() for line in open(inputFilesRAW)]
+        inputFiles= [line.strip().replace("/pnfs/pp.rl.ac.uk/data/cms","").replace("/opt/","file:/opt/") for line in open(inputFilesRAW)]
+
     #    with open(inputFilesRAW) as f:
      #       inputFiles=f.readlines()
     else:
