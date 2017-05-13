@@ -7314,8 +7314,8 @@ process.source = cms.Source( "PoolSource",
 )
 
 # run the Full L1T emulator, then repack the data into a new RAW collection, to be used by the HLT
-from HLTrigger.Configuration.CustomConfigs import L1REPACK
-process = L1REPACK(process,"FullSimHcalTP")
+#from HLTrigger.Configuration.CustomConfigs import L1REPACK
+#process = L1REPACK(process,"FullSimHcalTP")
 
 # adapt HLT modules to the correct process name
 if 'hltTrigReport' in process.__dict__:
@@ -7397,6 +7397,7 @@ _customInfo['inputFiles'][False] = "file:RelVal_Raw_GRun_MC.root"
 _customInfo['maxEvents' ]=  -1
 _customInfo['globalTag' ]= "90X_upgrade2017_TSG_Hcal_V2"
 #_customInfo['globalTag' ]= "90X_upgrade2017_realistic_v20"
+#_customInfo['inputFile' ]=  ['file:/opt/ppd/month/harper/mc/9_0_2/SingleElePt1To100_GENSIMRAW/SingleElePt1To100_GENSIMRAW_1.root']#
 _customInfo['inputFile' ]=  ['/store/mc/PhaseIFall16DR/ZToEE_NNPDF30_13TeV-powheg_M_50_120/GEN-SIM-RAW/FlatPU28to62HcalNZSRAW_EXO40_90X_upgrade2017_realistic_v6_C1-v1/80000/002BF7E7-9710-E711-A183-5065F38122A1.root']
 _customInfo['realData'  ]=  False
 from HLTrigger.Configuration.customizeHLTforALL import customizeHLTforAll
@@ -7432,13 +7433,16 @@ process.MessageLogger.suppressInfo.extend(["hltEgammaGsfTracks","hltEgammaGsfTra
 process.nrEventsStorer = cms.EDProducer("NrInputEventsStorer")
 process.HLTriggerFirstPath.insert(0,process.nrEventsStorer)
 #process.hltOutputTot.SelectEvents.SelectEvents = cms.vstring("HLT_Ele27_WPTight_Gsf_NoPM_v1","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_NoPM_v1","HLT_DoubleEle33_CaloIdL_NoPM_v1")
-#process.hltOutputTot.outputCommands = cms.untracked.vstring("keep *",)
 
-                                            
 process.hltOutputTot.eventAutoFlushCompressedSize = cms.untracked.int32(5*1024*1024)
 print  "global tag : ",process.GlobalTag.globaltag
 if True:
-    process.hltEgammaElectronPixelSeeds.matchingCuts=cms.VPSet(
+    
+    process.hltOutputTot.outputCommands.append("drop recoElectronSeeds_*_*_*")
+    process.hltOutputTot.outputCommands.append("drop *_hltEgammaGsfTracks_*_*")
+                                            
+
+    process.hltEgammaElectronPixelSeeds.matcherConfig.matchingCuts=cms.VPSet(
         cms.PSet(dPhiMax=cms.double(0.2),
                  dRZMax=cms.double(-1),
                  dRZMaxLowEtThres=cms.double(-1),
@@ -7458,5 +7462,30 @@ if True:
                  dRZMaxLowEt=cms.vdouble(0.2),
                  ),
         )
-                       
+if False:
+    
+#    process.hltOutputTot.outputCommands.append("drop recoElectronSeeds_*_*_*")
+#    process.hltOutputTot.outputCommands.append("drop *_hltEgammaGsfTracks_*_*")
+                                            
+
+    process.hltEgammaElectronPixelSeeds.matcherConfig.matchingCuts=cms.VPSet(
+        cms.PSet(dPhiMax=cms.double(0.03),
+                 dRZMax=cms.double(-1),
+                 dRZMaxLowEtThres=cms.double(-1),
+                 dRZMaxLowEtEtaBins=cms.vdouble(),
+                 dRZMaxLowEt=cms.vdouble(-1),
+                 ),
+        cms.PSet(dPhiMax=cms.double(0.004),
+                 dRZMax=cms.double(0.03),
+                 dRZMaxLowEtThres=cms.double(-1),
+                 dRZMaxLowEtEtaBins=cms.vdouble(),
+                 dRZMaxLowEt=cms.vdouble(0.2),
+                 ),
+        cms.PSet(dPhiMax=cms.double(0.004),
+                 dRZMax=cms.double(0.03),
+                 dRZMaxLowEtThres=cms.double(-1),
+                 dRZMaxLowEtEtaBins=cms.vdouble(),
+                 dRZMaxLowEt=cms.vdouble(0.2),
+                 ),
+        )                  
 process.hltEgammaPixelMatchVars.productsToWrite = cms.int32( 2 )
