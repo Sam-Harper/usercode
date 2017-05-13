@@ -138,13 +138,16 @@ bool TrigFuncs::isL1Filter(const std::string& filterName)
 bool TrigFuncs::isEGUnseeded(const SHTrigObj& trigObj,const SHTrigSummary& trigSum)
 {
   if((trigObj.type()&SHTrigObj::EGAMMA)==0) return false;
-
-  const TBits& bits = trigObj.filtersPassed();
-  const SHBitsDef& bitDef = trigSum.filterBitsDef();
-  for(size_t bitNr=bits.FirstSetBit();bitNr<=bits.LastSetBit();bitNr++){
-    if(bitDef.getBitName(bitNr).find("Unseeded")!=std::string::npos) return true;
-  }
-  return false;
+  
+  if((trigObj.type()&SHTrigObj::EGUNSEEDED)==0) return false;
+    //    const TBits& bits = trigObj.filtersPassed();
+    // const SHBitsDef& bitDef = trigSum.filterBitsDef();
+    //for(size_t bitNr=bits.FirstSetBit();bitNr<=bits.LastSetBit();bitNr++){
+      
+      // if(bitDef.getBitName(bitNr).find("Unseeded")!=std::string::npos) std::cout <<" name "<<bitNr<<" "<<bitDef.getBitName(bitNr)<<" type "<<trigObj.type()<<std::endl;
+  //    }
+  // }
+  return true;
 }
 bool TrigFuncs::isHIEG(const SHTrigObj& trigObj,const SHTrigSummary& trigSum)
 {

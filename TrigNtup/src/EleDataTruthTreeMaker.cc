@@ -65,11 +65,16 @@ void EleDataTruthTreeMaker::fill_(const SHEvent* event,const SHMCParticle& truth
     data_.cutCode=~0x0;
   }
    
+  //event->getTrigSum().printObjs();
+
   data_.eleTrigs = TrigBitsDef::getTrigCode(*event,data_.eleTruthDetEta,data_.eleTruthPhi,data_.eleTruthEta,data_.eleTruthPhi);
   data_.egHLT.clear();
   data_.egHLTUS.clear();
   auto egObjs = TrigFuncs::getEGTrigObj(data_.eleTruthDetEta,data_.eleTruthPhi,event->getTrigSum());
-  if(egObjs.first) data_.egHLT.fill(*egObjs.first);
+  if(egObjs.first){ 
+    data_.egHLT.fill(*egObjs.first);
+    //    std::cout <<"seeded type "<<egObjs.first->type()<<std::endl;
+  }
   if(egObjs.second) data_.egHLTUS.fill(*egObjs.second,"Unseeded");
   
   tree_->Fill();

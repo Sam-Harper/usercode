@@ -117,7 +117,12 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   phiWidth = cand.var(pmProd+tag+"phiWidth");
   etaWidth = cand.var(pmProd+tag+"etaWidth");
 
-
+  s2 = cand.var(pmProd+tag+"s2");
+  dPhi1BestS2 = cand.var(pmProd+tag+"dPhi1BestS2");
+  dPhi2BestS2 = cand.var(pmProd+tag+"dPhi2BestS2");
+  dPhi3BestS2 = cand.var(pmProd+tag+"dPhi3BestS2");
+  dRZ2BestS2 = cand.var(pmProd+tag+"dz2BestS2");
+  dRZ3BestS2 = cand.var(pmProd+tag+"dz3BestS2");
   // auto convertBackToInt=[](int part1,int part2){
   //   return part1 | (part2<<16);
   // };

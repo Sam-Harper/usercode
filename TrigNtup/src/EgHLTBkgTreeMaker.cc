@@ -17,9 +17,9 @@ void EgHLTBkgTreeMaker::fill(const SHEvent* event)
   for(const auto&trigObj :  event->getTrigSum().trigObjs()){
     if(trigObj.type()==SHTrigObj::PHOTON){
       fill_(trigObj,event);
-    }else{
-      std::cout <<"trig obj type "<<trigObj.type()<<std::endl;
-    }
+    }//else{
+      //      std::cout <<"trig obj type "<<trigObj.type()<<std::endl;
+    //}
   }
 }
 
