@@ -112,6 +112,7 @@ void TrigRateTree::endJob()
   edm::Service<TFileService> fs;
   fs->file().cd();
   TTree* tree = new TTree("rateTree","rateTree");
+  tree->Branch("datasetCode",&datasetCode_,"datasetCode/I");
   tree->Branch("nrTot",&nrEventsRunSum_,"nrTot/I");
   tree->Branch("nrTotPostPUFilter",&nrEventsRunPostPUFilterSum_,"nrTotPostPUFilter/I");
 

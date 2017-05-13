@@ -53,14 +53,17 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 
 process.trigRateTree = cms.EDAnalyzer("TrigRateTree",
-                                      nrEventsInRun=cms.InputTag("nrEventsStorer","nrEventsRun"),
-                                      nrEventsInRunPostPUFilter=cms.InputTag("nrEventsStorerPostPUFilter","nrEventsRun"),
+                                      nrEventsInRun=cms.InputTag("nrEventsStorer","nrEventsRun","HLTSkim"),
+                                      nrEventsInRunPostPUFilter=cms.InputTag("nrEventsStorerPostPUFilter","nrEventsRun","HLTSkim"),
                                       triggerResults=cms.InputTag("TriggerResults","","HLTX"),
                                       triggerResultsPUFilter=cms.InputTag("TriggerResults","","HLTSkim"),
                                       pileupInfo = cms.InputTag("addPileupInfo"),
                                       pileupFilterPath = cms.string("HLT_RemovePileUpDominatedEventsGen_v1"),
-                                      triggerPaths= cms.vstring("HLT_DoubleEle33_CaloIdL",
+                                      triggerPaths= cms.vstring("HLT_DoubleEle33_CaloIdL_v1",
                                                                 "HLT_Ele27_WPTight_Gsf_v7",
+                                                                "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v10",
+                                                                "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v10",
+                                                                "HLT_DoubleEle33_CaloIdL_MW_v8",
                                                                 "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9"),
                                       datasetCode=cms.int32(datasetCode)
                                       )
