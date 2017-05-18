@@ -59,12 +59,7 @@ process.trigRateTree = cms.EDAnalyzer("TrigRateTree",
                                       triggerResultsPUFilter=cms.InputTag("TriggerResults","","HLTSkim"),
                                       pileupInfo = cms.InputTag("addPileupInfo"),
                                       pileupFilterPath = cms.string("HLT_RemovePileUpDominatedEventsGen_v1"),
-                                      triggerPaths= cms.vstring("HLT_DoubleEle33_CaloIdL_v1",
-                                                                "HLT_Ele27_WPTight_Gsf_v7",
-                                                                "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v10",
-                                                                "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v10",
-                                                                "HLT_DoubleEle33_CaloIdL_MW_v8",
-                                                                "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9"),
+                                      triggerPaths= cms.vstring("HLT_DoubleEle5_CaloIdL_MW_v8","HLT_DoubleEle33_CaloIdL_MW_v8","HLT_DoublePhoton33_CaloIdL_v1","HLT_Photon33_v1","HLT_Photon50_v7","HLT_Photon75_v7","HLT_Photon90_v7","HLT_Photon120_v7","HLT_Photon150_v1","HLT_Photon175_v8","HLT_Photon200_v8","HLT_ECALHT800_v6","HLT_CaloJet500_NoJetID_v5","HLT_CaloJet550_NoJetID_v1","HLT_Photon300_NoHE_v7","HLT_DoublePhoton70_v1","HLT_DoublePhoton85_v8","HLT_DiSC30_18_EIso_AND_HE_Mass70_v6","HLT_Ele23_Ele12_CaloIdL_CaloIso_v1","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9","HLT_Ele27_WPTight_Gsf_NoPM_v1","HLT_Ele27_WPTight_Gsf_v7","HLT_Ele32_WPTight_Gsf_v1","HLT_Ele35_WPTight_Gsf_v1","HLT_Ele38_WPTight_Gsf_v1","HLT_Ele38_WPTightV2_Gsf_v1","HLT_Ele38_WPTight_Gsf_MW_v1","HLT_Ele40_WPTight_Gsf_v1"),
                                       datasetCode=cms.int32(datasetCode)
                                       )
 
