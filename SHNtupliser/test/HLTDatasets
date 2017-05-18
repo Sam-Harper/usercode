@@ -3,7 +3,7 @@
 /RelValZEE_13/CMSSW_9_0_0-PU25ns_90X_upgrade2017_realistic_v20-v1/GEN-SIM-DIGI-RAW  & -1 & -1 & 1.0 & 1.0 & 100 & 10 & extraDY
 
 
-/QCD_Pt_15to30_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 601 & 400 & QCDRATE
+/QCD_Pt_15to30_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 601 & 400 & 
 /QCD_Pt_30to50_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 602 & 200 & QCDRATE
 /QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 603 & 400 & QCDRATE
 /QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 604 & 100 & QCDRATE
