@@ -134,11 +134,11 @@ else:
     process.shNtupliser.sampleWeight = getWeight(datasetCode)
 
 
-import HLTrigger.HLTfilters.hltHighLevel_cfi
-process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-process.skimHLTFilter.throw=cms.bool(False)
-process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLTSkim")
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_RemovePileUpDominatedEventsGen_v1",)
+#import HLTrigger.HLTfilters.hltHighLevel_cfi
+#process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#process.skimHLTFilter.throw=cms.bool(False)
+#process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLTSkim")
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_RemovePileUpDominatedEventsGen_v1",)
 
 #
 
