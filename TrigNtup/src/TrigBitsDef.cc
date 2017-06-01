@@ -126,50 +126,56 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v");
   trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v");
   trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_MW_v");
-  trigPathNames_.push_back("HLT_DoublePhoton60_v");
+  trigPathNames_.push_back("HLT_DoubleEle5_CaloIdL_MW_v");
+  trigPathNames_.push_back("HLT_DoublePhoton70_v");
   trigPathNames_.push_back("HLT_DoublePhoton85_v");
   trigPathNames_.push_back("HLT_Photon300_NoHE_v");
   trigPathNames_.push_back("HLT_ECALHT800_v");
   trigPathNames_.push_back("HLT_CaloJet500_NoJetID_v");
-  trigPathNames_.push_back("HLT_Ele23_WPLoose_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele27_WPLoose_Gsf_v");
+  trigPathNames_.push_back("HLT_CaloJet550_NoJetID_v");
   trigPathNames_.push_back("HLT_Ele27_WPTight_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
-  trigPathNames_.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+  trigPathNames_.push_back("HLT_Ele27_WPTight_Gsf_NoPM_v");
+  trigPathNames_.push_back("HLT_Ele32_WPTight_Gsf_v"); 
+  trigPathNames_.push_back("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"); 
   trigPathNames_.push_back("HLT_Photon22_v");
-  trigPathNames_.push_back("HLT_Photon30_v");
-  trigPathNames_.push_back("HLT_Photon36_v");
+  trigPathNames_.push_back("HLT_Photon33_v");
   trigPathNames_.push_back("HLT_Photon50_v"); 
   trigPathNames_.push_back("HLT_Photon75_v"); 
   trigPathNames_.push_back("HLT_Photon90_v"); 
   trigPathNames_.push_back("HLT_Photon120_v"); 
-  trigPathNames_.push_back("HLT_Photon175_v"); 
+  trigPathNames_.push_back("HLT_Photon150_v"); 
+  trigPathNames_.push_back("HLT_Photon175_v");  
+  trigPathNames_.push_back("HLT_Photon200_v");  
   trigPathNames_.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
   trigPathNames_.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+  
  
 
   //trigFilterNames_.push_back("hltL1sSingleEG40IorSingleEG30IorSingleEG26IorDoubleEG2210IorDoubleEG2417IorSingleJet200");
 
   trigFilterNames_.assign(32*4,"");
-  trigFilterNames_[0]="hltEGL1SingleEG40OR35OR30OR25OR20ORDoubleEG2210ORSingleJet200Filter";
+  trigFilterNames_[0]="hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter";
   trigFilterNames_[1]="hltEG33EtFilter";
-  trigFilterNames_[2]="hltDiEG33EtUnseededFilter";
-  trigFilterNames_[3]="hltL1sL1SingleEG40";
+  trigFilterNames_[2]="hltEG33HEFilter";
+  trigFilterNames_[3]="hltEG33CaloIdLClusterShapeFilter";
   trigFilterNames_[4]="hltEle33CaloIdLPixelMatchFilter";
   trigFilterNames_[5]="hltEle33CaloIdLGsfTrkIdVLDPhiFilter";
   trigFilterNames_[6]="hltEle33CaloIdLMWPMS2Filter";
   trigFilterNames_[7]="hltEle33CaloIdLGsfTrkIdVLMWPMS2Filter";
-  trigFilterNames_[8]="hltDiEle33CaloIdLPixelMatchUnseededFilter";
-  trigFilterNames_[9]="hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter";
-  trigFilterNames_[10]="hltDiEle33CaloIdLMWPMS2UnseededFilter";
-  trigFilterNames_[11]="hltDiEle33CaloIdLGsfTrkIdVLMWPMS2UnseededFilter";
+  trigFilterNames_[8]="hltDiEG33EtUnseededFilter";
+  trigFilterNames_[9]="hltDiEG33CaloIdLClusterShapeUnseededFilter";
+  trigFilterNames_[10]="hltDiEle33CaloIdLPixelMatchUnseededFilter";
+  trigFilterNames_[11]="hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter";
+  trigFilterNames_[12]="hltDiEle33CaloIdLMWPMS2UnseededFilter"; 
+  trigFilterNames_[13]="hltDiEle33CaloIdLGsfTrkIdVLMWPMS2UnseededFilter";
 
-  trigFilterNames_[12]="hltEGL1SingleEGFilter";
-  trigFilterNames_[13]="hltEG5EtFilter";
-  trigFilterNames_[14]="hltEG5HEFilter";
-  trigFilterNames_[15]="hltEG5CaloIdLClusterShapeFilter";
-  trigFilterNames_[16]="hltEle5CaloIdLPixelMatchFilter";
-  trigFilterNames_[17]="hltEle5CaloIdLGsfTrkIdVLDEtaFilter";
+  trigFilterNames_[14]="hltL1sL1SingleEG40";
+  trigFilterNames_[15]="hltEGL1SingleEG5WithJetAndTauFilter";
+  trigFilterNames_[16]="hltEG5EtFilter";
+  trigFilterNames_[17]="hltEG5HEFilter";
+  trigFilterNames_[18]="hltEG5CaloIdLClusterShapeFilter";
+  trigFilterNames_[19]="hltEle5CaloIdLPixelMatchFilter";
+  trigFilterNames_[20]="hltEle5CaloIdLGsfTrkIdVLDEtaFilter";
 
   trigFilterNames_[0+1*32]="hltEG30HEFilter";
   trigFilterNames_[1+1*32]="hltEG36HEFilter";
@@ -182,23 +188,41 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigFilterNames_[8+1*32]="hltEG85HEFilter";
   trigFilterNames_[9+1*32]="hltDiEG85HEUnseededFilter";
 
-  trigFilterNames_[12+2*32]="hltEGL1SingleEGOrFilter";
-  trigFilterNames_[13+2*32]="hltEle27WPTightClusterShapeFilter";
-  trigFilterNames_[14+2*32]="hltEle27WPTightHEFilter";
-  trigFilterNames_[15+2*32]="hltEle27WPTightEcalIsoFilter";
-  trigFilterNames_[16+2*32]="hltEle27WPTightHcalIsoFilter";
-  trigFilterNames_[17+2*32]="hltEle27WPTightPixelMatchFilter";
-  trigFilterNames_[18+2*32]="hltEle27WPTightGsfOneOEMinusOneOPFilter";
-  trigFilterNames_[19+2*32]="hltEle27WPTightGsfChi2Filter";
-  trigFilterNames_[20+2*32]="hltEle27WPTightGsfMissingHitsFilter";
-  trigFilterNames_[21+2*32]="hltEle27WPTightGsfDetaFilter";
-  trigFilterNames_[22+2*32]="hltEle27WPTightGsfDphiFilter";
-  trigFilterNames_[23+2*32]="hltEle27WPTightGsfTrackIsoFilter";
+  trigFilterNames_[0+2*32]="hltEGL1SingleEGOrFilter";
+  trigFilterNames_[1+2*32]="hltEle27WPTightClusterShapeFilter";
+  trigFilterNames_[2+2*32]="hltEle27WPTightHEFilter";
+  trigFilterNames_[3+2*32]="hltEle27WPTightEcalIsoFilter";
+  trigFilterNames_[4+2*32]="hltEle27WPTightHcalIsoFilter";
+  trigFilterNames_[5+2*32]="hltEle27WPTightPixelMatchFilter";
+  trigFilterNames_[6+2*32]="hltEle27WPTightGsfOneOEMinusOneOPFilter";
+  trigFilterNames_[7+2*32]="hltEle27WPTightGsfChi2Filter";
+  trigFilterNames_[8+2*32]="hltEle27WPTightGsfMissingHitsFilter";
+  trigFilterNames_[9+2*32]="hltEle27WPTightGsfDetaFilter";
+  trigFilterNames_[10+2*32]="hltEle27WPTightGsfDphiFilter";
+  trigFilterNames_[11+2*32]="hltEle27WPTightGsfTrackIsoFilter";
 
-  trigFilterNames_[0+3*32]="hltEG33HEFilter";
-  trigFilterNames_[1+3*32]="hltEG33CaloIdLClusterShapeFilter";
-  trigFilterNames_[2+3*32]="hltEle33CaloIdLPixelMatchMixedLayerPairsFilter";
-  trigFilterNames_[3+3*32]="hltEle33CaloIdLPixelMatchTECFilter";
+  trigFilterNames_[0+3*32]="hltEGL1SingleAndDoubleEGOrPairFilter";
+  trigFilterNames_[1+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLEtLeg1Filter";
+  trigFilterNames_[2+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLEtLeg2Filter";
+  trigFilterNames_[3+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLClusterShapeLeg1Filter";
+  trigFilterNames_[4+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLClusterShapeLeg2Filter";
+  trigFilterNames_[5+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLHELeg1Filter";
+  trigFilterNames_[6+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLHELeg2Filter";
+  trigFilterNames_[7+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLEcalIsoLeg1Filter";
+  trigFilterNames_[8+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLEcalIsoLeg2Filter";
+  trigFilterNames_[9+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLHcalIsoLeg1Filter";
+  trigFilterNames_[10+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLHcalIsoLeg2Filter";
+  trigFilterNames_[11+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLPixelMatchLeg1Filter";
+  trigFilterNames_[12+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLPixelMatchLeg2Filter";
+  trigFilterNames_[13+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLOneOEMinusOneOPLeg1Filter";
+  trigFilterNames_[14+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLOneOEMinusOneOPLeg2Filter";
+  trigFilterNames_[15+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLDetaLeg1Filter";
+  trigFilterNames_[16+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLDetaLeg2Filter";
+  trigFilterNames_[17+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLDphiLeg1Filter";
+  trigFilterNames_[18+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLDphiLeg2Filter";
+  trigFilterNames_[19+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter";
+  trigFilterNames_[20+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter";
+  
 }
 
 
