@@ -107,6 +107,7 @@ parser.add_argument('--interfaceType',help='interface type of python config file
 parser.add_argument('--runLocal',help='run locally rather than batch',action='store_true')
 parser.add_argument('--nrJobs',help='number of jobs to split into (can not be larger than #files to run over)',default=1,type=int)
 parser.add_argument('--baseOutDir',help='base output directory',default="mc")
+parser.add_argument('--globalTag',help='globalTag',default=None)
 
 args = parser.parse_args()
 print args.config
@@ -169,6 +170,8 @@ for jobNr in range(0,args.nrJobs):
     batchFile.write("echo $CMSSW_RELEASE_BASE $CMSSW_BASE \n")
 
     cmd="cmsRun cmssw.py"
+    if args.globalTag!=None:
+        cmd+=" globalTag="+args.globalTag
     for filename in inputFilesForEachJob[jobNr]:
         if args.interfaceType==1 or args.interfaceType==2:
             if cmd.find("inputFiles=")==-1: cmd+=" inputFiles="
