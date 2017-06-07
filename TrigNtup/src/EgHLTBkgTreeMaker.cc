@@ -36,7 +36,7 @@ void EgHLTBkgTreeMaker::fill_(const SHTrigObj& hlt,const SHEvent* event)
   data_.weight = event->weight();
   data_.genWeight = event->getGenInfo().weight();
   data_.genPU.fill(*event);
-
+  data_.evtTrigs = TrigBitsDef::getTrigCode(*event);
   data_.eleTrigs = TrigBitsDef::getTrigCode(*event,hlt.eta(),hlt.phi(),hlt.eta(),hlt.phi());
   data_.egHLT.fill(hlt);
 

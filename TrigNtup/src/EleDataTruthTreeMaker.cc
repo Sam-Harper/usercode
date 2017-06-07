@@ -55,6 +55,7 @@ void EleDataTruthTreeMaker::fill_(const SHEvent* event,const SHMCParticle& truth
   data_.weight = event->weight();
   data_.genWeight = event->getGenInfo().weight();
   data_.genPU.fill(*event);
+  data_.evtTrigs = TrigBitsDef::getTrigCode(*event);
   if(recoEle!=NULL){
     data_.truthDR = MathFuncs::calDeltaR(truthEle.p4(),recoEle->p4());
     data_.ele.fill(*recoEle);
