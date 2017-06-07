@@ -112,6 +112,9 @@ process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltNam
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
 process.shNtupliser.addTrigSum = cms.bool(True)
+process.shNtupliser.tagFilters=cms.vstring("hltEG30EIso15HE30EcalIsoLastFilter","hltEG33CaloIdLClusterShapeFilter")
+process.shNtupliser.probeFilters=cms.vstring("hltEG18EIso15HE30EcalIsoUnseededFilter","hltEG33CaloIdLClusterShapeFilter")
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )

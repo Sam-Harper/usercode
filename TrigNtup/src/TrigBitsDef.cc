@@ -177,6 +177,9 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigFilterNames_[19]="hltEle5CaloIdLPixelMatchFilter";
   trigFilterNames_[20]="hltEle5CaloIdLGsfTrkIdVLDEtaFilter";
 
+  trigFilterNames_[21]="hltEG30EIso15HE30EcalIsoLastFilter";
+  trigFilterNames_[22]="hltEG18EIso15HE30EcalIsoUnseededFilter";
+  
   trigFilterNames_[0+1*32]="hltEG30HEFilter";
   trigFilterNames_[1+1*32]="hltEG36HEFilter";
   trigFilterNames_[2+1*32]="hltEG50HEFilter";

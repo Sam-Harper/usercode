@@ -13,12 +13,13 @@ class EgHLTTagProbeTreeMaker {
   EgHLTTagProbeTreeStruct data_;
 
   float minEtCut_;
-  std::string tagFilter_;
-  std::string probeFilter_;
+  std::vector<std::string> tagFilters_;
+  std::vector<std::string> probeFilters_;
  
 public:
 
-  EgHLTTagProbeTreeMaker(const char* treeName,const char* treeTitle);
+  EgHLTTagProbeTreeMaker(const char* treeName,const char* treeTitle,
+			 const std::vector<std::string>& tagFilters,const std::vector<std::string>& probeFilters);
   ~EgHLTTagProbeTreeMaker(){}
   EgHLTTagProbeTreeMaker(EgHLTTagProbeTreeMaker&)=delete;
   EgHLTTagProbeTreeMaker& operator=(EgHLTTagProbeTreeMaker&)=delete;

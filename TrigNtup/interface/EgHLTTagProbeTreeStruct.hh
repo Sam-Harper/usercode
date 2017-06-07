@@ -24,6 +24,9 @@ public:
   std::array<int,TrigBitsDef::kNrFilterWords> tagTrigs; 
   std::array<int,TrigBitsDef::kNrFilterWords> probeTrigs; 
   std::array<int,TrigBitsDef::kNrPathWords> evtTrigs;
+ 
+  float mass;
+
   EleStructs::HLTEgammaStruct tagHLT,probeHLT;
   int tagHLTRegion,probeHLTRegion;
 

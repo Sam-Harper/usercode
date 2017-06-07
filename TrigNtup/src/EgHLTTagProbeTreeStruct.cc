@@ -12,6 +12,8 @@ void EgHLTTagProbeTreeStruct::createBranches(TTree* tree)
   addBranch(tree,"puWeight",puWeight,buffSize);
   addBranch(tree,"evtTrigs",evtTrigs,buffSize);  
 
+  addBranch(tree,"mass",mass,buffSize);
+
   addBranch(tree,"tagTrigs",tagTrigs,buffSize);
   addBranch(tree,"tagHLT",tagHLT,buffSize);
   addBranch(tree,"tagHLTRegion",tagHLTRegion,buffSize);
@@ -45,6 +47,8 @@ void EgHLTTagProbeTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("genWeight",&genWeight); 
   tree->SetBranchAddress("puWeight",&puWeight);
   tree->SetBranchAddress("evtTrigs",&evtTrigs); 
+
+  tree->SetBranchAddress("mass",&mass);
 
   tree->SetBranchAddress("tagTrigs",&tagTrigs); 
   tree->SetBranchAddress("tagHLT",&tagHLT);

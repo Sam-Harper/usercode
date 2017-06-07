@@ -5,8 +5,11 @@
 #include "SHarper/SHNtupliser/interface/MathFuncs.hh"
 
 
-EgHLTTagProbeTreeMaker::EgHLTTagProbeTreeMaker(const char* treeName,const char* treeTitle):
-  minEtCut_(-1)
+EgHLTTagProbeTreeMaker::EgHLTTagProbeTreeMaker(const char* treeName,const char* treeTitle,
+					       const std::vector<std::string>& tagFilters,const std::vector<std::string>& probeFilters):
+  minEtCut_(-1),
+  tagFilters_(tagFilters),
+  probeFilters_(probeFilters)
 {
   tree_= new TTree(treeName,treeTitle);
   data_.createBranches(tree_);
@@ -15,8 +18,8 @@ EgHLTTagProbeTreeMaker::EgHLTTagProbeTreeMaker(const char* treeName,const char* 
 void EgHLTTagProbeTreeMaker::fill(const SHEvent* event)
 {
   auto trigSum = event->getTrigSum();
-  auto tags = trigSum.getTrigObjs(tagFilter_);
-  auto probes = trigSum.getTrigObjs(probeFilter_);
+  auto tags = trigSum.getTrigObjs(tagFilters_);
+  auto probes = trigSum.getTrigObjs(probeFilters_);
   
   data_.evt.fill(event);
   data_.weight = event->weight();
@@ -50,7 +53,7 @@ void EgHLTTagProbeTreeMaker::fill_(const SHTrigObj& tag,const SHTrigObj& probe,c
   data_.probeTrigs = TrigBitsDef::getTrigCode(*event,probe.eta(),probe.phi(),probe.eta(),probe.phi());
   data_.tagHLT.fill(tag);
   data_.probeHLT.fill(probe);
-
+  data_.mass = (tagHLT->p4()+probeHLT->p4()).Mag();
   if(tagTruth){
     data_.tagMC.fill(tagTruth->p4(),tagTruth->detEta());
     data_.tagTruthZ = tagTruth->pos().Z();
