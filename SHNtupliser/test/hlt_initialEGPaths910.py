@@ -10694,3 +10694,174 @@ if rateTest1p25E34:
     process.hltL1sSingleAndDoubleEGNonIsoOrWithEG26WithJetAndTau.L1SeedsLogicalExpression = cms.string("L1_SingleEG34 OR L1_DoubleEG_23_10 OR L1_SingleJet170 OR L1_SingleJet180 OR L1_SingleJet200 OR L1_SingleTau100er2p1 OR L1_SingleTau120er2p1")
 
     process.hltL1sSingleEGor.L1SeedsLogicalExpression = cms.string( "L1_SingleEG34 OR L1_SingleIsoEG30er2p1" )
+
+
+#process.hltEgammaElectronPixelSeeds.matcherConfig.minNrHits = cms.vuint32(3,3)
+
+#process.hltEgammaElectronPixelSeedsUnseeded.matcherConfig.minNrHits = cms.vuint32(3,3)
+
+process.hltEgammaElectronPixelSeeds.matcherConfig.matchingCuts = cms.VPSet(
+    cms.PSet(  dPhiMax = cms.double( 0.1 ),
+               dRZMax = cms.double( -1.0 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( -1.0 ),
+               dRZMaxLowEtThres = cms.double( -1.0 )
+               ),
+    cms.PSet(  dPhiMax = cms.double( 0.04 ),
+               dRZMax = cms.double( 0.1 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( 0.15 ),
+               dRZMaxLowEtThres = cms.double( 30.0 )
+               ),
+    cms.PSet(  dPhiMax = cms.double( 0.04 ),
+               dRZMax = cms.double( 0.1 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( 0.15 ),
+               dRZMaxLowEtThres = cms.double( 30.0 )
+               )
+)
+process.hltEgammaElectronPixelSeeds.matcherConfig.matchingCuts = cms.VPSet(
+    cms.PSet(  dPhiMax = cms.double( 0.05 ),
+               dRZMax = cms.double( -1.0 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( -1.0 ),
+               dRZMaxLowEtThres = cms.double( -1.0 )
+               ),
+    cms.PSet(  dPhiMax = cms.double( 0.004 ),
+               dRZMax = cms.double( 0.1 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( 0.15 ),
+               dRZMaxLowEtThres = cms.double( 30.0 )
+               ),
+    cms.PSet(  dPhiMax = cms.double( 0.004 ),
+               dRZMax = cms.double( 0.1 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( 0.15 ),
+               dRZMaxLowEtThres = cms.double( 30.0 )
+               )
+)
+
+
+process.hltEgammaElectronPixelSeeds.matcherConfig.matchingCuts = cms.VPSet(
+    cms.PSet(  
+        version = cms.int32(2),
+        dPhiMin = cms.PSet(
+            bins=cms.VPSet(
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(0.0),
+                xMax = cms.double(1.5),
+                yMin = cms.int32(-1),
+                yMax = cms.int32(-1),
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(-2.70401e-07,-0.100018,0.108329,0.251267,0.872989),
+                ),
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(0.0),
+                xMax = cms.double(1.5),
+                yMin = cms.int32(1),
+                yMax = cms.int32(1),
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(-1.80394e-07,-0.149987,0.10646,0.10646,0.492807),
+                ),
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(1.5),
+                xMax = cms.double(3.0),
+                yMin = cms.int32(-1),
+                yMax = cms.int32(-1),
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(-1.92804e-07,-0.139279, -0.139279, 0.219209, 0.408141)
+                ),
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(1.5),
+                xMax = cms.double(3.0),
+                yMin = cms.int32(1),
+                yMax = cms.int32(1),
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(-0.00369139, -0.102932, 0.10032,0.278453,0.809113)
+                ),
+            )),
+        dPhiMax = cms.PSet(
+            bins=cms.VPSet(
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(0.0),
+                xMax = cms.double(1.5),
+                yMin = cms.int32(-1),
+                yMax = cms.int32(-1),   
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(0.00071598,0.0694871,-0.00459788,0.235008,1.44803)
+                ),
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(0.0),
+                xMax = cms.double(1.5),
+                yMin = cms.int32(1),
+                yMax = cms.int32(1),
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(0.00110581,0.0630564,-0.00499959,0.209064,1.32594),
+                ),
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(1.5),
+                xMax = cms.double(3.0),
+                yMin = cms.int32(-1),
+                yMax = cms.int32(-1),
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(0.00717574,0.00717574,-0.00324127,0.307738,1.50924)
+                ),
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(1.5),
+                xMax = cms.double(3.0),
+                yMin = cms.int32(1),
+                yMax = cms.int32(1),
+                funcType = cms.string("TF1:=[0] + [1]*pow(x,[2])*exp(-pow(x,[3])+[4])"),
+                funcParams = cms.vdouble(0.00848497,0.0680687,-0.00489785,0.237686,1.26127)
+                ),
+            )),
+        dRZMin = cms.PSet(
+            bins=cms.VPSet(
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(0.0),
+                xMax = cms.double(3.0),
+                yMin = cms.int32(-1),
+                yMax = cms.int32(1),
+                funcType = cms.string("TF1:=pol0"),
+                funcParams = cms.vdouble(-99999)
+                ),
+            )),
+        dRZMax = cms.PSet(
+            bins=cms.VPSet(
+            cms.PSet(
+                binType = cms.string("AbsEtaCharge"),
+                xMin = cms.double(0.0),
+                xMax = cms.double(3.0),
+                yMin = cms.int32(-1),
+                yMax = cms.int32(1),
+                funcType = cms.string("TF1:=pol0"),
+                funcParams = cms.vdouble(99999)
+                ),
+            ))
+        ),
+    cms.PSet(  version=cms.int32(1),
+               dPhiMax = cms.double( 0.003 ),
+               dRZMax = cms.double( 0.05 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( 0.05 ),
+               dRZMaxLowEtThres = cms.double( 0.0 )
+               ),
+    cms.PSet(  version=cms.int32(1),
+               dPhiMax = cms.double( 0.003 ),
+               dRZMax = cms.double( 0.05 ),
+               dRZMaxLowEtEtaBins = cms.vdouble(  ),
+               dRZMaxLowEt = cms.vdouble( 0.05 ),
+               dRZMaxLowEtThres = cms.double( 0.0 )
+               )
+)
+
+process.hltEgammaElectronPixelSeedsUnseeded.matcherConfig.matchingCuts = process.hltEgammaElectronPixelSeeds.matcherConfig.matchingCuts
