@@ -53,7 +53,7 @@ void EgHLTTagProbeTreeMaker::fill_(const SHTrigObj& tag,const SHTrigObj& probe,c
   data_.probeTrigs = TrigBitsDef::getTrigCode(*event,probe.eta(),probe.phi(),probe.eta(),probe.phi());
   data_.tagHLT.fill(tag);
   data_.probeHLT.fill(probe);
-  data_.mass = (tagHLT->p4()+probeHLT->p4()).Mag();
+  data_.mass = (tag.p4()+probe.p4()).Mag();
   if(tagTruth){
     data_.tagMC.fill(tagTruth->p4(),tagTruth->detEta());
     data_.tagTruthZ = tagTruth->pos().Z();
