@@ -90,11 +90,11 @@ namespace EleStructs {
   };
 
    struct HLTEgammaStruct {
-     float et,nrgy,eta,phi,hadem,sigmaIEtaIEta,dEtaIn,dPhiIn,nrMissHits,nrClus,seedClusEFrac,pmDPhi1,pmDPhi2,pmDPhi3,pmDPhi4,pmDPhi1Info,pmDPhi2Info,pmDPhi3Info,pmDPhi4Info,pmDRZ1,pmDRZ2,pmDRZ3,pmDRZ4,pmDRZ1Info,pmDRZ2Info,pmDRZ3Info,pmDRZ4Info,phiWidth,etaWidth,s2,dPhi1BestS2,dPhi2BestS2,dPhi3BestS2,dRZ2BestS2,dRZ3BestS2,ecalIso,hcalIso,trkIso,trkChi2,invEOInvP;
+     float et,nrgy,eta,phi,hadem,sigmaIEtaIEta,dEtaIn,dPhiIn,nrMissHits,nrClus,seedClusEFrac,pmDPhi1,pmDPhi2,pmDPhi3,pmDPhi4,pmDPhi1Info,pmDPhi2Info,pmDPhi3Info,pmDPhi4Info,pmDRZ1,pmDRZ2,pmDRZ3,pmDRZ4,pmDRZ1Info,pmDRZ2Info,pmDRZ3Info,pmDRZ4Info,phiWidth,etaWidth,s2,dPhi1BestS2,dPhi2BestS2,dPhi3BestS2,dRZ2BestS2,dRZ3BestS2,ecalIso,hcalIso,trkIso,trkChi2,invEOInvP,trkIso2016;
    
-    static std::string contents(){return "et/F:nrgy:eta:phi:hadem:sigmaIEtaIEta:dEtaIn:dPhiIn:nrMissHits:nrClus:seedClusEFrac:pmDPhi1:pmDPhi2:pmDPhi3:pmDPhi4:pmDPhi1Info:pmDPhi2Info:pmDPhi3Info:pmDPhi4Info:pmDRZ1:pmDRZ2:pmDRZ3:pmDRZ4:pmDRZ1Info:pmDRZ2Info:pmDRZ3Info:pmDRZ4Info:phiWidth:etaWidth:s2:dPhi1BestS2:dPhi2BestS2:dPhi3BestS2:dRZ2BestS2:dRZ3BestS2:ecalIso:hcalIso:trkIso:trkChi2:invEOInvP";}
+    static std::string contents(){return "et/F:nrgy:eta:phi:hadem:sigmaIEtaIEta:dEtaIn:dPhiIn:nrMissHits:nrClus:seedClusEFrac:pmDPhi1:pmDPhi2:pmDPhi3:pmDPhi4:pmDPhi1Info:pmDPhi2Info:pmDPhi3Info:pmDPhi4Info:pmDRZ1:pmDRZ2:pmDRZ3:pmDRZ4:pmDRZ1Info:pmDRZ2Info:pmDRZ3Info:pmDRZ4Info:phiWidth:etaWidth:s2:dPhi1BestS2:dPhi2BestS2:dPhi3BestS2:dRZ2BestS2:dRZ3BestS2:ecalIso:hcalIso:trkIso:trkChi2:invEOInvP:trkIso2016";}
     void fill(const SHTrigObj& cand,const std::string& tag=""); 
-     void clear(){et=nrgy=eta=phi=hadem=sigmaIEtaIEta=dEtaIn=dPhiIn=nrMissHits=nrClus=seedClusEFrac=pmDPhi1=pmDPhi2=pmDPhi3=pmDPhi4=pmDPhi1Info=pmDPhi2Info=pmDPhi3Info=pmDPhi4Info=pmDRZ1=pmDRZ2=pmDRZ3=pmDRZ4=pmDRZ1Info=pmDRZ2Info=pmDRZ3Info=pmDRZ4Info=phiWidth=etaWidth=s2=dPhi1BestS2=dPhi2BestS2=dPhi3BestS2=dRZ2BestS2=dRZ3BestS2=ecalIso=hcalIso=trkIso=trkChi2=invEOInvP=-999.;}
+     void clear(){et=nrgy=eta=phi=hadem=sigmaIEtaIEta=dEtaIn=dPhiIn=nrMissHits=nrClus=seedClusEFrac=pmDPhi1=pmDPhi2=pmDPhi3=pmDPhi4=pmDPhi1Info=pmDPhi2Info=pmDPhi3Info=pmDPhi4Info=pmDRZ1=pmDRZ2=pmDRZ3=pmDRZ4=pmDRZ1Info=pmDRZ2Info=pmDRZ3Info=pmDRZ4Info=phiWidth=etaWidth=s2=dPhi1BestS2=dPhi2BestS2=dPhi3BestS2=dRZ2BestS2=dRZ3BestS2=ecalIso=hcalIso=trkIso=trkChi2=invEOInvP=trkIso2016=-999.;}
   };
 }
 

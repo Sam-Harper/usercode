@@ -129,7 +129,7 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   ecalIso = cand.var("hltEgammaEcalPFClusterIso"+tag);
   hcalIso = cand.var("hltEgammaHcalPFClusterIso"+tag);
   trkIso = cand.var("hltEgammaEleGsfTrackIso"+tag);
-  
+  trkIso2016 = cand.var("hltEgammaEleGsfTrackIso2016"+tag);
 
 
   // auto convertBackToInt=[](int part1,int part2){
