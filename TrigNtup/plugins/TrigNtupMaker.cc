@@ -10,6 +10,7 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 #include "SHarper/TrigNtup/interface/EleDataTruthTreeMaker.hh"
 #include "SHarper/TrigNtup/interface/EgHLTBkgTreeMaker.hh"
+#include "SHarper/TrigNtup/interface/EgHLTTagProbeTreeMaker.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloGeom.hh"
 #include "SHarper/SHNtupliser/interface/GeomFuncs.hh"
 #include "SHarper/SHNtupliser/interface/SHGeomFiller.h"
@@ -37,9 +38,12 @@ private:
   bool initGeom_;
 
   bool outputGeom_; //write out geom to file
+
+  std::vector<std::string> tagFilters_,probeFilters_;
   
   std::unique_ptr<EleDataTruthTreeMaker> genTreeMaker_;
   std::unique_ptr<EgHLTBkgTreeMaker> hltTreeMaker_;
+  std::unique_ptr<EgHLTTagProbeTreeMaker> hltTPTreeMaker_;
 
   TrigNtupMaker(const TrigNtupMaker& rhs)=delete;
   TrigNtupMaker& operator=(const TrigNtupMaker& rhs)=delete;
@@ -76,6 +80,7 @@ void TrigNtupMaker::fillTree()
 {
   genTreeMaker_->fill(shEvt_);
   hltTreeMaker_->fill(shEvt_);
+  hltTPTreeMaker_->fill(shEvt_);
 }
 
 TrigNtupMaker::TrigNtupMaker(const edm::ParameterSet& iPara):
@@ -88,6 +93,8 @@ TrigNtupMaker::TrigNtupMaker(const edm::ParameterSet& iPara):
   outputFilename_ = iPara.getParameter<std::string>("outputFilename");
   outputGeom_ = iPara.getParameter<bool>("outputGeom");
  
+  tagFilters_ = iPara.getParameter<std::vector<std::string>>("tagFilters");
+  probeFilters_ = iPara.getParameter<std::vector<std::string>>("probeFilters");
 }
 
 TrigNtupMaker::~TrigNtupMaker()
@@ -105,6 +112,7 @@ void TrigNtupMaker::beginJob()
   outFile_->cd();
   genTreeMaker_ = std::make_unique<EleDataTruthTreeMaker>("hltGenTree","");
   hltTreeMaker_ = std::make_unique<EgHLTBkgTreeMaker>("hltTree","");
+  hltTPTreeMaker_ = std::make_unique<EgHLTTagProbeTreeMaker>("hltTPTree","",tagFilters_,probeFilters_);
   //  shEvtTree_.makeTree("evtTree");
 } 
 

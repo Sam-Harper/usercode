@@ -95,6 +95,8 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   dEtaIn=cand.var("hltEgammaGsfTrackVars"+tag+"DetaSeed");
   dPhiIn=cand.var("hltEgammaGsfTrackVars"+tag+"Dphi");
   nrMissHits=cand.var("hltEgammaGsfTrackVars"+tag+"MissingHits");
+  trkChi2=cand.var("hltEgammaGsfTrackVars"+tag+"Chi2");
+  invEOInvP=cand.var("hltEgammaGsfTrackVars"+tag+"OneOESuperMinusOneOP");
   pmDPhi1=cand.var(pmProd+tag+"dPhi1");
   pmDPhi2=cand.var(pmProd+tag+"dPhi2");
   pmDPhi3=cand.var(pmProd+tag+"dPhi3");
@@ -123,6 +125,13 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   dPhi3BestS2 = cand.var(pmProd+tag+"dPhi3BestS2");
   dRZ2BestS2 = cand.var(pmProd+tag+"dz2BestS2");
   dRZ3BestS2 = cand.var(pmProd+tag+"dz3BestS2");
+
+  ecalIso = cand.var("hltEgammaEcalPFClusterIso"+tag);
+  hcalIso = cand.var("hltEgammaHcalPFClusterIso"+tag);
+  trkIso = cand.var("hltEgammaEleGsfTrackIso"+tag);
+  trkIso2016 = cand.var("hltEgammaEleGsfTrackIso2016"+tag);
+
+
   // auto convertBackToInt=[](int part1,int part2){
   //   return part1 | (part2<<16);
   // };

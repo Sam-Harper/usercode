@@ -1,5 +1,31 @@
 isCrabJob=False #script seds this if its a crab job
 
+
+def getNrEvents(datasetCode):
+    if datasetCode == 602: return  14381090
+    if datasetCode == 603: return  16687875
+    if datasetCode == 604: return  5238732
+    if datasetCode == 605: return  2062191
+    if datasetCode == 606: return  480374
+    if datasetCode == 607: return  389480
+    if datasetCode == 608: return  401312
+    return 1
+
+def getCrossSec(datasetCode):
+
+  if datasetCode==602: return 140932000. #QCD_Pt-30to50
+  if datasetCode==603: return 19204300. #QCD_Pt-50to80
+  if datasetCode==604: return 2762530. #QCD_Pt-80to120
+  if datasetCode==605: return 471100. #QCD_Pt-120to170  
+  if datasetCode==606: return 117276. #QCD_Pt-170to300
+  if datasetCode==607: return 7823. #QCD_Pt-300to470
+  if datasetCode==608: return 648.2 #QCD_Pt-470to600
+  return 0
+
+def getWeight(datasetCode):
+    print datasetCode, getCrossSec(datasetCode),getNrEvents(datasetCode)
+    return getCrossSec(datasetCode)/float(getNrEvents(datasetCode))
+
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -19,7 +45,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=100
+  #  datasetCode=100
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -86,6 +112,9 @@ process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltNam
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
 process.shNtupliser.addTrigSum = cms.bool(True)
+process.shNtupliser.tagFilters=cms.vstring("hltEG30EIso15HE30EcalIsoLastFilter","hltEG33CaloIdLClusterShapeFilter")
+process.shNtupliser.probeFilters=cms.vstring("hltEG18EIso15HE30EcalIsoUnseededFilter","hltEG33CaloIdLClusterShapeFilter")
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
@@ -105,17 +134,21 @@ else:
     process.TFileService.fileName= sys.argv[len(sys.argv)-1]
     #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
     process.shNtupliser.datasetCode = datasetCode
-    process.shNtupliser.sampleWeight = 1
+    process.shNtupliser.sampleWeight = getWeight(datasetCode)
 
 
-import HLTrigger.HLTfilters.hltHighLevel_cfi
-process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-process.skimHLTFilter.throw=cms.bool(False)
-process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLTSkim")
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_RemovePileUpDominatedEventsGen_v1",)
+#import HLTrigger.HLTfilters.hltHighLevel_cfi
+#process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#process.skimHLTFilter.throw=cms.bool(False)
+#process.skimHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLTSkim")
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_RemovePileUpDominatedEventsGen_v1",)
 
-#process.p = cms.Path(process.skimHLTFilter*process.shNtupliser)
-process.p = cms.Path(process.shNtupliser)
+#
+
+if datasetCode>=600:
+    process.p = cms.Path(process.skimHLTFilter*process.shNtupliser)
+else:
+    process.p = cms.Path(process.shNtupliser)
 
 #from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
 #swapHEEPToMiniAOD(process.shNtupliser)
