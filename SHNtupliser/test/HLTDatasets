@@ -4,13 +4,13 @@
 
 
 /QCD_Pt_15to30_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 601 & 400 & 
-/QCD_Pt_30to50_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 602 & 200 & QCDRATE
-/QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 603 & 400 & QCDRATE
-/QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 604 & 100 & QCDRATE
-/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 605 & 50 & QCDRATE
-/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 606 & 10 & QCDRATE
-/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 607 & 10 & QCDRATE
-/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 608 & 10 & QCDRATE
+/QCD_Pt_30to50_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 602 & 100 & QCDRATE 94.5TB
+/QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 603 & 100 & QCDRATE 95.3TB
+/QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 604 & 50 & QCDRATE 25.7TB
+/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 605 & 25 & QCDRATE 5.6TB
+/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 606 & 5 & QCDRATE 1.4TB
+/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 607 & 5 & QCDRATE 1.2TB
+/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW  & -1 & -1 & 1.0 & 1.0 & 608 & 5 & QCDRATE 1.3TB
 
-/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 101 & 100 & EWKRATE
-/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 201 & 400 & EWKRATE
+/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW & 200000 & -1 & 1.0 & 1.0 & 101 & 100 & EWKRATE
+/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/PhaseIFall16DR-FlatPU28to62HcalNZSRAW_90X_upgrade2017_realistic_v6_C1-v1/GEN-SIM-RAW & 500000 & -1 & 1.0 & 1.0 & 201 & 400 & EWKRATE
