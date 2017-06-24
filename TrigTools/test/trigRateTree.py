@@ -63,6 +63,12 @@ process.trigRateTree = cms.EDAnalyzer("TrigRateTree",
                                       datasetCode=cms.int32(datasetCode)
                                       )
 
+
+process.trigRateTree.triggerPaths= cms.vstring(
+    "HLT_Ele27_WPTight_Gsf_v8","HLT_Ele35_WPTight_Gsf_v1","HLT_Ele38_WPTight_Gsf_v1","HLT_Ele40_WPTight_Gsf_v1","HLT_Ele27_WPTight_0_Gsf_v1","HLT_Ele35_WPTight_0_Gsf_v1","HLT_Ele38_WPTight_0_Gsf_v1","HLT_Ele40_WPTight_0_Gsf_v1","HLT_Ele27_WPTight_1_Gsf_v1","HLT_Ele35_WPTight_1_Gsf_v1","HLT_Ele38_WPTight_1_Gsf_v1","HLT_Ele40_WPTight_1_Gsf_v1","HLT_Ele27_WPLoose_1_Gsf_v1","HLT_Ele35_WPLoose_1_Gsf_v1","HLT_Ele38_WPLoose_1_Gsf_v1","HLT_Ele40_WPLoose_1_Gsf_v1"
+
+)
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
