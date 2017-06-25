@@ -118,10 +118,10 @@ void TrigResultTreeMakerV2::beginRun(const edm::Run& run,const edm::EventSetup& 
     TFile* file = &fs->file();
     file->cd();
     
-    size_t nrInts = pathNames_.size()/kWordSize;
+    size_t nrInts = pathNames_.size()/kWordSize+1;
     trigBits_.resize(nrInts,0);
 
-    size_t nrIntsP5 = pathNamesP5_.size()/kWordSize;
+    size_t nrIntsP5 = pathNamesP5_.size()/kWordSize+1;
     trigBitsP5_.resize(nrIntsP5,0);
     
     tree_=new TTree("trigResultTree","tree");
@@ -147,8 +147,9 @@ namespace {
 	if(wordAndBitNr.first<trigBits.size()){
 	  unsigned int bit = 0x1 << wordAndBitNr.second;
 	  trigBits[wordAndBitNr.first] |= bit;
-	}else{
-	  std::cout <<"Warning word number is "<<wordAndBitNr.first<<" while trigBits has "<<trigBits.size()<<" words "<<std::endl;
+	}else{ 
+	  std::cout <<"for path "<<pathNr<<" "<<pathNames[pathNr]<<" Warning word number is "<<wordAndBitNr.first<<" while trigBits has "<<trigBits.size()<<" words "<<std::endl;
+	  
 	}
       }
     }
@@ -172,6 +173,7 @@ void TrigResultTreeMakerV2::analyze(const edm::Event& iEvent, const edm::EventSe
 
   psColumn_= hltConfigP5_->prescaleSet(iEvent,iSetup);
   hltPhysicsPS_ = hltConfigP5_->prescaleValues(iEvent,iSetup,refTrigger_).second;
+
   fillTrigInfo(pathNames_,trigNames,trigResults,trigBits_,kWordSize);
   fillTrigInfo(pathNamesP5_,trigNamesP5,trigResultsP5,trigBitsP5_,kWordSize);
 
