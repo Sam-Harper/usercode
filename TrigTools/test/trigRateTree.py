@@ -60,7 +60,8 @@ process.trigRateTree = cms.EDAnalyzer("TrigRateTree",
                                       pileupInfo = cms.InputTag("addPileupInfo"),
                                       pileupFilterPath = cms.string("HLT_RemovePileUpDominatedEventsGen_v1"),
                                       triggerPaths= cms.vstring("HLT_DoubleEle5_CaloIdL_MW_v8","HLT_DoubleEle33_CaloIdL_MW_v8","HLT_DoublePhoton33_CaloIdL_v1","HLT_Photon33_v1","HLT_Photon50_v7","HLT_Photon75_v7","HLT_Photon90_v7","HLT_Photon120_v7","HLT_Photon150_v1","HLT_Photon175_v8","HLT_Photon200_v8","HLT_ECALHT800_v6","HLT_CaloJet500_NoJetID_v5","HLT_CaloJet550_NoJetID_v1","HLT_Photon300_NoHE_v7","HLT_DoublePhoton70_v1","HLT_DoublePhoton85_v8","HLT_DiSC30_18_EIso_AND_HE_Mass70_v6","HLT_Ele23_Ele12_CaloIdL_CaloIso_v1","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9","HLT_Ele27_WPTight_Gsf_NoPM_v1","HLT_Ele27_WPTight_Gsf_v7","HLT_Ele32_WPTight_Gsf_v1","HLT_Ele35_WPTight_Gsf_v1","HLT_Ele38_WPTight_Gsf_v1","HLT_Ele38_WPTightV2_Gsf_v1","HLT_Ele38_WPTight_Gsf_MW_v1","HLT_Ele40_WPTight_Gsf_v1","HLT_Ele27_WPTight_Gsf_L1DoubleEG_v1","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v1","HLT_Ele35_WPTight_Gsf_L1DoubleEG_v1"),
-                                      datasetCode=cms.int32(datasetCode)
+                                      datasetCode=cms.int32(datasetCode),
+                                      datasets=cms.VPSet()
                                       )
 
 
@@ -68,7 +69,64 @@ process.trigRateTree.triggerPaths= cms.vstring(
     "HLT_Ele27_WPTight_Gsf_v8","HLT_Ele35_WPTight_Gsf_v1","HLT_Ele38_WPTight_Gsf_v1","HLT_Ele40_WPTight_Gsf_v1","HLT_Ele27_WPTight_0_Gsf_v1","HLT_Ele35_WPTight_0_Gsf_v1","HLT_Ele38_WPTight_0_Gsf_v1","HLT_Ele40_WPTight_0_Gsf_v1","HLT_Ele27_WPTight_1_Gsf_v1","HLT_Ele35_WPTight_1_Gsf_v1","HLT_Ele38_WPTight_1_Gsf_v1","HLT_Ele40_WPTight_1_Gsf_v1","HLT_Ele27_WPLoose_1_Gsf_v1","HLT_Ele35_WPLoose_1_Gsf_v1","HLT_Ele38_WPLoose_1_Gsf_v1","HLT_Ele40_WPLoose_1_Gsf_v1"
 
 )
+process.trigRateTree.triggerPaths= cms.vstring(
+"HLT_DoubleEle5_CaloIdL_MW_v8","HLT_DoubleEle33_CaloIdL_MW_v8","HLT_DoubleEle33_CaloIdL_MW_Unseeded_v8","HLT_DoublePhoton33_CaloIdL_v1","HLT_Photon33_v1","HLT_Photon50_v7","HLT_Photon75_v7","HLT_Photon90_v7","HLT_Photon120_v7","HLT_Photon150_v1","HLT_Photon175_v8","HLT_Photon200_v8","HLT_ECALHT800_v6","HLT_CaloJet500_NoJetID_v6","HLT_CaloJet550_NoJetID_v1","HLT_Photon300_NoHE_v7","HLT_DoublePhoton70_v1","HLT_DoublePhoton85_v8","HLT_DiSC30_18_EIso_AND_HE_Mass70_v6","HLT_Ele23_Ele12_CaloIdL_CaloIso_v1","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9","HLT_Ele27_WPTight_Gsf_NoPM_v1","HLT_Ele27_WPTight_Gsf_v7","HLT_Ele27_WPTight_Gsf_L1DoubleEG_v1","HLT_Ele32_WPTight_Gsf_v1","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v1","HLT_Ele35_WPTight_Gsf_v1","HLT_Ele35_WPTight_Gsf_L1DoubleEG_v1","HLT_Ele38_WPTight_Gsf_v1","HLT_Ele38_WPTightV2_Gsf_v1","HLT_Ele38_WPTight_Gsf_MW_v1","HLT_Ele40_WPTight_Gsf_v1","HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v8","HLT_Ele28_HighEta_SC20_Mass55_v8","HLT_Ele115_CaloIdVT_GsfTrkIdT_v8","HLT_Ele135_CaloIdVT_GsfTrkIdT_v1","HLT_Ele145_CaloIdVT_GsfTrkIdT_v2","HLT_Ele200_CaloIdVT_GsfTrkIdT_v2","HLT_Ele250_CaloIdVT_GsfTrkIdT_v7","HLT_Ele300_CaloIdVT_GsfTrkIdT_v7","HLT_Ele27_WPTight_Gsf_DoubleL1_v1","HLT_Ele30_WPTight_Gsf_DoubleL1_v1","HLT_Ele32_WPTight_Gsf_DoubleL1_v1","HLT_Ele35_WPTight_Gsf_DoubleL1_v1","HLT_DiEle27_WPTightCaloOnly_L1DoubleEG_v1",
+)
+process.trigRateTree.triggerPaths= cms.vstring("HLT_DoubleEle33_CaloIdL_MW_v8",
+                                               "HLT_DoubleEle30_CaloIdL_MW_v8",
+                                               "HLT_DoubleEle27_CaloIdL_MW_v8",
+                                               "HLT_DoubleEle25_CaloIdL_MW_v8",
+                                               "HLT_DoubleEle37_Ele27_CaloIdL_MW_v8",                   
+                                               "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9",
+                                               "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9")
 
+process.trigRateTree.datasets = cms.VPSet(
+    cms.PSet(
+        name=cms.string("dataset1"),
+        paths=cms.vstring(
+            "HLT_DoubleEle33_CaloIdL_MW_v8",
+            "HLT_DoubleEle25_CaloIdL_MW_v8",
+            "HLT_DoubleEle37_Ele27_CaloIdL_MW_v8",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9"
+            )
+        ),
+    cms.PSet(
+        name=cms.string("dataset2"),
+        paths=cms.vstring(
+            "HLT_DoubleEle33_CaloIdL_MW_v8",
+            "HLT_DoubleEle27_CaloIdL_MW_v8",
+            "HLT_DoubleEle37_Ele27_CaloIdL_MW_v8",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9"
+            )
+        ),
+    cms.PSet(
+        name=cms.string("dataset3"),
+        paths=cms.vstring(
+            "HLT_DoubleEle33_CaloIdL_MW_v8",
+            "HLT_DoubleEle37_Ele27_CaloIdL_MW_v8",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9"
+            )
+        ),
+    cms.PSet(
+        name=cms.string("dataset4"),
+        paths=cms.vstring(
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9"
+            )
+        ),
+
+    cms.PSet(
+        name=cms.string("dataset5"),
+        paths=cms.vstring(
+            "HLT_DoubleEle33_CaloIdL_MW_v8",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v9",
+            "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v9"
+            )
+        ),
+)
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )

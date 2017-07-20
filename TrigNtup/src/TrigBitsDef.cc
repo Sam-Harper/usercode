@@ -179,6 +179,15 @@ void TrigBitsDef::setTrigNamesRun2016()
 
   trigFilterNames_[21]="hltEG30EIso15HE30EcalIsoLastFilter";
   trigFilterNames_[22]="hltEG18EIso15HE30EcalIsoUnseededFilter";
+
+  trigFilterNames_[23]="hltEG115EtFilter";
+  trigFilterNames_[24]="hltEG115CaloIdVTClusterShapeFilter";
+  trigFilterNames_[25]="hltEG115CaloIdVTClusterShapeFilter";
+  trigFilterNames_[26]="hltEle115CaloIdVTPixelMatchFilter";
+  trigFilterNames_[27]="hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter";
+  
+
+    
   
   trigFilterNames_[0+1*32]="hltEG30HEFilter";
   trigFilterNames_[1+1*32]="hltEG36HEFilter";
@@ -202,7 +211,13 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigFilterNames_[8+2*32]="hltEle27WPTightGsfMissingHitsFilter";
   trigFilterNames_[9+2*32]="hltEle27WPTightGsfDetaFilter";
   trigFilterNames_[10+2*32]="hltEle27WPTightGsfDphiFilter";
-  trigFilterNames_[11+2*32]="hltEle27WPTightGsfTrackIsoFilter";
+  trigFilterNames_[11+2*32]="hltEle27WPTightGsfTrackIsoFilter"; 
+
+  trigFilterNames_[12+2*32]="hltEle27L1SingleAndDoubleEGFilter";
+  trigFilterNames_[13+2*32]="hltEle27L1DoubleEGWPTightClusterShapeFilter";
+  trigFilterNames_[14+2*32]="hltEle27L1DoubleEGWPTightHEFilter";
+  trigFilterNames_[15+2*32]="hltEle27L1DoubleEGWPTightEcalIsoFilter";
+  trigFilterNames_[16+2*32]="hltEle27L1DoubleEGWPTightHcalIsoFilter";
 
   trigFilterNames_[0+3*32]="hltEGL1SingleAndDoubleEGOrPairFilter";
   trigFilterNames_[1+3*32]="hltEle23Ele12CaloIdLTrackIdLIsoVLEtLeg1Filter";

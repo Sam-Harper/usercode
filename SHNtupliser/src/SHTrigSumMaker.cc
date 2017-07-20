@@ -296,6 +296,7 @@ void SHTrigSumMaker::addHLTMenu_(const HLTConfigProvider& hltConfig)
   
   SHHLTMenu hltMenu;
   hltMenu.setProcessName(hltConfig.processName());
+  std::cout <<"global tag "<<hltConfig.globalTag()<<std::endl;
   hltMenu.setGlobalTag(hltConfig.globalTag());
   hltMenu.setMenuName(hltConfig.tableName());
   hltMenu.setFilterBitsDef(filterNames);   

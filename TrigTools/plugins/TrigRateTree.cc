@@ -29,13 +29,16 @@ class TrigRateTree : public edm::EDAnalyzer {
   unsigned int nrEventsRunPostPUFilterSum_;
   std::string pileupFilterPath_;
   std::vector<std::string> triggerPaths_;
+  std::vector<std::pair<std::string,std::vector<std::string> > > datasets_;
 
   static constexpr int kMaxNrPU_ = 70;
 
   std::vector<std::array<int,kMaxNrPU_+1> > hltCounts_;
   std::vector<std::array<int,kMaxNrPU_+1> > hltCountsPostPUFilter_;
+  std::vector<std::array<int,kMaxNrPU_+1> > datasetCounts_;
+  std::vector<std::array<int,kMaxNrPU_+1> > datasetCountsPostPUFilter_;
   
-  
+
   
 public:
   
@@ -51,7 +54,19 @@ public:
 
     hltCounts_.resize(triggerPaths_.size());
     hltCountsPostPUFilter_.resize(triggerPaths_.size());
-    
+     
+
+    auto datasetPSets = pset.getParameter<std::vector<edm::ParameterSet> >("datasets");
+    for(auto& datasetPSet : datasetPSets) {
+      auto name = datasetPSet.getParameter<std::string>("name");
+      auto paths = datasetPSet.getParameter<std::vector<std::string> >("paths"); 
+      datasets_.push_back({name,paths});
+
+    }
+
+    datasetCounts_.resize(datasets_.size());
+    datasetCountsPostPUFilter_.resize(datasets_.size());
+ 
     
   }
 
@@ -104,6 +119,20 @@ void TrigRateTree::analyze(const edm::Event& event,const edm::EventSetup& setup)
       if(passPUFilter) hltCountsPostPUFilter_[pathNr][nrTruePU]++;
     }
   }
+
+  for(size_t datasetNr=0;datasetNr<datasets_.size();datasetNr++){
+    bool passDataset=false;
+    auto& trigPaths = datasets_[datasetNr].second;
+    for(size_t pathNr=0;pathNr<trigPaths.size() && !passDataset;pathNr++){
+       size_t pathIndex = trigNames.triggerIndex(trigPaths[pathNr]);
+       if(pathIndex<trigResults->size() && trigResults->accept(pathIndex)) passDataset=true;
+    }
+    if(passDataset){
+      datasetCounts_[datasetNr][nrTruePU]++;
+      if(passPUFilter) datasetCountsPostPUFilter_[datasetNr][nrTruePU]++;
+    }
+
+  }
 	 
 }
 
@@ -118,6 +147,8 @@ void TrigRateTree::endJob()
 
   std::vector<int> nrPass(triggerPaths_.size(),0);
   std::vector<int> nrPassPostPUFilter(triggerPaths_.size(),0);
+  std::vector<int> nrPassDataset(datasets_.size(),0);
+  std::vector<int> nrPassDatasetPostPUFilter(datasets_.size(),0);
   
 
   for(size_t pathNr=0;pathNr<triggerPaths_.size();pathNr++){
@@ -130,6 +161,22 @@ void TrigRateTree::endJob()
     tree->Branch((pathName+"_vsPU").c_str(),hltCounts_[pathNr].data(),("counts["+std::to_string(kMaxNrPU_+1)+"]/I").c_str());
     tree->Branch((pathName+"_vsPUPostPUFilter").c_str(),hltCountsPostPUFilter_[pathNr].data(),("counts["+std::to_string(kMaxNrPU_+1)+"]/I").c_str());    
   }
+  std::cout <<"doign datasets "<<std::endl;
+
+  for(size_t datasetNr=0;datasetNr<datasets_.size();datasetNr++){
+    std::cout <<"dataset "<<datasetNr<<std::endl;
+    const auto& datasetName = datasets_[datasetNr].first;
+    
+    nrPassDataset[datasetNr]= std::accumulate(datasetCounts_[datasetNr].begin(),datasetCounts_[datasetNr].end(),0);
+    nrPassDatasetPostPUFilter[datasetNr] = std::accumulate(datasetCountsPostPUFilter_[datasetNr].begin(),datasetCountsPostPUFilter_[datasetNr].end(),0);
+
+    tree->Branch((datasetName+"_pass").c_str(),&nrPassDataset[datasetNr],"nrPass/I");
+    tree->Branch((datasetName+"_passPostPUFilter").c_str(),&nrPassDatasetPostPUFilter[datasetNr],"nrPass/I");
+    tree->Branch((datasetName+"_vsPU").c_str(),datasetCounts_[datasetNr].data(),("counts["+std::to_string(kMaxNrPU_+1)+"]/I").c_str());
+    tree->Branch((datasetName+"_vsPUPostPUFilter").c_str(),datasetCountsPostPUFilter_[datasetNr].data(),("counts["+std::to_string(kMaxNrPU_+1)+"]/I").c_str());    
+  }
+  std::cout <<"end "<<std::endl;
+
   tree->Fill();
   
 }
