@@ -137,7 +137,7 @@ void TrigResultTreeMakerV2::beginRun(const edm::Run& run,const edm::EventSetup& 
     tree_->Branch("hltPhysicsPS",&hltPhysicsPS_,"hltPhysicsPS/I");
     
     file->WriteObject(&pathNames_,"trigPathNames");
-    file->WriteObject(&pathNames_,"trigPathNamesP5");
+    file->WriteObject(&pathNamesP5_,"trigPathNamesP5");
   }
   
 }

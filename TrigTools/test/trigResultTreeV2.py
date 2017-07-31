@@ -16,7 +16,7 @@ if isCrabJob:
 else:
     import sys
     from SHarper.SHNtupliser.addInputFiles import addInputFiles
-    addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
+    addInputFiles(process.source,sys.argv[2:len(sys.argv)-2])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
 
@@ -55,7 +55,8 @@ process.load("Configuration.StandardSequences.Services_cff")
 process.trigRateTree = cms.EDAnalyzer("TrigResultTreeMakerV2",
                                       trigResultsTag=cms.InputTag("TriggerResults","","HLTX"),
                                       trigResultsP5Tag=cms.InputTag("TriggerResults","","HLT"),
-                                      refTrigger=cms.string("HLT_Physics_v6")
+#                                      refTrigger=cms.string("HLT_Physics_part0_v7")
+                                      refTrigger=cms.string(sys.argv[len(sys.argv)-2])
                                       )
 
 process.TFileService = cms.Service("TFileService",
