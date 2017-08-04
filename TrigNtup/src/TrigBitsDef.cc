@@ -123,8 +123,8 @@ void TrigBitsDef::setTrigNamesRun2016()
 {
 
   trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v");
-  trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v");
+  trigPathNames_.push_back("HLT_DoublePhoton33_CaloIdL_v");
+  trigPathNames_.push_back("HLT_DiEle27_WPTightCaloOnly_L1DoubleEG_v");
   trigPathNames_.push_back("HLT_DoubleEle33_CaloIdL_MW_v");
   trigPathNames_.push_back("HLT_DoubleEle5_CaloIdL_MW_v");
   trigPathNames_.push_back("HLT_DoublePhoton70_v");
@@ -186,9 +186,6 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigFilterNames_[26]="hltEle115CaloIdVTPixelMatchFilter";
   trigFilterNames_[27]="hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter";
   
-
-    
-  
   trigFilterNames_[0+1*32]="hltEG30HEFilter";
   trigFilterNames_[1+1*32]="hltEG36HEFilter";
   trigFilterNames_[2+1*32]="hltEG50HEFilter";
@@ -199,6 +196,14 @@ void TrigBitsDef::setTrigNamesRun2016()
   trigFilterNames_[7+1*32]="hltEG300erEtFilter";
   trigFilterNames_[8+1*32]="hltEG85HEFilter";
   trigFilterNames_[9+1*32]="hltDiEG85HEUnseededFilter";
+
+  trigFilterNames_[10+1*32]="hltEG5EtUnseededFilter";
+  trigFilterNames_[11+1*32]="hltEG5HEUnseededFilter";
+  trigFilterNames_[12+1*32]="hltEG5CaloIdLClusterShapeUnseededFilter";
+  trigFilterNames_[13+1*32]="hltEle5CaloIdLPixelMatchUnseededFilter";
+  trigFilterNames_[14+1*32]="hltEle5CaloIdLMWPMS2UnseededFilter";
+
+
 
   trigFilterNames_[0+2*32]="hltEGL1SingleEGOrFilter";
   trigFilterNames_[1+2*32]="hltEle27WPTightClusterShapeFilter";
