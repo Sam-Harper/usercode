@@ -1,0 +1,22 @@
+/DoubleEG/Run2017B-PromptReco-v1/MINIAOD & 297046 & 297474 & 40 
+/SinglePhoton/Run2017B-PromptReco-v1/MINIAOD & 297046 & 297474 & 40 
+/DoubleEG/Run2017B-PromptReco-v1/AOD & 297046 & 297474 & 40 
+/SinglePhoton/Run2017B-PromptReco-v1/AOD & 297046 & 297474 & 40 
+/DoubleEG/Run2017B-v1/RAW & 297483 & 297563 & 200 
+
+
+
+/SingleElectron/Run2017B-PromptReco-v1/AOD & 297046 & 297723 & 160
+/DoubleEG/Run2017B-PromptReco-v1/AOD & 297483  & 297723 & 160 
+/SinglePhoton/Run2017B-PromptReco-v1/AOD & 297483 & 297723 &  160 
+
+
+
+/SingleElectron/Run2017B-PromptReco-v2/AOD & 298996 & 299329 & 160  & do
+/DoubleEG/Run2017B-PromptReco-v2/AOD & 298996 & 299329 & 160 & do
+
+/SingleElectron/Run2017C-PromptReco-v1/AOD & 299368  & 299420 & 160 & do
+/DoubleEG/Run2017C-PromptReco-v1/AOD & 299368 & 299420 & 40 & do2
+
+
+/DoubleEG/Run2017C-PromptReco-v1/AOD & 299480 & 299480 & 5 & do
