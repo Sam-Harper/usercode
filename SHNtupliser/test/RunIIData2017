@@ -22,4 +22,9 @@
 /DoubleEG/Run2017C-PromptReco-v1/AOD & 299480 & 299480 & 5 & do
 
 
-/SingleElectron/Run2017D-PromptReco-v1/MINIAOD & 302030 & 302663 & 10
+
+/SingleElectron/Run2017D-PromptReco-v1/MINIAOD & 302030 & 302663 & 100
+
+/DoubleEG/Run2017C-PromptReco-v1/AOD & 299368 & 299649 & 80 & 
+/SingleElectron/Run2017C-PromptReco-v1/AOD & 299443  & 299649 & 80 & do
+
