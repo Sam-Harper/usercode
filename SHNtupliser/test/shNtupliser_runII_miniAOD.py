@@ -20,7 +20,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=100
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -57,6 +57,7 @@ else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '92X_dataRun2_Prompt_v9', '')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -84,8 +85,8 @@ process.shNtupliser.addIsolTrks = True
 process.shNtupliser.addPFCands = True
 process.shNtupliser.addPFClusters = True
 process.shNtupliser.addTrigSum = True
-if not isMC:
-    process.shNtupliser.addGainSwitchInfo = True
+
+process.shNtupliser.addGainSwitchInfo = False
 
 process.shNtupliser.minEtToPromoteSC = 20
 process.shNtupliser.fillFromGsfEle = True
@@ -104,9 +105,9 @@ if useMiniAOD:
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-if not isMC:
-    process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
-    process.shNtupliser.metTag = cms.InputTag("slimmedMETsMuEGClean")
+#if not isMC:
+#    process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
+#    process.shNtupliser.metTag = cms.InputTag("slimmedMETsMuEGClean")
 
 
 #if 1, its a crab job...
@@ -136,7 +137,8 @@ if datasetName=="DoubleEG":
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle37*","HLT_DoublePhoton60_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*")
 elif datasetName=="SingleElectron":
     print "setting up HLT skim for SingleElectron"
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele105_CaloIdVT_GsfTrkIdT_v*","HLT_Ele115_CaloIdVT_GsfTrkIdT_v*","HLT_Ele27_WPLoose_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPTight_Gsf_v*","HLT_Ele32_eta2p1_WPTight_Gsf_v*","HLT_Ele35_WPLoose_Gsf_v*")
+    #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele105_CaloIdVT_GsfTrkIdT_v*","HLT_Ele115_CaloIdVT_GsfTrkIdT_v*","HLT_Ele27_WPLoose_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPTight_Gsf_v*","HLT_Ele32_eta2p1_WPTight_Gsf_v*","HLT_Ele35_WPLoose_Gsf_v*","HLT_Ele32_WPTight_Gsf_v*)
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 elif datasetName=="SinglePhoton":
     print "setting up HLT skim for SinglePhoton"
     process.skimHLTFilter.HLTPaths =cms.vstring("HLT_Photon22_v*","HLT_Photon30_v*","HLT_Photon36_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon165_HE10_v*","HLT_Photon175_v*","HLT_Photon250_NoHE_v*","HLT_Photon300_NoHE_v*")
@@ -198,7 +200,8 @@ process.p = cms.Path(#process.primaryVertexFilter*
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-if not isMC:
+if not isMC and False:
+    print "overriding"
     from CondCore.DBCommon.CondDBSetup_cfi import *
     process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
                                   connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),

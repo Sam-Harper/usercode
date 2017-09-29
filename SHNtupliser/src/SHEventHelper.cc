@@ -556,7 +556,7 @@ void SHEventHelper::addIsolTrksFromCands_(const std::vector<pat::PackedCandidate
     if(rejectEles && absPdgId==11) continue;
     //ensure its a charged object
     //in theory charge()!=0 should work
-    if(cand.charge()!=0){
+    if(cand.charge()!=0 && cand.hasTrackDetails()){
       if(!(absPdgId==11 || absPdgId==13 || absPdgId==15 || absPdgId==211) ) std::cout <<"pid "<<cand.pdgId()<<" charged but not usual ones"<<std::endl;
       const reco::Track& trk = cand.pseudoTrack();
       if(!branches_.filterIsolTrks || 

@@ -31,7 +31,12 @@ void SHTrigSumMaker::makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& s
     if(heepEvent.handles().trigEvent.isValid()){
       fillSHTrigObjs_(heepEvent.triggerEvent(),shTrigSum);
     }else if(heepEvent.handles().patTrigObjs.isValid()){
-      fillSHTrigObjs_(*heepEvent.handles().patTrigObjs,shTrigSum);
+      std::vector<pat::TriggerObjectStandAlone> unpackedObjs;
+      for(auto& trigObj : *heepEvent.handles().patTrigObjs){
+	unpackedObjs.push_back(trigObj);
+	unpackedObjs.back().unpackFilterLabels(heepEvent.event(),trigResults);
+      }
+      fillSHTrigObjs_(unpackedObjs,shTrigSum);
     }
     shTrigSum.sort();
   }
