@@ -23,6 +23,7 @@ shNtupPara = cms.PSet(
     addHLTDebug = cms.bool(False),
     addMCParts = cms.bool(True),
     addGainSwitchInfo = cms.bool(False),
+    addJetMETExtra= cms.bool(False),
     filterIsolTrks=cms.bool(True),
     filterEcalHits=cms.bool(True),
     filterHcalHits=cms.bool(True),

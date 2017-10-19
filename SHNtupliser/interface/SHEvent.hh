@@ -27,6 +27,7 @@
 #include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
 #include "SHarper/SHNtupliser/interface/SHRecHitsToClustersMap.hh"
 #include "SHarper/SHNtupliser/interface/SHGainSwitchInfo.hh"
+#include "SHarper/SHNtupliser/interface/SHJetMETExtra.hh"
 #include "TObject.h"
 #include "TClonesArray.h"
 #include "TBits.h"
@@ -114,6 +115,8 @@ class SHEvent : public TObject {
   SHPileUpSummary puSum_;//! stored on a seperate branch 
   SHRecHitsToClustersMap recHitClusMap_;//! stored on a seperate branch 
   SHGainSwitchInfo gainSwitchInfo_;//! stored on a seperate branch 
+  SHJetMETExtra jetMETExtra_;//! stored on a seperate branch
+
 
   SHEvent(const SHEvent &rhs):TObject(rhs){}//disabling copying for now
   SHEvent& operator=(const SHEvent&){return *this;}//disabling assignment
@@ -254,6 +257,9 @@ class SHEvent : public TObject {
   SHTrigSummary& getTrigSum(){return trigSum_;}
   const SHPileUpSummary& getPUSum()const{return puSum_;}
   SHPileUpSummary& getPUSum(){return puSum_;}
+  const SHJetMETExtra& getJetMETExtra()const{return jetMETExtra_;}
+  SHJetMETExtra& getJetMETExtra(){return jetMETExtra_;}
+
   TClonesArray& getIsolTrks(){return isolTrkArray_;} //needed for SHEventReader to know where this is memory wise
   SHGainSwitchInfo& getGSInfo(){return gainSwitchInfo_;} 
   const SHGainSwitchInfo& getGSInfo()const{return gainSwitchInfo_;} 

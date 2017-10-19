@@ -20,6 +20,7 @@ void SHEventTreeData::BranchData::setup(const edm::ParameterSet& iPara)
   addHLTDebug=iPara.getParameter<bool>("addHLTDebug");
   addMCParts=iPara.getParameter<bool>("addMCParts");
   addGainSwitchInfo=iPara.getParameter<bool>("addGainSwitchInfo");
+  addJetMETExtra=iPara.getParameter<bool>("addJetMETExtra");
   filterIsolTrks=iPara.getParameter<bool>("filterIsolTrks");
   filterEcalHits=iPara.getParameter<bool>("filterEcalHits");
   filterHcalHits=iPara.getParameter<bool>("filterHcalHits");
@@ -39,7 +40,8 @@ SHEventTreeData::SHEventTreeData(SHEvent* & event):
   shPreShowerClusters_(nullptr),
   shGenInfo_(nullptr), 
   shTrigSum_(nullptr),
-  shGSInfo_(nullptr)
+  shGSInfo_(nullptr),
+  shJetMETExtra_(nullptr)
 {
   if(event_) setMemLocs();
 
@@ -57,6 +59,7 @@ void SHEventTreeData::setMemLocs()
   shGenInfo_ = &(event_->getGenInfo()); 
   shTrigSum_ = &(event_->getTrigSum());
   shGSInfo_ = &(event_->getGSInfo());
+  shJetMETExtra_ = &(event_->getJetMETExtra());
 }
 
 void SHEventTreeData::makeTree(const std::string& name)
@@ -78,6 +81,7 @@ void SHEventTreeData::makeTree(const std::string& name)
   if(branches_.addPUInfo) tree_->Branch("PUInfoBranch","SHPileUpSummary",&shPUSum_,32000,splitLevel);
   if(branches_.addTrigSum) tree_->Branch("TrigSummaryBranch","SHTrigSummary",&shTrigSum_,32000,splitLevel);
   if(branches_.addGainSwitchInfo) tree_->Branch("GainSwitchInfoBranch","SHGainSwitchInfo",&shGSInfo_,32000,splitLevel);
+  if(branches_.addJetMETExtra) tree_->Branch("JetMETExtraBranch","SHJetMETExtra",&shJetMETExtra_,32000,splitLevel);
 }
 
 void SHEventTreeData::fill()

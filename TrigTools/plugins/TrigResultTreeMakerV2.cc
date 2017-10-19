@@ -56,6 +56,8 @@ private:
   trigtools::EvtInfoStruct evtInfo_;
   std::vector<unsigned int> trigBits_;
   std::vector<unsigned int> trigBitsP5_;
+  std::vector<int> trigWeights_;
+  std::vector<int> trigWeightsP5_;
   int psColumn_;
   int hltPhysicsPS_;
   std::string refTrigger_;
@@ -113,42 +115,61 @@ void TrigResultTreeMakerV2::beginRun(const edm::Run& run,const edm::EventSetup& 
   if(pathNames_.empty()){ //initialising hlt paths names
     pathNames_ = hltConfig_->hltConfigProvider().triggerNames();
     pathNamesP5_ = hltConfigP5_->hltConfigProvider().triggerNames();
-    
+    trigWeights_.resize(pathNames_.size(),0);
+    trigWeightsP5_.resize(pathNamesP5_.size(),0);
     edm::Service<TFileService> fs;
     TFile* file = &fs->file();
     file->cd();
     
-    size_t nrInts = pathNames_.size()/kWordSize;
+    size_t nrInts = pathNames_.size()/kWordSize+1;
     trigBits_.resize(nrInts,0);
 
-    size_t nrIntsP5 = pathNamesP5_.size()/kWordSize;
+    size_t nrIntsP5 = pathNamesP5_.size()/kWordSize+1;
     trigBitsP5_.resize(nrIntsP5,0);
     
     tree_=new TTree("trigResultTree","tree");
     tree_->Branch("evtInfo",&evtInfo_,trigtools::EvtInfoStruct::contents().c_str());
-    tree_->Branch("trigBits",&trigBits_[0],("trigBits["+std::to_string(trigBits_.size())+"]/i").c_str());
+    tree_->Branch("trigBits",&trigBits_[0],("trigBits["+std::to_string(trigBits_.size())+"]/i").c_str()); 
     tree_->Branch("trigBitsP5",&trigBitsP5_[0],("trigBitsP5["+std::to_string(trigBitsP5_.size())+"]/i").c_str());
+    tree_->Branch("trigWeights",&trigWeights_[0],("trigWeights["+std::to_string(trigWeights_.size())+"]/I").c_str()); 
+    tree_->Branch("trigWeightsP5",&trigWeightsP5_[0],("trigWeightsP5["+std::to_string(trigWeightsP5_.size())+"]/I").c_str());
     tree_->Branch("psColumn",&psColumn_,"psColumn/I");
     tree_->Branch("hltPhysicsPS",&hltPhysicsPS_,"hltPhysicsPS/I");
     
     file->WriteObject(&pathNames_,"trigPathNames");
-    file->WriteObject(&pathNames_,"trigPathNamesP5");
+    file->WriteObject(&pathNamesP5_,"trigPathNamesP5");
   }
   
 }
 namespace {
-  void fillTrigInfo(const std::vector<std::string>& pathNames,const edm::TriggerNames& trigNames,const edm::TriggerResults& trigResults,std::vector<unsigned int>& trigBits,const unsigned int wordSize)
+  void fillTrigInfo(const std::vector<std::string>& pathNames,const edm::TriggerNames& trigNames,
+		    const edm::TriggerResults& trigResults,const HLTConfigProvider& hltConfig,int psColumn,
+		    std::vector<unsigned int>& trigBits,std::vector<int>& trigWeights,const unsigned int wordSize)
   {
+    std::vector<unsigned int> defaultPSes(hltConfig.prescaleSize(),1);
     std::fill(trigBits.begin(),trigBits.end(),0);
+    std::fill(trigWeights.begin(),trigWeights.end(),0);
     for(size_t pathNr=0;pathNr<pathNames.size();pathNr++){
       size_t pathIndex = trigNames.triggerIndex(pathNames[pathNr]);
       if(pathIndex<trigResults.size() &&  trigResults.accept(pathIndex)){
+	
+	auto psTblEntry = hltConfig.prescaleTable().find(pathNames[pathNr]);
+	const std::vector<unsigned int>& preScales = psTblEntry!=hltConfig.prescaleTable().end() ? 
+	  psTblEntry->second : defaultPSes;
+	int preScale=1;
+	if(static_cast<size_t>(psColumn)<preScales.size()) preScale = preScales[psColumn];
+	//	else std::cout <<"for path "<<pathNames[pathNr]<<" column "<<psColumn<<" higher than number of ps columns "<<preScales.size();
+	if(pathNr<trigWeights.size()) trigWeights[pathNr]=preScale;
+	else std::cout <<"trigWeights size "<<trigWeights.size()<<" is incorrect, has pathNr "<<pathNr<<std::endl;
+	  
+
 	auto wordAndBitNr = getWordAndBitNr(pathNr,wordSize);
 	if(wordAndBitNr.first<trigBits.size()){
 	  unsigned int bit = 0x1 << wordAndBitNr.second;
 	  trigBits[wordAndBitNr.first] |= bit;
-	}else{
-	  std::cout <<"Warning word number is "<<wordAndBitNr.first<<" while trigBits has "<<trigBits.size()<<" words "<<std::endl;
+	}else{ 
+	  std::cout <<"for path "<<pathNr<<" "<<pathNames[pathNr]<<" Warning word number is "<<wordAndBitNr.first<<" while trigBits has "<<trigBits.size()<<" words "<<std::endl;
+	  
 	}
       }
     }
@@ -170,10 +191,11 @@ void TrigResultTreeMakerV2::analyze(const edm::Event& iEvent, const edm::EventSe
   
   evtInfo_.fill(iEvent);
 
-  psColumn_= hltConfigP5_->prescaleSet(iEvent,iSetup);
-  hltPhysicsPS_ = hltConfigP5_->prescaleValues(iEvent,iSetup,refTrigger_).second;
-  fillTrigInfo(pathNames_,trigNames,trigResults,trigBits_,kWordSize);
-  fillTrigInfo(pathNamesP5_,trigNamesP5,trigResultsP5,trigBitsP5_,kWordSize);
+  psColumn_= 5;//hltConfigP5_->prescaleSet(iEvent,iSetup);
+  hltPhysicsPS_ =75;// = hltConfigP5_->prescaleValues(iEvent,iSetup,refTrigger_).second;
+
+  fillTrigInfo(pathNames_,trigNames,trigResults,hltConfig_->hltConfigProvider(),psColumn_,trigBits_,trigWeights_,kWordSize);
+  fillTrigInfo(pathNamesP5_,trigNamesP5,trigResultsP5,hltConfigP5_->hltConfigProvider(),psColumn_,trigBitsP5_,trigWeightsP5_,kWordSize);
 
   tree_->Fill();
  

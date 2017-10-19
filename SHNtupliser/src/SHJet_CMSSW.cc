@@ -19,6 +19,7 @@ SHJet::SHJet(const pat::Jet & jet):
   hadronFlavour_(convertFlavour(jet.hadronFlavour()))
 {
   // std::cout <<"jet energy "<<jet.energy()<<" jet corr energy "<<jet.correctedP4(3).E()<<" uncorr "<<unCorrNrgy_<<std::endl;
+  //if(jet.chargedEmEnergyFraction()>0) std::cout <<"jet test reco "<<jet.chargedEmEnergyFraction()<<" ntup : "<<chargedEmNrgy_/(nrgy_*invNrgyCorr_)<<" corr "<<1./invNrgyCorr_<<std::endl;
 }
 
 

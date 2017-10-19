@@ -251,6 +251,8 @@ public:
   static void boost_replace_all(std::string& orgString,const std::string& pattern,const std::string& subTxt);
 
   static std::string convertToTTreeStr(int val); //for -ve vals, string is M instead 
+  static std::string convertToTTreeStr(float val); //for -ve vals, string is M instead and . replaced by p
+  static std::string convertToTTreeStr(double val); //for -ve vals, string is M instead and . replaced by p
   static std::string convertToStr(int val){std::ostringstream retVal;retVal<<val;return retVal.str();}
   static std::string getenv(const std::string& var){
     auto val = std::getenv(var.c_str()); return val ? std::string(val) : std::string();

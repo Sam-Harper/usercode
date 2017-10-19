@@ -137,21 +137,6 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
   for(size_t candNr=0;candNr<pfCands->size();candNr++){ 
     const reco::PFCandidateRef pfCandRef(pfCands,candNr);
     const reco::PFCandidate& pfParticle = *pfCandRef;
-    
-    // const reco::PFCandidate& pfCand =*pfCandRef;
-    // if(pfCand.particleId()==reco::PFCandidate::h){
-    //   if(std::abs(pfCand.pt()-pfCand.trackRef()->pt())>0.0001){
-    // 	std::cout <<"  bad match "<<"  pt "<<pfCand.pt()<<" "<<pfCand.eta()<<" "<<pfCand.phi()<<" track: "<<pfCand.trackRef()->pt()<<" "<<pfCand.trackRef()->eta()<<" "<<pfCand.trackRef()->phi()<<" track qual "<<pfCand.trackRef()->quality(reco::TrackBase::highPurity)<<" err "<<pfCand.trackRef()->ptError()/pfCand.trackRef()->pt()<<" E: "<<pfCand.ecalEnergy()<<" H: "<<pfCand.hcalEnergy()<<std::endl;
-    // 	//	std::cout <<"      "<<pfCand<<std::endl;
-    //   }
-    //   else if(pfCand.trackRef()->ptError()/pfCand.trackRef()->pt()>0.1){
-    // 	std::cout <<"  good match "<<"  pt "<<pfCand.pt()<<" "<<pfCand.eta()<<" "<<pfCand.phi()<<" track: "<<pfCand.trackRef()->pt()<<" "<<pfCand.trackRef()->eta()<<" "<<pfCand.trackRef()->phi()<<" track qual "<<pfCand.trackRef()->quality(reco::TrackBase::highPurity)<<" err "<<pfCand.trackRef()->ptError()/pfCand.trackRef()->pt()<<" E: "<<pfCand.ecalEnergy()<<" H: "<<pfCand.hcalEnergy()<<std::endl;
-    // 	//	std::cout <<"      "<<pfCand<<std::endl;
-    //   }
-    // }
-      
-   
-    
 
     int scSeedCrysId=getSeedCrysIdOfPFCandSC(pfCandRef,gsfToPFMapToUse,eleHandle);
     bool accept =false;
@@ -163,20 +148,22 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
       }
     }//end ele loop
   
-   
+    accept=true;
     if(accept){
       if(isPhoton(pfCandRef)){
-       	shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+       	shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId,pfParticle.pdgId());
       }else if(isNeutralHadron(pfCandRef)){
-	shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+	shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId,pfParticle.pdgId());
       }else if(isChargedHadron(pfCandRef)){
 	int pfCandVtx= chargedHadronVertex(pfParticle,*vertices.product());
 	if(pfCandVtx==-1 || pfCandVtx==0){
 	
-	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId);
+	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId,pfParticle.pdgId());
 	  //shPFCand.setVertex(0,0,0);
 	  shPFCand.setVertex(pfParticle.vx(),pfParticle.vy(),pfParticle.vz());
 	}
+      }else{
+	std::cout <<"PFCandidate not added "<<pfParticle.pdgId()<<" "<<pfParticle.particleId()<<std::endl;
       }
     }	 
   }
@@ -185,7 +172,7 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 bool PFFuncs::isPhoton(const reco::PFCandidateRef& pfCand)
 {
   const int pfParticleIDAbs=std::abs(pfCand->pdgId()); 
-  if(pfParticleIDAbs==22) return true;
+  if(pfParticleIDAbs==22 || pfParticleIDAbs==11 || pfParticleIDAbs==15 || pfParticleIDAbs==13) return true;
   else return false;
 }
 
@@ -195,7 +182,10 @@ bool PFFuncs::isNeutralHadron(const reco::PFCandidateRef& pfCand)
   if(pfParticleIDAbs==130 ||
      pfParticleIDAbs==111 ||
      pfParticleIDAbs==310 ||
-     pfParticleIDAbs==2112) return true;
+     pfParticleIDAbs==2112 || 
+     pfParticleIDAbs == 1 || 
+     pfParticleIDAbs == 2
+     ) return true;
   else return false;
 }
 
@@ -205,7 +195,8 @@ bool PFFuncs::isChargedHadron(const reco::PFCandidateRef& pfCand)
   if(pfParticleIDAbs == 211 ||
      pfParticleIDAbs == 321 ||
      pfParticleIDAbs == 999211 ||
-     pfParticleIDAbs == 2212) return true;
+     pfParticleIDAbs == 2212 
+     ) return true;
   else return false;
 }
 

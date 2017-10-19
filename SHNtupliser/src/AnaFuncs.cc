@@ -843,3 +843,29 @@ std::string AnaFuncs::convertToTTreeStr(int val) //for -ve vals, string is M ins
   return valStr.str();
 }
 
+
+std::string AnaFuncs::convertToTTreeStr(float val) //for -ve vals, string is M instead so -28 is M28
+{
+  std::ostringstream valOStr;
+  valOStr<<val;
+  std::string valStr = valOStr.str();
+  auto decPoint = valStr.find(".");
+  if(decPoint!=std::string::npos){
+    valStr.replace(decPoint,1,"p");
+  }
+  if(val<0) valStr.replace(0,1,"M");
+  return valStr;
+}
+
+std::string AnaFuncs::convertToTTreeStr(double val) //for -ve vals, string is M instead so -28 is M28
+{
+  std::ostringstream valOStr;
+  valOStr<<val;
+  std::string valStr = valOStr.str();
+  auto decPoint = valStr.find(".");
+  if(decPoint!=std::string::npos){
+    valStr.replace(decPoint,1,"p");
+  }
+  if(val<0) valStr.replace(0,1,"M");
+  return valStr;
+}

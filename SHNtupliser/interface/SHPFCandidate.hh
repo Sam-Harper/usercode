@@ -52,6 +52,9 @@ public:
 
   void setVertex(float x,float y,float z){vx_=x;vy_=y;vz_=z;}
 
+  std::ostream& print(std::ostream& out)const;
+  friend std::ostream& operator<<(std::ostream& out,const SHPFCandidate& cand){return cand.print(out);}
+
   ClassDef(SHPFCandidate,4)
 };
 

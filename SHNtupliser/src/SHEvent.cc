@@ -109,6 +109,7 @@ void SHEvent::clear()
   pfCands_.clear();
   pfClusters_.clear();
   recHitClusMap_.clear();
+  jetMETExtra_.clear();
 }
 SHEvent::~SHEvent()
 {

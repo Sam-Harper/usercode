@@ -58,7 +58,8 @@ class SHElectron : public TObject {
   float phoNrgy_; //not set by the electron
   float altNrgy_; //not set by the electron
   float altNrgyErr_; //not set by the electron
-  float altEPCombNrgy_; //not set by the electron
+  float altEPCombNrgy_; 
+  float altPhoNrgy_; //not set by the electron
   TVector3 posCal_;
   float e5x5_; 
   float eta_;
@@ -203,8 +204,8 @@ private:
   // void setPassPFlowPreSel(bool pass){passPFlowPreSel_=pass;}
   // void setPassMVAPreSel(bool pass){passMVAPreSel_=pass;}
   void setTrkIsol(float isolPt03,float isolPt04,float isolNrTrks){isolPtTrks_=isolPt03;isolPtTrksDR04_=isolPt04;isolNrTrks_=isolNrTrks;}
-  void setNrgyExtra(float iAltNrgy,float iAltNrgyErr,float iAltEPCombNrgy,float iPhoNrgy){
-    altNrgy_=iAltNrgy;altNrgyErr_=iAltNrgyErr;altEPCombNrgy_=iAltEPCombNrgy;phoNrgy_=iPhoNrgy;
+  void setNrgyExtra(float iAltNrgy,float iAltNrgyErr,float iAltEPCombNrgy,float iPhoNrgy,float iAltPhoNrgy){
+    altNrgy_=iAltNrgy;altNrgyErr_=iAltNrgyErr;altEPCombNrgy_=iAltEPCombNrgy;phoNrgy_=iPhoNrgy;altPhoNrgy_=iAltPhoNrgy;
   }
 
   //get the seed + super clusters
@@ -239,6 +240,7 @@ private:
   float altNrgy()const{return altNrgy_;}
   float altNrgyErr()const{return altNrgyErr_;}
   float altEPCombNrgy()const{return altEPCombNrgy_;}
+  float altPhoNrgy()const{return altPhoNrgy_;}
   
   float et()const;
   float clusEt()const{return posCal().Pt()/posCal().Mag()*clusNrgy();}
@@ -364,7 +366,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,27) 
+  ClassDef(SHElectron,28) 
 
 };
 

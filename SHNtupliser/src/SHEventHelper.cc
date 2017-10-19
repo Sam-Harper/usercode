@@ -90,7 +90,7 @@ void SHEventHelper::makeSHEvent(const heep::Event & heepEvent, SHEvent& shEvent)
   if(branches_.addCaloHits) addEcalWeightsHits(heepEvent,shEvent);
   if(branches_.addCaloTowers) addCaloTowers(heepEvent,shEvent);
   if(branches_.addGainSwitchInfo) addGSFixInfo(heepEvent,shEvent);
-
+  if(branches_.addJetMETExtra) addJetMETExtra(heepEvent,shEvent);
 
 }
 
@@ -183,9 +183,11 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   fillRecHitClusterMap(*gsfEle->superCluster(),shEvent);
   const reco::Photon* phoMatch = getPhoMatch_(gsfEle,heepEvent);
   const reco::GsfElectron* oldEleMatch = getOldEleMatch_(gsfEle,heepEvent);
+  const reco::Photon* oldPhoMatch = getOldPhoMatch_(gsfEle,heepEvent);
   const float phoNrgy = phoMatch ? phoMatch->energy() : 0.;
-  if(oldEleMatch) shEle->setNrgyExtra(oldEleMatch->ecalEnergy(),oldEleMatch->ecalEnergyError(),oldEleMatch->energy(),phoNrgy);//oldEleMatch->superCluster()->energy());
-  else shEle->setNrgyExtra(0.,0.,0.,phoNrgy);
+  const float phoNrgyAlt = oldPhoMatch ? oldPhoMatch->energy() : 0.;  
+  if(oldEleMatch) shEle->setNrgyExtra(oldEleMatch->ecalEnergy(),oldEleMatch->ecalEnergyError(),oldEleMatch->energy(),phoNrgy,phoNrgyAlt);//oldEleMatch->superCluster()->energy());
+  else shEle->setNrgyExtra(0.,0.,0.,phoNrgy,phoNrgyAlt);
 		    
   //MultiTrajectoryStateTransform trajStateTransform(heepEvent.handles().trackGeom.product(),heepEvent.handles().bField.product());
  
@@ -221,6 +223,9 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
 {
   shEvent.addElectron(photon);  
   SHElectron* shEle = shEvent.getElectron(shEvent.nrElectrons()-1);   
+  const reco::Photon* oldPhoMatch = getOldPhoMatch_(photon,heepEvent);
+  const float phoNrgyAlt = oldPhoMatch ? oldPhoMatch->energy() : 0.;
+  shEle->setNrgyExtra(0.,0.,0.,photon.energy(),phoNrgyAlt);
   setNrSatCrysIn5x5_(heepEvent,*shEle);
   fillRecHitClusterMap(*photon.superCluster(),shEvent);
 }
@@ -484,6 +489,55 @@ void SHEventHelper::addGSFixInfo(const heep::Event& heepEvent,SHEvent& shEvent)c
     gsInfo.setMETJustEGFix(met.et(),met.phi());
   }
     
+}
+
+void SHEventHelper::addJetMETExtra(const heep::Event& heepEvent,SHEvent& shEvent)const
+{
+  auto handles = heepEvent.handles();
+  //  std::cout <<"adding jetMETExtra "<< handles.extraJets.size()<<std::endl;
+  auto getCollName=[](const edm::Provenance* prov){
+    if(prov){
+      if(prov->productInstanceName().empty()) return prov->moduleLabel()+"__"+prov->processName();
+      else return prov->moduleLabel()+"__"+prov->productInstanceName()+"__"+prov->processName();
+    }else return std::string();
+  };
+
+  std::vector<std::vector<SHJet> > shJets;
+  std::vector<std::string> shJetNames;
+  for(const auto& jetColl: handles.extraJets){
+    //std::cout <<"looping over jets"<<std::endl;
+    if(jetColl.isValid()){
+      //std::cout <<"filling jets "<<std::endl;
+      shJets.push_back(std::vector<SHJet>());
+      shJets.reserve(jetColl->size());
+      for(const auto& jet : *jetColl){
+	if(jet.pt()>15) shJets.back().emplace_back(SHJet(jet));
+      }
+      //	std::transform(jetColl->begin(),jetColl->end(),std::back_inserter(shJets.back()),
+      //		     [](const auto& jet){return SHJet(jet);});
+      
+      shJetNames.push_back(getCollName(jetColl.provenance()));
+    }
+  }
+  std::vector<SHMet> shMETs;
+  std::vector<std::string> shMETNames;
+  for(const auto& mets: handles.extraMETs){
+    if(mets.isValid()){
+      if(mets->size()!=1) throw cms::Exception("CorruptData","More than one (or zero) MET in the collection");
+      const auto& met = (*mets)[0];
+      SHMet shMET;
+      shMET.setMet(met.et()*std::cos(met.phi()),
+		   met.et()*std::sin(met.phi()));
+      shMET.setSumEmEt(0,0,0);
+      shMET.setSumHadEt(0,0,0,0);      
+      shMETs.push_back(shMET);
+      shMETNames.push_back(getCollName(mets.provenance()));
+    }
+  }
+  auto& jetMETExtra = shEvent.getJetMETExtra();
+  jetMETExtra.setJets(std::move(shJets),std::move(shJetNames));
+  jetMETExtra.setMETs(std::move(shMETs),std::move(shMETNames));
+
 }
 
   
@@ -967,7 +1021,10 @@ void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const edm::Ptr<rec
 {
   if(heepEvent.handles().eleIsolPtTrksValueMap.isValid()){
     float trkIso = (*heepEvent.handles().eleIsolPtTrksValueMap)[gsfEle];
-    shEle.setTrkIsol(trkIso,-1.,-1);
+    shEle.setTrkIsol(shEle.isolPtTrks(),shEle.isolPtTrksDR04(),trkIso);
+    return;
+  }else{
+    shEle.setTrkIsol(shEle.isolPtTrks(),shEle.isolPtTrksDR04(),-1);
     return;
   }
    
@@ -1197,6 +1254,38 @@ SHEventHelper::getOldEleMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const h
       int dIR2 = calDIR2(ele.superCluster()->seed()->seed(),gsfEle->superCluster()->seed()->seed());
       if(dIR2<=bestDIR2){
 	bestMatch = &ele;
+	bestDIR2 = dIR2;
+      }
+    }
+  }
+  return bestMatch;
+}
+const reco::Photon* 
+SHEventHelper::getOldPhoMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent)
+{
+  const reco::Photon* bestMatch = nullptr;
+  int bestDIR2=gsfEle->isEB() ?  2  : 0; //seed in 3x3 barrel, exact match endcap
+  if(heepEvent.handles().oldPho.isValid()) {
+    for(auto& pho : *heepEvent.handles().oldPho){
+      int dIR2 = calDIR2(pho.superCluster()->seed()->seed(),gsfEle->superCluster()->seed()->seed());
+      if(dIR2<=bestDIR2){
+	bestMatch = &pho;
+	bestDIR2 = dIR2;
+      }
+    }
+  }
+  return bestMatch;
+}
+const reco::Photon* 
+SHEventHelper::getOldPhoMatch_(const reco::Photon& pho,const heep::Event& heepEvent)
+{
+  const reco::Photon* bestMatch = nullptr;
+  int bestDIR2=pho.isEB() ?  2  : 0; //seed in 3x3 barrel, exact match endcap
+  if(heepEvent.handles().oldPho.isValid()) {
+    for(auto& oldPho : *heepEvent.handles().oldPho){
+      int dIR2 = calDIR2(oldPho.superCluster()->seed()->seed(),pho.superCluster()->seed()->seed());
+      if(dIR2<=bestDIR2){
+	bestMatch = &oldPho;
 	bestDIR2 = dIR2;
       }
     }

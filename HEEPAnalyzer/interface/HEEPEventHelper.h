@@ -58,6 +58,7 @@ namespace heep {
     edm::EDGetTokenT<edm::View<reco::GsfElectron> > gsfEleTag_;
     edm::EDGetTokenT<edm::View<reco::GsfElectron> > oldGsfEleTag_;
     edm::EDGetTokenT<edm::View<reco::Photon> > recoPhoTag_;
+    edm::EDGetTokenT<edm::View<reco::Photon> > oldPhoTag_;
     edm::EDGetTokenT<reco::PFCandidateCollection> pfCandidateTag_;
     edm::EDGetTokenT<reco::SuperClusterCollection> superClusterEBTag_;
     edm::EDGetTokenT<reco::SuperClusterCollection> superClusterEETag_; 
@@ -95,7 +96,8 @@ namespace heep {
     edm::EDGetTokenT<EcalRecHitCollection> gsFixOrgReducedEGEBHitsTag_;
     edm::EDGetTokenT<edm::View<pat::MET> > gsFixMETOrgTag_;
     edm::EDGetTokenT<edm::View<pat::MET> > gsFixMETEGCleanTag_;
-    
+    std::vector<edm::EDGetTokenT<edm::View<pat::Jet> > > extraJetTags_;
+    std::vector<edm::EDGetTokenT<edm::View<reco::MET> > > extraMETTags_;
     
     std::shared_ptr<HLTPrescaleProvider> hltPSProvider_;
 
@@ -155,6 +157,23 @@ namespace heep {
 		  edm::ConsumesCollector& cc){
       token=cc.consumes<T>(tag);
     }
+    template<typename T>
+    void getToken_(std::vector<edm::EDGetTokenT<T> >& tokens,const std::vector<edm::InputTag>& tags,
+		  edm::ConsumesCollector& cc){
+      tokens.clear();
+      for(auto& tag : tags){
+	tokens.push_back(cc.consumes<T>(tag));
+      }
+    }
+    template<typename T>
+    static void setHandles(const edm::Event& event,const std::vector<edm::EDGetTokenT<T> >& tokens,
+			   std::vector<edm::Handle<T> >& handles){
+      if(handles.size()!=tokens.size()) handles.resize(tokens.size());
+      for(size_t collNr=0;collNr<tokens.size();collNr++){
+	event.getByToken(tokens[collNr],handles[collNr]);
+      }
+    }
+
   };
 }
 

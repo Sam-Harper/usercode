@@ -107,6 +107,7 @@ public:
   void addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addPFClusters(const heep::Event& heepEvent,SHEvent& shEvent)const;
   void addGSFixInfo(const heep::Event& heepEvent,SHEvent& shEvent)const;
+  void addJetMETExtra(const heep::Event& heepEvent,SHEvent& shEvent)const;
 
   static std::vector<const EcalRecHit*> getGainSwitchedHits(const EcalRecHitCollection& hits);
  
@@ -161,6 +162,8 @@ private:
   
   static const reco::Photon* getPhoMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent);
   static const reco::GsfElectron* getOldEleMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent);
+  static const reco::Photon* getOldPhoMatch_(const edm::Ptr<reco::GsfElectron>& gsfEle,const heep::Event& heepEvent);
+  static const reco::Photon* getOldPhoMatch_(const reco::Photon& pho,const heep::Event& heepEvent);
   template<typename T>
   static bool hasGSIn5x5_(edm::Handle<edm::View<T> > handle,
 			  const EcalRecHitCollection& recHits,const CaloTopology& caloTopo);

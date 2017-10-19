@@ -16,7 +16,7 @@
 
 #include "TTree.h"
 #include <iostream>
-
+#include <numeric>
 class TrigRateTree : public edm::EDAnalyzer {
   edm::EDGetTokenT<edm::MergeableCounter> nrEventsRunToken_;
   edm::EDGetTokenT<edm::MergeableCounter> nrEventsRunPostPUFilterToken_;

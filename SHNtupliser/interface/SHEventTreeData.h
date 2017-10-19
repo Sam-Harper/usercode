@@ -29,6 +29,7 @@ public:
     bool addHLTDebug;    
     bool addMCParts;
     bool addGainSwitchInfo;
+    bool addJetMETExtra;
     bool filterIsolTrks;
     bool filterEcalHits;
     bool filterHcalHits;
@@ -56,6 +57,7 @@ private:
   SHGenInfo* shGenInfo_;//we own this, nah just kidding, we dont
   SHTrigSummary* shTrigSum_; //we do not own this
   SHGainSwitchInfo* shGSInfo_;// we do not own this
+  SHJetMETExtra* shJetMETExtra_;// we do not own this
   TrigMenuMgr trigMenuMgr_;
 
 public:

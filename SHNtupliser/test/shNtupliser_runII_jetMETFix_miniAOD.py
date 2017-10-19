@@ -20,7 +20,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=0
+    datasetCode=100
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -88,7 +88,7 @@ process.shNtupliser.addTrigSum = True
 
 process.shNtupliser.addGainSwitchInfo = False
 
-process.shNtupliser.minEtToPromoteSC = 20
+process.shNtupliser.minEtToPromoteSC = 10
 process.shNtupliser.fillFromGsfEle = True
 process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
@@ -97,8 +97,16 @@ process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-process.shNtupliser.oldGsfEleTag = cms.InputTag("gedGsfElectronsReg")
-disableLargeCollections=False
+
+if useMiniAOD:
+    from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
+    swapHEEPToMiniAOD(process.shNtupliser)
+process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsReg")
+process.shNtupliser.oldPhoTag = cms.InputTag("slimmedPhotonsReg")
+process.shNtupliser.gsfEleTag = cms.InputTag("slimmedElectrons",processName=cms.InputTag.skipCurrentProcess())
+process.shNtupliser.recoPhoTag = cms.InputTag("slimmedPhotons",processName=cms.InputTag.skipCurrentProcess())
+
+disableLargeCollections=True
 if disableLargeCollections:
     print "*******************************************"
     print "*******disabling large collections*********"
@@ -108,9 +116,6 @@ if disableLargeCollections:
     process.shNtupliser.addIsolTrks = False
 
 
-if useMiniAOD:
-    from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
-    swapHEEPToMiniAOD(process.shNtupliser)
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -205,120 +210,37 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 
-process.load('SHarper.SHNtupliser.regressionApplicationMiniAOD_cff')
+process.load('SHarper.SHNtupliser.regressionApplicationMiniAOD_newNames_cff')
+from SHarper.SHNtupliser.egJetMETTests_cfi import customiseEGJetMET
+process.jetMETSeqOrg = customiseEGJetMET(process,'Org',correctEles=False,correctPhos=False,
+                                         useSCEnergy=False,scEnergyEtThres=0.)
 
-process.packedPFCandidates = cms.EDProducer("EGPackedPFCandCorrector",
-                                     eles = cms.InputTag("slimmedElectrons2"),
-                                     srcCands = cms.InputTag("packedPFCandidates",processName=cms.InputTag.skipCurrentProcess())
-)
+process.jetMETSeqEleCorr = customiseEGJetMET(process,'EleCorr',correctEles=True,correctPhos=False,
+                                             useSCEnergy=False,scEnergyEtThres=0.)
+process.jetMETSeqEGCorr = customiseEGJetMET(process,'EGCorr',correctEles=True,correctPhos=True,
+                                            useSCEnergy=False,scEnergyEtThres=0.)
+process.jetMETSeqSCCorr = customiseEGJetMET(process,'SCCorr',correctEles=True,correctPhos=True,
+                                            useSCEnergy=True,scEnergyEtThres=300.)
 
+process.jetMETSeqFull = cms.Sequence(process.jetMETSeqOrg*process.jetMETSeqEleCorr*
+                                     process.jetMETSeqEGCorr*process.jetMETSeqSCCorr)
 
-process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", 
-                                                     src = cms.InputTag("packedGenParticles"), 
-                                                     cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16")
-                                                     )
+process.shNtupliser.extraJetTags = cms.VInputTag("slimmedJets::@skipCurrentProcess","slimmedJetsOrg","slimmedJetsEleCorr","slimmedJetsEGCorr","slimmedJetsSCCorr")
+process.shNtupliser.extraMETTags = cms.VInputTag("slimmedMETs::@skipCurrentProcess","slimmedMETsOrg","slimmedMETsEleCorr","slimmedMETsEGCorr","slimmedMETsSCCorr")
+process.shNtupliser.addJetMETExtra = True
 
-## Define GenJets
-from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
-process.ak4GenJetsNoNu = ak4GenJets.clone(src = 'packedGenParticlesForJetsNoNu')
-## Select charged hadron subtracted packed PF candidates (this function of fromPV works on miniaod)
-process.pfCHS = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV"))
-from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
-## Define PFJetsCHS
-process.ak4PFJetsCHS = ak4PFJets.clone(src = 'pfCHS', doAreaFastjet = True)
-process.slimmedMETs = cms.EDProducer("PFMETProducer",
-                                     src = cms.InputTag("packedPFCandidates"),
-                                     alias = cms.string('pfMet'),
-                                     globalThreshold = cms.double(0.0),
-                                     calculateSignificance = cms.bool(False),
-                                     )
-
-process.patJetCorrFactors = cms.EDProducer("JetCorrFactorsProducer",
-    emf = cms.bool(False),
-    extraJPTOffset = cms.string('L1FastJet'),
-    flavorType = cms.string('J'),
-    levels = cms.vstring('L1FastJet', 
-        'L2Relative', 
-        'L3Absolute', 
-        'L2L3Residual'),
-    payload = cms.string('AK4PFchs'),
-    primaryVertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
-    rho = cms.InputTag("fixedGridRhoFastjetAll"),
-    src = cms.InputTag("ak4PFJetsCHS"),
-    useNPV = cms.bool(True),
-    useRho = cms.bool(True)
-)
-
-
-
-process.patJets = cms.EDProducer("PATJetProducer",
-    JetFlavourInfoSource = cms.InputTag(""),
-    JetPartonMapSource = cms.InputTag(""),
-    addAssociatedTracks = cms.bool(False),
-    addBTagInfo = cms.bool(False),
-    addDiscriminators = cms.bool(False),
-    addEfficiencies = cms.bool(False),
-    addGenJetMatch = cms.bool(False),
-    addGenPartonMatch = cms.bool(False),
-    addJetCharge = cms.bool(False),
-    addJetCorrFactors = cms.bool(True),
-    addJetFlavourInfo = cms.bool(False),
-    addJetID = cms.bool(False),
-    addPartonJetMatch = cms.bool(False),
-    addResolutions = cms.bool(False),
-    addTagInfos = cms.bool(False),
-    discriminatorSources = cms.VInputTag(),
-    efficiencies = cms.PSet(
-
-    ),
-    embedGenJetMatch = cms.bool(True),
-    embedGenPartonMatch = cms.bool(False),
-    embedPFCandidates = cms.bool(False),
-    genJetMatch = cms.InputTag(""),
-    genPartonMatch = cms.InputTag(""),
-    getJetMCFlavour = cms.bool(False),
-    jetChargeSource = cms.InputTag("patJetCharge"),
-    jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactors")),
-    jetIDMap = cms.InputTag("ak4JetID"),
-    jetSource = cms.InputTag("ak4PFJetsCHS"),
-    partonJetSource = cms.InputTag("NOT_IMPLEMENTED"),
-    resolutions = cms.PSet(
-
-    ),
-    tagInfoSources = cms.VInputTag(),
-    trackAssociationSource = cms.InputTag("ak4JetTracksAssociatorAtVertexPF"),
-    useLegacyJetMCFlavour = cms.bool(False),
-    userData = cms.PSet(
-        userCands = cms.PSet(
-            src = cms.VInputTag("")
-        ),
-        userClasses = cms.PSet(
-            src = cms.VInputTag("")
-        ),
-        userFloats = cms.PSet(
-            src = cms.VInputTag()
-        ),
-        userFunctionLabels = cms.vstring(),
-        userFunctions = cms.vstring(),
-        userInts = cms.PSet(
-            src = cms.VInputTag()
-        )
-    )
-)
-
-
-process.jetReclusterMC = cms.Sequence(process.packedGenParticlesForJetsNoNu*process.ak4GenJetsNoNu)
-process.jetRecluster = cms.Sequence(process.pfCHS*process.ak4PFJetsCHS*process.patJetCorrFactors*process.patJets*process.slimmedMETs)
-
-#process.shNtupliser.jetTag = cms.InputTag("patJets")
-
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimMETFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.skimMETFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","RECO")
+process.skimMETFilter.throw = cms.bool(True)
+process.skimMETFilter.andOr = cms.bool(False)
+process.skimMETFilter.HLTPaths = cms.vstring("Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter","Flag_eeBadScFilter")
 
 process.p = cms.Path(#process.primaryVertexFilter*
+    process.skimMETFilter*
     process.regressionApplication*
     process.egammaFilter*
-#    process.jetReclusterMC*
-    process.packedPFCandidates*process.jetRecluster*
-
+    process.jetMETSeqFull*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
     process.shNtupliser)
         
@@ -342,30 +264,3 @@ if not isCrabJob:
 #    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_276831-277420_MINIAOD_03Feb2017-v1_20170210_133745_lumis_job69.json').getVLuminosityBlockRange()
 #    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_281207-284035_MINIAOD_03Feb2017_ver2-v1_20170212_180554_lumis_job172.json').getVLuminosityBlockRange()
 
-#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-#    compressionAlgorithm = cms.untracked.string('LZMA'),
-#    compressionLevel = cms.untracked.int32(4),
-#    dataset = cms.untracked.PSet(
-#        dataTier = cms.untracked.string('AODSIM'),
-#        filterName = cms.untracked.string('')
-#    ),
-#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-#    fileName = cms.untracked.string('file:outputTestAOD.root'),
-#    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
-#)                                        
-#process.out = cms.EndPath(process.AODSIMoutput)
-print process.GlobalTag.globaltag
-process.output = cms.OutputModule("PoolOutputModule",
-    compressionAlgorithm = cms.untracked.string('LZMA'),
-    compressionLevel = cms.untracked.int32(4),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string(''),
-        filterName = cms.untracked.string('')
-    ),
-    dropMetaData = cms.untracked.string('ALL'),
-    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    fastCloning = cms.untracked.bool(False),
-    fileName = cms.untracked.string('testOutput.root'),
-    outputCommands = cms.untracked.vstring("keep *")
-)
-process.pOut = cms.EndPath(process.output)

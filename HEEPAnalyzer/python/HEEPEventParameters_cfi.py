@@ -10,7 +10,9 @@ def swapHEEPToMiniAOD(heepPara):
     heepPara.photonTag = cms.InputTag("slimmedPhotons")
     heepPara.metTag = cms.InputTag("slimmedMETs")
     heepPara.gsfEleTag = cms.InputTag("slimmedElectrons")
+    heepPara.oldGsfEleTag = cms.InputTag("slimmedElectrons",processName=cms.InputTag.skipCurrentProcess())
     heepPara.recoPhoTag = cms.InputTag("slimmedPhotons")
+    heepPara.oldPhoTag = cms.InputTag("slimmedPhotons",processName=cms.InputTag.skipCurrentProcess())
     heepPara.reducedBarrelRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
     heepPara.reducedEndcapRecHitTag = cms.InputTag("reducedEgamma","reducedEERecHits")
     heepPara.superClusterEBTag = cms.InputTag("reducedEgamma","reducedSuperClusters")
@@ -37,6 +39,7 @@ heepEventPara  = cms.PSet (
     gsfEleTag = cms.InputTag("gedGsfElectrons"),
     oldGsfEleTag = cms.InputTag("gedGsfElectrons",processName=cms.InputTag.skipCurrentProcess()),
     recoPhoTag = cms.InputTag("gedPhotons"),
+    oldPhoTag = cms.InputTag("gedPhotons",processName=cms.InputTag.skipCurrentProcess()),
     pfCandidateTag = cms.InputTag("particleFlow"),
     packedPFCandTag = cms.InputTag("packedPFCandidates"),
     lostTrackTag = cms.InputTag("lostTracks"),
@@ -88,7 +91,10 @@ heepEventPara  = cms.PSet (
     gsFixHitsNotReplaced = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","hitsNotReplaced"),
     gsFixOrgReducedEGEBHits = cms.InputTag("reducedEgammaBeforeGSFix","reducedEBRecHits"),
     gsFixMETOrg = cms.InputTag("slimmedMETs"),
-    gsFixMETEGClean = cms.InputTag("slimmedMETsEGClean")
+    gsFixMETEGClean = cms.InputTag("slimmedMETsEGClean"),
+    extraJetTags = cms.VInputTag(),
+    extraMETTags = cms.VInputTag(),
+
     
 )
 

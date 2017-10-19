@@ -50,6 +50,7 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(gsfEleTag_ , conf.getParameter<edm::InputTag>("gsfEleTag"),cc);
   getToken_(oldGsfEleTag_ , conf.getParameter<edm::InputTag>("oldGsfEleTag"),cc);
   getToken_(recoPhoTag_ , conf.getParameter<edm::InputTag>("recoPhoTag"),cc);
+  getToken_(oldPhoTag_ , conf.getParameter<edm::InputTag>("oldPhoTag"),cc);
   getToken_(pfCandidateTag_ , conf.getParameter<edm::InputTag>("pfCandidateTag"),cc);
   getToken_(ctfTrackTag_ , conf.getParameter<edm::InputTag>("ctfTrackTag"),cc);
   getToken_(genParticleTag_ , conf.getParameter<edm::InputTag>("genParticleTag"),cc);
@@ -83,6 +84,8 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(gsFixOrgReducedEGEBHitsTag_,conf.getParameter<edm::InputTag>("gsFixOrgReducedEGEBHits"),cc);
   getToken_(gsFixMETOrgTag_,conf.getParameter<edm::InputTag>("gsFixMETOrg"),cc);
   getToken_(gsFixMETEGCleanTag_,conf.getParameter<edm::InputTag>("gsFixMETEGClean"),cc);
+  getToken_(extraJetTags_,conf.getParameter<std::vector<edm::InputTag> >("extraJetTags"),cc);
+  getToken_(extraMETTags_,conf.getParameter<std::vector<edm::InputTag> >("extraMETTags"),cc);
   
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -143,6 +146,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(gsfEleTag_,handles.gsfEle);
   event.getByToken(oldGsfEleTag_,handles.oldGsfEle);
   event.getByToken(recoPhoTag_,handles.recoPho);
+  event.getByToken(oldPhoTag_,handles.oldPho);
   event.getByToken(pfCandidateTag_,handles.pfCandidate);
   event.getByToken(superClusterEBTag_,handles.superClusEB);
   event.getByToken(superClusterEETag_,handles.superClusEE); 
@@ -182,6 +186,10 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(gsFixOrgReducedEGEBHitsTag_,handles.gsFixOrgReducedEGEBHits);
   event.getByToken(gsFixMETOrgTag_,handles.gsFixMETOrg); 
   event.getByToken(gsFixMETEGCleanTag_,handles.gsFixMETEGClean); 
+  
+  setHandles(event,extraJetTags_,handles.extraJets);
+  setHandles(event,extraMETTags_,handles.extraMETs);
+  
 
   setup.get<CaloGeometryRecord>().get(handles.caloGeom);
   setup.get<CaloTopologyRecord>().get(handles.caloTopology);

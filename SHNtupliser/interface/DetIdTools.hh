@@ -109,6 +109,7 @@ private:
   static const int kSubDetMask  = 0x7 << kSubDetOffset;
   static const int kBarrelCode = 1 << kSubDetOffset;
   static const int kEndcapCode = 2 << kSubDetOffset;
+  static const int kTrackerCode = 1 << kDetOffset;
   static const int kEcalCode = 3 << kDetOffset;
   static const int kHcalCode = 4 << kDetOffset;
   static const int kCaloCode = 5 << kDetOffset;
@@ -164,11 +165,30 @@ private:
   static const int kL1CaloIEtaAbsMin = 1;
   static const int kL1CaloIEtaAbsMax = 32;
 
+  static const int kBPXLayerOffset     = 20;
+  static const int kBPXLadderOffset    = 12;
+  static const int kBPXModuleOffset    = 2;
+  static const int kBPXLayerMask       = 0xF;
+  static const int kBPXLadderMask      = 0xFF;
+  static const int kBPXModuleMask      = 0xFF;
+  
+  static const int kFPXSideOffset      = 23;
+  static const int kFPXDiskOffset      = 18;
+  static const int kFPXBladeOffset     = 12;   
+  static const int kFPXPanelOffset     = 10; 
+  static const int kFPXModuleOffset    = 2;   
+  static const int kFPXSideMask        = 0x3;
+  static const int kFPXDiskMask        = 0xF;
+  static const int kFPXBladeMask       = 0x3F;   
+  static const int kFPXPanelMask       = 0x3; 
+  static const int kFPXModuleMask      = 0xFF; 
+
 
   //detector id
   static bool isEcal(int detId){return (detId&kDetMask) == kEcalCode;}
   static bool isHcal(int detId){return (detId&kDetMask) == kHcalCode;}
   static bool isCalo(int detId){return (detId&kDetMask) == kCaloCode;}
+  static bool isTracker(int detId){return (detId&kDetMask) == kTrackerCode;}
   static bool isBarrel(int detId){return (detId&kSubDetMask) == kBarrelCode;}
   static bool isEndcap(int detId){return (detId&kSubDetMask) == kEndcapCode;}
   static bool isEcalBarrel(int detId){return isEcal(detId) && isBarrel(detId);}
@@ -271,6 +291,18 @@ private:
   static int sixES(int detId){return (detId>>6)&0x3F;}
   static int siyES(int detId){return (detId>>12)&0x3F;}
   static int stripES(int detId){return detId&0x3F;}
+
+  //pixel tools
+  static int getVal(int detId,int offset,int mask){return (detId>>offset)&mask;}
+  static int layerBPX(int detId){return getVal(detId,kBPXLayerOffset,kBPXLayerMask);}
+  static int ladderBPX(int detId){return getVal(detId,kBPXLadderOffset,kBPXLadderMask);}
+  static int moduleBPX(int detId){return getVal(detId,kBPXModuleOffset,kBPXModuleMask);}
+  static int sideFPX(int detId){return getVal(detId,kFPXSideOffset,kFPXSideMask);} 
+  static int diskFPX(int detId){return getVal(detId,kFPXDiskOffset,kFPXDiskMask);} 
+  static int bladeFPX(int detId){return getVal(detId,kFPXBladeOffset,kFPXBladeMask);} 
+  static int panelFPX(int detId){return getVal(detId,kFPXPanelOffset,kFPXPanelMask);} 
+  static int moduleFPX(int detId){return getVal(detId,kFPXModuleOffset,kFPXModuleMask);} 
+
   
   //hashes for fast lookup
 

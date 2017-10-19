@@ -96,6 +96,7 @@ namespace heep {
     edm::Handle<edm::View<reco::GsfElectron> > gsfEle; 
     edm::Handle<edm::View<reco::GsfElectron> > oldGsfEle; 
     edm::Handle<edm::View<reco::Photon> > recoPho;
+    edm::Handle<edm::View<reco::Photon> > oldPho;
     edm::Handle<reco::TrackCollection> ctfTrack;
     edm::Handle<reco::GenParticleCollection> genParticle;
     edm::Handle<std::vector<pat::PackedGenParticle> > packedGenParticle;
@@ -143,6 +144,11 @@ namespace heep {
     edm::Handle<EcalRecHitCollection> gsFixOrgReducedEGEBHits;
     edm::Handle<edm::View<pat::MET> > gsFixMETOrg;
     edm::Handle<edm::View<pat::MET> > gsFixMETEGClean;
+
+    std::vector<edm::Handle<edm::View<pat::Jet> > > extraJets;
+    std::vector<edm::Handle<edm::View<reco::MET> > > extraMETs;
+
+
   };
 }
 
