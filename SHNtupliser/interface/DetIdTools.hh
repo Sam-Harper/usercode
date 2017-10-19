@@ -272,7 +272,7 @@ private:
   static int iPhiHcal(int detId){return newFormatHcal(detId) ? detId&kHcalPhiMask2 : detId&kHcalPhiMask1;}
   static int iEtaAbsHcal(int detId){return newFormatHcal(detId) ? (detId>>kHcalEtaOffset2)&kHcalEtaMask2 : (detId>>kHcalEtaOffset1)&kHcalEtaMask1;}
   static int iEtaHcal(int detId){return zSideHcal(detId)*iEtaAbsHcal(detId);}
-  static int zSideHcal(int detId){auto& mask=newFormatHcal(detId) ? kHcalZsideMask2 : kHcalZsideMask1;return (detId&mask) ? (1) : (-1);}
+  static int zSideHcal(int detId){int mask=newFormatHcal(detId) ? kHcalZsideMask2 : kHcalZsideMask1;return (detId&mask) ? (1) : (-1);}
   static int depthHcal(int detId){return newFormatHcal(detId) ? (detId>>kHcalDepthOffset2)&kHcalDepthMask2 : (detId>>kHcalDepthOffset1)&kHcalDepthMask1;}
   static int getEffectiveHcalDepth(int detId); //effective depth is for isolation and accounts for not all depths being equal
   static int getNrDepthsInHcalTower(int detId); 
