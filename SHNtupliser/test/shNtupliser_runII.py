@@ -1,5 +1,5 @@
 isCrabJob=False #script seds this if its a crab job
-useMiniAOD=False
+useMiniAOD=True
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -20,7 +20,7 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=100
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -49,11 +49,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
-    #process.GlobalTag.globaltag = autoCond['run2_mc']
-    #process.GlobalTag = GlobalTag(process.GlobalTag, '92X_upgrade2017_realistic_v10', '')
     process.GlobalTag = GlobalTag(process.GlobalTag, '92X_upgrade2017_realistic_v10', '')
 else:
-#    process.GlobalTag.globaltag = autoCond['run2_data']
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
@@ -75,30 +72,13 @@ process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
 
-process.shNtupliser.addMet = True
-process.shNtupliser.addJets = True
 process.shNtupliser.addMuons = False
-process.shNtupliser.applyMuonId = True
-process.shNtupliser.addCaloTowers = True
-process.shNtupliser.addCaloHits = True
-process.shNtupliser.addIsolTrks = True
-process.shNtupliser.addPFCands = True
-process.shNtupliser.addPFClusters = True
-process.shNtupliser.addTrigSum = True
-
-process.shNtupliser.addGainSwitchInfo = False
-
-process.shNtupliser.minEtToPromoteSC = 10
-process.shNtupliser.fillFromGsfEle = True
-process.shNtupliser.minNrSCEtPassEvent = cms.double(-1)
 process.shNtupliser.outputGeom = cms.bool(False)
-
 process.shNtupliser.hltProcName = cms.string(hltName)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-process.shNtupliser.oldGsfEleTag = cms.InputTag("gedGsfElectronsReg")
-process.shNtupliser.oldPhoTag = cms.InputTag("gedPhotonsReg")
+
 disableLargeCollections=True
 if disableLargeCollections:
     print "*******************************************"
@@ -107,6 +87,7 @@ if disableLargeCollections:
     process.shNtupliser.addPFCands = False
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
+#    process.shNtupliser.addCaloHits = False
 
 
 if useMiniAOD:
@@ -145,22 +126,22 @@ datasetName="TOSED:DATASETNAME"
 
 if datasetName=="DoubleEG":
     print "setting up HLT skim for DoubleEG"
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle37*","HLT_DoublePhoton60_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*")
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33*","HLT_DoubleEle33*","HLT_DoubleEle25*","HLT_DoublePhoton70_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL*","HLT_DiEle27_WPTightCaloOnly*")
 elif datasetName=="SingleElectron":
     print "setting up HLT skim for SingleElectron"
-    #process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele105_CaloIdVT_GsfTrkIdT_v*","HLT_Ele115_CaloIdVT_GsfTrkIdT_v*","HLT_Ele27_WPLoose_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPTight_Gsf_v*","HLT_Ele32_eta2p1_WPTight_Gsf_v*","HLT_Ele35_WPLoose_Gsf_v*","HLT_Ele32_WPTight_Gsf_v*)
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele27_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_v*","HLT_Ele35_WPLoose_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*")
+#    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 elif datasetName=="SinglePhoton":
     print "setting up HLT skim for SinglePhoton"
-    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_Photon22_v*","HLT_Photon30_v*","HLT_Photon36_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon165_HE10_v*","HLT_Photon175_v*","HLT_Photon250_NoHE_v*","HLT_Photon300_NoHE_v*")
+    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_Photon22_v*","HLT_Photon25_v*","HLT_Photon30_v*","HLT_Photon33_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon150_v*","HLT_Photon175_v*","HLT_Photon200_v*","HLT_Photon250_NoHE_v*","HLT_Photon300_NoHE_v*")
 elif datasetName=="JetHT":
     print "setting up HLT skim for JetHT"
-    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_CaloJet500_NoJetID_v*",)
+    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_CaloJet500_NoJetID_v*","HLT_CaloJet550_NoJetID_v*",)
 else:
     print "setting HLT skim to select all"
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 
-process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 
 process.egammaFilter = cms.EDFilter("EGammaFilter",
                                     nrElesRequired=cms.int32(-1),
@@ -205,21 +186,24 @@ my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronI
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
-from RecoEgamma.EgammaIsolationAlgos.electronTrackIsolations_cfi import *
-process.eleTrkIsol = cms.EDProducer("EleTkIsolValMapProducer",
-                                 electronProducer = cms.InputTag("gedGsfElectrons"),
-                                 trackProducer = cms.InputTag("generalTracks"),
-                                 trkIsolConfig = trkIsol03CfgV3
-                                 )
-process.shNtupliser.eleIsolPtTrksValueMapTag= cms.InputTag("eleTrkIsol")
+#from RecoEgamma.EgammaIsolationAlgos.electronTrackIsolations_cfi import *
+#process.eleTrkIsol = cms.EDProducer("EleTkIsolValMapProducer",
+#                                 electronProducer = cms.InputTag("gedGsfElectrons"),
+#                                 trackProducer = cms.InputTag("generalTracks"),
+#                                 trkIsolConfig = trkIsol03CfgV3
+#                                 )
+#process.shNtupliser.eleIsolPtTrksValueMapTag= cms.InputTag("eleTrkIsol")
 
-process.load('SHarper.SHNtupliser.regressionApplicationAOD_newNames_cff')
+if not useMiniAOD:
+    process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
+else:
+    process.load('SHarper.SHNtupliser.regressionApplicationMiniAOD_cff')
 
 process.p = cms.Path(#process.primaryVertexFilter*
     process.regressionApplication*
     process.egammaFilter*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
-    process.eleTrkIsol*
+ #   process.eleTrkIsol*
     process.shNtupliser)
         
 if not isMC:

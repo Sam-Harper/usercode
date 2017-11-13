@@ -12,10 +12,6 @@ gedPhotons = cms.EDProducer("ModifiedRecoPhotonProducer",
     modifierConfig = cms.PSet( modifications = cms.VPSet() )
 )    
 
-regressionModifier.ecalrechitsEB = cms.InputTag("reducedEcalRecHitsEB")
-regressionModifier.ecalrechitsEE = cms.InputTag("reducedEcalRecHitsEE")
-regressionModifier.useLocalFile  = cms.bool(False)
-
 egamma_modifications = cms.VPSet( )
 egamma_modifications.append( regressionModifier )
 
