@@ -1,9 +1,5 @@
 isMC=False
 
-patCandID=""
-#if pfNoPU:
- #   patCandID="PFlow"
-
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
@@ -23,7 +19,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 # Load geometry
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = cms.string('GR10_P_V5::All')
+
 from Configuration.AlCa.autoCond import autoCond
 if isMC:
     # process.GlobalTag.globaltag = autoCond['startup']
@@ -38,24 +34,14 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(500)
 )
 
-process.load("Configuration.StandardSequences.Services_cff")
-process.load('FWCore/MessageService/MessageLogger_cfi')
-process.load('Configuration/StandardSequences/L1HwVal_cff')
-process.load("Configuration.StandardSequences.RawToDigi_Data_cff") ###check this for MC!
-process.load('Configuration.StandardSequences.L1Reco_cff')
-process.load('Configuration.StandardSequences.Reconstruction_cff')
-process.load('Configuration/StandardSequences/EndOfProcess_cff')
-process.load('Configuration.Geometry.GeometryIdeal_cff')
-process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
-process.load("JetMETCorrections.Configuration.DefaultJEC_cff")
 
 
 import sys
 
-hltName="REDIGI311X"
+hltName="HLT"
 #do not remove this comment...
 #CRABHLTNAMEOVERWRITE
-hltName="HLT"
+
 
 from SHarper.HEEPAnalyzer.HEEPEventParameters_cfi import *
 from SHarper.SHNtupliser.shNtupliserParameters_cfi import *
@@ -165,7 +151,7 @@ process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone
 
 process.p = cms.Path(#process.skimHLTFilter*
                      process.RawToDigi*process.SLHCCaloTrigger*
-#                     process.kt6PFJetsForIsolation*
+
                      process.shNtupliser)
 
 
