@@ -2,6 +2,9 @@
 
 import os
 import optparse
+import sys
+import time
+import shutil
 
 parser = optparse.OptionParser(description='submits jobs to crab')
 
@@ -21,6 +24,7 @@ if not options.input or not options.pattern or not options.shNtupVersion or not 
     parser.error("input, pattern, shNtupVersion, config and cmsswVersion are manditory")
 print options.config
 
+crabProjDir='crab_projects'
 
 datasetDefFile =open(options.input)
 for line in datasetDefFile:
@@ -35,7 +39,8 @@ for line in datasetDefFile:
  #   print datasetPath,nrJobs,datasetCode
     dataset=datasetPath.split("/")[1]
     datasetId = datasetPath.split("/")[2]
-    datasetId = datasetId[datasetId.find("-")+1:]
+#    datasetId = datasetId[datasetId.find("-")+1:]
+
 
     runStart = int(splitLine[1])
     runEnd = int(splitLine[2])
@@ -58,6 +63,11 @@ for line in datasetDefFile:
     #print datasetPath,nrJobs,datasetCode,dataset,datasetFormat
     #print publishDataname
     #print outputFile,outputPath
+    
+    if datasetFormat.find("MINIAOD")!=-1:
+        useMiniAODStr="useMiniAOD=True"
+    else:
+        useMiniAODStr="useMiniAOD=False"
 
     with open(options.config,"r") as configFile:
         configLines = configFile.readlines()
@@ -68,6 +78,7 @@ for line in datasetDefFile:
             line=line.replace("OUTPUTFILE",outputFile)
             line=line.replace("SAMPLEWEIGHT","1")
             line=line.replace("isCrabJob=False","isCrabJob=True");
+            line=line.replace("#MINIAODTYPE",useMiniAODStr);
             line=line.replace("DATASETCODE",str(datasetCode))
             line=line.replace("TOSED:DATASETNAME",str(dataset))
             line=line.replace("TOSED:DATASETVERSION",str(datasetPath.split("/")[2]))
@@ -89,16 +100,28 @@ for line in datasetDefFile:
                     " Data.outputDatasetTag="+publishDataname+ \
                     " Data.runRange="+runRange+ \
                     " JobType.psetName="+tempConfig+ \
+                    " General.workArea="+crabProjDir+ \
                     " General.transferLogs="+str(options.transferLogFiles)
     print "will submit:"
     print crabSubmitCmd
     print " "
 
+    #so we can redo our cmd later easily
+    scriptCmd = sys.argv[0]+" "
+    for entry in sys.argv[1:]: scriptCmd+=entry+" "
+
     if options.dryRun=="False":
         print "submitting for REAL"
-        import time
         time.sleep(5)
-        import os
         os.system(crabSubmitCmd)
+        full_crab_dir = crabProjDir+"/crab_"+workingDir
+        if os.path.isdir(full_crab_dir):
+            with open(full_crab_dir+"/submitCmd","w") as f:
+                f.write(scriptCmd+"\n")
+            with open(full_crab_dir+"/crabCmd","w") as f:
+                f.write(crabSubmitCmd+"\n")
+                
+            shutil.copy(tempConfig,full_crab_dir+"/cmssw.py")
+        
 
 print "All done"
