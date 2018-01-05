@@ -143,7 +143,7 @@ namespace heep {
       return relIso <= maxIsolHadRel03;
     }
     bool passNrMissHits(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      return ele.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= maxNrMissHits;
+      return ele.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS) <= maxNrMissHits;
     }
     bool passDXY(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
       const float dxyAbs = std::abs(ele.gsfTrack()->dxy(eleExtra.primaryVertex));

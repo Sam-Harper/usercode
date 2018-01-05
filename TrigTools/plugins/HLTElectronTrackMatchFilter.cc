@@ -325,7 +325,7 @@ void HLTElectronTrackMatchFilter::EleDataStruct::fill(const reco::SuperCluster& 
   dPhi = iDPhi;
   dEta = iDEta;
 
-  nrMissHits =trk.hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
+  nrMissHits =trk.hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
   nrTracks = iNrTracks;
 }
 void HLTElectronTrackMatchFilter::EleDataStruct::fill(const reco::SuperCluster& superClus)

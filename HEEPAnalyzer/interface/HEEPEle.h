@@ -183,7 +183,7 @@ namespace heep {
     float isolEmRel03()const{return et()!=0 ? isolEm()/et():0.;} //WP80
     float isolHadRel03()const{return et()!=0 ? isolHad()/et():0.;} //WP80
 
-    int nrMissHits()const{return gsfEle_->gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);}
+    int nrMissHits()const{return gsfEle_->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);}
     float dxy()const{return gsfEle_->gsfTrack()->dxy(eleExtra_.primaryVertex);}
 
     //selection cuts
