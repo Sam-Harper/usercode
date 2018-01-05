@@ -49,7 +49,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
-    process.GlobalTag = GlobalTag(process.GlobalTag, '92X_upgrade2017_realistic_v10', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v9', '')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
@@ -86,7 +86,7 @@ if disableLargeCollections:
     print "*******************************************"
     process.shNtupliser.addPFCands = False
     process.shNtupliser.addPFClusters = False
-    process.shNtupliser.addIsolTrks = False
+#   process.shNtupliser.addIsolTrks = False
 #    process.shNtupliser.addCaloHits = False
 
 
