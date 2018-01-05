@@ -2,6 +2,9 @@
 
 import os
 import optparse
+import sys
+import time
+import shutil
 
 parser = optparse.OptionParser(description='submits jobs to crab')
 
@@ -90,15 +93,26 @@ for line in datasetDefFile:
     print "will submit:"
     print crabSubmitCmd
     print " "
+    
+    #so we can redo our cmd later easily
+    scriptCmd = sys.argv[0]+" "
+    for entry in sys.argv[1:]: scriptCmd+=entry+" "
 
     if options.dryRun=="False":
         print "submitting for REAL"
-        import time
         time.sleep(5)
-        import os
         os.system(crabSubmitCmd)
-        import shutil
-        if os.path.isdir(crabProjDir+"/crab_"+workingDirTmp):
-            shutil.move(crabProjDir+"/crab_"+workingDirTmp,crabProjDir+"/"+workingDir)
+        tmp_crab_dir = crabProjDir+"/crab_"+workingDirTmp)
+        full_crab_dir = crabProjDir+"/"+workingDir
+        if os.path.isdir(tmp_crab_dir):
+            shutil.move(tmp_crab_dir,full_crab_dir)
+            with open(full_crab_dir+"/submitCmd","w") as f:
+                f.write(scriptCmd+"\n")
+            with open(full_crab_dir+"/crabCmd","w") as f:
+                f.write(crabSubmitCmd+"\n")
+                
+            shutil.copy(tempConfig,full_crab_dir+"/cmssw.py")
+
+        
 
 print "All done"

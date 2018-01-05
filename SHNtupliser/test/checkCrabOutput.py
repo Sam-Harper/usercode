@@ -2,6 +2,7 @@ import tarfile
 from CRABAPI.RawCommand import crabCommand
 import datetime
 import glob
+import time
 
 import contextlib
 import sys
@@ -56,12 +57,19 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
     config_file = job_data.extractfile(job_data.getmember("debug/crabConfig.py"))
     exec(''.join(config_file.readlines()))
 
-   # for line in config_file.readlines():
-   #     print line,
     with nostdout():
-        status = crabCommand('status',dir = crab_dir)
-#    print status
-
+        try_nr = 1
+        status = []
+        while try_nr <=3 and status==[]:
+            try:
+                status = crabCommand('status',dir = crab_dir)
+            except:
+                try_nr += 1
+                time.sleep(10)
+   # print status
+    if status == []:
+        print crab_dir," : failed to get crab status"
+        return
 
     #jobsPerStatus
     nrjobs = len(status['jobList'])
@@ -72,7 +80,7 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
 #    print grid_output_dir
     missing_jobs = find_missing_jobs(grid_output_dir,nrjobs)
     
-    if status["taskWarningMsg"]!=[]:
+    if status["taskWarningMsg"]!=[] and status["taskWarningMsg"]!='[]':
         print crab_dir, ":",status["taskWarningMsg"][0]
     elif status['jobsPerStatus']=={}:
         print crab_dir, ": no jobs created"
@@ -111,6 +119,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     for crab_dir in args.crab_dirs:
+        time.sleep(10)
         check_crab_output(crab_dir=crab_dir,resubmit_failed=args.resub_failed,verbose=args.verbose)
 
 
