@@ -70,7 +70,7 @@ public:
   }
 
 	       
-  
+  friend std::ostream& operator<<(std::ostream& out,const SHTrigObj& obj){return obj.print(out);}
   std::ostream& print(std::ostream&)const;
  
 

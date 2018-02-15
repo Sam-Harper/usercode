@@ -1,7 +1,7 @@
 #include "SHarper/SHNtupliser/interface/SHL1Cluster.hh"
 
 //I detest resorting to this but its the easiest option
-#define SLHCBUILD 1
+#define SLHCBUILD 0
 #if SLHCBUILD
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 #include "DataFormats/L1TCalorimeter/interface/CaloCluster.h"

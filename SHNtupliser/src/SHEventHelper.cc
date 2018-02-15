@@ -1081,6 +1081,15 @@ void SHEventHelper::setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco
   if(heepEvent.handles().heepIDVIDBits.isValid()){
     shEle.setCutCodeVID((*heepEvent.handles().heepIDVIDBits)[gsfEle]);
   }
+  std::vector<int> vidBits;
+  for(const auto& idBits : heepEvent.handles().vidBits){
+    if(idBits.isValid()){
+      vidBits.push_back((*idBits)[gsfEle]);
+    }else{
+      vidBits.push_back(-1);
+    } 
+  } 
+  shEle.setIDs(std::move(vidBits));
 }
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEcalClusterTools.h"

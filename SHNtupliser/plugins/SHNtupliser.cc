@@ -105,6 +105,7 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
     initGeom_=true;
   }
   evtHelper_.makeHeepEvent(run,iSetup,heepEvt_);
+  shEvtTree_.runSetup(run,iSetup);
   std::cout <<"end begin run "<<std::endl;
 
 

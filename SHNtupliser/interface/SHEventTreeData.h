@@ -3,9 +3,12 @@
 
 namespace edm{
   class ParameterSet;
+  class Run;
+  class EventSetup;
 }
 
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
+#include "SHarper/SHNtupliser/interface/SHEventProvenance.hh"
 #include "SHarper/SHNtupliser/interface/TrigMenuMgr.hh"
 #include "TTree.h"
 
@@ -59,13 +62,14 @@ private:
   SHGainSwitchInfo* shGSInfo_;// we do not own this
   SHJetMETExtra* shJetMETExtra_;// we do not own this
   TrigMenuMgr trigMenuMgr_;
-
+  SHEventProvenance shEventProv_; //because I really dont know about ROOTs ownership rules for userdata, hence we'll make a copy and add to the tree everytime it changes
 public:
   SHEventTreeData(SHEvent* & event);
   void setMemLocs();
   void makeTree(const std::string& name);
   void fill();
-  void setup(const edm::ParameterSet& iPara){branches_.setup(iPara);}
+  void setup(const edm::ParameterSet& iPara);
+  void runSetup(const edm::Run& run,const edm::EventSetup& iSetup);
 
 };
 

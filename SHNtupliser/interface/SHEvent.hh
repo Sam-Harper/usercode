@@ -103,6 +103,8 @@ class SHEvent : public TObject {
 
   float rhoCorr_; //new for V22 
   int flags_; //new for V22, usefull for flagging things like events with bad laser corrections
+
+  std::string configMD5SumStr_; //V27
   
   SHCaloTowerContainer caloTowers_; //! so this is a new experimental design, I store this on another branch and give it this memory location
   
@@ -193,7 +195,7 @@ class SHEvent : public TObject {
   void setEleRhoCorr(float iRho){eleRhoCorr_=iRho;}
   void setRhoCorr(float iRho){rhoCorr_=iRho;}
   void setFlags(int iFlags){flags_=iFlags;}
- 
+  void setConfigMD5SumStr(std::string val){configMD5SumStr_=std::move(val);}
   virtual void copyEventPara(const SHEvent& rhs);
   virtual void clear();
   void clearTrigs(){trigArray_.Delete();}
@@ -315,7 +317,7 @@ class SHEvent : public TObject {
   SHSuperCluster* getSuperClus_(int clusNr); //allows the event to modify the electron
   float fEtCorr_(float et,int type)const; //little naughty, shouldnt be part of the class
 
-  ClassDef(SHEvent,26) 
+  ClassDef(SHEvent,27) 
 
 };
   

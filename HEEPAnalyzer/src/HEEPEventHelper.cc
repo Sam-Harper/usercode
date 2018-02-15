@@ -75,6 +75,7 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(gsfEleToPFCandMapTag_ , conf.getParameter<edm::InputTag>("gsfEleToPFCandMapTag"),cc);
   getToken_(heepIDVIDTag_ ,conf.getParameter<edm::InputTag>("heepIDVID"),cc);
   getToken_(heepIDVIDBitsTag_ ,conf.getParameter<edm::InputTag>("heepIDVIDBits"),cc);
+  getToken_(vidBitsTags_,conf.getParameter<std::vector<edm::InputTag> >("vidBits"),cc);
   getToken_(lheEventTag_ ,conf.getParameter<edm::InputTag>("lheEventTag"),cc);  
   getToken_(genEvtInfoTag_ ,conf.getParameter<edm::InputTag>("genEvtInfoTag"),cc); 
   getToken_(egHLTCandsTag_ ,conf.getParameter<edm::InputTag>("egHLTCandsTag"),cc); 
@@ -175,6 +176,7 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   event.getByToken(gsfEleToPFCandMapTag_,handles.gsfEleToPFCandMap);
   event.getByToken(heepIDVIDTag_,handles.heepIDVID);
   event.getByToken(heepIDVIDBitsTag_,handles.heepIDVIDBits);
+  setHandles(event,vidBitsTags_,handles.vidBits);
   event.getByToken(lheEventTag_,handles.lheEvent);
   event.getByToken(genEvtInfoTag_,handles.genEvtInfo);
   event.getByToken(egHLTCandsTag_,handles.egHLTCands);

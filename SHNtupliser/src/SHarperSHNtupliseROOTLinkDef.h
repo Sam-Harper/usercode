@@ -42,6 +42,7 @@
 #include "SHarper/SHNtupliser/interface/SHHLTMenu.hh"
 #include "SHarper/SHNtupliser/interface/SHGainSwitchInfo.hh"
 #include "SHarper/SHNtupliser/interface/SHJetMETExtra.hh"
+#include "SHarper/SHNtupliser/interface/SHEventProvenance.hh"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -101,4 +102,5 @@
 #pragma link C++ class SHHLTMenu::Path+;
 #pragma link C++ class SHGainSwitchInfo+;
 #pragma link C++ class SHJetMETExtra+;
+#pragma link C++ class SHEventProvenance+;
 #endif

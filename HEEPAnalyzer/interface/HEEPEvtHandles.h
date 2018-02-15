@@ -126,6 +126,7 @@ namespace heep {
     
     edm::Handle<edm::ValueMap<bool> > heepIDVID;
     edm::Handle<edm::ValueMap<unsigned int> >  heepIDVIDBits;
+    std::vector<edm::Handle<edm::ValueMap<unsigned int> > >  vidBits;
     edm::Handle<reco::RecoEcalCandidateCollection>  egHLTCands;
     edm::Handle<reco::RecoEcalCandidateCollection>  egHLTCandsUnseeded;
     

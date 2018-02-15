@@ -166,6 +166,7 @@ class SHElectron : public TObject {
   int pmSubDets_;
 
   int nrSatCrysIn5x5_; //new for v25
+  std::vector<int> ids_; //associated IDs
 
   float rhoCorr_; //! set by the event each time we get it
 
@@ -207,6 +208,7 @@ private:
   void setNrgyExtra(float iAltNrgy,float iAltNrgyErr,float iAltEPCombNrgy,float iPhoNrgy,float iAltPhoNrgy){
     altNrgy_=iAltNrgy;altNrgyErr_=iAltNrgyErr;altEPCombNrgy_=iAltEPCombNrgy;phoNrgy_=iPhoNrgy;altPhoNrgy_=iAltPhoNrgy;
   }
+  void setIDs(std::vector<int> ids){ids_=std::move(ids);}
 
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
@@ -354,6 +356,7 @@ private:
   // const SHIsolSuperCluster& getIsolSuperClus()const;
   // float isolEmClus(double coneRadius)const;
   // float isolEmEtClus(double coneRadius)const;
+  const std::vector<int> ids()const{return ids_;}
 
   //links
   int superClusIndex()const{return superClusIndx_;}
@@ -366,7 +369,7 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,28) 
+  ClassDef(SHElectron,29) 
 
 };
 

@@ -20,7 +20,8 @@ else:
     addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=0
+    datasetCode=101
+#    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -49,12 +50,12 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
-    process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v9', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
-    process.GlobalTag = GlobalTag(process.GlobalTag, '92X_dataRun2_Prompt_v9', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2', '')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -86,8 +87,8 @@ if disableLargeCollections:
     print "*******************************************"
     process.shNtupliser.addPFCands = False
     process.shNtupliser.addPFClusters = False
-#   process.shNtupliser.addIsolTrks = False
-#    process.shNtupliser.addCaloHits = False
+    process.shNtupliser.addIsolTrks = False
+    #process.shNtupliser.addCaloHits = False
 
 
 if useMiniAOD:
@@ -129,7 +130,7 @@ if datasetName=="DoubleEG":
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33*","HLT_DoubleEle33*","HLT_DoubleEle25*","HLT_DoublePhoton70_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL*","HLT_DiEle27_WPTightCaloOnly*")
 elif datasetName=="SingleElectron":
     print "setting up HLT skim for SingleElectron"
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele27_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_v*","HLT_Ele35_WPLoose_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*")
+    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele27_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_v*","HLT_Ele35_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*")
 #    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 elif datasetName=="SinglePhoton":
     print "setting up HLT skim for SinglePhoton"
@@ -172,6 +173,20 @@ if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetC
 if isCrabJob and process.shNtupliser.datasetCode.value()>140:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
+if useMiniAOD:
+    
+    process.load('Configuration.StandardSequences.Services_cff')
+    process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+                                                       calibratedPatElectrons  = cms.PSet( initialSeed = cms.untracked.uint32(81),
+                                                                                           engineName = cms.untracked.string('TRandom3'),
+                                                                                           ),
+                                                       calibratedPatPhotons  = cms.PSet( initialSeed = cms.untracked.uint32(81),
+                                                                                         engineName = cms.untracked.string('TRandom3'),
+                                                                                         ),
+                                                       )
+    process.load('EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi')
+    process.shNtupliser.oldGsfEleTag = cms.InputTag("calibratedPatElectrons")
+
 #setup the VID with HEEP 7.0, not necessary if you dont want to use VID
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 # turn on VID producer, indicate data format  to be
@@ -182,27 +197,25 @@ else:
     switchOnVIDElectronIdProducer(process,DataFormat.AOD)
 
 # define which IDs we want to produce and add them to VID
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
+                 'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff',
+                 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff', 
+                 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff'
+                 ]
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
-#from RecoEgamma.EgammaIsolationAlgos.electronTrackIsolations_cfi import *
-#process.eleTrkIsol = cms.EDProducer("EleTkIsolValMapProducer",
-#                                 electronProducer = cms.InputTag("gedGsfElectrons"),
-#                                 trackProducer = cms.InputTag("generalTracks"),
-#                                 trkIsolConfig = trkIsol03CfgV3
-#                                 )
-#process.shNtupliser.eleIsolPtTrksValueMapTag= cms.InputTag("eleTrkIsol")
 
-if not useMiniAOD:
-    process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
-else:
-    process.load('SHarper.SHNtupliser.regressionApplicationMiniAOD_cff')
+#if not useMiniAOD:
+#    process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
+#else:
+#    process.load('SHarper.SHNtupliser.regressionApplicationMiniAOD_cff')
 
 process.p = cms.Path(#process.primaryVertexFilter*
-    process.regressionApplication*
+  #  process.regressionApplication*
     process.egammaFilter*
     process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
+    process.calibratedPatElectrons*
  #   process.eleTrkIsol*
     process.shNtupliser)
         

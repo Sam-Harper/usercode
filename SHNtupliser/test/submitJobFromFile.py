@@ -102,7 +102,7 @@ for line in datasetDefFile:
         print "submitting for REAL"
         time.sleep(5)
         os.system(crabSubmitCmd)
-        tmp_crab_dir = crabProjDir+"/crab_"+workingDirTmp)
+        tmp_crab_dir = crabProjDir+"/crab_"+workingDirTmp
         full_crab_dir = crabProjDir+"/"+workingDir
         if os.path.isdir(tmp_crab_dir):
             shutil.move(tmp_crab_dir,full_crab_dir)
