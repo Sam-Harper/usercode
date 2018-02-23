@@ -61,10 +61,34 @@ namespace{
     return handle;
   }
 
+  void printID(const pat::Electron& ele){
+     std::cout <<"   electronIDs: "<<std::endl;
+     for(const auto& id : ele.electronIDs()){
+       std::cout <<"          "<<id.first<<" "<<id.second<<std::endl;
+     }
+  }
+  void printID(const pat::Photon& pho){
+     std::cout <<"   photonIDs: "<<std::endl;
+     for(const auto& id : pho.photonIDs()){
+       std::cout <<"          "<<id.first<<" "<<id.second<<std::endl;
+     }
+  }
+
   template<typename T> void print(const edm::Event& evt,const std::string& tag,const T& obj){
     std::cout <<tag<<" event "<<evt.id().run()<<" "<<evt.id().event()<<" "<<evt.bunchCrossing()<<" ";
-    std::cout <<" pt/eta/phi "<<obj.pt()<<" "<<obj.eta()<<" "<<obj.phi()<<" ecal "<<obj.ecalPFClusterIso()<<" hcal "<<obj.hcalPFClusterIso()<<std::endl;
+    std::cout <<" E/pt/eta/phi "<<obj.energy()<<" "<<obj.pt()<<" "<<obj.eta()<<" "<<obj.phi()<<" ecal "<<obj.ecalPFClusterIso()<<" hcal "<<obj.hcalPFClusterIso()<<std::endl;
+    std::cout <<"   userFloats: "<<std::endl;
+    for(const auto& name : obj.userFloatNames()){
+      std::cout <<"          "<<name<<" "<<obj.userFloat(name)<<std::endl;
+    }
+    std::cout <<"   userInts: "<<std::endl;
+    for(const auto& name : obj.userIntNames()){
+      std::cout <<"          "<<name<<" "<<obj.userInt(name)<<std::endl;
+    }
+    printID(obj);
   }
+
+
 }
 
 EGammaDebugger::EGammaDebugger(const edm::ParameterSet& iPara)
@@ -92,8 +116,7 @@ void EGammaDebugger::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for(const auto & obj : *ootPhosHandle){
     print(iEvent,"egammaDebug: ootpho",obj);
   }
-  
-  
+   
 }
 
 DEFINE_FWK_MODULE(EGammaDebugger);
