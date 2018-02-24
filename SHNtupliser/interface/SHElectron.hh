@@ -21,6 +21,9 @@
 //#include "SHEvent/SHIsolCluster.hh"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 #include "SHarper/SHNtupliser/interface/CaloTools.hh"
+#include "SHarper/SHNtupliser/interface/TempFuncs.hh"
+#include "SHarper/SHNtupliser/interface/LogErr.hh"
+
 #include "TObject.h"
 #include "TVector3.h"
 #include "TLorentzVector.h"
@@ -167,6 +170,14 @@ class SHElectron : public TObject {
 
   int nrSatCrysIn5x5_; //new for v25
   std::vector<int> ids_; //associated IDs
+  //userfloats make a long resisted appearence
+  std::vector<std::pair<std::string,float> > userFloats_;
+  std::vector<std::pair<std::string,int> > userInts_;
+  std::vector<std::pair<std::string,float> > userIDs_;
+  using UserFloatSorter = TempFuncs::PairComp<std::string,float,std::less<std::string> >;
+  using UserIntSorter = TempFuncs::PairComp<std::string,int,std::less<std::string> >;
+  using UserIDSorter = TempFuncs::PairComp<std::string,float,std::less<std::string> >;
+  
 
   float rhoCorr_; //! set by the event each time we get it
 
@@ -209,7 +220,19 @@ private:
     altNrgy_=iAltNrgy;altNrgyErr_=iAltNrgyErr;altEPCombNrgy_=iAltEPCombNrgy;phoNrgy_=iPhoNrgy;altPhoNrgy_=iAltPhoNrgy;
   }
   void setIDs(std::vector<int> ids){ids_=std::move(ids);}
-
+  void setUserInts(std::vector<std::pair<std::string,int> > vars){
+    userInts_=std::move(vars);
+    std::sort(userInts_.begin(),userInts_.end(),UserIntSorter());
+  }
+  void setUserFloats(std::vector<std::pair<std::string,float> > vars){
+    userFloats_=std::move(vars);
+    std::sort(userFloats_.begin(),userFloats_.end(),UserFloatSorter());
+  }
+  void setUserIDs(std::vector<std::pair<std::string,float> > vars){
+    userIDs_=std::move(vars);
+    std::sort(userIDs_.begin(),userIDs_.end(),UserIDSorter());
+  }
+  
   //get the seed + super clusters
   //tried to avoid pointers but it looks envitable as sometimes the ele wont
   //have any seed/super clusters and want those calls to degrade gracefully
@@ -312,7 +335,8 @@ private:
   float isolHad()const{return isolHad_;}
   float isolHadDepth1()const{return isolHadDepth1_;}
   float isolHadDepth2()const{return isolHadDepth2_;}
-  float isolPtTrks()const{return isolPtTrks_;}
+  float isolPtTrks()const{return isolNrTrks_!=-1 ? isolNrTrks_ : isolPtTrks_;} //really nasty hack to do with how I was storing CMSSW computed track isolation, should go away
+  float isolPtTrksCMSSW()const{return isolPtTrks_;}
   float isolNrTrks()const{return isolNrTrks_;}
  
   float isolEmDR04()const{return isolEmDR04_;}
@@ -356,8 +380,21 @@ private:
   // const SHIsolSuperCluster& getIsolSuperClus()const;
   // float isolEmClus(double coneRadius)const;
   // float isolEmEtClus(double coneRadius)const;
-  const std::vector<int> ids()const{return ids_;}
-
+  const std::vector<int>& ids()const{return ids_;}
+  const std::vector<std::pair<std::string,float> >& userFloats()const{return userFloats_;}
+  const std::vector<std::pair<std::string,int> >& userInts()const{return userInts_;}
+  const std::vector<std::pair<std::string,float> >& userIDs()const{return userIDs_;}
+  
+  float userFloat(const std::string& name)const{
+    return getUserVar<float,UserFloatSorter>(name,userFloats_);
+  }
+  float userID(const std::string& name)const{
+    return getUserVar<float,UserIDSorter>(name,userIDs_);
+  }
+  float userInt(const std::string& name)const{
+    return getUserVar<int,UserIntSorter>(name,userInts_);
+  }
+   
   //links
   int superClusIndex()const{return superClusIndx_;}
 
@@ -369,7 +406,19 @@ private:
 
   void setNewNrgy(float nrgy);
 
-  ClassDef(SHElectron,29) 
+private:
+  template<typename T,typename Sorter> 
+  static T getUserVar(const std::string& varName,const std::vector<std::pair<std::string,T> >& vars){
+    auto res = std::equal_range(vars.begin(),vars.end(),varName,Sorter());
+    const size_t nrFound = std::distance(res.first,res.second);
+    if(nrFound==1) return res.first->second;
+    else if(nrFound>1){
+      LogErr << " Error,  "<<nrFound<<" keys match "<<varName<<std::endl;
+    }
+    return std::numeric_limits<T>::max();
+  }
+  
+  ClassDef(SHElectron,30) 
 
 };
 

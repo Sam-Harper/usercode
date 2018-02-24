@@ -137,6 +137,7 @@ private:
   int getSCSeedCrysId_(uint pfSeedId,const std::vector<reco::SuperCluster>& superClusters)const;
   void fixTrkIsols_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const;
   void setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const;
+  void addUserData_(const reco::GsfElectron* gsfEle,SHElectron& ele)const;
   void setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const;
   bool isNearEle_(float eta,float phi,const SHEvent& shEvent,const float maxDR)const;
   void fillEcalHitVec_(const heep::Event& heepEvent,const EcalRecHitCollection& hitColl,const SHEvent& event)const;
