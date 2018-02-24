@@ -329,7 +329,7 @@ getMaxEtaPhiRecHitDist(const reco::RecoEcalCandidate& cand,
   for(auto subClus = superClus->clustersBegin();subClus!=superClus->clustersEnd();++subClus){
     for(auto& hit : (*subClus)->hitsAndFractions()){
       const CaloSubdetectorGeometry* subDetGeom =  calGeometryHandle_->getSubdetectorGeometry(hit.first);
-      std::shared_ptr<const CaloCellGeometry> cellGeom = subDetGeom ? subDetGeom->getGeometry(hit.first) :   std::shared_ptr<const CaloCellGeometry>();
+      const CaloCellGeometry* cellGeom = subDetGeom ? subDetGeom->getGeometry(hit.first) : nullptr;
       if(cellGeom){
 	const GlobalPoint& cellPos =cellGeom->getPosition();
 	float dPhi = std::abs(reco::deltaPhi(l1Phi,cellPos.phi()));

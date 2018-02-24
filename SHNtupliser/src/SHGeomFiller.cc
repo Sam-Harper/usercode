@@ -126,8 +126,8 @@ void SHGeomFiller::fillHcalGeomEndcap(SHCaloGeom& hcalGeom)
 void SHGeomFiller::getCellPosition(const DetId &detId,TVector3 &pos)
 {
   const CaloSubdetectorGeometry* subDetGeom =  calGeometry_->getSubdetectorGeometry(detId);
-  std::shared_ptr<const CaloCellGeometry> cellGeom = subDetGeom!=nullptr ? subDetGeom->getGeometry(detId) : std::shared_ptr<const CaloCellGeometry>();
-  if(cellGeom!=nullptr){
+  const CaloCellGeometry* cellGeom = subDetGeom!=NULL ? subDetGeom->getGeometry(detId) : NULL;
+  if(cellGeom!=NULL){
     const GlobalPoint &gpPos =cellGeom->getPosition();
     pos.SetXYZ(gpPos.x(),gpPos.y(),gpPos.z());
   }else{
@@ -140,8 +140,8 @@ void SHGeomFiller::getCellPosition(const DetId &detId,TVector3 &pos)
 void SHGeomFiller::getCellEdges(const DetId& detId,SHCaloCellGeom::CellEdges& frontEdges,SHCaloCellGeom::CellEdges& rearEdges)
 {
   const CaloSubdetectorGeometry* subDetGeom =  calGeometry_->getSubdetectorGeometry(detId);
-  std::shared_ptr<const CaloCellGeometry> cellGeom = subDetGeom!=nullptr ? subDetGeom->getGeometry(detId) : std::shared_ptr<const CaloCellGeometry>();
-  if(cellGeom!=nullptr){
+  const CaloCellGeometry* cellGeom = subDetGeom!=NULL ? subDetGeom->getGeometry(detId) : NULL;
+  if(cellGeom!=NULL){
     const EZArrayFL<GlobalPoint>& corners = cellGeom->getCorners();
     if(corners[0].eta()==corners[2].eta() || corners[0].phi()==corners[2].phi()) edm::LogInfo("SHGeomFiller") <<"getCellEdges: Warning corner structure has changed, edges will be incorrectly filled";
     //std::cout <<"nr corners "<<corners.size()<<" det id "<<detId.det()<<" sub det "<<detId.subdetId()<<std::endl;
@@ -172,8 +172,8 @@ void SHGeomFiller::getCellEdges(const DetId& detId,SHCaloCellGeom::CellEdges& fr
 void SHGeomFiller::getCellCorners(const DetId& detId,std::vector<TVector3>& cornerVec)
 {
   const CaloSubdetectorGeometry* subDetGeom =  calGeometry_->getSubdetectorGeometry(detId);
-  std::shared_ptr<const CaloCellGeometry> cellGeom = subDetGeom!=nullptr ? subDetGeom->getGeometry(detId) : std::shared_ptr<const CaloCellGeometry>();
-  if(cellGeom!=nullptr){
+  const CaloCellGeometry* cellGeom = subDetGeom!=NULL ? subDetGeom->getGeometry(detId) : NULL;
+  if(cellGeom!=NULL){
     const EZArrayFL<GlobalPoint>& cmsswCorners = cellGeom->getCorners();
     
     if(cmsswCorners.size()!=8) std::cout <<"SHGeomFiller: getCornerVec : Error corner vec has "<<cmsswCorners.size()<<" corners, not 8 "<<std::endl;
