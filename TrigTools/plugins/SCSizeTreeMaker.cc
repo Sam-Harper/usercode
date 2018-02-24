@@ -256,7 +256,7 @@ void SCSizeTreeMaker::analyzeSC(const reco::SuperCluster& superClus,
   auto hits = getAllHitsInInfluence(superClus,pfClusters);
   for(auto& hit : hits){
     const CaloSubdetectorGeometry* subDetGeom =  calGeometryHandle_->getSubdetectorGeometry(hit.first);
-    const CaloCellGeometry* cellGeom = subDetGeom ? subDetGeom->getGeometry(hit.first) : nullptr;
+    std::shared_ptr<const CaloCellGeometry> cellGeom = subDetGeom ? subDetGeom->getGeometry(hit.first) :   std::shared_ptr<const CaloCellGeometry>();
     if(cellGeom){
       const GlobalPoint& cellPos =cellGeom->getPosition();
       
@@ -532,7 +532,7 @@ getMaxEtaPhiRecHitDist(const reco::RecoEcalCandidate& cand,
   for(auto subClus = superClus->clustersBegin();subClus!=superClus->clustersEnd();++subClus){
     for(auto& hit : (*subClus)->hitsAndFractions()){
       const CaloSubdetectorGeometry* subDetGeom =  calGeometryHandle_->getSubdetectorGeometry(hit.first);
-      const CaloCellGeometry* cellGeom = subDetGeom ? subDetGeom->getGeometry(hit.first) : nullptr;
+      std::shared_ptr<const CaloCellGeometry> cellGeom = subDetGeom ? subDetGeom->getGeometry(hit.first) :   std::shared_ptr<const CaloCellGeometry>();
       if(cellGeom){
 	const GlobalPoint& cellPos =cellGeom->getPosition();
 	float dPhi = std::abs(reco::deltaPhi(l1Phi,cellPos.phi()));
