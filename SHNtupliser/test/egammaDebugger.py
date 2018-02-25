@@ -1,7 +1,7 @@
 # Import configurations
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("HEEP")
+process = cms.Process("EGDEBUG")
 
 
 import FWCore.ParameterSet.VarParsing as VarParsing
