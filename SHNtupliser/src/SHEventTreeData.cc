@@ -29,7 +29,7 @@ void SHEventTreeData::BranchData::setup(const edm::ParameterSet& iPara)
   addJetMETExtra=iPara.getParameter<bool>("addJetMETExtra");
   addEleUserData=iPara.getParameter<bool>("addEleUserData");
   fillTrkIsolFromUserData=iPara.getParameter<bool>("fillTrkIsolFromUserData");
-  trkIsolUserDataName=iPara.getParameter<bool>("trkIsolUserDataName");
+  trkIsolUserDataName=iPara.getParameter<std::string>("trkIsolUserDataName");
   
   filterIsolTrks=iPara.getParameter<bool>("filterIsolTrks");
   filterEcalHits=iPara.getParameter<bool>("filterEcalHits");
