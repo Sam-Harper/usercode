@@ -228,6 +228,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   const float phoNrgyAlt = oldPhoMatch ? oldPhoMatch->energy() : 0.;
   shEle->setNrgyExtra(0.,0.,0.,photon.energy(),phoNrgyAlt);
   setNrSatCrysIn5x5_(heepEvent,*shEle);
+  addUserData_(&photon,*shEle);
   fillRecHitClusterMap(*photon.superCluster(),shEvent);
 }
 
@@ -1024,6 +1025,7 @@ void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const edm::Ptr<rec
     const pat::Electron* patEle = dynamic_cast<const pat::Electron*>(&*gsfEle);
     if(patEle){
       shEle.setTrkIsol(shEle.isolPtTrks(),shEle.isolPtTrksDR04(),patEle->userFloat(branches_.trkIsolUserDataName));
+      return;
     }
       
   }else if(heepEvent.handles().eleIsolPtTrksValueMap.isValid()){
@@ -1099,6 +1101,24 @@ void SHEventHelper::setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco
   shEle.setIDs(std::move(vidBits));
 }
 
+void SHEventHelper::addUserData_(const reco::Photon* pho,SHElectron& ele)const
+{
+  const pat::Photon* patPho = dynamic_cast<const pat::Photon*>(pho);
+  if(patPho){
+    //ele.setUserIDs(patPho->electronIDs());
+    std::vector<std::pair<std::string,float> > userIDs;
+    std::vector<std::pair<std::string,float> > userFloats;
+    std::vector<std::pair<std::string,int> > userInts;
+    for(auto& name : patPho->userFloatNames()) userFloats.push_back({name,patPho->userFloat(name)});  
+    for(auto& name : patPho->userIntNames()) userInts.push_back({name,patPho->userInt(name)});
+    for(auto& id : patPho->photonIDs()) userInts.push_back({id.first,id.second});
+    
+    ele.setUserInts(std::move(userInts));
+    ele.setUserFloats(std::move(userFloats));
+
+  }
+}
+
 void SHEventHelper::addUserData_(const reco::GsfElectron* gsfEle,SHElectron& ele)const
 {
   const pat::Electron* patEle = dynamic_cast<const pat::Electron*>(gsfEle);
@@ -1113,7 +1133,7 @@ void SHEventHelper::addUserData_(const reco::GsfElectron* gsfEle,SHElectron& ele
 
   }
 }
-
+ 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEcalClusterTools.h"
 void SHEventHelper::setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const
 {
