@@ -1111,10 +1111,11 @@ void SHEventHelper::addUserData_(const reco::Photon* pho,SHElectron& ele)const
     std::vector<std::pair<std::string,int> > userInts;
     for(auto& name : patPho->userFloatNames()) userFloats.push_back({name,patPho->userFloat(name)});  
     for(auto& name : patPho->userIntNames()) userInts.push_back({name,patPho->userInt(name)});
-    for(auto& id : patPho->photonIDs()) userInts.push_back({id.first,id.second});
+    for(auto& id : patPho->photonIDs()) userIDs.push_back({id.first,id.second});
     
     ele.setUserInts(std::move(userInts));
     ele.setUserFloats(std::move(userFloats));
+    ele.setUserIDs(std::move(userIDs));
 
   }
 }
