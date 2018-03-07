@@ -21,7 +21,7 @@ else:
     from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     datasetCode=getDatasetCode(process.source.fileNames[0])
     datasetCode=101
-#    datasetCode=0
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -76,6 +76,8 @@ process.shNtupliser.sampleWeight = 1
 process.shNtupliser.addMuons = False
 process.shNtupliser.outputGeom = cms.bool(False)
 process.shNtupliser.hltProcName = cms.string(hltName)
+process.shNtupliser.addEleUserData = cms.bool(True)  
+process.shNtupliser.fillTrkIsolFromUserData = cms.bool(True)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
@@ -94,6 +96,7 @@ if disableLargeCollections:
 if useMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
+    
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")

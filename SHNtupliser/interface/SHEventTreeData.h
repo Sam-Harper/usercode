@@ -33,6 +33,10 @@ public:
     bool addMCParts;
     bool addGainSwitchInfo;
     bool addJetMETExtra;
+    bool addEleUserData;
+    bool fillTrkIsolFromUserData;
+    std::string trkIsolUserDataName;
+    
     bool filterIsolTrks;
     bool filterEcalHits;
     bool filterHcalHits;

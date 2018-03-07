@@ -178,6 +178,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   fixTrkIsols_(heepEvent,gsfEle,*shEle);
   setNrSatCrysIn5x5_(heepEvent,*shEle);
   setCutCode_(heepEvent,gsfEle,*shEle);
+  if(branches_.addEleUserData) addUserData_(&*gsfEle,*shEle);
   //shEle- >setPassMVAPreSel(shEle->isolMVA()>=-0.1);
   //shEle->setPassPFlowPreSel(gsfEle.mvaOutput().status==3); 
   fillRecHitClusterMap(*gsfEle->superCluster(),shEvent);
@@ -227,6 +228,7 @@ void SHEventHelper::addElectron(const heep::Event& heepEvent,SHEvent& shEvent,co
   const float phoNrgyAlt = oldPhoMatch ? oldPhoMatch->energy() : 0.;
   shEle->setNrgyExtra(0.,0.,0.,photon.energy(),phoNrgyAlt);
   setNrSatCrysIn5x5_(heepEvent,*shEle);
+  addUserData_(&photon,*shEle);
   fillRecHitClusterMap(*photon.superCluster(),shEvent);
 }
 
@@ -1019,7 +1021,14 @@ const std::vector<int> makeSortedVec(std::vector<int> vec)
 
 void SHEventHelper::fixTrkIsols_(const heep::Event& heepEvent,const edm::Ptr<reco::GsfElectron>& gsfEle,SHElectron& shEle)const
 {
-  if(heepEvent.handles().eleIsolPtTrksValueMap.isValid()){
+  if(branches_.fillTrkIsolFromUserData){
+    const pat::Electron* patEle = dynamic_cast<const pat::Electron*>(&*gsfEle);
+    if(patEle){
+      shEle.setTrkIsol(shEle.isolPtTrks(),shEle.isolPtTrksDR04(),patEle->userFloat(branches_.trkIsolUserDataName));
+      return;
+    }
+      
+  }else if(heepEvent.handles().eleIsolPtTrksValueMap.isValid()){
     float trkIso = (*heepEvent.handles().eleIsolPtTrksValueMap)[gsfEle];
     shEle.setTrkIsol(shEle.isolPtTrks(),shEle.isolPtTrksDR04(),trkIso);
     return;
@@ -1092,6 +1101,39 @@ void SHEventHelper::setCutCode_(const heep::Event& heepEvent,const edm::Ptr<reco
   shEle.setIDs(std::move(vidBits));
 }
 
+void SHEventHelper::addUserData_(const reco::Photon* pho,SHElectron& ele)const
+{
+  const pat::Photon* patPho = dynamic_cast<const pat::Photon*>(pho);
+  if(patPho){
+    //ele.setUserIDs(patPho->electronIDs());
+    std::vector<std::pair<std::string,float> > userIDs;
+    std::vector<std::pair<std::string,float> > userFloats;
+    std::vector<std::pair<std::string,int> > userInts;
+    for(auto& name : patPho->userFloatNames()) userFloats.push_back({name,patPho->userFloat(name)});  
+    for(auto& name : patPho->userIntNames()) userInts.push_back({name,patPho->userInt(name)});
+    for(auto& id : patPho->photonIDs()) userInts.push_back({id.first,id.second});
+    
+    ele.setUserInts(std::move(userInts));
+    ele.setUserFloats(std::move(userFloats));
+
+  }
+}
+
+void SHEventHelper::addUserData_(const reco::GsfElectron* gsfEle,SHElectron& ele)const
+{
+  const pat::Electron* patEle = dynamic_cast<const pat::Electron*>(gsfEle);
+  if(patEle){
+    ele.setUserIDs(patEle->electronIDs());
+    std::vector<std::pair<std::string,float> > userFloats;
+    std::vector<std::pair<std::string,int> > userInts;
+    for(auto& name : patEle->userFloatNames()) userFloats.push_back({name,patEle->userFloat(name)});  
+    for(auto& name : patEle->userIntNames()) userInts.push_back({name,patEle->userInt(name)});
+    ele.setUserInts(std::move(userInts));
+    ele.setUserFloats(std::move(userFloats));
+
+  }
+}
+ 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEcalClusterTools.h"
 void SHEventHelper::setNrSatCrysIn5x5_(const heep::Event& heepEvent,SHElectron& shEle)const
 {
@@ -1301,3 +1343,5 @@ SHEventHelper::getOldPhoMatch_(const reco::Photon& pho,const heep::Event& heepEv
   }
   return bestMatch;
 }
+
+		  

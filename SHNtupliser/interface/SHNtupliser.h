@@ -23,7 +23,7 @@
 #include "SHarper/SHNtupliser/interface/SHEventHelper.h"
 #include "SHarper/SHNtupliser/interface/SHEventTreeData.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEventHelper.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
@@ -50,7 +50,7 @@ class SHTrigSummary;
 
 class SHTrigObjContainer;
 
-class SHNtupliser : public edm::EDAnalyzer {
+class SHNtupliser : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
 
 private:
   heep::EventHelper evtHelper_; //this is our magic class where all the nastyness is contained
@@ -113,11 +113,11 @@ public:
   virtual ~SHNtupliser();
   
 private:
-  virtual void beginJob() ;
-  virtual void beginRun(const edm::Run& run,const edm::EventSetup& iSetup);
-  virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
-  virtual void endRun(edm::Run const& iRun, edm::EventSetup const&);
-  virtual void endJob() ;
+  virtual void beginJob() override ;
+  virtual void beginRun(const edm::Run& run,const edm::EventSetup& iSetup) override;
+  virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;
+  virtual void endRun(edm::Run const& iRun, edm::EventSetup const&) override;
+  virtual void endJob() override;
 
 protected:
   bool fillSHEvent(const edm::Event& iEvent,const edm::EventSetup& iSetup);
