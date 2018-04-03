@@ -158,6 +158,29 @@ def outputCmdsRePixelLight():
     return res
 
 
+def outputCmdsEgammaDebug():
+    res = cms.untracked.vstring("drop *",
+    'keep recoRecoEcalCandidatesToValuefloatAssociation_*_*_*',
+    "keep *_hltEgammaCandidates_*_*",
+    "keep *_hltParticleFlowSuperClusterECALL1Seeded_*_*",
+    "keep *_hltParticleFlowClusterECALL1Seeded_*_*",
+    "keep *_hltParticleFlowClusterPSL1Seeded_*_*",
+    "keep *_hltEgammaCandidatesUnseeded_*_*",
+    "keep *_hltParticleFlowSuperClusterECALUnseeded_*_*",
+    "keep *_hltParticleFlowClusterECALUnseeded_*_*",
+    "keep *_hltParticleFlowClusterPSUnseeded_*_*",
+    "keep *_hltGtStage2Digis_*_*",
+    "keep *_hltGtStage2ObjectMap_*_*",
+    "keep *_hltScalersRawToDigi_*_*",
+    #"keep *_hltOnlineBeamSpot_*_*",
+    #"keep *_hltSiStripClusters_*_*",
+    "keep *_addPileupInfo_*_*",
+    "keep *_genParticles_*_*", 
+    "keep *_externalLHEProducer_*_*",
+    'keep *_hltTriggerSummaryAOD_*_*',
+    'keep *_TriggerResults_*_*',
+    )
+    return res
 def outputCmdsRePixelMedium():
     res = cms.untracked.vstring(
         "drop *",

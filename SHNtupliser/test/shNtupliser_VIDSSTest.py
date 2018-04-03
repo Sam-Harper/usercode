@@ -1,5 +1,4 @@
 isCrabJob=False #script seds this if its a crab job
-useMiniAOD=True
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -10,8 +9,21 @@ process = cms.Process("HEEP")
 
 import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing ('analysis') 
+options.register('isMiniAOD',True,options.multiplicity.singleton,options.varType.bool," whether we are running on miniAOD or not")
+options.register('applyECorr',True,options.multiplicity.singleton,options.varType.bool," ")
+options.register('applyVIDOnECorrEgamma',True,options.multiplicity.singleton,options.varType.bool," ")
+
+
 options.parseArguments()
 
+print options.inputFiles
+if options.inputFiles==[]:
+    if options.isMiniAOD:
+        options.inputFiles=['file:/opt/ppd/month/harper/dataFiles/DoubleEG_Run2017F_MINIAOD_94X_305064_3E907453-F3E1-E711-BFB4-0CC47AB0B704.root']
+    else:
+        options.inputFiles=['file:/opt/ppd/month/harper/dataFiles/DoubleEG_Run2017E_AOD_304144_LS90to91_LS629to631_LS961to963_A479BAD3-69D3-E711-AE6D-FA163E41AF41.root']
+
+print options.inputFiles
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.inputFiles),  
 #                            eventsToProcess = cms.untracked.VEventRange("281707:47701394-281707:47701394")
@@ -34,7 +46,7 @@ else: isMC=True
 datasetVersion="TOSED:DATASETVERSION"
 
 
-print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD,"datasetVersion = ",datasetVersion
+print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",options.isMiniAOD,"datasetVersion = ",datasetVersion
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -64,7 +76,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(500)
 )
 
 #CRABHLTNAMEOVERWRITE
@@ -99,7 +111,7 @@ if disableLargeCollections:
     #process.shNtupliser.addCaloHits = False
 
 
-if useMiniAOD:
+if options.isMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
 
@@ -139,112 +151,16 @@ if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetC
 if isCrabJob and process.shNtupliser.datasetCode.value()>140:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-#useMiniAOD=False
 
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format  to be
-# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
-if useMiniAOD:
-    switchOnVIDElectronIdProducer(process,DataFormat.MiniAOD)
-   # switchOnVIDPhotonIdProducer(process,DataFormat.MiniAOD)
-else:
-    switchOnVIDElectronIdProducer(process,DataFormat.AOD)
-    switchOnVIDPhotonIdProducer(process,DataFormat.AOD)
-
-
-# define which IDs we want to produce and add them to VID
-ele_id_modules =  [ 'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
-                    'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff',
-                    'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff', 
-                    'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff',
-                    'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff',
-                    'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff',
-                    'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff',
-                  ]
-pho_id_modules =  [ 'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_TrueVtx_cff',
-                    'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1_cff', 
-                    'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1p1_cff', 
-                    'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff',
-                    'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring16_nonTrig_V1_cff'
-                  ]
-for idmod in ele_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-#for idmod in pho_id_modules:
-#    setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-
-
-if useMiniAOD:
-    process.egmPhotonIDs = cms.PSet(physicsObjectIDs = cms.VPSet())
-    process.load('EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi')
-    process.load('EgammaAnalysis.ElectronTools.calibratedPatPhotonsRun2_cfi')
-    process.calibratedPatElectrons.electrons = cms.InputTag('slimmedElectrons',processName=cms.InputTag.skipCurrentProcess())
-    process.calibratedPatPhotons.photons = cms.InputTag('slimmedPhotons',processName=cms.InputTag.skipCurrentProcess())
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons')
- #   process.egmPhotonIDs.physicsObjectSrc = cms.InputTag('calibratedPatPhotons')
-    process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedPatElectrons') 
- #   process.photonMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedPatPhotons')
-#    process.photonIDValueMapProducer.srcMiniAOD = cms.InputTag('calibratedPatPhotons')
-  #  process.egmPhotonIsolation.srcToIsolate = cms.InputTag('calibratedPatPhotons')
-    if hasattr(process,'heepIDVarValueMaps'):
-        process.heepIDVarValueMaps.elesMiniAOD = cms.InputTag('calibratedPatElectrons')
-
-    from RecoEgamma.EgammaTools.egammaObjectModificationsInMiniAOD_cff import egamma_modifications
-    from RecoEgamma.EgammaTools.egammaObjectModifications_tools import makeVIDBitsModifier,makeVIDinPATIDsModifier,makeEnergyScaleAndSmearingSysModifier                                     
-    egamma_modifications.append(makeVIDBitsModifier(process,"egmGsfElectronIDs","egmPhotonIDs"))
-    egamma_modifications.append(makeVIDinPATIDsModifier(process,"egmGsfElectronIDs","egmPhotonIDs"))
-    egamma_modifications.append(makeEnergyScaleAndSmearingSysModifier("calibratedPatElectrons","calibratedPatPhotons"))
-
-    #add the HEEP trk isol to the slimmed electron
-    egamma_modifications[0].electron_config.heepV70TrkPtIso = cms.InputTag("heepIDVarValueMaps","eleTrkPtIso")
-    for pset in egamma_modifications:
-        pset.overrideExistingValues = cms.bool(True)
-        if hasattr(pset,"electron_config"): pset.electron_config.electronSrc = cms.InputTag("calibratedPatElectrons")
-        if hasattr(pset,"photon_config"): pset.photon_config.photonSrc = cms.InputTag("calibratedPatPhotons")
-
-    process.slimmedElectrons = cms.EDProducer("ModifiedElectronProducer",
-                                              src=cms.InputTag("calibratedPatElectrons"),
-                                              modifierConfig = cms.PSet(
-            modifications = egamma_modifications
-            )
-                                              )
-    process.slimmedPhotons = cms.EDProducer("ModifiedPhotonProducer",
-                                              src=cms.InputTag("calibratedPatPhotons"),
-                                              modifierConfig = cms.PSet(
-            modifications = cms.VPSet()# egamma_modifications
-            )
-                                            )
-
-                                            
-    
-
-
-else:
-    process.load('EgammaAnalysis.ElectronTools.calibratedElectronsRun2_cfi')
-    process.load('EgammaAnalysis.ElectronTools.calibratedPhotonsRun2_cfi')
-    #we will rename the collections to the standard names so VID and other things pick it up
-
-    process.gedGsfElectrons = process.calibratedElectrons.clone(electrons=cms.InputTag("gedGsfElectrons",processName=cms.InputTag.skipCurrentProcess()))
-    process.gedPhotons = process.calibratedPhotons.clone(photons=cms.InputTag("gedPhotons",processName=cms.InputTag.skipCurrentProcess())) 
-
-if useMiniAOD:
-    process.egammaScaleSmearTask = cms.Task(process.calibratedPatElectrons,process.slimmedElectrons,
-                                            process.calibratedPatPhotons,process.slimmedPhotons
-                                            )
-else:
-    process.egammaScaleSmearTask = cms.Task(process.gedGsfElectrons,
-                                            process.gedPhotons
-                                            )
-                                          
-
-process.egammaScaleSmearSeq = cms.Sequence( process.egammaScaleSmearTask)
-process.egammaScaleSmearAndVIDSeq = cms.Sequence(process.egammaScaleSmearSeq*
-    process.egmGsfElectronIDSequence)
-    #process.egmPhotonIDSequence)
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+setupEgammaPostRecoSeq(process,applyEnergyCorrections=options.applyECorr,
+                       applyVIDOnCorrectedEgamma=options.applyVIDOnECorrEgamma,
+                       isMiniAOD=options.isMiniAOD)
 
 
 process.p = cms.Path(#process.primaryVertexFilter*
   #  process.regressionApplication*
-    process.egammaScaleSmearAndVIDSeq*
+    process.egammaPostRecoSeq*
  #   process.eleTrkIsol*
     process.shNtupliser)
  
@@ -274,7 +190,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    fileName = cms.untracked.string('file:outputTestAOD.root'),
+    fileName = cms.untracked.string(options.outputFile.replace(".root","_EDM.root")),
     outputCommands = cms.untracked.vstring('keep *',
                                            "keep *_*_*_RECO",
                                            'keep *_*_*_HLT',
@@ -282,5 +198,5 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
                                            'keep *_slimmedPhotons*_*_*')
                                            
 )                                        
-#process.out = cms.EndPath(process.AODSIMoutput)
+process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag
