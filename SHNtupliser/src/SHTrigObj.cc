@@ -2,7 +2,7 @@
 #include "SHarper/SHNtupliser/interface/MathFuncs.hh"
 #include "SHarper/SHNtupliser/interface/LogErr.hh"
 #include <array>
-
+#include <limits>
 ClassImp(SHTrigObj)
 
 
@@ -35,7 +35,7 @@ float SHTrigObj::var(const std::string& varName)const
   // else if(varName=="phi") return phi();
   // else if(varName=="nrgy") return p4().E();
   // else if(varName=="et") return p4().Et();
-  if(vars_.empty()) return -9999;
+  if(vars_.empty()) return std::numeric_limits<float>::max();
 
   auto result =  std::equal_range(vars_.begin(),vars_.end(),varName,VarSorter());
   
@@ -44,10 +44,10 @@ float SHTrigObj::var(const std::string& varName)const
   }else if(result.second-result.first==0){
     // now suppress the error message as the vars wont always be present
     //    LogErr <<" Warning, var "<<varName<<" not found "<<std::endl;
-    return -999;
+    return std::numeric_limits<float>::max();
   }else{
     LogErr << " Error,  "<<result.second-result.first<<" keys match "<<varName<<std::endl;
-    return -999;
+    return std::numeric_limits<float>::max();
   }  
 }
 

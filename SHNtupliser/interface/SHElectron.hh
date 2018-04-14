@@ -65,6 +65,7 @@ class SHElectron : public TObject {
   float altPhoNrgy_; //not set by the electron
   TVector3 posCal_;
   float e5x5_; 
+  float r9_; //new for V31
   float eta_;
   float detEta_;
 
@@ -418,7 +419,7 @@ private:
     return std::numeric_limits<T>::max();
   }
   
-  ClassDef(SHElectron,30) 
+  ClassDef(SHElectron,31) 
 
 };
 
