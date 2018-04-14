@@ -19,6 +19,7 @@ parser.add_option('--copyData',help="whether to stage out the data or not",defau
 parser.add_option('--dbsUrl',help="dbs url global,phys03 etc",default="global")
 parser.add_option('--transferLogFiles',help="whether to transfer log files or not",default=False)
 parser.add_option('--ignoreLocality',help="whether to ignore locality",default=False)
+parser.add_option('--grl',help='good run lumi json',default="")
 options,args = parser.parse_args()
 if not options.input or not options.pattern or not options.shNtupVersion or not options.cmsswVersion or not options.config:
     parser.error("input, pattern, shNtupVersion, config and cmsswVersion are manditory")
@@ -85,10 +86,11 @@ for line in datasetDefFile:
             tempConfigFile.write(line)
 
   
-
-
-
-    
+    grlStr=""
+    if options.grl!="":
+        print "adding grl",options.grl
+        grlStr = " Data.lumiMask='"+options.grl+"'"
+        
     crabSubmitCmd = "crab submit -c crab_base.py General.requestName="+workingDir+ \
                     " General.transferOutputs="+str(options.copyData)+ \
                     " Data.inputDataset="+datasetPath+ \
@@ -101,7 +103,8 @@ for line in datasetDefFile:
                     " Data.runRange="+runRange+ \
                     " JobType.psetName="+tempConfig+ \
                     " General.workArea="+crabProjDir+ \
-                    " General.transferLogs="+str(options.transferLogFiles)
+                    " General.transferLogs="+str(options.transferLogFiles)+ \
+                    grlStr
     print "will submit:"
     print crabSubmitCmd
     print " "
