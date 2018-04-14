@@ -32,6 +32,7 @@ altNrgyErr_(0.),
 altEPCombNrgy_(0.),
 posCal_(ele.caloPosition().X(),ele.caloPosition().Y(),ele.caloPosition().Z()),
 e5x5_(ele.full5x5_e5x5()),
+r9_(ele.full5x5_r9()),
 eta_(ele.eta()),
 detEta_(ele.superCluster()->eta()),
 //track quantities (momentum + positions)
@@ -143,6 +144,7 @@ altNrgyErr_(0.),
 altEPCombNrgy_(0.),
 posCal_(pho.caloPosition().X(),pho.caloPosition().Y(),pho.caloPosition().Z()),
 e5x5_(pho.full5x5_e5x5()),
+r9_(pho.full5x5_r9()),
 eta_(pho.eta()),
 detEta_(pho.superCluster()->eta()),
 
@@ -257,6 +259,7 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   altEPCombNrgy_(0.),
   posCal_(superClus.x(),superClus.y(),superClus.z()),
   e5x5_(shape.e5x5),
+  r9_(-999),
   eta_(p4.Eta()),
   detEta_(superClus.eta()),
   //track quantities (momentum + positions)

@@ -61,6 +61,7 @@ public:
   bool valid()const{return type_!=0;}
   bool isUndefined()const{return type_==static_cast<int>(UNDEFINED);}
   float var(const std::string& varName)const; 
+  const std::vector<std::pair<std::string,float> >& vars()const{return vars_;}
   void clearVars(){vars_.clear();}
   void addVars(const std::vector<std::pair<std::string,float> >& vars);
   void addVars(std::vector<std::pair<std::string,float> > &&vars);
