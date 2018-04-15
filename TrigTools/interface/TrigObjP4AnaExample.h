@@ -10,6 +10,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
@@ -50,7 +51,7 @@ class TrigObjP4AnaExample : public edm::EDAnalyzer {
 private:
   edm::InputTag trigEventTag_;
   std::string filterName_;
-
+  edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
   std::string pathName_;
   std::vector<std::string> filtersOfPath_; //the filters of the path
   HLTConfigProvider hltConfig_; //to translate path names to filter names

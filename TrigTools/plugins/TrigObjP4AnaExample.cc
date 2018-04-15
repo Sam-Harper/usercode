@@ -16,6 +16,7 @@ TrigObjP4AnaExample::TrigObjP4AnaExample(const edm::ParameterSet& iPara)
   trigEventTag_ = iPara.getParameter<edm::InputTag>("trigEventTag");
   filterName_ = iPara.getParameter<std::string>("filterName");
   pathName_ = iPara.getParameter<std::string>("pathName");
+  trigEventToken_ = consumes<trigger::TriggerEvent>(trigEventTag_);
 }
 
 //what we are going to do here is also show an example of how to get the filters of the path automagically 
@@ -38,7 +39,7 @@ void TrigObjP4AnaExample::analyze(const edm::Event& iEvent, const edm::EventSetu
 {
   //get trigger event
   edm::Handle<trigger::TriggerEvent> trigEvent; 
-  iEvent.getByLabel(trigEventTag_,trigEvent);
+  iEvent.getByToken(trigEventToken_,trigEvent);
   
   //get the p4s
   std::vector<math::XYZTLorentzVector> trigObjP4s;
