@@ -15,7 +15,7 @@ process.maxEvents = cms.untracked.PSet(
 )
  
 import subprocess
-fileNameRAW = subprocess.Popen(['das_client.py','--query','file dataset='+sys.argv[2],'--limit','1','--format','json'],stdout=subprocess.PIPE).communicate()[0]
+fileNameRAW = subprocess.Popen(['dasgoclient','--query','file dataset='+sys.argv[2],'--limit','1','--format','json'],stdout=subprocess.PIPE).communicate()[0]
 import json
 fileNameJson=json.loads(fileNameRAW)
 fileName=str(fileNameJson["data"][0]["file"][0]["name"])
