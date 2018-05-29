@@ -58,7 +58,7 @@ else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
-    process.GlobalTag.globaltag = "92X_dataRun2_Prompt_v4"
+    process.GlobalTag.globaltag = "101X_dataRun2_Prompt_v9"
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -76,12 +76,12 @@ process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
 process.shNtupliser.sampleWeight = 1
 
-process.shNtupliser.addMet = True
-process.shNtupliser.addJets = True
+process.shNtupliser.addMet = False
+process.shNtupliser.addJets = False
 process.shNtupliser.addMuons = False
-process.shNtupliser.applyMuonId = True
-process.shNtupliser.addCaloTowers = True
-process.shNtupliser.addCaloHits = True
+process.shNtupliser.applyMuonId = False
+process.shNtupliser.addCaloTowers = False
+process.shNtupliser.addCaloHits = False
 process.shNtupliser.addIsolTrks = False
 process.shNtupliser.addPFCands = False
 process.shNtupliser.addPFClusters = True
@@ -104,25 +104,20 @@ if useMiniAOD:
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
-if not isMC:
-    process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsBeforeGSFix")
-    process.shNtupliser.metTag = cms.InputTag("slimmedMETsMuEGClean")
 
 
 #if 1, its a crab job...
 if isCrabJob:
     print "using crab specified filename"
     process.TFileService.fileName= "OUTPUTFILE"
-    #process.shNtupliser.outputFilename= "OUTPUTFILE"
     process.shNtupliser.datasetCode = datasetCode
     process.shNtupliser.sampleWeight = SAMPLEWEIGHT
 else:
     print "using user specified filename"
     process.TFileService.fileName= sys.argv[len(sys.argv)-1]
-    #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
     process.shNtupliser.datasetCode = datasetCode
     process.shNtupliser.sampleWeight = 1
-  #  print "datset code ",process.shNtupliser.datasetCode
+
 
 # Additional output definition
 import HLTrigger.HLTfilters.hltHighLevel_cfi
@@ -178,42 +173,17 @@ if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetC
 if isCrabJob and process.shNtupliser.datasetCode.value()>140:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-#setup the VID with HEEP 7.0, not necessary if you dont want to use VID
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format  to be
-# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
-if useMiniAOD:
-    switchOnVIDElectronIdProducer(process,DataFormat.MiniAOD)
-else:
-    switchOnVIDElectronIdProducer(process,DataFormat.AOD)
-
-# define which IDs we want to produce and add them to VID
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
-for idmod in my_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 process.p = cms.Path(#process.primaryVertexFilter*
-    process.egammaFilter*
-
-#    process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
+    #process.egammaFilter*
+  #  process.hltGtStage2Digis * process.hltGtStage2ObjectMap*
     process.shNtupliser)
         
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
-#if not isMC:
- #   from CondCore.DBCommon.CondDBSetup_cfi import *
- #   process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
-   #                               connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
-  #                                toGet = cms.VPSet(cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
-    #                                                         tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt")),
-     #                                               cms.PSet(record = cms.string("L1TUtmTriggerMenuRcd"),
-       #                                                      tag = cms.string("L1TUtmTriggerMenu_Stage2v0_hlt"))
-      #                                              )                              )
-    #process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
-
-if not isCrabJob:
-    import FWCore.PythonUtilities.LumiList as LumiList
+#if not isCrabJob:
+#    import FWCore.PythonUtilities.LumiList as LumiList
 #    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_276831-277420_MINIAOD_03Feb2017-v1_20170210_133745_lumis_job69.json').getVLuminosityBlockRange()
 #    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_281207-284035_MINIAOD_03Feb2017_ver2-v1_20170212_180554_lumis_job172.json').getVLuminosityBlockRange()
 
