@@ -52,7 +52,9 @@ void EgHLTTagProbeTreeMaker::fill_(const SHTrigObj& tag,const SHTrigObj& probe,c
   data_.tagTrigs = TrigBitsDef::getTrigCode(*event,tag.eta(),tag.phi(),tag.eta(),tag.phi());
   data_.probeTrigs = TrigBitsDef::getTrigCode(*event,probe.eta(),probe.phi(),probe.eta(),probe.phi());
   data_.tagHLT.fill(tag);
+  data_.tagHLTRegion =  CaloTools::region(tag.eta());
   data_.probeHLT.fill(probe);
+  data_.probeHLTRegion =  CaloTools::region(probe.eta());
   data_.mass = (tag.p4()+probe.p4()).Mag();
   if(tagTruth){
     data_.tagMC.fill(tagTruth->p4(),tagTruth->detEta());
