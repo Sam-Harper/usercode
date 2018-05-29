@@ -22,3 +22,5 @@
 /ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf/RunIISpring18DR-NZSPU40to70_100X_upgrade2018_realistic_v10-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 120 & 100 &
 
 /WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISpring18DR-NZSPU40to70_100X_upgrade2018_realistic_v10-v1/GEN-SIM-RAW & -1 & -1 & 1.0 & 1.0 & 130 & 100 & do
+
+/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISpring18DR-NZSPU40to70_100X_upgrade2018_realistic_v10-v2/GEN-SIM-RAW & 1000000 & -1 & 1.0 & 1.0 & 130 & 200 & do
