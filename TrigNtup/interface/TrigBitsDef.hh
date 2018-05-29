@@ -35,7 +35,14 @@ public:
   
   static std::pair<size_t,size_t> getWordAndBitNr(size_t index){return {index/kWordSize,index%kWordSize};}
   static void outOfBoundsErr(const std::string& funcStr);
+  static void setTrigNames2012();
+  static void setTrigNamesRun2015();
   static void setTrigNamesRun2016(); 
+  static void setTrigNamesRun2017(); 
+  static void setTrigNamesDebug2018(); 
+  static void setTrigNamesRun2016WPLoose(); 
+  static void setTrigNamesPHYS14();
+  static void setTrigNamesDebug();
   static void setTrigNames();
   static void write(TDirectory* dir);
 };
