@@ -65,7 +65,7 @@ const SHCaloCellGeom& SHCaloGeom::getCell(int detId)const
    else if(detCode_==HCAL) indx = DetIdTools::getHashHcal(detId);
    if(indx>=0 && indx<(int)cellGeoms_.size())  return cellGeoms_[indx];
    else {
-     std::cout <<"SHCaloGeom::getCell : Warning indx "<<indx<<" is invalid, detid "<<std::hex<<detId<<std::dec<<" detCode "<<detCode_<<std::endl;
+     //std::cout <<"SHCaloGeom::getCell : Warning indx "<<indx<<" is invalid, detid "<<std::hex<<detId<<std::dec<<" detCode "<<detCode_<<std::endl;
      return nullCell_;
    }
 }

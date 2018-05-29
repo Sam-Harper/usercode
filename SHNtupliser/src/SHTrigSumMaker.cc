@@ -417,7 +417,7 @@ TBits SHTrigSumMaker::getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const
     if(l1Name!=l1Util.decisionsFinal()[bitNr].first){
           // l1Name!=l1Util.masks()[bitNr].first ||  //masks are screwed
        // l1Name!=l1Util.prescales()[bitNr].first){
-      LogErr<<" Warning, algo names dont match up for bit "<<bitNr<<" SHL1MenuName "<<l1Name<<" L1DecisionName "<<l1Util.decisionsFinal()[bitNr].first <<" L1MaskName "<<l1Util.masks()[bitNr].first<<" L1PSName "<<l1Util.prescales()[bitNr].first<<std::endl;
+      //      LogErr<<" Warning, algo names dont match up for bit "<<bitNr<<" SHL1MenuName "<<l1Name<<" L1DecisionName "<<l1Util.decisionsFinal()[bitNr].first <<" L1MaskName "<<l1Util.masks()[bitNr].first<<" L1PSName "<<l1Util.prescales()[bitNr].first<<std::endl;
     }
     
   }
