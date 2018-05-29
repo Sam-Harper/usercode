@@ -12,6 +12,7 @@ config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'shNtupliser_autoGen_cfg.py'
 config.JobType.maxMemoryMB = 3000
 config.JobType.numCores = 4
+config.JobType.inputFiles=['EEAlign_2018.db']
 #config.JobType.inputFiles=['EEAlign_2018.db','alignments_PIX_MP.db','alignments_PIXSTRIP_MP.db','TrackerAlignment_PCL_byRun_v1_express_315648.db']
 #TOSED:EXTRAJOBTYPEINFO
 
