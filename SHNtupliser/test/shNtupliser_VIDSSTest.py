@@ -10,8 +10,8 @@ process = cms.Process("HEEP")
 import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing ('analysis') 
 options.register('isMiniAOD',True,options.multiplicity.singleton,options.varType.bool," whether we are running on miniAOD or not")
-options.register('applyECorr',True,options.multiplicity.singleton,options.varType.bool," ")
-options.register('applyVIDOnECorrEgamma',True,options.multiplicity.singleton,options.varType.bool," ")
+options.register('applyECorr',False,options.multiplicity.singleton,options.varType.bool," ")
+options.register('applyVIDOnECorrEgamma',False,options.multiplicity.singleton,options.varType.bool," ")
 
 
 options.parseArguments()
@@ -68,7 +68,7 @@ else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
-    process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v9', '')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -76,7 +76,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(500)
+    input = cms.untracked.int32(1000)
 )
 
 #CRABHLTNAMEOVERWRITE
@@ -198,5 +198,5 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
                                            'keep *_slimmedPhotons*_*_*')
                                            
 )                                        
-process.out = cms.EndPath(process.AODSIMoutput)
+#process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag
