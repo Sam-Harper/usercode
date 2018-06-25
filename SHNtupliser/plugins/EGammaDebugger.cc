@@ -73,10 +73,37 @@ namespace{
        std::cout <<"          "<<id.first<<" "<<id.second<<std::endl;
      }
   }
+  const reco::GsfElectron::ShowerShape& getShowerShape(const reco::GsfElectron& ele){
+    return ele.showerShape();
+  }
+  const reco::GsfElectron::ShowerShape& getFull5x5ShowerShape(const reco::GsfElectron& ele){
+    return ele.full5x5_showerShape();
+  }
+  const reco::Photon::ShowerShape& getFull5x5ShowerShape(const reco::Photon& pho){
+    return pho.full5x5_showerShapeVariables();
+  }
+  const reco::Photon::ShowerShape& getShowerShape(const reco::Photon& pho){
+    return pho.showerShapeVariables();
+  }
 
   template<typename T> void print(const edm::Event& evt,const std::string& tag,const T& obj){
     std::cout <<tag<<" event "<<evt.id().run()<<" "<<evt.id().event()<<" "<<evt.bunchCrossing()<<" ";
     std::cout <<" E/pt/eta/phi "<<obj.energy()<<" "<<obj.pt()<<" "<<obj.eta()<<" "<<obj.phi()<<" ecal "<<obj.ecalPFClusterIso()<<" hcal "<<obj.hcalPFClusterIso()<<std::endl;
+    auto showerShape = getFull5x5ShowerShape(obj);
+    std::cout <<"   showershapes: "<<std::endl;
+    std::cout <<"            "<<"e2x5Left "<<showerShape.e2x5Left<<std::endl;
+    std::cout <<"            "<<"e2x5Right "<<showerShape.e2x5Right<<std::endl;
+    std::cout <<"            "<<"e2x5Top "<<showerShape.e2x5Top<<std::endl;
+    std::cout <<"            "<<"e2x5Bottom "<<showerShape.e2x5Bottom<<std::endl;
+    showerShape = getShowerShape(obj);
+    std::cout <<"            "<<"e2x5Left "<<showerShape.e2x5Left<<std::endl;
+    std::cout <<"            "<<"e2x5Right "<<showerShape.e2x5Right<<std::endl;
+    std::cout <<"            "<<"e2x5Top "<<showerShape.e2x5Top<<std::endl;
+    std::cout <<"            "<<"e2x5Bottom "<<showerShape.e2x5Bottom<<std::endl;
+    
+    std::cout <<"   sat: "<<std::endl;
+    std::cout <<"            "<<obj.nSaturatedXtals()<<" "<<obj.isSeedSaturated()<<std::endl;
+
     std::cout <<"   userFloats: "<<std::endl;
     for(const auto& name : obj.userFloatNames()){
       std::cout <<"          "<<name<<" "<<obj.userFloat(name)<<std::endl;
