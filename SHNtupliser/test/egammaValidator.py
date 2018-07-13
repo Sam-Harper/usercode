@@ -16,27 +16,29 @@ def ele_diff(ele1,ele2):
  #       if name.find("Down")!=-1 or name.find("Up")!=-1: continue
 #        if name=="energyEcalTrkErrPostCorr" or name=="energyEcalTrkPostCorr": continue
 #        if name=="energySmearUp" or name =="energySmearDown": continue
+        if name.find("energyScaleEt")==0: continue
         if abs(ele1.userFloat(name)-ele2.userFloat(name))>0.0001:
-            print "diff ele",name,ele1.userFloat(name),ele2.userFloat(name)
+            print "diff ele {:.1f}, {:.2f}, {:.2f} :".format(ele1.et(),ele1.eta(),ele1.phi()),name,ele1.userFloat(name),ele2.userFloat(name)
             diff = True
 
     vars_to_check = ["ecalEnergy","ecalEnergyError","eta","phi"]
     for var in vars_to_check:
         if abs(getattr(ele1,var)()-getattr(ele2,var)())>0.0001:
-            print "diff ele",var,getattr(ele1,var)(),getattr(ele2,var)()
+            print "diff ele {:.1f}, {:.2f}, {:.2f} :".format(ele1.et(),ele1.eta(),ele1.phi()),var,getattr(ele1,var)(),getattr(ele2,var)()
             diff = True
     return diff
 
 def pho_diff(pho1,pho2):
     diff = False
-    for name in pho1.userFloatNames():
+    for name in pho1.userFloatNames():        
+        if name.find("energyScaleEt")==0: continue
         if abs(pho1.userFloat(name)-pho2.userFloat(name))>0.000001:
-            print "diff pho",name,pho1.userFloat(name),pho2.userFloat(name)
+            print "diff pho {:.1f}, {:.2f}, {:.2f} :".format(pho1.et(),pho1.eta(),pho1.phi()),name,pho1.userFloat(name),pho2.userFloat(name)
             diff=True
     vars_to_check = ["et","energy","eta","phi"]
     for var in vars_to_check:
         if abs(getattr(pho1,var)()-getattr(pho2,var)())>0.000001:
-            print "diff pho",var,getattr(pho1,var)(),getattr(pho2,var)()
+            print "diff pho {:.1f}, {:.2f}, {:.2f} :".format(pho1.et(),pho1.eta(),pho1.phi()),var,getattr(pho1,var)(),getattr(pho2,var)()
             diff=True
     return diff
 
@@ -88,7 +90,8 @@ phos, pho_label = Handle("std::vector<pat::Photon>"), "slimmedPhotons"
 phos_ref = Handle("std::vector<pat::Photon>")
 ### Events loop ###
 
-
+min_pho_et = 10
+min_ele_et = 5
 do_phos=True
 do_eles=True
 
@@ -129,7 +132,8 @@ for event_nr,event in enumerate(events):
         event.getByLabel(pho_label,phos)
         events_ref.getByLabel(pho_label,phos_ref)
     
-        for pho_nr,pho in enumerate(phos.product()):
+        for pho_nr,pho in enumerate(phos.product()):  
+            if pho.et()<min_pho_et: continue
             pho_ref = match_by_sc(pho,phos_ref.product())
             nr_phos+=1
             if pho_ref==None:
@@ -146,6 +150,7 @@ for event_nr,event in enumerate(events):
         events_ref.getByLabel(ele_label,eles_ref) 
     
         for ele_nr,ele in enumerate(eles.product()):
+            if ele.et()<min_ele_et: continue
             nr_eles+=1
             ele_ref = match_by_sc(ele,eles_ref.product())
             if ele_ref==None:
