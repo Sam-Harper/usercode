@@ -15,7 +15,7 @@ def ele_diff(ele1,ele2):
     for name in ele1.userFloatNames():
  #       if name.find("Down")!=-1 or name.find("Up")!=-1: continue
 #        if name=="energyEcalTrkErrPostCorr" or name=="energyEcalTrkPostCorr": continue
-        if name=="energySmearUp" or name =="energySmearDown": continue
+#        if name=="energySmearUp" or name =="energySmearDown": continue
         if abs(ele1.userFloat(name)-ele2.userFloat(name))>0.0001:
             print "diff ele",name,ele1.userFloat(name),ele2.userFloat(name)
             diff = True
@@ -65,15 +65,20 @@ from DataFormats.FWLite import Events, Handle
 verbose=False
 
 
+import argparse
+
+parser = argparse.ArgumentParser(description='compares E/gamma pat::Electrons/Photons')
 
 
-### IO ###
-#xrd="root://xrootd-cms.infn.it/"
-#eos="/afs/cern.ch/user/b/benjamin/eos/cms"
-file_prefix="file:"
+parser.add_argument('--ref',help='ref filename',required=True)
+parser.add_argument('--target',help='target filename',required=True)
+parser.add_argument('--prefix',help='file prefex',default="file:")
+args = parser.parse_args()
 
-target_file = "/opt/ppd/scratch/harper/CMSSW/reco/CMSSW_942_EGReminiAODNewSS/src/miniAOD-prodData_PAT.root"
-ref_file = "/opt/ppd/scratch/harper/CMSSW/reco/CMSSW_942_EGReminiAODNewSS/src/miniAOD-prodData_PAT1KStd.root"
+file_prefix=args.prefix
+
+target_file = args.target
+ref_file = args.ref
 #ref_file = "miniAOD-prodMC_PAT.root"
 #ref_file = "/opt/ppd/scratch/harper/CMSSW/reco/CMSSW_942_EGReminiAODNewSS/src/miniAOD-prodData_PAT_full.root"
 ### Objects from file ###

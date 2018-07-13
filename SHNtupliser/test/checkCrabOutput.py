@@ -98,7 +98,7 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
 
         if resubmit_failed and job_states['failed']:
             print "resubmiting jobs",job_states['failed'] 
-            crabCommand('resubmit',sitewhitelist="T2_UK_SGrid_RALPP",dir = crab_dir)
+            crabCommand('resubmit',dir = crab_dir)
 
         if verbose:
             for jobnr in job_states['failed']:
