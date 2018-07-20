@@ -2,7 +2,8 @@
 #define UTILITY_CALOTOOLS_HH
 
 #include <cmath>
-
+#include <vector>
+#include <algorithm>
 class CaloTools {
 
 public:
@@ -22,6 +23,17 @@ public:
   }
   static int evtRegion(float eta1,float eta2){return region(eta1)+region(eta2);}
 
+  static int isEBEtaGap(int iEta){
+    static const std::vector<int> gaps ={1,25,26,45,46,65,66,85};
+    return std::binary_search(gaps.begin(),gaps.end(),std::abs(iEta));
+  }
+  static int isEBPhiGap(int iPhi){
+    int mod = iPhi%20;
+    return (mod == 0 || mod ==1);
+  } 
+  static int isEBGap(int iEta,int iPhi){    
+    return isEBEtaGap(iEta) || isEBPhiGap(iPhi);
+  }
 };
 
 

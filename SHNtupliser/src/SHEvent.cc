@@ -242,6 +242,15 @@ void SHEvent::addHcalHits(const std::vector<SHCaloHit> & hitVec)
   }
 } 
 
+int SHEvent::nrGoodVertices()const
+{
+  int nrGoodVtxs = 0;
+  for(int vtxNr=0;vtxNr<nrVertices();vtxNr++){
+    if(getVertex(vtxNr)->isGood()) nrGoodVtxs++;
+  }
+  return nrGoodVtxs;
+}
+
 const SHSuperCluster* SHEvent::getSuperClus(int clusNr)const
 {
   SHSuperCluster* clus = (SHSuperCluster*) superClusArray_[clusNr];

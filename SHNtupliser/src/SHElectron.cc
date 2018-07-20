@@ -22,6 +22,7 @@ SHElectron::SHElectron():
   altEPCombNrgy_(0.),
   posCal_(0.,0.,0.),
   e5x5_(0.),
+  r9_(0.),
   eta_(0.),
   detEta_(0.),
 //track quantities (momentum + positions)
@@ -87,6 +88,8 @@ SHElectron::SHElectron():
   isolChargedHadron_(-999.),
   isolNeutralHadron_(-999.),
   isolPhoton_(-999.),
+  isolEcalCluster_(-999.),
+  isolHcalCluster_(-999.),
   hademDepth1BC_(-999.),
   hademDepth2BC_(-999.),
   isolHadDepth1BC_(-999.),
@@ -127,6 +130,7 @@ SHElectron::SHElectron(const SHElectron &rhs):
   altEPCombNrgy_(rhs.altEPCombNrgy_),
   posCal_(rhs.posCal_),
   e5x5_(rhs.e5x5_),
+  r9_(rhs.r9_),
   eta_(rhs.eta_),
   detEta_(rhs.detEta_),
 //track quantities (momentum + positions)
@@ -194,6 +198,8 @@ SHElectron::SHElectron(const SHElectron &rhs):
   isolChargedHadron_(rhs.isolChargedHadron_),
   isolNeutralHadron_(rhs.isolNeutralHadron_),
   isolPhoton_(rhs.isolPhoton_),  
+  isolEcalCluster_(rhs.isolEcalCluster_),
+  isolHcalCluster_(rhs.isolHcalCluster_),
   hademDepth1BC_(rhs.hademDepth1BC_),
   hademDepth2BC_(rhs.hademDepth2BC_),
   isolHadDepth1BC_(rhs.isolHadDepth1BC_),
@@ -211,6 +217,9 @@ SHElectron::SHElectron(const SHElectron &rhs):
   pmDRz2_(rhs.pmDRz2_),
   pmSubDets_(rhs.pmSubDets_),
   nrSatCrysIn5x5_(rhs.nrSatCrysIn5x5_),
+  userFloats_(rhs.userFloats_),
+  userInts_(rhs.userInts_),
+  userIDs_(rhs.userIDs_),
   rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {

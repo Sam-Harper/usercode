@@ -46,6 +46,7 @@ public:
   int ndof()const{return (data_>>kNDOFOffset) & kNDOFMask;}
   int nrTracks()const{return (data_>>kNrTrksOffset) & kNrTrksMask;}
   bool isValid()const{return (data_>>kIsValidOffset) & kIsValidMask;}
+  bool isGood()const{return isValid() && chi2()!=0 && ndof()>=4 && std::abs(vz())<24 && vx()*vx()+vy()*vy()<=4.0;}
   
   static int packData(const bool isValid,const int ndof,const int nrTrks);
   

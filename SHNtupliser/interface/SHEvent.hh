@@ -233,6 +233,7 @@ class SHEvent : public TObject {
   //  int nrL1Cands()const{return l1CandArray_.GetLast()+1;}
   int nrMuons()const{return muArray_.GetLast()+1;}
   int nrVertices()const{return vertexArray_.GetLast()+1;}
+  int nrGoodVertices()const;
 
   int runnr()const{return runnr_;}
   int eventnr()const{return eventnr_;}

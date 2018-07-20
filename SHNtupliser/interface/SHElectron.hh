@@ -143,6 +143,8 @@ class SHElectron : public TObject {
   float isolChargedHadron_;
   float isolNeutralHadron_;
   float isolPhoton_;
+  float isolEcalCluster_;
+  float isolHcalCluster_;
 
   //new H/E defination
   float hademDepth1BC_;
@@ -188,10 +190,10 @@ class SHElectron : public TObject {
 
 private:
   SHElectron& operator=(const SHElectron& ){return *this;} 
-
  public:
   SHElectron();
   SHElectron(const SHElectron& rhs);
+public:
   SHElectron(const heep::Ele& ele,int superClusNr=-1);
  //fills off a GsfElectron, doesnt fill nr trks isol or cutcode
   SHElectron(const reco::GsfElectron& ele,int superClusNr=-1);
@@ -278,6 +280,7 @@ private:
   const TLorentzVector& p4()const{return p4_;}
   const TVector3& posCal()const{return posCal_;}
   float e5x5()const{return e5x5_;}
+  float r9()const{return r9_;}
   float eta()const{return eta_;}
   float phi()const{return p4().Phi();}
   float detEta()const{return detEta_;} 
@@ -415,11 +418,11 @@ private:
     if(nrFound==1) return res.first->second;
     else if(nrFound>1){
       LogErr << " Error,  "<<nrFound<<" keys match "<<varName<<std::endl;
-    }
+    }    
     return std::numeric_limits<T>::max();
   }
   
-  ClassDef(SHElectron,31) 
+  ClassDef(SHElectron,32) 
 
 };
 

@@ -1,5 +1,4 @@
 isCrabJob=False #script seds this if its a crab job
-useMiniAOD=True
 
 # Import configurations
 import FWCore.ParameterSet.Config as cms
@@ -8,37 +7,35 @@ import sys
 # set up process
 process = cms.Process("HEEP")
 
-process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(),  
-#                            eventsToProcess = cms.untracked.VEventRange("281707:47701394-281707:47701394")
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing ('analysis') 
+options.register('isMiniAOD',True,options.multiplicity.singleton,options.varType.bool," whether we are running on miniAOD or not")
 
-                            )
+
+options.parseArguments()
+
+print options.inputFiles
+process.source = cms.Source("PoolSource",
+                            fileNames = cms.untracked.vstring(options.inputFiles),  
+                          )
+
 if isCrabJob:
     datasetCode=DATASETCODE
 else:
-    from SHarper.SHNtupliser.addInputFiles import addInputFiles
-    addInputFiles(process.source,sys.argv[2:len(sys.argv)-1])
-    from SHarper.SHNtupliser.datasetCodes import getDatasetCode
-    datasetCode=getDatasetCode(process.source.fileNames[0])
-    datasetCode=101
     datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
 
 datasetVersion="TOSED:DATASETVERSION"
-if not isCrabJob:
-    try:
-        datasetVersion=sys.argv[2].split("/")[-1].split("_")[1]
-    except IndexError:
-        pass
 
-print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",useMiniAOD,"datasetVersion = ",datasetVersion
+
+print "isCrab = ",isCrabJob,"isMC = ",isMC," datasetCode = ",datasetCode," useMiniAOD = ",options.isMiniAOD,"datasetVersion = ",datasetVersion
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(100000),
+    reportEvery = cms.untracked.int32(100),
     limit = cms.untracked.int32(10000000)
 )
 
@@ -55,7 +52,7 @@ else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
-    process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v9', '')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -63,11 +60,11 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 #CRABHLTNAMEOVERWRITE
-hltName="HLT"
+hltName="reHLT"
 
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
@@ -76,12 +73,17 @@ process.shNtupliser.sampleWeight = 1
 process.shNtupliser.addMuons = False
 process.shNtupliser.outputGeom = cms.bool(False)
 process.shNtupliser.hltProcName = cms.string(hltName)
-process.shNtupliser.addEleUserData = cms.bool(True)  
-process.shNtupliser.fillTrkIsolFromUserData = cms.bool(True)
 process.shNtupliser.trigResultsTag = cms.InputTag("TriggerResults","",hltName)
 process.shNtupliser.trigEventTag = cms.InputTag("hltTriggerSummaryAOD","",hltName)
 process.shNtupliser.hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco")
-
+process.shNtupliser.addEleUserData = cms.bool(True)  
+process.shNtupliser.fillTrkIsolFromUserData = cms.bool(True)
+process.shNtupliser.heepIDVID = cms.InputTag("")
+process.shNtupliser.heepIDVIDBits = cms.InputTag("")
+process.shNtupliser.vidBits = cms.VInputTag()
+process.shNtupliser.eleIsolPtTrksValueMapTag = cms.InputTag("")
+process.shNtupliser.trkIsoNoJetCoreTag = cms.InputTag("")
+process.shNtupliser.nrSatCrysIn5x5Tag = cms.InputTag("")
 disableLargeCollections=True
 if disableLargeCollections:
     print "*******************************************"
@@ -93,10 +95,9 @@ if disableLargeCollections:
     #process.shNtupliser.addCaloHits = False
 
 
-if useMiniAOD:
+if options.isMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
-    
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -115,53 +116,11 @@ if isCrabJob:
     process.shNtupliser.sampleWeight = SAMPLEWEIGHT
 else:
     print "using user specified filename"
-    process.TFileService.fileName= sys.argv[len(sys.argv)-1]
+    process.TFileService.fileName= options.outputFile
     #process.shNtupliser.outputFilename= sys.argv[len(sys.argv)-1]
     process.shNtupliser.datasetCode = datasetCode
     process.shNtupliser.sampleWeight = 1
   #  print "datset code ",process.shNtupliser.datasetCode
-
-# Additional output definition
-import HLTrigger.HLTfilters.hltHighLevel_cfi
-process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-process.skimHLTFilter.throw=cms.bool(False)
-datasetName="TOSED:DATASETNAME"
-
-
-if datasetName=="DoubleEG":
-    print "setting up HLT skim for DoubleEG"
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoublePhoton33*","HLT_DoubleEle33*","HLT_DoubleEle25*","HLT_DoublePhoton70_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL*","HLT_DiEle27_WPTightCaloOnly*")
-elif datasetName=="SingleElectron":
-    print "setting up HLT skim for SingleElectron"
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele27_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_v*","HLT_Ele35_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*")
-#    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
-elif datasetName=="SinglePhoton":
-    print "setting up HLT skim for SinglePhoton"
-    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_Photon22_v*","HLT_Photon25_v*","HLT_Photon30_v*","HLT_Photon33_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon150_v*","HLT_Photon175_v*","HLT_Photon200_v*","HLT_Photon250_NoHE_v*","HLT_Photon300_NoHE_v*")
-elif datasetName=="JetHT":
-    print "setting up HLT skim for JetHT"
-    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_CaloJet500_NoJetID_v*","HLT_CaloJet550_NoJetID_v*",)
-else:
-    print "setting HLT skim to select all"
-    process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
-
-#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
-
-process.egammaFilter = cms.EDFilter("EGammaFilter",
-                                    nrElesRequired=cms.int32(-1),
-                                    nrPhosRequired=cms.int32(-1),
-                                    nrSCsRequired=cms.int32(-1),
-                                    eleEtCut=cms.double(10),
-                                    phoEtCut=cms.double(20),
-                                    scEtCut=cms.double(-1),
-                                    eleTag=process.shNtupliser.gsfEleTag,
-                                    phoTag=process.shNtupliser.recoPhoTag,
-                                    superClusEBTag = process.shNtupliser.superClusterEBTag,
-                                    superClusEETag = process.shNtupliser.superClusterEETag,
-                                    caloTowerTag = cms.InputTag("towerMaker"),
-                                    genEvtInfoTag=cms.InputTag("generator"),
-                                    requireEcalDriven=cms.bool(True)
-                                     )
 
 print "dataset code: ",process.shNtupliser.datasetCode.value()
 
@@ -176,82 +135,27 @@ if process.shNtupliser.datasetCode.value()>=140 and process.shNtupliser.datasetC
 if isCrabJob and process.shNtupliser.datasetCode.value()>140:
     process.shNtupliser.addTrigSum = cms.bool(False)
 
-if useMiniAOD:
-    
-    process.load('Configuration.StandardSequences.Services_cff')
-    process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-                                                       calibratedPatElectrons  = cms.PSet( initialSeed = cms.untracked.uint32(81),
-                                                                                           engineName = cms.untracked.string('TRandom3'),
-                                                                                           ),
-                                                       calibratedPatPhotons  = cms.PSet( initialSeed = cms.untracked.uint32(81),
-                                                                                         engineName = cms.untracked.string('TRandom3'),
-                                                                                         ),
-                                                       )
-    process.load('EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi')
-    process.shNtupliser.oldGsfEleTag = cms.InputTag("calibratedPatElectrons")
-
-#setup the VID with HEEP 7.0, not necessary if you dont want to use VID
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format  to be
-# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
-if useMiniAOD:
-    switchOnVIDElectronIdProducer(process,DataFormat.MiniAOD)
-else:
-    switchOnVIDElectronIdProducer(process,DataFormat.AOD)
-
-# define which IDs we want to produce and add them to VID
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
-                 'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff',
-                 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff', 
-                 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff'
-                 ]
-for idmod in my_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 
-#if not useMiniAOD:
-#    process.load('SHarper.SHNtupliser.regressionApplicationAOD_cff')
-#else:
-#    process.load('SHarper.SHNtupliser.regressionApplicationMiniAOD_cff')
-
-process.p = cms.Path(#process.primaryVertexFilter*
-  #  process.regressionApplication*
-    process.egammaFilter*
-    process.egmGsfElectronIDSequence* #makes the VID value maps, only necessary if you use VID
-    process.calibratedPatElectrons*
- #   process.eleTrkIsol*
+process.p = cms.Path(
     process.shNtupliser)
-        
-if not isMC:
-    process.p.insert(0,process.skimHLTFilter)
+ 
 
-if not isMC and False:
-    print "overriding"
-    from CondCore.DBCommon.CondDBSetup_cfi import *
-    process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                  connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
-                                  toGet = cms.VPSet(cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
-                                                             tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt")),
-                                                    cms.PSet(record = cms.string("L1TUtmTriggerMenuRcd"),
-                                                             tag = cms.string("L1TUtmTriggerMenu_Stage2v0_hlt"))
-                                                    )                              )
-    process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
-
-if not isCrabJob:
-    import FWCore.PythonUtilities.LumiList as LumiList
-#    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_276831-277420_MINIAOD_03Feb2017-v1_20170210_133745_lumis_job69.json').getVLuminosityBlockRange()
-#    process.source.lumisToProcess = LumiList.LumiList(filename = 'crab_projects/crab_Data_DoubleEG_8026_SHv29D_281207-284035_MINIAOD_03Feb2017_ver2-v1_20170212_180554_lumis_job172.json').getVLuminosityBlockRange()
-
-#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-#    compressionAlgorithm = cms.untracked.string('LZMA'),
-#    compressionLevel = cms.untracked.int32(4),
-#    dataset = cms.untracked.PSet(
-#        dataTier = cms.untracked.string('AODSIM'),
-#        filterName = cms.untracked.string('')
-#    ),
-#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-#    fileName = cms.untracked.string('file:outputTestAOD.root'),
-#    outputCommands = cms.untracked.vstring("keep *_*_*_*",)
-#)                                        
+process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+    compressionAlgorithm = cms.untracked.string('LZMA'),
+    compressionLevel = cms.untracked.int32(4),
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('AODSIM'),
+        filterName = cms.untracked.string('')
+    ),
+    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+    fileName = cms.untracked.string(options.outputFile.replace(".root","_EDM.root")),
+    outputCommands = cms.untracked.vstring('keep *',
+                                           "keep *_*_*_RECO",
+                                           'keep *_*_*_HLT',
+                                           'keep *_slimmedElectrons*_*_*',
+                                           'keep *_slimmedPhotons*_*_*')
+                                           
+)                                        
 #process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag
