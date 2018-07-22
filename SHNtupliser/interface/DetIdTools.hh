@@ -128,7 +128,7 @@ private:
   static const int kMaxIYEndcap = 100;
 
   static const int kNrHcalCellsBarrel = 1296*2;
-  static const int kNrHcalCellsEndcap = 1296*2;
+  static const int kNrHcalCellsEndcap = 3384*2;
   static const int kNrEcalCellsBarrel = 61200; 
   static const int kNrEcalCellsEndcap = 7740*2; 
   static const int kNrCaloTowers = 1800*2; //upto and including eta of 29
@@ -138,7 +138,7 @@ private:
   static const int kHcalIEtaAbsMin = 1;
   static const int kHcalIEtaAbsMax = 29;
   static const int kHcalDepthMin = 1;
-  static const int kHcalDepthMax = 3;
+  static const int kHcalDepthMax = 7;
 
   static const int kHcalPhiMask1       = 0x7F;
   static const int kHcalPhiMask2       = 0x3FF;
@@ -219,10 +219,22 @@ private:
   static bool isValidEcalEndcapId(int crystal_ix,int crystal_iy,int iz);
   static bool isValidEcalEndcapId(int detId){return isEcalEndcap(detId) && isValidEcalEndcapId(iXEndcap(detId),iYEndcap(detId),zEndcap(detId));}
   static bool isValidEcalId(int detId);
-  static bool isValidHcalId(int iEta,int iPhi,int depth); 
-  static bool isValidHcalId(int detId){return isHcal(detId)&& isValidHcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
-  static bool isValidHcalBarrelId(int iEta,int iPhi,int depth);  //not updated to new format
-  static bool isValidHcalEndcapId(int iEta,int iPhi,int depth); //not updated to new format
+
+  static bool isValidPhase0HcalId(int iEta,int iPhi,int depth); 
+  static bool isValidPhase0HcalId(int detId){return isHcal(detId)&& isValidPhase0HcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
+  static bool isValidPhase0HcalBarrelId(int iEta,int iPhi,int depth);
+  static bool isValidPhase0HcalEndcapId(int iEta,int iPhi,int depth);
+  
+  static bool isValidPhase1HcalId(int iEta,int iPhi,int depth); 
+  static bool isValidPhase1HcalId(int detId){return isHcal(detId)&& isValidPhase1HcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
+  static bool isValidPhase1HcalBarrelId(int iEta,int iPhi,int depth){return isValidPhase0HcalBarrelId(iEta,iPhi,depth);} //phase0 and phase 1 are identical for HB
+  static bool isValidPhase1HcalEndcapId(int iEta,int iPhi,int depth); 
+
+  static bool isValidHcalId(int iEta,int iPhi,int depth){return isValidPhase1HcalId(iEta,iPhi,depth);}
+  static bool isValidHcalId(int detId){return isValidPhase1HcalId(detId);}
+  static bool isValidHcalBarrelId(int iEta,int iPhi,int depth){return isValidPhase1HcalBarrelId(iEta,iPhi,depth);}
+  static bool isValidHcalEndcapId(int iEta,int iPhi,int depth){return isValidPhase1HcalEndcapId(iEta,iPhi,depth);}
+
 
   static bool isValidCaloId(int detId){return isCalo(detId)&& isValidCaloId(iEtaCalo(detId),iPhiCalo(detId));}
   static bool isValidCaloId(int iEta,int iPhi);
@@ -316,6 +328,8 @@ private:
     int etaBandNr =  kMaxIEtaBarrel + (positiveZBarrel(detId) ? iEtaAbsBarrel(detId)-1 : -iEtaAbsBarrel(detId)); // 0 - 189 starting at lowest eta (~-1.5) to highest
     return etaBandNr* kMaxIPhiBarrel + iPhiBarrel(detId)-1;
   }
+  static int calHashHcalLegacy(int detId);
+
   static int calHashHcal(int detId);
   
   static int calHashCalo(int detId);

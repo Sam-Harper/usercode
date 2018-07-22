@@ -1,6 +1,5 @@
 #include "SHarper/SHNtupliser/interface/SHEventHelper.h"
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
-#include "SHarper/SHNtupliser/interface/HackedFuncs.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 #include "SHarper/SHNtupliser/interface/SHEleCMSSWStructs.hh"
 #include "SHarper/SHNtupliser/interface/GeomFuncs.hh"
@@ -815,7 +814,7 @@ void SHEventHelper::initHcalHitVec_()const
 	 int maxDepth = 1;
 	 if(iEtaAbs>=15) maxDepth=2;
 	 for(int depth=1;depth<=maxDepth;depth++){
-	   if(HackedFuncs::validHcalDetId(HcalBarrel,iEta,iPhi,depth)){
+	   if(DetIdTools::isValidHcalBarrelId(iEta,iPhi,depth)){
 	     HcalDetId detId(HcalBarrel,iEta,iPhi,depth);
 	     size_t indx = DetIdTools::calHashHcal(detId.rawId());
 	     if(indx>=hcalHitVec_.size()){
@@ -835,8 +834,8 @@ void SHEventHelper::initHcalHitVec_()const
     for(int side=0;side<=1;side++){
       int iEta = iEtaAbs*(2*side-1);
       for(int iPhi=1;iPhi<=72;iPhi++){
-	for(int depth=1;depth<=3;depth++){
-	  if(HackedFuncs::validHcalDetId(HcalEndcap,iEta,iPhi,depth)){
+	for(int depth=1;depth<=8;depth++){
+	  if(DetIdTools::isValidHcalEndcapId(iEta,iPhi,depth)){
 	    HcalDetId detId(HcalEndcap,iEta,iPhi,depth);
 	    size_t indx = DetIdTools::calHashHcal(detId.rawId());
 	    if(indx>=hcalHitVec_.size()){

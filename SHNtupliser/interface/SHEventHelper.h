@@ -63,7 +63,7 @@ private:
   
   //magic numbers, number of hcal cells (need to fix)
   static constexpr int kNrHcalBarrelCrys_=1296*2;
-  static constexpr int kNrHcalEndcapCrys_=1296*2;
+  static constexpr int kNrHcalEndcapCrys_=3384*2;
 
   static constexpr float kMaxDRTrks_=0.4;
   static constexpr float kMaxDRPFCands_=0.5;

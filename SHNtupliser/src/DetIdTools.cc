@@ -418,10 +418,10 @@ int DetIdTools::makeL1CaloDetId(int iEta,int iPhi)
 // }
 
 //ported from HcalDetId.hash_index in CMSSW
-int DetIdTools::calHashHcal(int detId)
+int DetIdTools::calHashHcalLegacy(int detId)
 {
   if(!DetIdTools::isHcal(detId)){
-    std::cout <<"DetIdTools::calHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
+    std::cout <<"DetIdTools::calHashHcalLegacy: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
     return -1;
   }
   
@@ -451,6 +451,53 @@ int DetIdTools::calHashHcal(int detId)
     if (iEtaAbs >= 21 && iEtaAbs <= 26)  index = (iPhi - 1)*8 + (iPhi/2)*20 + 8  + 2*(iEtaAbs-21) + (depth - 1);
     if (iEtaAbs >= 27 && iEtaAbs <= 28)  index = (iPhi - 1)*8 + (iPhi/2)*20 + 20 + 3*(iEtaAbs-27) + (depth - 1);
     if (iEtaAbs == 29)                     index = (iPhi - 1)*8 + (iPhi/2)*20 + 26 + 2*(iEtaAbs-29) + (depth - 1);
+    
+    index += 2*HBhalf;
+    if (zSide == -1) index += HEhalf;
+  }
+  
+  return index;
+}
+
+int DetIdTools::calHashHcal(int detId)
+{
+  if(!DetIdTools::isHcal(detId)){
+    std::cout <<"DetIdTools::calHashHcal: Warning det id "<<std::hex<<detId<<std::dec<<" is not in the hcal"<<std::endl;
+    return -1;
+  }
+  
+  int index = -1;
+
+  int HBhalf = kNrHcalCellsBarrel/2;
+  int HEhalf = kNrHcalCellsEndcap/2;
+  
+  int iPhi = DetIdTools::iPhiHcal(detId);
+  int iEtaAbs = DetIdTools::iEtaAbsHcal(detId);
+  int zSide = DetIdTools::zSideHcal(detId);
+  int depth = DetIdTools::depthHcal(detId);
+
+  // HB valid DetIds: phi=1-72,eta=1-14,depth=1; phi=1-72,eta=15-16,depth=1-2
+  if (DetIdTools::isHcalBarrel(detId)) {
+    if (iEtaAbs < 16)   index = (iPhi - 1)*18 + (iEtaAbs - 1) + (depth - 1);
+    if (iEtaAbs == 16)  index = (iPhi - 1)*18 + iEtaAbs + (depth - 1);
+    
+    if (zSide == -1) index += HBhalf;
+  } else if (DetIdTools::isHcalEndcap(detId)) {
+    //we're going to change it to be based on eta for the endcap as its easier (as #phi segements changes in eta)
+    //we're also going to be compatible with phase 0 and phase 1
+    //therefore eta=16 depth=4 (PhaseI) and eta=16, depth=3 (Phase0) give the same hash
+    //likewise eta=17 depth=2 (PhaseI) and eta=17, depth=1 (Phase0) give the same hash
+    if (iEtaAbs == 16) index = (iPhi -1);
+    if (iEtaAbs == 17){
+      int effectiveDepth = depth;
+      if(depth>1) effectiveDepth--;
+      index = kHcalIPhiMax+(iPhi-1)*2+(effectiveDepth-1);
+    }
+    if (iEtaAbs == 18)  index = kHcalIPhiMax*3 + (iPhi-1)*5 + (depth-1);
+    if (iEtaAbs >= 19 && iEtaAbs <= 20)  index = kHcalIPhiMax*(8 + 6*(iEtaAbs-19)) + (iPhi-1)*6 + (depth-1);
+    if (iEtaAbs >= 21 && iEtaAbs <= 25)  index = kHcalIPhiMax*20 + kHcalIPhiMax/2*6*(iEtaAbs-21) + (iPhi/2)*6 + (depth-1);
+    if (iEtaAbs >= 26 && iEtaAbs <= 28)  index = kHcalIPhiMax*20 + kHcalIPhiMax/2*6*5 + kHcalIPhiMax/2*7*(iEtaAbs-26) + (iPhi/2)*7 + (depth-1);
+    if (iEtaAbs == 29)                   index = kHcalIPhiMax*35 + kHcalIPhiMax/2*21 + (iPhi/2)*3 + (depth-1);
     
     index += 2*HBhalf;
     if (zSide == -1) index += HEhalf;
@@ -581,10 +628,16 @@ int DetIdTools::nrOfNearestGap(int detId)
 }
 
 
-bool DetIdTools::isValidHcalId(int iEta,int iPhi,int depth)
+bool DetIdTools::isValidPhase0HcalId(int iEta,int iPhi,int depth)
 {  
-  return isValidHcalBarrelId(iEta,iPhi,depth) || isValidHcalEndcapId(iEta,iPhi,depth);
+  return isValidPhase0HcalBarrelId(iEta,iPhi,depth) || isValidPhase0HcalEndcapId(iEta,iPhi,depth);
 }
+
+bool DetIdTools::isValidPhase1HcalId(int iEta,int iPhi,int depth)
+{  
+  return isValidPhase1HcalBarrelId(iEta,iPhi,depth) || isValidPhase1HcalEndcapId(iEta,iPhi,depth);
+}
+
 
 bool DetIdTools::isValidCaloId(int iEta,int iPhi)
 {
@@ -654,13 +707,13 @@ int DetIdTools::getNrDepthsInHcalTower(int detId)
   }//end valid hcal det id check
 }
 
-bool DetIdTools::isValidHcalBarrelId(int iEta,int iPhi,int depth)
+bool DetIdTools::isValidPhase0HcalBarrelId(int iEta,int iPhi,int depth)
 {
   const int hcalBarrelIEtaMax = 16;
   const int hcalBarrelIPhiMin = 1;
   const int hcalBarrelIPhiMax = 72;
   
-  if(abs(iEta)<=hcalBarrelIEtaMax){ //iEta good
+  if(abs(iEta)>=1 && abs(iEta)<=hcalBarrelIEtaMax){ //iEta good
     if(iPhi>=hcalBarrelIPhiMin && iPhi<=hcalBarrelIPhiMax){ //iPhi good
       if(depth==1 || (abs(iEta)>=15 && depth==2)){ //depth good
 	return true;
@@ -670,7 +723,7 @@ bool DetIdTools::isValidHcalBarrelId(int iEta,int iPhi,int depth)
   return false;
 }
 
-bool DetIdTools::isValidHcalEndcapId(int iEta,int iPhi,int depth)
+bool DetIdTools::isValidPhase0HcalEndcapId(int iEta,int iPhi,int depth)
 {
   const int iEtaMin = 16;
   const int iEtaMax = 29;
@@ -702,6 +755,45 @@ bool DetIdTools::isValidHcalEndcapId(int iEta,int iPhi,int depth)
     else return false;
   }else if(abs(iEta)<=29){
     if(depth>=1 && depth<=2) return true;
+    else return false;
+  }else return false;
+}
+
+bool DetIdTools::isValidPhase1HcalEndcapId(int iEta,int iPhi,int depth)
+{
+  const int iEtaMin = 16;
+  const int iEtaMax = 29;
+  const int iEtaPhiBoundary=21;
+  const int iPhiMin = 1;
+  const int iPhiMax = 72;// 
+
+
+  //first check ieta and phi 
+  if(abs(iEta)<iEtaMin || abs(iEta)>iEtaMax) return false;
+  else if(iPhi<iPhiMin || iPhi>iPhiMax) return false;
+
+  //final phi check, if its above the eta boundary, it goes like 1,3,5,..,69,71
+  //so we check it isnt odd
+  if(abs(iEta)>=iEtaPhiBoundary && iPhi%2==0) return false;
+
+  //depth checks
+  if(abs(iEta)==16){
+    if(depth==4) return true;
+    else return false;
+  }else if(abs(iEta)==17){
+    if(depth==2 || depth==3) return true;
+    else return false;
+  }else if(abs(iEta)==18){
+    if(depth>=1 && depth<=5) return true;
+    else return false;
+  } else if(abs(iEta)<=25){
+    if(depth>=1 && depth<=6) return true;
+    else return false;
+  }else if(abs(iEta)<=28){
+    if(depth>=1 && depth<=7) return true;
+    else return false;
+  }else if(abs(iEta)<=29){
+    if(depth>=1 && depth<=3) return true;
     else return false;
   }else return false;
 }

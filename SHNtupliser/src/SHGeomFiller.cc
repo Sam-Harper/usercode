@@ -13,8 +13,7 @@
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 
 #include "SHarper/SHNtupliser/interface/SHCaloGeom.hh"
-
-#include "SHarper/SHNtupliser/interface/HackedFuncs.h"
+#include "SHarper/SHNtupliser/interface/LogErr.hh"
 
 #include "TVector3.h"
 
@@ -85,7 +84,7 @@ void SHGeomFiller::fillHcalGeomBarrel(SHCaloGeom& hcalGeom)
   for(int etaNr=-16;etaNr<=16;etaNr++){
     for(int phiNr=1;phiNr<=72;phiNr++){
       for(int depth =1;depth<=2;depth++){
-	if(HackedFuncs::validHcalDetId(HcalBarrel,etaNr,phiNr,depth)){
+	if(DetIdTools::isValidHcalBarrelId(etaNr,phiNr,depth)){
 	  HcalDetId detId(HcalBarrel,etaNr,phiNr,depth);
 	  getCellPosition(detId,pos); 
 	  std::vector<TVector3> corners;
@@ -105,8 +104,8 @@ void SHGeomFiller::fillHcalGeomEndcap(SHCaloGeom& hcalGeom)
     for(int side=0;side<=1;side++){
       int iEta = iEtaAbs*(2*side-1);
       for(int iPhi=1;iPhi<=72;iPhi++){
-	for(int depth=1;depth<=3;depth++){
-	  if(HackedFuncs::validHcalDetId(HcalEndcap,iEta,iPhi,depth)){
+	for(int depth=1;depth<=8;depth++){
+	  if(DetIdTools::isValidHcalEndcapId(iEta,iPhi,depth)){
 	    HcalDetId detId(HcalEndcap,iEta,iPhi,depth);
 	    TVector3 pos;
 	    getCellPosition(detId,pos); 
@@ -160,7 +159,7 @@ void SHGeomFiller::getCellEdges(const DetId& detId,SHCaloCellGeom::CellEdges& fr
     frontEdges.fill(minEtaFront,maxEtaFront,minPhiFront,maxPhiFront);
     rearEdges.fill(minEtaRear,maxEtaRear,minPhiRear,maxPhiRear);
   }else{
-    std::cout <<"problem "<<std::endl;
+    LogErr <<"null geom for id "<<detId.det()<<" "<<detId.subdetId()<<" detId "<<detId.rawId()<<std::endl;
     if(detId.rawId()!=0) edm::LogInfo("SHGeomFiller")<<"getCellEdges Warning : Geometry not found for "<<std::hex<<detId.rawId()<<std::dec<<", subDetGeom "<<subDetGeom<<" cellGeom "<<cellGeom;
     frontEdges.clear();
     rearEdges.clear();
@@ -173,6 +172,7 @@ void SHGeomFiller::getCellCorners(const DetId& detId,std::vector<TVector3>& corn
 {
   const CaloSubdetectorGeometry* subDetGeom =  calGeometry_->getSubdetectorGeometry(detId);
   std::shared_ptr<const CaloCellGeometry> cellGeom = subDetGeom!=nullptr ? subDetGeom->getGeometry(detId) : std::shared_ptr<const CaloCellGeometry>();
+  if(subDetGeom==nullptr) LogErr<<" null sub det geom for id "<<detId.det()<<" "<<detId.subdetId()<<" detId "<<detId.rawId()<<std::endl;
   if(cellGeom!=nullptr){
     const EZArrayFL<GlobalPoint>& cmsswCorners = cellGeom->getCorners();
     
@@ -183,7 +183,10 @@ void SHGeomFiller::getCellCorners(const DetId& detId,std::vector<TVector3>& corn
       cornerVec[cornerNr].SetXYZ(cmsswCorners[cornerNr].x(),cmsswCorners[cornerNr].y(),cmsswCorners[cornerNr].z());
     }
   }else{
-    std::cout <<"problem "<<std::endl;
+    LogErr <<"null geom for id "<<detId.det()<<" "<<detId.subdetId()<<" detId "<<detId.rawId();
+    if(detId.det()==DetId::Hcal){
+      std::cout <<" "<<HcalDetId(detId)<<std::endl;
+    }
     if(detId.rawId()!=0) edm::LogInfo("SHGeomFiller")<<"getCornerVec Warning : Geometry not found for "<<std::hex<<detId.rawId()<<std::dec<<", subDetGeom "<<subDetGeom<<" cellGeom "<<cellGeom;
     cornerVec.clear();
     cornerVec.resize(8);
