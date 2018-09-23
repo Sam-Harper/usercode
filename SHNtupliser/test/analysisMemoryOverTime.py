@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
-def processData(content,memData,eventNr):
+def processData(content,memData,eventNr,selfmem):
     active=False
+    if selfmem: start_str = "Flat profile (self"
+    else: start_str = "Flat profile (cumulative"
+    
     for line in content:
         line=line.rstrip()
         
      #   if len(line.split())>1 and line.split()[1]=="total": active=True
         if active and line.find("---------")!=-1: return
-        if line.find("Flat profile (self")!=-1: active=True
+        if line.find(start_str)!=-1: active=True
 
        # print active
 
@@ -54,6 +57,9 @@ import argparse
 
 parser = argparse.ArgumentParser(description='analysers all the igreports')
 parser.add_argument('igReports',help='igReports',nargs="+")
+parser.add_argument('--selfmem',action='store_true',help='uses self memory rather than cumalative')
+parser.add_argument('--min',default=0,type=int,help='min event number to process')
+parser.add_argument('--output','-o',default='output.root',help='output filename')
 args = parser.parse_args()
 
 memData={}
@@ -61,16 +67,18 @@ memData={}
 args.igReports.sort(key=getint)
  
 for filename in args.igReports:
+    eventNr=filename.split(".")[1]
+    if int(eventNr)<args.min: continue
     print filename
     with open(filename) as f:
         content =f.readlines()
-        eventNr=filename.split(".")[1]
-        processData(content,memData,eventNr)
+
+        processData(content,memData,eventNr,args.selfmem)
     
 
 #print memData
 from ROOT import gROOT, TFile, TF1, TCanvas
-rootFile=TFile("test.root","RECREATE")
+rootFile=TFile(args.output,"RECREATE")
 graphNr=0
 
 c1=TCanvas("c1","c1",900,600)
@@ -90,6 +98,7 @@ for key in memData.keys():
     graph2.Draw("AP")
   #  c1.Print("plots/graph"+str(graphNr)+".gif")
     if fit.GetParameter(1)>0.01:
+#    if key.find("CaloTower")!=-1:
         print graphNr,key
         rootFile.WriteTObject(graph,"graph"+str(graphNr))
         graphNr+=1
