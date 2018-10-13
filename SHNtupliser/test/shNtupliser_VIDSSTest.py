@@ -37,8 +37,8 @@ else:
    # addInputFiles(process.source,options.inputFiles)
     #from SHarper.SHNtupliser.datasetCodes import getDatasetCode
     #datasetCode=getDatasetCode(process.source.file])
-    datasetCode=101
-#    datasetCode=0
+#    datasetCode=101
+    datasetCode=0
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -76,7 +76,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(options.maxEvents)
 )
 
 #CRABHLTNAMEOVERWRITE
@@ -202,8 +202,10 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     fileName = cms.untracked.string(options.outputFile.replace(".root","_EDM.root")),
-    outputCommands = cms.untracked.vstring('keep *',
+    outputCommands = cms.untracked.vstring('drop *',
+#                                           'keep *',
                                            "keep *_*_*_RECO",
+                                           "keep *_*_*_PAT",
                                            'keep *_*_*_HLT',
                                            'keep *_slimmedElectrons*_*_*',
                                            'keep *_slimmedPhotons*_*_*')
