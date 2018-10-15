@@ -26,7 +26,7 @@ if options.inputFiles==[]:
 print options.inputFiles
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.inputFiles),  
-#                            eventsToProcess = cms.untracked.VEventRange("281707:47701394-281707:47701394")
+                         #   eventsToProcess = cms.untracked.VEventRange("306138:870375103-306138:870375103")
 
                           )
 
@@ -76,7 +76,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(options.maxEvents)
 )
 
 #CRABHLTNAMEOVERWRITE
@@ -114,6 +114,10 @@ if disableLargeCollections:
 if options.isMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
+
+    process.shNtupliser.oldPhoTag = cms.InputTag("slimmedPhotonsReg")
+    process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsReg")
+
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -155,27 +159,34 @@ if isCrabJob and process.shNtupliser.datasetCode.value()>140:
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,applyEnergyCorrections=options.applyECorr,
                        applyVIDOnCorrectedEgamma=options.applyVIDOnECorrEgamma,
-                       isMiniAOD=options.isMiniAOD)
+                       isMiniAOD=options.isMiniAOD,
+                       era='2017-Nov17ReReco')
+#                       era='2016-Legacy')
 
 
+
+process.load("SHarper.SHNtupliser.regressionApplicationMiniAOD_newNames_cff")
+
+
+# Additional output definition
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+process.skimHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.skimHLTFilter.throw=cms.bool(False)
+datasetName="TOSED:DATASETNAME"
+
+
+print "setting up HLT skim for DoubleEG"
+process.skimHLTFilter.HLTPaths = cms.vstring("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL*")
+#process.skimHLTFilter.HLTPaths = cms.vstring("HLT_*")
 process.p = cms.Path(#process.primaryVertexFilter*
-  #  process.regressionApplication*
+    process.regressionApplication*
     process.egammaPostRecoSeq*
  #   process.eleTrkIsol*
     process.shNtupliser)
  
+if not isMC:
+    process.p.insert(0,process.skimHLTFilter)
 
-if not isMC and False:
-    print "overriding"
-    from CondCore.DBCommon.CondDBSetup_cfi import *
-    process.l1Menu = cms.ESSource("PoolDBESSource",CondDBSetup,
-                                  connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
-                                  toGet = cms.VPSet(cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
-                                                             tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt")),
-                                                    cms.PSet(record = cms.string("L1TUtmTriggerMenuRcd"),
-                                                             tag = cms.string("L1TUtmTriggerMenu_Stage2v0_hlt"))
-                                                    )                              )
-    process.es_prefer_l1Menu = cms.ESPrefer("PoolDBESSource","l1Menu")
 
 if not isCrabJob:
     import FWCore.PythonUtilities.LumiList as LumiList
@@ -191,8 +202,10 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     fileName = cms.untracked.string(options.outputFile.replace(".root","_EDM.root")),
-    outputCommands = cms.untracked.vstring('keep *',
+    outputCommands = cms.untracked.vstring('drop *',
+#                                           'keep *',
                                            "keep *_*_*_RECO",
+                                           "keep *_*_*_PAT",
                                            'keep *_*_*_HLT',
                                            'keep *_slimmedElectrons*_*_*',
                                            'keep *_slimmedPhotons*_*_*')
@@ -200,3 +213,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
 )                                        
 #process.out = cms.EndPath(process.AODSIMoutput)
 print process.GlobalTag.globaltag
+if options.isMiniAOD:
+    print "pat eles",process.calibratedPatElectrons.correctionFile
+else:
+    print "gsf eles",process.calibratedElectrons.correctionFile
