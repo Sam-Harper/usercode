@@ -58,7 +58,7 @@ for line in datasetDefFile:
     # /store/user/<dir>[/<subdirs>]/<primary-dataset>/<publication-name>/<time-stamp>/<counter>/<file-name>
     import datetime
     currTime=datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-    datasetId = "HEmiss2"
+#    datasetId = "HEmiss2"
     workingDir="Data_"+dataset+"_"+options.cmsswVersion+"_"+options.shNtupVersion+"_"+runRange+"_"+datasetFormat+"_"+datasetId+"_"+currTime
 
 
