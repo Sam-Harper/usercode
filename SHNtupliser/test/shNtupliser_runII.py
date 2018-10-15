@@ -10,6 +10,7 @@ process = cms.Process("HEEP")
 import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing ('analysis') 
 options.register('isMiniAOD',True,options.multiplicity.singleton,options.varType.bool," whether we are running on miniAOD or not")
+options.register('datasetCode',0,options.multiplicity.singleton,options.varType.int," datasetcode")
 
 
 options.parseArguments()
@@ -22,7 +23,7 @@ process.source = cms.Source("PoolSource",
 if isCrabJob:
     datasetCode=DATASETCODE
 else:
-    datasetCode=0
+    datasetCode=options.datasetCode
 
 if datasetCode==0: isMC=False
 else: isMC=True
@@ -47,12 +48,12 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
-    process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v12', '')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
     process.GlobalTag = GlobalTag(process.GlobalTag, globalTagName,'')
-    process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v9', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v7', '')
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
@@ -60,11 +61,11 @@ process.load("Configuration.StandardSequences.Services_cff")
 
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 #CRABHLTNAMEOVERWRITE
-hltName="reHLT"
+hltName="HLT"
 
 process.load("SHarper.SHNtupliser.shNtupliser_cfi")
 process.shNtupliser.datasetCode = 1
@@ -83,13 +84,14 @@ process.shNtupliser.heepIDVIDBits = cms.InputTag("")
 process.shNtupliser.vidBits = cms.VInputTag()
 process.shNtupliser.eleIsolPtTrksValueMapTag = cms.InputTag("")
 process.shNtupliser.trkIsoNoJetCoreTag = cms.InputTag("")
-process.shNtupliser.nrSatCrysIn5x5Tag = cms.InputTag("")
+process.shNtupliser.nrSatCrysIn5x5Tag = cms.InputTag("") 
+process.shNtupliser.addPFCands = True
 disableLargeCollections=True
 if disableLargeCollections:
     print "*******************************************"
     print "*******disabling large collections*********"
     print "*******************************************"
-    process.shNtupliser.addPFCands = False
+#    process.shNtupliser.addPFCands = False
     process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
     #process.shNtupliser.addCaloHits = False
@@ -98,6 +100,10 @@ if disableLargeCollections:
 if options.isMiniAOD:
     from SHarper.HEEPAnalyzer.HEEPAnalyzer_cfi import swapHEEPToMiniAOD
     swapHEEPToMiniAOD(process.shNtupliser)
+
+    process.shNtupliser.oldPhoTag = cms.InputTag("slimmedPhotonsReg")
+    process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsReg")
+    process.load("SHarper.SHNtupliser.regressionApplicationMiniAOD_newNames_cff")
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
@@ -138,6 +144,7 @@ if isCrabJob and process.shNtupliser.datasetCode.value()>140:
 
 
 process.p = cms.Path(
+    process.regressionApplication*
     process.shNtupliser)
  
 
