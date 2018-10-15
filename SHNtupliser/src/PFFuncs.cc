@@ -4,6 +4,7 @@
 #include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElementCluster.h"
@@ -102,7 +103,74 @@ int PFFuncs::getSeedCrysIdOfPFCandSC(const reco::PFCandidateRef pfCandRef,
 
 }
 
+int PFFuncs::getSeedCrysIdOfPFCandSC(const pat::PackedCandidateRef pfCandRef,
+				     const std::vector<const pat::Electron*> & eles)
+{
+  for(auto& ele : eles){
 
+    auto elePackedCands = ele->associatedPackedPFCandidates();
+    for(const pat::PackedCandidateRef& elePackedCand : elePackedCands){
+      if(elePackedCand == pfCandRef) {
+	if(ele->superCluster().isNonnull()) return ele->superCluster()->seed()->seed().rawId();
+	return -1;
+      }
+    }
+  }
+  return 0;
+     
+}
+
+
+void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
+			  const edm::Handle<std::vector<pat::PackedCandidate> >& pfCands,
+			  const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle)
+{
+
+  const double maxDR2 = maxDR*maxDR;
+  std::vector<std::pair<float,float> > eleEtaPhi;
+  for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
+    const SHElectron* ele = event->getElectron(eleNr);
+    if(ele->et()>20 && ele->hasTrack()){
+      eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+    }
+  }
+  std::vector<const pat::Electron*> patEles;
+  for(const auto& ele : *eleHandle){
+    patEles.push_back(dynamic_cast<const pat::Electron*>(&ele));
+  }
+  for(size_t candNr=0;candNr<pfCands->size();candNr++){ 
+    const pat::PackedCandidateRef pfCandRef(pfCands,candNr);
+    const pat::PackedCandidate& pfCand = *pfCandRef;
+    int scSeedCrysId=getSeedCrysIdOfPFCandSC(pfCandRef,patEles);
+    bool accept =false;
+    for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
+      if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
+			       pfCand.eta(),pfCand.phi())<maxDR2){
+	accept=true;
+	break;
+      }
+    }//end ele loop
+ 
+    if(accept){
+      if(isPhoton(pfCand)){
+       	shPFCands.addPhoton(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.mass(),pfCand.isGoodEgamma(),scSeedCrysId,pfCand.pdgId());
+      }else if(isNeutralHadron(pfCand)){
+	shPFCands.addNeutralHad(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.mass(),-1,scSeedCrysId,pfCand.pdgId());
+      }else if(isChargedHadron(pfCand)){
+	int pfCandVtx= pfCand.vertexRef().key();
+	if(pfCandVtx==-1 || pfCandVtx==0){
+	
+	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.mass(),-1,scSeedCrysId,pfCand.pdgId());
+	  //shPFCand.setVertex(0,0,0);
+	  shPFCand.setVertex(pfCand.vx(),pfCand.vy(),pfCand.vz());
+	}
+      }else{
+	std::cout <<"PFCandidate not added "<<pfCand.pdgId()<<std::endl;
+      }
+    }	 
+  }
+  
+}
 
 void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
 			  const edm::Handle<std::vector<reco::PFCandidate> >& pfCands,
@@ -129,56 +197,54 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
   std::vector<std::pair<float,float> > eleEtaPhi;
   for(int eleNr=0;eleNr<event->nrElectrons();eleNr++){
     const SHElectron* ele = event->getElectron(eleNr);
-    if(ele->et()>20){
+    if(ele->et()>20 && ele->hasTrack()){
       eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
     }
   }
   // std::cout <<"starting pf cand dump"<<std::endl;
   for(size_t candNr=0;candNr<pfCands->size();candNr++){ 
     const reco::PFCandidateRef pfCandRef(pfCands,candNr);
-    const reco::PFCandidate& pfParticle = *pfCandRef;
-
+    const reco::PFCandidate& pfCand = *pfCandRef;
+   
     int scSeedCrysId=getSeedCrysIdOfPFCandSC(pfCandRef,gsfToPFMapToUse,eleHandle);
     bool accept =false;
     for(size_t eleNr=0;eleNr<eleEtaPhi.size();eleNr++){
       if(MathFuncs::calDeltaR2(eleEtaPhi[eleNr].first,eleEtaPhi[eleNr].second,
-			       pfParticle.eta(),pfParticle.phi())<maxDR2){
+			       pfCand.eta(),pfCand.phi())<maxDR2){
 	accept=true;
 	break;
       }
     }//end ele loop
-  
-    accept=true;
     if(accept){
-      if(isPhoton(pfCandRef)){
-       	shPFCands.addPhoton(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId,pfParticle.pdgId());
-      }else if(isNeutralHadron(pfCandRef)){
-	shPFCands.addNeutralHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId,pfParticle.pdgId());
-      }else if(isChargedHadron(pfCandRef)){
-	int pfCandVtx= chargedHadronVertex(pfParticle,*vertices.product());
+      if(isPhoton(pfCand)){
+       	shPFCands.addPhoton(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.mass(),pfCand.mva_nothing_gamma(),scSeedCrysId,pfCand.pdgId());
+      }else if(isNeutralHadron(pfCand)){
+	shPFCands.addNeutralHad(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.mass(),pfCand.mva_nothing_gamma(),scSeedCrysId,pfCand.pdgId());
+      }else if(isChargedHadron(pfCand)){
+	int pfCandVtx= chargedHadronVertex(pfCand,*vertices.product());
 	if(pfCandVtx==-1 || pfCandVtx==0){
 	
-	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfParticle.pt(),pfParticle.eta(),pfParticle.phi(),pfParticle.mass(),pfParticle.mva_nothing_gamma(),scSeedCrysId,pfParticle.pdgId());
+	  SHPFCandidate& shPFCand =shPFCands.addChargedHad(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.mass(),pfCand.mva_nothing_gamma(),scSeedCrysId,pfCand.pdgId());
 	  //shPFCand.setVertex(0,0,0);
-	  shPFCand.setVertex(pfParticle.vx(),pfParticle.vy(),pfParticle.vz());
+	  shPFCand.setVertex(pfCand.vx(),pfCand.vy(),pfCand.vz());
 	}
       }else{
-	std::cout <<"PFCandidate not added "<<pfParticle.pdgId()<<" "<<pfParticle.particleId()<<std::endl;
+	std::cout <<"PFCandidate not added "<<pfCand.pdgId()<<" "<<pfCand.particleId()<<std::endl;
       }
     }	 
   }
 }
 
-bool PFFuncs::isPhoton(const reco::PFCandidateRef& pfCand)
+bool PFFuncs::isPhoton(const reco::Candidate& pfCand)
 {
-  const int pfParticleIDAbs=std::abs(pfCand->pdgId()); 
+  const int pfParticleIDAbs=std::abs(pfCand.pdgId()); 
   if(pfParticleIDAbs==22 || pfParticleIDAbs==11 || pfParticleIDAbs==15 || pfParticleIDAbs==13) return true;
   else return false;
 }
 
-bool PFFuncs::isNeutralHadron(const reco::PFCandidateRef& pfCand)
+bool PFFuncs::isNeutralHadron(const reco::Candidate& pfCand)
 {
-  const int pfParticleIDAbs=std::abs(pfCand->pdgId()); 
+  const int pfParticleIDAbs=std::abs(pfCand.pdgId()); 
   if(pfParticleIDAbs==130 ||
      pfParticleIDAbs==111 ||
      pfParticleIDAbs==310 ||
@@ -189,9 +255,9 @@ bool PFFuncs::isNeutralHadron(const reco::PFCandidateRef& pfCand)
   else return false;
 }
 
-bool PFFuncs::isChargedHadron(const reco::PFCandidateRef& pfCand)
+bool PFFuncs::isChargedHadron(const reco::Candidate& pfCand)
 {
-  const int pfParticleIDAbs=std::abs(pfCand->pdgId()); 
+  const int pfParticleIDAbs=std::abs(pfCand.pdgId()); 
   if(pfParticleIDAbs == 211 ||
      pfParticleIDAbs == 321 ||
      pfParticleIDAbs == 999211 ||

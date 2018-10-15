@@ -400,16 +400,23 @@ void SHEventHelper::addGenInfo(const heep::Event& heepEvent,SHEvent& shEvent)con
 
 void SHEventHelper::addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  if(heepEvent.handles().vertices.isValid()){
+  if(heepEvent.handles().vertices.isValid() && 
+     heepEvent.handles().pfCandidate.isValid() &&
+     heepEvent.handles().gsfEle.isValid() && 
+     heepEvent.handles().gsfEleToPFCandMap.isValid()){
     reco::VertexRef mainVtx(heepEvent.handles().vertices,0); 
-    if(heepEvent.handles().pfCandidate.isValid() &&
-       heepEvent.handles().gsfEle.isValid() && 
-       heepEvent.handles().gsfEleToPFCandMap.isValid()){
-      PFFuncs::fillPFCands(&shEvent,kMaxDRPFCands_,shEvent.getPFCands(),heepEvent.handles().pfCandidate,
-			   mainVtx,heepEvent.handles().vertices,
+    
+    PFFuncs::fillPFCands(&shEvent,kMaxDRPFCands_,shEvent.getPFCands(),heepEvent.handles().pfCandidate,
+			 mainVtx,heepEvent.handles().vertices,
 			   *(heepEvent.handles().gsfEleToPFCandMap.product()),
-			   heepEvent.handles().gsfEle);
-    }
+			 heepEvent.handles().gsfEle);
+  }else if(heepEvent.handles().packedPFCand.isValid() &&
+	   heepEvent.handles().gsfEle.isValid()){
+    PFFuncs::fillPFCands(&shEvent,kMaxDRPFCands_,shEvent.getPFCands(),heepEvent.handles().packedPFCand,
+			 heepEvent.handles().gsfEle);
+    
+	   
+
   }
 }
 
