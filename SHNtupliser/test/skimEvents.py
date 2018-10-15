@@ -2,7 +2,7 @@
 import FWCore.ParameterSet.Config as cms
 
 # set up process
-process = cms.Process("SkimEle")
+process = cms.Process("SkimHLT")
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
