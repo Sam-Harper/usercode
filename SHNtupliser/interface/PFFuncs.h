@@ -3,6 +3,8 @@
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Common/interface/Handle.h"
@@ -27,16 +29,21 @@ public:
   static int getSeedCrysIdOfPFCandSC(const reco::PFCandidateRef pfCandRef,
 				     const edm::ValueMap<std::vector<reco::PFCandidateRef> > & gsfToPFMap,
 				     const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle);
-  
+  static int getSeedCrysIdOfPFCandSC(const pat::PackedCandidateRef pfCandRef,
+				     const std::vector<const pat::Electron*> & eles);
   
   static void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands, 
 			  const edm::Handle<std::vector<reco::PFCandidate> >& pfCands,
 			  const reco::VertexRef mainVtx,const edm::Handle<reco::VertexCollection> vertices,
 			  const edm::ValueMap<std::vector<reco::PFCandidateRef> > & gsfToPFMap,
 			  const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle);
-  static bool isPhoton(const reco::PFCandidateRef& pfCand);
-  static bool isNeutralHadron(const reco::PFCandidateRef& pfCand);
-  static bool isChargedHadron(const reco::PFCandidateRef& pfCand);
+
+  static void fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& shPFCands,
+			  const edm::Handle<std::vector<pat::PackedCandidate> >& pfCands,
+			  const edm::Handle<edm::View<reco::GsfElectron> >& eleHandle);
+  static bool isPhoton(const reco::Candidate& pfCand);
+  static bool isNeutralHadron(const reco::Candidate& pfCand);
+  static bool isChargedHadron(const reco::Candidate& pfCand);
   static int chargedHadronVertex(const reco::PFCandidate& pfcand, const reco::VertexCollection& vertices);
 
 
