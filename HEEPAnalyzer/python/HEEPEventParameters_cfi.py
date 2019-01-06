@@ -15,6 +15,7 @@ def swapHEEPToMiniAOD(heepPara):
     heepPara.oldPhoTag = cms.InputTag("slimmedPhotons",processName=cms.InputTag.skipCurrentProcess())
     heepPara.reducedBarrelRecHitTag = cms.InputTag("reducedEgamma","reducedEBRecHits")
     heepPara.reducedEndcapRecHitTag = cms.InputTag("reducedEgamma","reducedEERecHits")
+    heepPara.hbheRecHitsTag = cms.InputTag("reducedEgamma","reducedHBHEHits")
     heepPara.superClusterEBTag = cms.InputTag("reducedEgamma","reducedSuperClusters")
     heepPara.superClusterEETag = cms.InputTag("reducedEgamma","reducedSuperClusters")
     heepPara.preShowerClusterXTag = cms.InputTag("reducedEgamma","reducedESClusters")
@@ -35,7 +36,7 @@ heepEventPara  = cms.PSet (
     endcapWeightsRecHitTag = cms.InputTag("ecalGlobalRecHitSelectedDigis","EcalRecHitsEE"),
     reducedBarrelRecHitTag = cms.InputTag("reducedEcalRecHitsEB"),
     reducedEndcapRecHitTag = cms.InputTag("reducedEcalRecHitsEE"),
-    hbheRecHitsTag = cms.InputTag("hbhereco"),
+    hbheRecHitsTag = cms.InputTag("reducedHcalRecHits","hbhereco"),
     gsfEleTag = cms.InputTag("gedGsfElectrons"),
     oldGsfEleTag = cms.InputTag("gedGsfElectrons",processName=cms.InputTag.skipCurrentProcess()),
     recoPhoTag = cms.InputTag("gedPhotons"),
