@@ -394,7 +394,7 @@ void SHEventHelper::addCaloTowers(const heep::Event& heepEvent, SHEvent& shEvent
 
 void SHEventHelper::addGenInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
-  GenFuncs::fillGenInfo(heepEvent,shEvent.getGenInfo(),branches_.addMCParts);
+  GenFuncs::fillGenInfo(heepEvent,shEvent.getGenInfo(),branches_.addMCParts,branches_.addPDFWeights);
 }
 
 void SHEventHelper::addPFCands(const heep::Event& heepEvent,SHEvent& shEvent)const

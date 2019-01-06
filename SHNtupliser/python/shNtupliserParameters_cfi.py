@@ -22,6 +22,7 @@ shNtupPara = cms.PSet(
     addTrigSum = cms.bool(True),
     addHLTDebug = cms.bool(False),
     addMCParts = cms.bool(True),
+    addPDFWeights = cms.bool(False),
     addGainSwitchInfo = cms.bool(False),
     addJetMETExtra= cms.bool(False),
     addEleUserData= cms.bool(False),

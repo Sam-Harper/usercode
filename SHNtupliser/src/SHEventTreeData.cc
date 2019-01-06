@@ -25,6 +25,7 @@ void SHEventTreeData::BranchData::setup(const edm::ParameterSet& iPara)
   addEles=iPara.getParameter<bool>("addEles");
   addHLTDebug=iPara.getParameter<bool>("addHLTDebug");
   addMCParts=iPara.getParameter<bool>("addMCParts");
+  addPDFWeights=iPara.getParameter<bool>("addPDFWeights");
   addGainSwitchInfo=iPara.getParameter<bool>("addGainSwitchInfo");
   addJetMETExtra=iPara.getParameter<bool>("addJetMETExtra");
   addEleUserData=iPara.getParameter<bool>("addEleUserData");

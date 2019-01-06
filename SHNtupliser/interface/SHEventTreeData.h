@@ -31,6 +31,7 @@ public:
     bool addEles; 
     bool addHLTDebug;    
     bool addMCParts;
+    bool addPDFWeights;
     bool addGainSwitchInfo;
     bool addJetMETExtra;
     bool addEleUserData;
