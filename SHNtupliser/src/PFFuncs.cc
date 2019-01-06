@@ -132,6 +132,7 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
     const SHElectron* ele = event->getElectron(eleNr);
     if(ele->et()>20 && ele->hasTrack()){
       eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()));
+      //eleEtaPhi.push_back(std::make_pair(ele->detEta(),ele->detPhi()+3.14159265359/2));
     }
   }
   std::vector<const pat::Electron*> patEles;
@@ -150,7 +151,7 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 	break;
       }
     }//end ele loop
- 
+    //  accept=true;
     if(accept){
       if(isPhoton(pfCand)){
        	shPFCands.addPhoton(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.mass(),pfCand.isGoodEgamma(),scSeedCrysId,pfCand.pdgId());
@@ -165,7 +166,7 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 	  shPFCand.setVertex(pfCand.vx(),pfCand.vy(),pfCand.vz());
 	}
       }else{
-	std::cout <<"PFCandidate not added "<<pfCand.pdgId()<<std::endl;
+	if(std::abs(pfCand.pdgId())!=11 && std::abs(pfCand.pdgId())!=13 && std::abs(pfCand.pdgId())!=15) std::cout <<"PFCandidate not added "<<pfCand.pdgId()<<std::endl;
       }
     }	 
   }
@@ -229,7 +230,7 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 	  shPFCand.setVertex(pfCand.vx(),pfCand.vy(),pfCand.vz());
 	}
       }else{
-	std::cout <<"PFCandidate not added "<<pfCand.pdgId()<<" "<<pfCand.particleId()<<std::endl;
+	if(std::abs(pfCand.pdgId())!=11 && std::abs(pfCand.pdgId())!=13 && std::abs(pfCand.pdgId())!=15) std::cout <<"PFCandidate not added "<<pfCand.pdgId()<<" "<<pfCand.particleId()<<std::endl;
       }
     }	 
   }
@@ -238,7 +239,8 @@ void PFFuncs::fillPFCands(const SHEvent* event,double maxDR,SHPFCandContainer& s
 bool PFFuncs::isPhoton(const reco::Candidate& pfCand)
 {
   const int pfParticleIDAbs=std::abs(pfCand.pdgId()); 
-  if(pfParticleIDAbs==22 || pfParticleIDAbs==11 || pfParticleIDAbs==15 || pfParticleIDAbs==13) return true;
+  //  if(pfParticleIDAbs==22 || pfParticleIDAbs==11 || pfParticleIDAbs==15 || pfParticleIDAbs==13) return true;
+  if(pfParticleIDAbs==22) return true;
   else return false;
 }
 
