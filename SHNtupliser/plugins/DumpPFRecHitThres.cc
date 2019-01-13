@@ -53,7 +53,7 @@ private:
 
 DumpPFRecHitThres::DumpPFRecHitThres(const edm::ParameterSet& iPara):
   written_(false),
-  logPrefix_("pfrechit thres")
+  logPrefix_("pfrechit thres ")
 {
 
 
@@ -70,7 +70,7 @@ void DumpPFRecHitThres::dumpBarrelThres(const EcalPFRecHitThresholds& thresholds
     if(thresItr == thresholds.end()){
       std::cout <<logPrefix_<<" warning missing threshold for "<<iEta<<" "<<iPhi<<std::endl;
     }else{
-      std::cout <<logPrefix_<<" iEta: "<<iPhi<<" iPhi "<<iPhi<<" : "<<*thresItr<<std::endl;
+      std::cout <<logPrefix_<<" iEta: "<<iEta<<" iPhi "<<iPhi<<" : "<<*thresItr<<std::endl;
     }
   }
   
