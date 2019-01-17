@@ -1,6 +1,6 @@
 <export>
 </export>
-<library   name="SHarperTrigNtup_plugins" file="TrigNtupMaker.cc,SCRegTreeMaker.cc">
+<library   name="SHarperTrigNtup_plugins" file="TrigNtupMaker.cc,SCRegTreeMaker.cc,EcalClusIsoTreeMaker.cc">
   <use   name="SHarper/TrigNtup"/>
   <use   name="SHarper/HEEPAnalyzer"/>
 </library>
