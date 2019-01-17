@@ -50,11 +50,11 @@ void GenInfo::fill(const reco::GenParticle& genPart,float iDR)
   dR = iDR;
 }
 
-void SCRegTreeStruct::fill(const edm::Event& event,int iNrVert,const reco::SuperCluster& iSC,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::GenParticle* iMC)
+void SCRegTreeStruct::fill(const edm::Event& event,int iNrVert,const reco::SuperCluster& iSC,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::GenParticle* iMC,const pat::Electron* ele)
 {
   nrVert = iNrVert;
   evt.fill(event);
-  sc.fill(iSC,ecalHitsEB,ecalHitsEE,topo);
+  sc.fill(iSC,ecalHitsEB,ecalHitsEE,topo,ele!=nullptr);
   if(iMC) mc.fill(*iMC,std::sqrt(reco::deltaR2(iSC.eta(),iSC.phi(),iMC->eta(),iMC->phi())));
   else mc.clear();
   clus1.fill(0,0,0);
@@ -77,7 +77,7 @@ void SCRegTreeStruct::fill(const edm::Event& event,int iNrVert,const reco::Super
   
 }
 
-void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo)
+void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,bool iEleMatch)
 {
   auto& seedClus = *sc.seed();
   isEB = seedClus.seed().subdetId()==EcalBarrel;
@@ -135,4 +135,5 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalRecHitCollect
       clusterMaxDRRawEnergy = clus->energy();
     }
   }
+  eleMatch = iEleMatch;
 }

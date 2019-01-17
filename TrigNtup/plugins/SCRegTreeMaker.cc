@@ -12,6 +12,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
@@ -43,6 +44,7 @@ private:
   edm::EDGetTokenT<reco::SuperClusterCollection> scToken_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEBToken_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEEToken_;
+  edm::EDGetTokenT<std::vector<pat::Electron> > elesToken_;
 
   SCRegTreeMaker(const SCRegTreeMaker& rhs)=delete;
   SCRegTreeMaker& operator=(const SCRegTreeMaker& rhs)=delete;
@@ -74,6 +76,7 @@ SCRegTreeMaker::SCRegTreeMaker(const edm::ParameterSet& iPara):
   setToken(scToken_,iPara,"scTag");
   setToken(ecalHitsEBToken_,iPara,"ecalHitsEBTag");
   setToken(ecalHitsEEToken_,iPara,"ecalHitsEETag");
+  setToken(elesToken_,iPara,"elesTag");
 }
 
 SCRegTreeMaker::~SCRegTreeMaker()
@@ -112,6 +115,12 @@ namespace{
     else if(!sc.clusters().isAvailable()) return false;
     else return true;
   }
+  const pat::Electron* matchEle(unsigned int seedId,const std::vector<pat::Electron>& eles){
+    for(auto& ele : eles){
+      if(ele.superCluster()->seed()->seed().rawId()==seedId) return &ele;
+    }
+    return nullptr;
+  }
 }
 
 void SCRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
@@ -121,17 +130,19 @@ void SCRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
   auto ecalHitsEEHandle = getHandle(iEvent,ecalHitsEEToken_);
   auto genPartsHandle = getHandle(iEvent,genPartsToken_);
   auto verticesHandle = getHandle(iEvent,verticesToken_);
+  auto elesHandle = getHandle(iEvent,elesToken_);
   edm::ESHandle<CaloTopology> caloTopoHandle;
   iSetup.get<CaloTopologyRecord>().get(caloTopoHandle);
 
   int nrVert = verticesHandle->size();
   for(const auto& sc: *scHandle){
     const reco::GenParticle* genPart = genPartsHandle.isValid() ? matchGenPart(sc.eta(),sc.phi(),*genPartsHandle) : nullptr;
+    const pat::Electron* ele = elesHandle.isValid() ? matchEle(sc.seed()->seed().rawId(),*elesHandle) : nullptr;
     
     if(hasBasicClusters(sc)){
       
     
-      scRegTreeData_.fill(iEvent,nrVert,sc,*ecalHitsEBHandle,*ecalHitsEEHandle,*caloTopoHandle,genPart);
+      scRegTreeData_.fill(iEvent,nrVert,sc,*ecalHitsEBHandle,*ecalHitsEEHandle,*caloTopoHandle,genPart,ele);
       scRegTree_->Fill();
     }
   }

@@ -61,6 +61,7 @@ process.scRegTreeMaker = cms.EDAnalyzer("SCRegTreeMaker",
                                         scTag = cms.InputTag("reducedEgamma","reducedSuperClusters"),
                                         ecalHitsEBTag = cms.InputTag("reducedEgamma","reducedEBRecHits"),
                                         ecalHitsEETag = cms.InputTag("reducedEgamma","reducedEERecHits"),
+                                        elesTag = cms.InputTag("slimmedElectrons")
                                         )
 process.p = cms.Path(process.scRegTreeMaker)
 print process.GlobalTag.globaltag
