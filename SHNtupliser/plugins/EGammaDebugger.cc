@@ -140,8 +140,10 @@ void EGammaDebugger::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for(const auto & obj : *phosHandle){
     print(iEvent,"egammaDebug: pho",obj);
   }
-  for(const auto & obj : *ootPhosHandle){
-    print(iEvent,"egammaDebug: ootpho",obj);
+  if(ootPhosHandle.isValid()){
+    for(const auto & obj : *ootPhosHandle){
+      print(iEvent,"egammaDebug: ootpho",obj);
+    }
   }
    
 }
