@@ -24,6 +24,11 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
 )
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
+#setup global tag, note it is incredably important to due use the correct global tag
+#which is the tag the MC or data was recoed with
+#if not, you'll load in the wrong menu and get the wrong bit names and prescales 
+#a MC tag for data will give something that looks like it works but actually doesnt 
+#and I persum vice versa.
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
