@@ -26,32 +26,33 @@
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 #include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
 
-#include "SHarper/TrigNtup/interface/SCRegTreeStruct.hh"
+#include "SHarper/TrigNtup/interface/EGRegTreeStruct.hh"
 
 #include "TFile.h"
 #include "TTree.h"
 
 #include <string>
 
-class SCRegTreeMaker : public edm::EDAnalyzer {
+class EGRegTreeMaker : public edm::EDAnalyzer {
 
 private:
-  SCRegTreeStruct scRegTreeData_;
-  TTree* scRegTree_;
+  EGRegTreeStruct egRegTreeData_;
+  TTree* egRegTree_;
 
   edm::EDGetTokenT<reco::VertexCollection>  verticesToken_;
+  edm::EDGetTokenT<double> rhoToken_;
   edm::EDGetTokenT<reco::GenParticleCollection> genPartsToken_;
   std::vector<edm::EDGetTokenT<reco::SuperClusterCollection>> scTokens_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEBToken_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEEToken_;
   edm::EDGetTokenT<std::vector<pat::Electron> > elesToken_;
 
-  SCRegTreeMaker(const SCRegTreeMaker& rhs)=delete;
-  SCRegTreeMaker& operator=(const SCRegTreeMaker& rhs)=delete;
+  EGRegTreeMaker(const EGRegTreeMaker& rhs)=delete;
+  EGRegTreeMaker& operator=(const EGRegTreeMaker& rhs)=delete;
 
 public:
-  explicit SCRegTreeMaker(const edm::ParameterSet& iPara);
-  virtual ~SCRegTreeMaker();
+  explicit EGRegTreeMaker(const edm::ParameterSet& iPara);
+  virtual ~EGRegTreeMaker();
   
 private:
   virtual void beginJob();
@@ -74,10 +75,11 @@ private:
 
 
 
-SCRegTreeMaker::SCRegTreeMaker(const edm::ParameterSet& iPara):
-  scRegTree_(nullptr)
+EGRegTreeMaker::EGRegTreeMaker(const edm::ParameterSet& iPara):
+  egRegTree_(nullptr)
 {
   setToken(verticesToken_,iPara,"verticesTag");
+  setToken(rhoToken_,iPara,"rhoTag");
   setToken(genPartsToken_,iPara,"genPartsTag");
   setToken(scTokens_,iPara,"scTag");
   setToken(ecalHitsEBToken_,iPara,"ecalHitsEBTag");
@@ -85,21 +87,21 @@ SCRegTreeMaker::SCRegTreeMaker(const edm::ParameterSet& iPara):
   setToken(elesToken_,iPara,"elesTag");
 }
 
-SCRegTreeMaker::~SCRegTreeMaker()
+EGRegTreeMaker::~EGRegTreeMaker()
 {
 
 }
 
 
-void SCRegTreeMaker::beginJob()
+void EGRegTreeMaker::beginJob()
 {
   edm::Service<TFileService> fs;
   fs->file().cd();
-  scRegTree_ = new TTree("scRegTree","");
-  scRegTreeData_.createBranches(scRegTree_);
+  egRegTree_ = new TTree("egRegTree","");
+  egRegTreeData_.createBranches(egRegTree_);
 } 
 
-void SCRegTreeMaker::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
+void EGRegTreeMaker::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
 { 
  
 }
@@ -140,13 +142,14 @@ namespace{
   }
 }
 
-void SCRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
+void EGRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
   auto scHandles = getHandle(iEvent,scTokens_);
   auto ecalHitsEBHandle = getHandle(iEvent,ecalHitsEBToken_);
   auto ecalHitsEEHandle = getHandle(iEvent,ecalHitsEEToken_);
   auto genPartsHandle = getHandle(iEvent,genPartsToken_);
   auto verticesHandle = getHandle(iEvent,verticesToken_);
+  auto rhoHandle = getHandle(iEvent,rhoToken_);
   auto elesHandle = getHandle(iEvent,elesToken_);
   edm::ESHandle<CaloTopology> caloTopoHandle;
   iSetup.get<CaloTopologyRecord>().get(caloTopoHandle);
@@ -158,17 +161,17 @@ void SCRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
       const pat::Electron* ele = elesHandle.isValid() ? matchEle(sc.seed()->seed().rawId(),*elesHandle) : nullptr;
       
       if(hasBasicClusters(sc)){
-	
-	
-	scRegTreeData_.fill(iEvent,nrVert,sc,*ecalHitsEBHandle,*ecalHitsEEHandle,*caloTopoHandle,genPart,ele);
-	scRegTree_->Fill();
+	egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,sc,
+			    *ecalHitsEBHandle,*ecalHitsEEHandle,
+			    *caloTopoHandle,genPart,ele);
+	egRegTree_->Fill();
       }
     }
   }
 
 } 
 
-const reco::GenParticle*  SCRegTreeMaker::matchGenPart(float eta,float phi,const std::vector<reco::GenParticle>& genParts)
+const reco::GenParticle*  EGRegTreeMaker::matchGenPart(float eta,float phi,const std::vector<reco::GenParticle>& genParts)
 {
   const reco::GenParticle* bestMatch=nullptr;
   float bestDR2=0.3*0.3;
@@ -187,7 +190,7 @@ const reco::GenParticle*  SCRegTreeMaker::matchGenPart(float eta,float phi,const
   return bestMatch;
 }
 
-void SCRegTreeMaker::endJob()
+void EGRegTreeMaker::endJob()
 { 
 
 }
@@ -197,4 +200,4 @@ void SCRegTreeMaker::endJob()
 
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(SCRegTreeMaker);
+DEFINE_FWK_MODULE(EGRegTreeMaker);

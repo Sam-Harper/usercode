@@ -16,7 +16,7 @@ if __name__ == "__main__":
     #output_file = output_file.replace(".root","_{}.root".format(file_nr+1))
     input_files = input_files.format(scenario=args.scenario)
     print "doing file ",input_files
-    cmd = ["cmsRun","SHarper/TrigNtup/test/scRegTreeMaker.py",
+    cmd = ["cmsRun","SHarper/TrigNtup/test/egRegTreeMaker.py",
            "inputFiles={}".format(input_files),
            "outputFile={}".format(output_file)]
     print cmd

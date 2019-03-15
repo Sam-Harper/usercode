@@ -55,8 +55,9 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(options.outputFile)
 )
 
-process.scRegTreeMaker = cms.EDAnalyzer("SCRegTreeMaker",
+process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         verticesTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                        rhoTag = cms.InputTag("fixedGridRhoFastjetAll"),
                                         genPartsTag = cms.InputTag("prunedGenParticles"),
 #                                        scTag = cms.VInputTag("reducedEgamma:reducedSuperClusters",),
                                         scTag = cms.VInputTag("particleFlowSuperClusterECAL:particleFlowSuperClusterECALBarrel","particleFlowSuperClusterECAL:particleFlowSuperClusterECALEndcapWithPreshower"),
@@ -64,5 +65,5 @@ process.scRegTreeMaker = cms.EDAnalyzer("SCRegTreeMaker",
                                         ecalHitsEETag = cms.InputTag("reducedEgamma","reducedEERecHits"),
                                         elesTag = cms.InputTag("slimmedElectrons")
                                         )
-process.p = cms.Path(process.scRegTreeMaker)
+process.p = cms.Path(process.egRegTreeMaker)
 print process.GlobalTag.globaltag
