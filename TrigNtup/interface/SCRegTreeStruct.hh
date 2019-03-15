@@ -34,10 +34,10 @@ struct ClustStruct {
 
 
 struct SuperClustStruct {
-  float rawEnergy,etaWidth,phiWidth,e3x3,seedClusEnergy,eMax,e2nd,eLeftRightDiffSumRatio,eTopBottomDiffSumRatio,sigmaIEtaIEta,sigmaIEtaIPhi,sigmaIPhiIPhi,numberOfClusters,clusterMaxDR,clusterMaxDRDPhi,clusterMaxDRDEta,clusterMaxDRRawEnergy,iEtaOrX,iPhiOrY,isEB,corrEnergy74X,scEta,scPhi,seedEta,seedPhi,eleMatch;
-  static std::string contents(){return "rawEnergy/F:etaWidth:phiWidth:e3x3:seedClusEnergy:eMax:e2nd:eLeftRightDiffSumRatio:eTopBottomDiffSumRatio:sigmaIEtaIEta:sigmaIEtaIPhi:sigmaIPhiIPhi:numberOfClusters:clusterMaxDR:clusterMaxDRDPhi:clusterMaxDRDEta:clusterMaxDRRawEnergy:iEtaOrX:iPhiOrY:isEB:corrEnergy74X:scEta:scPhi:seedEta:seedPhi:eleMatch";}
+  float rawEnergy,etaWidth,phiWidth,e3x3,seedClusEnergy,eMax,e2nd,eLeftRightDiffSumRatio,eTopBottomDiffSumRatio,sigmaIEtaIEta,sigmaIEtaIPhi,sigmaIPhiIPhi,numberOfClusters,numberOfSubClusters,clusterMaxDR,clusterMaxDRDPhi,clusterMaxDRDEta,clusterMaxDRRawEnergy,iEtaOrX,iPhiOrY,isEB,corrEnergy74X,scEta,scPhi,seedEta,seedPhi,eleMatch;
+  static std::string contents(){return "rawEnergy/F:etaWidth:phiWidth:e3x3:seedClusEnergy:eMax:e2nd:eLeftRightDiffSumRatio:eTopBottomDiffSumRatio:sigmaIEtaIEta:sigmaIEtaIPhi:sigmaIPhiIPhi:numberOfClusters:numberOfSubClusters:clusterMaxDR:clusterMaxDRDPhi:clusterMaxDRDEta:clusterMaxDRRawEnergy:iEtaOrX:iPhiOrY:isEB:corrEnergy74X:scEta:scPhi:seedEta:seedPhi:eleMatch";}
   void clear(){
-    rawEnergy=etaWidth=phiWidth=e3x3=seedClusEnergy=eMax=e2nd=eLeftRightDiffSumRatio=eTopBottomDiffSumRatio=sigmaIEtaIEta=sigmaIEtaIPhi=sigmaIPhiIPhi=numberOfClusters=clusterMaxDR=clusterMaxDRDPhi=clusterMaxDRDEta=clusterMaxDRRawEnergy=iEtaOrX=iPhiOrY=isEB=corrEnergy74X=scEta=scPhi=seedEta=seedPhi=eleMatch=0;
+    rawEnergy=etaWidth=phiWidth=e3x3=seedClusEnergy=eMax=e2nd=eLeftRightDiffSumRatio=eTopBottomDiffSumRatio=sigmaIEtaIEta=sigmaIEtaIPhi=sigmaIPhiIPhi=numberOfClusters=numberOfSubClusters=clusterMaxDR=clusterMaxDRDPhi=clusterMaxDRDEta=clusterMaxDRRawEnergy=iEtaOrX=iPhiOrY=isEB=corrEnergy74X=scEta=scPhi=seedEta=seedPhi=eleMatch=0;
   }
 
   void fill(const reco::SuperCluster& sc,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,bool iEleMatch);

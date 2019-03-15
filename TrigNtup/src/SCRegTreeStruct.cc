@@ -9,6 +9,7 @@
 
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
+#include "FWCore/Utilities/interface/isFinite.h"
 
 void SCRegTreeStruct::createBranches(TTree* tree)
 {
@@ -64,16 +65,16 @@ void SCRegTreeStruct::fill(const edm::Event& event,int iNrVert,const reco::Super
   auto fillClus = [&iSC](ClustStruct& clus,size_t index){
     if(index<static_cast<size_t>(iSC.clusters().size())){
       auto iClus = iSC.clusters()[index];
-      clus.fill( iClus->energy()-iSC.seed()->energy(),
+      clus.fill( iClus->energy(),//-iSC.seed()->energy(),
 		 iClus->eta()-iSC.seed()->eta(),
 		 reco::deltaPhi(iClus->phi(),iSC.seed()->phi()));
     }else{
       clus.fill( 0, 0, 0 );
     }
   };  
-  fillClus(clus1,0);  
-  fillClus(clus2,1);  
-  fillClus(clus3,2);  
+  fillClus(clus1,1);  
+  fillClus(clus2,2);  
+  fillClus(clus3,3);  
   
 }
 
@@ -106,10 +107,25 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalRecHitCollect
   float eTopBottomDiff  = eTop - eBottom;
   eTopBottomDiffSumRatio  = eTopBottomSum !=0. ? eTopBottomDiff/eTopBottomSum : 0.;
   auto localCovs =  EcalClusterTools::localCovariances(seedClus,&ecalHits,&topo);
-  sigmaIEtaIEta = localCovs[0];
-  sigmaIEtaIPhi = localCovs[1];
-  sigmaIPhiIPhi = localCovs[2];
+  sigmaIEtaIEta =std::sqrt(localCovs[0]);
+  sigmaIEtaIPhi = std::numeric_limits<float>::max();
+  sigmaIPhiIPhi = std::numeric_limits<float>::max();
+  if (!edm::isNotFinite(localCovs[2])) sigmaIPhiIPhi = std::sqrt(localCovs[2]) ;
+
+  const bool applySPPBug = true;
+  const float seeBySpp = applySPPBug ? sigmaIEtaIEta*std::numeric_limits<float>::max() : sigmaIEtaIEta*sigmaIPhiIPhi;
+  
+  if(  seeBySpp > 0 ) {
+    sigmaIEtaIPhi = localCovs[1] / seeBySpp;
+  } else if ( localCovs[1] > 0 ) {
+    sigmaIEtaIPhi = 1.f;
+  } else {
+    sigmaIEtaIPhi = -1.f;
+  }
+
   numberOfClusters = sc.clusters().size();
+  numberOfSubClusters = std::max(0,static_cast<int>(sc.clusters().size())-1);
+
   if(isEB){
     EBDetId ebDetId(seedClus.seed());
     iEtaOrX = ebDetId.ieta();
@@ -125,14 +141,17 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalRecHitCollect
   clusterMaxDRDEta = 999.;
   clusterMaxDRRawEnergy = 0.;
   float maxDR2 = 0;
-  for(auto& clus : sc.clusters()){
-    float dR2 = reco::deltaR2(seedEta,seedPhi,clus->eta(),clus->phi());
-    if(dR2 > maxDR2 ){
-      maxDR2 = dR2;
-      clusterMaxDR = std::sqrt(dR2);
-      clusterMaxDRDPhi = reco::deltaPhi(clus->phi(),seedPhi);
-      clusterMaxDRDEta = clus->eta()-seedEta;
-      clusterMaxDRRawEnergy = clus->energy();
+  if(sc.clusters().size()>1){
+    for(auto& clus : sc.clusters()){
+
+      float dR2 = reco::deltaR2(seedEta,seedPhi,clus->eta(),clus->phi());
+      if(dR2 > maxDR2 ){
+	maxDR2 = dR2;
+	clusterMaxDR = std::sqrt(dR2);
+	clusterMaxDRDPhi = reco::deltaPhi(clus->phi(),seedPhi);
+	clusterMaxDRDEta = clus->eta()-seedEta;
+	clusterMaxDRRawEnergy = clus->energy();
+      }
     }
   }
   eleMatch = iEleMatch;

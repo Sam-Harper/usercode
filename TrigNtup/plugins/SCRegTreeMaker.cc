@@ -41,7 +41,7 @@ private:
 
   edm::EDGetTokenT<reco::VertexCollection>  verticesToken_;
   edm::EDGetTokenT<reco::GenParticleCollection> genPartsToken_;
-  edm::EDGetTokenT<reco::SuperClusterCollection> scToken_;
+  std::vector<edm::EDGetTokenT<reco::SuperClusterCollection>> scTokens_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEBToken_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEEToken_;
   edm::EDGetTokenT<std::vector<pat::Electron> > elesToken_;
@@ -63,6 +63,12 @@ private:
   void setToken(edm::EDGetTokenT<T>& token,const edm::ParameterSet& iPara,const std::string& tagName){
     token = consumes<T>(iPara.getParameter<edm::InputTag>(tagName));
   }
+  template<typename T>
+  void setToken(std::vector<edm::EDGetTokenT<T> > & tokens,const edm::ParameterSet& iPara,const std::string& tagName){
+    for(auto& tag: iPara.getParameter<std::vector<edm::InputTag> >(tagName)){
+      tokens.push_back(consumes<T>(tag));
+    }
+  }
   static const reco::GenParticle* matchGenPart(float eta,float phi,const std::vector<reco::GenParticle>& genParts);
 };
 
@@ -73,7 +79,7 @@ SCRegTreeMaker::SCRegTreeMaker(const edm::ParameterSet& iPara):
 {
   setToken(verticesToken_,iPara,"verticesTag");
   setToken(genPartsToken_,iPara,"genPartsTag");
-  setToken(scToken_,iPara,"scTag");
+  setToken(scTokens_,iPara,"scTag");
   setToken(ecalHitsEBToken_,iPara,"ecalHitsEBTag");
   setToken(ecalHitsEEToken_,iPara,"ecalHitsEETag");
   setToken(elesToken_,iPara,"elesTag");
@@ -106,6 +112,17 @@ namespace {
     iEvent.getByToken(token,handle);
     return handle;
   }
+  template<typename T> 
+  std::vector<edm::Handle<T> > getHandle(const edm::Event& iEvent,const std::vector<edm::EDGetTokenT<T> >& tokens)
+  {
+    std::vector<edm::Handle<T> > handles;
+    for(auto& token : tokens){
+      edm::Handle<T> handle;
+      iEvent.getByToken(token,handle);
+      handles.emplace_back(std::move(handle));
+    }
+    return handles;
+  }
 }
   
 namespace{
@@ -125,7 +142,7 @@ namespace{
 
 void SCRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
 {
-  auto scHandle = getHandle(iEvent,scToken_);
+  auto scHandles = getHandle(iEvent,scTokens_);
   auto ecalHitsEBHandle = getHandle(iEvent,ecalHitsEBToken_);
   auto ecalHitsEEHandle = getHandle(iEvent,ecalHitsEEToken_);
   auto genPartsHandle = getHandle(iEvent,genPartsToken_);
@@ -135,15 +152,17 @@ void SCRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
   iSetup.get<CaloTopologyRecord>().get(caloTopoHandle);
 
   int nrVert = verticesHandle->size();
-  for(const auto& sc: *scHandle){
-    const reco::GenParticle* genPart = genPartsHandle.isValid() ? matchGenPart(sc.eta(),sc.phi(),*genPartsHandle) : nullptr;
-    const pat::Electron* ele = elesHandle.isValid() ? matchEle(sc.seed()->seed().rawId(),*elesHandle) : nullptr;
-    
-    if(hasBasicClusters(sc)){
+  for(const auto& scHandle : scHandles){
+    for(const auto& sc: *scHandle){
+      const reco::GenParticle* genPart = genPartsHandle.isValid() ? matchGenPart(sc.eta(),sc.phi(),*genPartsHandle) : nullptr;
+      const pat::Electron* ele = elesHandle.isValid() ? matchEle(sc.seed()->seed().rawId(),*elesHandle) : nullptr;
       
-    
-      scRegTreeData_.fill(iEvent,nrVert,sc,*ecalHitsEBHandle,*ecalHitsEEHandle,*caloTopoHandle,genPart,ele);
-      scRegTree_->Fill();
+      if(hasBasicClusters(sc)){
+	
+	
+	scRegTreeData_.fill(iEvent,nrVert,sc,*ecalHitsEBHandle,*ecalHitsEEHandle,*caloTopoHandle,genPart,ele);
+	scRegTree_->Fill();
+      }
     }
   }
 
