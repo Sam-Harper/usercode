@@ -15,6 +15,8 @@ void EGRegTreeStruct::createBranches(TTree* tree)
   tree->Branch("rho",&rho,"rho/F");
   tree->Branch("evt",&evt,evt.contents().c_str());
   tree->Branch("sc",&sc,sc.contents().c_str());
+  tree->Branch("ssFull",&ssFull,ssFull.contents().c_str());
+  tree->Branch("ssFrac",&ssFrac,ssFrac.contents().c_str());
   tree->Branch("ele",&ele,ele.contents().c_str());
   tree->Branch("mc",&mc,mc.contents().c_str());
   tree->Branch("clus1",&clus1,clus1.contents().c_str());
@@ -28,6 +30,8 @@ void EGRegTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("rho",&rho);
   tree->SetBranchAddress("evt",&evt);
   tree->SetBranchAddress("sc",&sc);
+  tree->SetBranchAddress("scFull",&ssFull);
+  tree->SetBranchAddress("scFrac",&ssFrac);
   tree->SetBranchAddress("ele",&ele);
   tree->SetBranchAddress("mc",&mc);
   tree->SetBranchAddress("clus1",&clus1);
@@ -61,6 +65,8 @@ void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,const 
   rho = iRho,
   evt.fill(event);
   sc.fill(iSC);
+  ssFull.fill<true>(*iSC.seed(),ecalHitsEB,ecalHitsEE,topo);
+  ssFrac.fill<false>(*iSC.seed(),ecalHitsEB,ecalHitsEE,topo);
   if(iMC) mc.fill(*iMC,std::sqrt(reco::deltaR2(iSC.eta(),iSC.phi(),iMC->eta(),iMC->phi())));
   if(iEle) ele.fill(*iEle);
 
@@ -89,11 +95,13 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc)
   etaWidth = sc.etaWidth();
   phiWidth = sc.phiWidth();
   seedClusEnergy = seedClus.energy();
-  corrEnergy74X = sc.energy();
+  corrEnergy = sc.energy();
   scEta = sc.eta();
   scPhi = sc.phi();
   seedEta = seedClus.eta();
   seedPhi = seedClus.phi();
+  dPhiSeedSC = reco::deltaPhi(seedPhi,scPhi);
+  dEtaSeedSC = seedEta-scEta;
   numberOfClusters = sc.clusters().size();
   numberOfSubClusters = std::max(0,static_cast<int>(sc.clusters().size())-1);
 
@@ -101,6 +109,12 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc)
     EBDetId ebDetId(seedClus.seed());
     iEtaOrX = ebDetId.ieta();
     iPhiOrY = ebDetId.iphi();
+    const int iEtaCorr = ebDetId.ieta() - (ebDetId.ieta() > 0 ? +1 : -1);
+    const int iEtaCorr26 = ebDetId.ieta() - (ebDetId.ieta() > 0 ? +26 : -26);
+    iEtaMod5 = iEtaCorr%5;
+    iEtaMod20 = std::abs(ebDetId.ieta()<=25) ? iEtaCorr%20 : iEtaCorr26%20;
+    iPhiMod2 = ebDetId.iphi()%2;
+    iPhiMod20 = ebDetId.iphi()%20;
   }else{
     EEDetId eeDetId(seedClus.seed());
     iEtaOrX = eeDetId.ix();

@@ -43,20 +43,20 @@ struct EleStruct {
 };
 
 struct SuperClustStruct {
-  float rawEnergy,rawESEnergy,etaWidth,phiWidth,seedClusEnergy,numberOfClusters,numberOfSubClusters,clusterMaxDR,clusterMaxDRDPhi,clusterMaxDRDEta,clusterMaxDRRawEnergy,iEtaOrX,iPhiOrY,isEB,corrEnergy74X,scEta,scPhi,seedEta,seedPhi;
-  static std::string contents(){return "rawEnergy/F:rawESEnergy:etaWidth:phiWidth:seedClusEnergy:numberOfClusters:numberOfSubClusters:clusterMaxDR:clusterMaxDRDPhi:clusterMaxDRDEta:clusterMaxDRRawEnergy:iEtaOrX:iPhiOrY:isEB:corrEnergy74X:scEta:scPhi:seedEta:seedPhi";}
+  float rawEnergy,rawESEnergy,etaWidth,phiWidth,seedClusEnergy,numberOfClusters,numberOfSubClusters,clusterMaxDR,clusterMaxDRDPhi,clusterMaxDRDEta,clusterMaxDRRawEnergy,corrEnergy,scEta,scPhi,seedEta,seedPhi,dEtaSeedSC,dPhiSeedSC,isEB,iEtaOrX,iPhiOrY,iEtaMod5,iPhiMod2,iEtaMod20,iPhiMod20;
+  static std::string contents(){return "rawEnergy/F:rawESEnergy:etaWidth:phiWidth:seedClusEnergy:numberOfClusters:numberOfSubClusters:clusterMaxDR:clusterMaxDRDPhi:clusterMaxDRDEta:clusterMaxDRRawEnergy:corrEnergy:scEta:scPhi:seedEta:seedPhi:dEtaSeedSC:dPhiSeedSC:isEB:iEtaOrX:iPhiOrY:iEtaMod5:iPhiMod2:iEtaMod20:iPhiMod20";}
   void clear(){
-    rawEnergy=rawESEnergy=etaWidth=phiWidth=seedClusEnergy=numberOfClusters=numberOfSubClusters=clusterMaxDR=clusterMaxDRDPhi=clusterMaxDRDEta=clusterMaxDRRawEnergy=iEtaOrX=iPhiOrY=isEB=corrEnergy74X=scEta=scPhi=seedEta=seedPhi;
+    rawEnergy=rawESEnergy=etaWidth=phiWidth=seedClusEnergy=numberOfClusters=numberOfSubClusters=clusterMaxDR=clusterMaxDRDPhi=clusterMaxDRDEta=clusterMaxDRRawEnergy=corrEnergy=scEta=scPhi=seedEta=seedPhi=dEtaSeedSC=dPhiSeedSC=isEB=iEtaOrX=iPhiOrY=iEtaMod5=iPhiMod2=iEtaMod20=iPhiMod20=0.;
   }
 
   void fill(const reco::SuperCluster& sc);
 };
 
 struct ShowerShapeStruct {
-  float e3x3,seedClusEnergy,eMax,e2nd,eLeftRightDiffSumRatio,eTopBottomDiffSumRatio,sigmaIEtaIEta,sigmaIEtaIPhi,sigmaIPhiIPhi;
-  static std::string contents(){return "e3x3:seedClusEnergy:eMax:e2nd:eLeftRightDiffSumRatio:eTopBottomDiffSumRatio:sigmaIEtaIEta:sigmaIEtaIPhi:sigmaIPhiIPhi";}
+  float e3x3,e5x5,seedClusEnergy,eMax,e2nd,eLeftRightDiffSumRatio,eTopBottomDiffSumRatio,sigmaIEtaIEta,sigmaIEtaIPhi,sigmaIPhiIPhi,e2x5Max,e2x5Top,e2x5Bottom,e2x5Left,e2x5Right;
+  static std::string contents(){return "e3x3:e5x5:seedClusEnergy:eMax:e2nd:eLeftRightDiffSumRatio:eTopBottomDiffSumRatio:sigmaIEtaIEta:sigmaIEtaIPhi:sigmaIPhiIPhi:e2x5Max:e2x5Top:e2x5Bottom:e2x5Left:e2x5Right";}
   void clear(){
-    e3x3=seedClusEnergy=eMax=e2nd=eLeftRightDiffSumRatio=eTopBottomDiffSumRatio=sigmaIEtaIEta=sigmaIEtaIPhi=sigmaIPhiIPhi=0.;
+    e3x3=e5x5=seedClusEnergy=eMax=e2nd=eLeftRightDiffSumRatio=eTopBottomDiffSumRatio=sigmaIEtaIEta=sigmaIEtaIPhi=sigmaIPhiIPhi=e2x5Max=e2x5Top=e2x5Bottom=e2x5Left=e2x5Right=0.;
   }
   template<bool full5x5>
   void fill(const reco::CaloCluster& clus,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo);  
@@ -81,6 +81,8 @@ struct EGRegTreeStruct {
   float rho;
   EvtStruct evt;
   SuperClustStruct sc;
+  ShowerShapeStruct ssFull;
+  ShowerShapeStruct ssFrac;
   EleStruct ele;
   GenInfoStruct mc;
   ClustStruct clus1;
@@ -94,6 +96,8 @@ struct EGRegTreeStruct {
     rho=0.;
     evt.clear();
     sc.clear();
+    ssFull.clear();
+    ssFrac.clear();
     ele.clear();
     mc.clear();
     clus1.clear();
@@ -110,6 +114,7 @@ void ShowerShapeStruct::fill(const reco::CaloCluster& clus,const EcalRecHitColle
   const EcalRecHitCollection& ecalHits = isEB ? ecalHitsEB : ecalHitsEE;
 
   e3x3 = EcalClusterToolsT<full5x5>::e3x3(clus,&ecalHits,&topo);
+  e5x5 = EcalClusterToolsT<full5x5>::e5x5(clus,&ecalHits,&topo);
   eMax = EcalClusterToolsT<full5x5>::eMax(clus,&ecalHits);
   e2nd = EcalClusterToolsT<full5x5>::e2nd(clus,&ecalHits);
   float eLeft = EcalClusterToolsT<full5x5>::eLeft(clus,&ecalHits,&topo);
@@ -121,6 +126,13 @@ void ShowerShapeStruct::fill(const reco::CaloCluster& clus,const EcalRecHitColle
   float eBottom = EcalClusterToolsT<full5x5>::eBottom(clus,&ecalHits,&topo);
   float eTopBottomSum  = eTop + eBottom;
   float eTopBottomDiff  = eTop - eBottom;
+  
+  e2x5Bottom =  EcalClusterToolsT<full5x5>::e2x5Bottom(clus,&ecalHits,&topo);
+  e2x5Top =  EcalClusterToolsT<full5x5>::e2x5Top(clus,&ecalHits,&topo);
+  e2x5Left =  EcalClusterToolsT<full5x5>::e2x5Left(clus,&ecalHits,&topo);
+  e2x5Right =  EcalClusterToolsT<full5x5>::e2x5Right(clus,&ecalHits,&topo);
+  e2x5Max = EcalClusterToolsT<full5x5>::e2x5Max(clus,&ecalHits,&topo);
+
   eTopBottomDiffSumRatio  = eTopBottomSum !=0. ? eTopBottomDiff/eTopBottomSum : 0.;
   auto localCovs =  EcalClusterToolsT<full5x5>::localCovariances(clus,&ecalHits,&topo);
  
