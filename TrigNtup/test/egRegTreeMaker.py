@@ -33,8 +33,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if options.isMC:
-#    process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v12', '')
-    process.GlobalTag = GlobalTag(process.GlobalTag, '103X_mc2017_realistic_v1', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v15', '')
+#    process.GlobalTag = GlobalTag(process.GlobalTag, '103X_mc2017_realistic_v1', '')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
@@ -65,5 +65,11 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         ecalHitsEETag = cms.InputTag("reducedEgamma","reducedEERecHits"),
                                         elesTag = cms.InputTag("slimmedElectrons")
                                         )
+process.egRegTreeMaker.scTag = cms.VInputTag("lowPtGsfElectronSuperClusters")
+process.egRegTreeMaker.elesTag = cms.InputTag("slimmedLowPtElectrons")
+process.egRegTreeMaker.ecalHitsEBTag = cms.InputTag("ecalRecHit","EcalRecHitsEB")
+process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("ecalRecHit","EcalRecHitsEE")
+
+
 process.p = cms.Path(process.egRegTreeMaker)
 print process.GlobalTag.globaltag

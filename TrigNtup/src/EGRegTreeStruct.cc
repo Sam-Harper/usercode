@@ -57,32 +57,34 @@ void GenInfoStruct::fill(const reco::GenParticle& genPart,float iDR)
   dR = iDR;
 }
 
-void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,const reco::SuperCluster& iSC,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::GenParticle* iMC,const reco::GsfElectron* iEle)
+void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle)
 {
   clear();
 
   nrVert = iNrVert;
   rho = iRho,
   evt.fill(event);
-  sc.fill(iSC);
-  ssFull.fill<true>(*iSC.seed(),ecalHitsEB,ecalHitsEE,topo);
-  ssFrac.fill<false>(*iSC.seed(),ecalHitsEB,ecalHitsEE,topo);
-  if(iMC) mc.fill(*iMC,std::sqrt(reco::deltaR2(iSC.eta(),iSC.phi(),iMC->eta(),iMC->phi())));
+  if(iSC){
+    sc.fill(*iSC);
+    ssFull.fill<true>(*iSC->seed(),ecalHitsEB,ecalHitsEE,topo);
+    ssFrac.fill<false>(*iSC->seed(),ecalHitsEB,ecalHitsEE,topo);
+    auto fillClus = [&iSC](ClustStruct& clus,size_t index){
+      if(index<static_cast<size_t>(iSC->clusters().size())){
+	auto iClus = iSC->clusters()[index];
+      clus.fill( iClus->energy(),
+		 iClus->eta()-iSC->seed()->eta(),
+		 reco::deltaPhi(iClus->phi(),iSC->seed()->phi()));
+      }else{
+	clus.fill( 0, 0, 0 );
+      }
+    };  
+    fillClus(clus1,1);  
+    fillClus(clus2,2);  
+    fillClus(clus3,3);  
+  }
+  if(iMC) mc.fill(*iMC, iSC ? std::sqrt(reco::deltaR2(iSC->eta(),iSC->phi(),iMC->eta(),iMC->phi())) : 999);
   if(iEle) ele.fill(*iEle);
 
-  auto fillClus = [&iSC](ClustStruct& clus,size_t index){
-    if(index<static_cast<size_t>(iSC.clusters().size())){
-      auto iClus = iSC.clusters()[index];
-      clus.fill( iClus->energy(),
-		 iClus->eta()-iSC.seed()->eta(),
-		 reco::deltaPhi(iClus->phi(),iSC.seed()->phi()));
-    }else{
-      clus.fill( 0, 0, 0 );
-    }
-  };  
-  fillClus(clus1,1);  
-  fillClus(clus2,2);  
-  fillClus(clus3,3);  
 }
 
 void SuperClustStruct::fill(const reco::SuperCluster& sc)
@@ -142,6 +144,7 @@ void EleStruct::fill(const reco::GsfElectron& ele)
 {
   et = ele.et();
   energy = ele.energy();
+  ecalEnergy = ele.ecalEnergy();
   eta = ele.eta();
   phi = ele.phi();
   trkEtaMode = ele.gsfTrack()->etaMode();
