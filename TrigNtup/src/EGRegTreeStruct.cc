@@ -153,6 +153,12 @@ void EleStruct::fill(const reco::GsfElectron& ele)
   trkPhiMode = ele.gsfTrack()->phiMode();
   trkPMode = ele.gsfTrack()->pMode();
   trkPModeErr = std::abs(ele.gsfTrack()->qoverpModeError())*ele.gsfTrack()->pMode()*ele.gsfTrack()->pMode();
+  trkPInn = ele.gsfTrack()->p();
+  trkPtInn = ele.gsfTrack()->pt();
+  trkPVtx = std::sqrt(ele.trackMomentumAtVtx().Mag2());
+  trkPOut = std::sqrt(ele.trackMomentumOut().Mag2());
+  trkChi2 = ele.gsfTrack()->chi2();
+  trkNDof = ele.gsfTrack()->ndof();
   fbrem = ele.fbrem();
   corrMean = 1.;
   corrSigma = 0.;
