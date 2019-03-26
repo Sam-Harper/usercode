@@ -66,4 +66,7 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         elesTag = cms.InputTag("slimmedElectrons")
                                         )
 process.p = cms.Path(process.egRegTreeMaker)
+
+process.egRegTreeMaker.ecalHitsEBTag = cms.InputTag("ecalRecHit","EcalRecHitsEB")
+process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("ecalRecHit","EcalRecHitsEE")
 print process.GlobalTag.globaltag

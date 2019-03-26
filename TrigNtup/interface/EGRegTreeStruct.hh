@@ -110,31 +110,31 @@ struct EGRegTreeStruct {
 template<bool full5x5>
 void ShowerShapeStruct::fill(const reco::CaloCluster& clus,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo)
 {
-  bool isEB = clus.seed().subdetId()==EcalBarrel;
+  const bool isEB = clus.seed().subdetId()==EcalBarrel;
   const EcalRecHitCollection& ecalHits = isEB ? ecalHitsEB : ecalHitsEE;
 
   e3x3 = EcalClusterToolsT<full5x5>::e3x3(clus,&ecalHits,&topo);
   e5x5 = EcalClusterToolsT<full5x5>::e5x5(clus,&ecalHits,&topo);
   eMax = EcalClusterToolsT<full5x5>::eMax(clus,&ecalHits);
   e2nd = EcalClusterToolsT<full5x5>::e2nd(clus,&ecalHits);
-  float eLeft = EcalClusterToolsT<full5x5>::eLeft(clus,&ecalHits,&topo);
-  float eRight = EcalClusterToolsT<full5x5>::eRight(clus,&ecalHits,&topo);
-  float eLeftRightSum  = eLeft + eRight;
-  float eLeftRightDiff  = eLeft - eRight;
-  eLeftRightDiffSumRatio  = eLeftRightSum !=0. ? eLeftRightDiff/eLeftRightSum : 0.;
-  float eTop = EcalClusterToolsT<full5x5>::eTop(clus,&ecalHits,&topo);
-  float eBottom = EcalClusterToolsT<full5x5>::eBottom(clus,&ecalHits,&topo);
-  float eTopBottomSum  = eTop + eBottom;
-  float eTopBottomDiff  = eTop - eBottom;
-  
+  const float eLeft = EcalClusterToolsT<full5x5>::eLeft(clus,&ecalHits,&topo);
+  const float eRight = EcalClusterToolsT<full5x5>::eRight(clus,&ecalHits,&topo);
+  const float eLeftRightSum  = eLeft + eRight;
+  const float eLeftRightDiff  = eLeft - eRight;
+  eLeftRightDiffSumRatio  = eLeftRightSum !=0.f ? eLeftRightDiff/eLeftRightSum : 0.f;
+  const float eTop = EcalClusterToolsT<full5x5>::eTop(clus,&ecalHits,&topo);
+  const float eBottom = EcalClusterToolsT<full5x5>::eBottom(clus,&ecalHits,&topo);
+  const float eTopBottomSum  = eTop + eBottom;
+  const float eTopBottomDiff  = eTop - eBottom;
+  eTopBottomDiffSumRatio  = eTopBottomSum !=0.f ? eTopBottomDiff/eTopBottomSum : 0.f;
+
   e2x5Bottom =  EcalClusterToolsT<full5x5>::e2x5Bottom(clus,&ecalHits,&topo);
   e2x5Top =  EcalClusterToolsT<full5x5>::e2x5Top(clus,&ecalHits,&topo);
   e2x5Left =  EcalClusterToolsT<full5x5>::e2x5Left(clus,&ecalHits,&topo);
   e2x5Right =  EcalClusterToolsT<full5x5>::e2x5Right(clus,&ecalHits,&topo);
   e2x5Max = EcalClusterToolsT<full5x5>::e2x5Max(clus,&ecalHits,&topo);
 
-  eTopBottomDiffSumRatio  = eTopBottomSum !=0. ? eTopBottomDiff/eTopBottomSum : 0.;
-  auto localCovs =  EcalClusterToolsT<full5x5>::localCovariances(clus,&ecalHits,&topo);
+  const auto localCovs =  EcalClusterToolsT<full5x5>::localCovariances(clus,&ecalHits,&topo);
  
   sigmaIEtaIEta =std::sqrt(localCovs[0]);
   sigmaIEtaIPhi = std::numeric_limits<float>::max();

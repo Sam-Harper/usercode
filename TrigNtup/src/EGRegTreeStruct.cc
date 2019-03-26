@@ -124,8 +124,10 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc)
   clusterMaxDRDPhi = 999.;
   clusterMaxDRDEta = 999.;
   clusterMaxDRRawEnergy = 0.;
+
   float maxDR2 = 0;
   for(auto& clus : sc.clusters()){
+    if(clus == sc.seed()) continue;
     float dR2 = reco::deltaR2(seedEta,seedPhi,clus->eta(),clus->phi());
     if(dR2 > maxDR2 ){
       maxDR2 = dR2;
