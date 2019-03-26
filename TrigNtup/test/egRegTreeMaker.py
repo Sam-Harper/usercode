@@ -72,4 +72,7 @@ process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("ecalRecHit","EcalRecHitsEE"
 
 
 process.p = cms.Path(process.egRegTreeMaker)
+
+process.egRegTreeMaker.ecalHitsEBTag = cms.InputTag("ecalRecHit","EcalRecHitsEB")
+process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("ecalRecHit","EcalRecHitsEE")
 print process.GlobalTag.globaltag
