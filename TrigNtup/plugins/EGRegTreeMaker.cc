@@ -71,6 +71,7 @@ private:
     }
   }
   static const reco::GenParticle* matchGenPart(float eta,float phi,const std::vector<reco::GenParticle>& genParts);
+  static const reco::SuperCluster*  matchSC(float eta,float phi,const std::vector<edm::Handle<reco::SuperClusterCollection> >& scHandles);
 };
 
 
@@ -155,21 +156,40 @@ void EGRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
   iSetup.get<CaloTopologyRecord>().get(caloTopoHandle);
 
   int nrVert = verticesHandle->size();
-  for(const auto& scHandle : scHandles){
-    for(const auto& sc: *scHandle){
-      const reco::GenParticle* genPart = genPartsHandle.isValid() ? matchGenPart(sc.eta(),sc.phi(),*genPartsHandle) : nullptr;
-      const pat::Electron* ele = elesHandle.isValid() ? matchEle(sc.seed()->seed().rawId(),*elesHandle) : nullptr;
-      
-      if(hasBasicClusters(sc)){
-	egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,sc,
+  bool fillFromSC = false;
+  if(fillFromSC){
+    for(const auto& scHandle : scHandles){
+      for(const auto& sc: *scHandle){
+	const reco::GenParticle* genPart = genPartsHandle.isValid() ? matchGenPart(sc.eta(),sc.phi(),*genPartsHandle) : nullptr;
+	const pat::Electron* ele = elesHandle.isValid() ? matchEle(sc.seed()->seed().rawId(),*elesHandle) : nullptr;
+	
+	if(hasBasicClusters(sc)){
+	  egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,
+			      *ecalHitsEBHandle,*ecalHitsEEHandle,
+			      *caloTopoHandle,
+			      &sc,genPart,ele);
+	  egRegTree_->Fill();
+	}
+      }
+    }
+  }else{
+
+    for(const auto& genPart : *genPartsHandle){
+      if(std::abs(genPart.pdgId())==11 && genPart.statusFlags().isPrompt() && genPart.statusFlags().isFirstCopy()){
+	const reco::SuperCluster* sc = matchSC(genPart.eta(),genPart.phi(),scHandles);
+	const pat::Electron* ele = elesHandle.isValid() && sc ? matchEle(sc->seed()->seed().rawId(),*elesHandle) : nullptr;
+	
+
+	egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,
 			    *ecalHitsEBHandle,*ecalHitsEEHandle,
-			    *caloTopoHandle,genPart,ele);
+			    *caloTopoHandle,
+			    sc,&genPart,ele);
 	egRegTree_->Fill();
       }
     }
-  }
-
-} 
+    
+  } 
+}
 
 const reco::GenParticle*  EGRegTreeMaker::matchGenPart(float eta,float phi,const std::vector<reco::GenParticle>& genParts)
 {
@@ -184,6 +204,23 @@ const reco::GenParticle*  EGRegTreeMaker::matchGenPart(float eta,float phi,const
 	  bestDR2 = dR2;
 	}
 	  
+      }
+    }
+  }
+  return bestMatch;
+}
+
+
+const reco::SuperCluster*  EGRegTreeMaker::matchSC(float eta,float phi,const std::vector<edm::Handle<reco::SuperClusterCollection> >& scHandles)
+{
+  const reco::SuperCluster* bestMatch=nullptr;
+  float bestDR2=0.3*0.3;
+  for(const auto& scHandle : scHandles){
+    for(const auto& sc: *scHandle){
+      float dR2 = reco::deltaR2(sc.eta(),sc.phi(),eta,phi);
+      if(dR2<bestDR2){
+	bestMatch = &sc;
+	bestDR2 = dR2;
       }
     }
   }

@@ -36,9 +36,9 @@ struct ClustStruct {
 
 
 struct EleStruct {
-  float et,energy,eta,phi,trkEtaMode,trkPhiMode,trkPMode,trkPModeErr,fbrem,corrMean,corrSigma,hademTow,hademCone;
-  static std::string contents(){return "et/F:energy:eta:phi:trkEtaMode:trkPhiMode:trkPMode:trkPModeErr:fbrem:corrMean:corrSigma:hademTow:hademCone";}
-  void clear(){et=energy=eta=phi=trkEtaMode=trkPhiMode=trkPMode=trkPModeErr=fbrem=corrMean=corrSigma=hademTow=hademCone=0.;}
+  float et,energy,ecalEnergy,eta,phi,trkEtaMode,trkPhiMode,trkPMode,trkPModeErr,fbrem,corrMean,corrSigma,hademTow,hademCone;
+  static std::string contents(){return "et/F:energy:ecalEnergy:eta:phi:trkEtaMode:trkPhiMode:trkPMode:trkPModeErr:fbrem:corrMean:corrSigma:hademTow:hademCone";}
+  void clear(){et=energy=ecalEnergy=eta=phi=trkEtaMode=trkPhiMode=trkPMode=trkPModeErr=fbrem=corrMean=corrSigma=hademTow=hademCone=0.;}
   void fill(const reco::GsfElectron& ele);
 };
 
@@ -90,7 +90,7 @@ struct EGRegTreeStruct {
   ClustStruct clus3;
   void createBranches(TTree* tree);
   void setBranchAddresses(TTree* tree);
-  void fill(const edm::Event& event,int iNrVert,float iRho,const reco::SuperCluster& iSC,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::GenParticle* iMC,const reco::GsfElectron* iEle);
+  void fill(const edm::Event& event,int iNrVert,float iRho,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle);
   void clear(){
     nrVert=0;
     rho=0.;
