@@ -36,9 +36,9 @@ struct ClustStruct {
 
 
 struct EleStruct {
-  float et,energy,ecalEnergy,eta,phi,trkEtaMode,trkPhiMode,trkPMode,trkPModeErr,fbrem,corrMean,corrSigma,hademTow,hademCone,trkPInn,trkPtInn,trkPVtx,trkPOut,trkChi2,trkNDof;
-  static std::string contents(){return "et/F:energy:ecalEnergy:eta:phi:trkEtaMode:trkPhiMode:trkPMode:trkPModeErr:fbrem:corrMean:corrSigma:hademTow:hademCone:trkPInn:trkPtInn:trkPVtx:trkPOut:trkChi2:trkNDof";}
-  void clear(){et=energy=ecalEnergy=eta=phi=trkEtaMode=trkPhiMode=trkPMode=trkPModeErr=fbrem=corrMean=corrSigma=hademTow=hademCone=trkPInn=trkPtInn=trkPVtx=trkPOut=trkChi2=trkNDof=0.;}
+  float et,energy,energyErr,ecalEnergy,ecalEnergyErr,eta,phi,trkEtaMode,trkPhiMode,trkPMode,trkPModeErr,fbrem,corrMean,corrSigma,hademTow,hademCone,trkPInn,trkPtInn,trkPVtx,trkPOut,trkChi2,trkNDof,ecalDrivenSeed,nrSatCrys;
+  static std::string contents(){return "et/F:energy:energyErr:ecalEnergy:ecalEnergyErr:eta:phi:trkEtaMode:trkPhiMode:trkPMode:trkPModeErr:fbrem:corrMean:corrSigma:hademTow:hademCone:trkPInn:trkPtInn:trkPVtx:trkPOut:trkChi2:trkNDof:ecalDrivenSeed:nrSatCrys";}
+  void clear(){et=energy=energyErr=ecalEnergy=ecalEnergyErr=eta=phi=trkEtaMode=trkPhiMode=trkPMode=trkPModeErr=fbrem=corrMean=corrSigma=hademTow=hademCone=trkPInn=trkPtInn=trkPVtx=trkPOut=trkChi2=trkNDof=ecalDrivenSeed=nrSatCrys=0.;}
   void fill(const reco::GsfElectron& ele);
 };
 
@@ -53,10 +53,10 @@ struct SuperClustStruct {
 };
 
 struct ShowerShapeStruct {
-  float e3x3,e5x5,seedClusEnergy,eMax,e2nd,eLeftRightDiffSumRatio,eTopBottomDiffSumRatio,sigmaIEtaIEta,sigmaIEtaIPhi,sigmaIPhiIPhi,e2x5Max,e2x5Top,e2x5Bottom,e2x5Left,e2x5Right;
-  static std::string contents(){return "e3x3:e5x5:seedClusEnergy:eMax:e2nd:eLeftRightDiffSumRatio:eTopBottomDiffSumRatio:sigmaIEtaIEta:sigmaIEtaIPhi:sigmaIPhiIPhi:e2x5Max:e2x5Top:e2x5Bottom:e2x5Left:e2x5Right";}
+  float e3x3,e5x5,seedClusEnergy,eMax,e2nd,eLeftRightDiffSumRatio,eTopBottomDiffSumRatio,sigmaIEtaIEta,sigmaIEtaIPhi,sigmaIPhiIPhi,e2x5Max,e2x5Top,e2x5Bottom,e2x5Left,e2x5Right,eTop,eBottom,eLeft,eRight;
+  static std::string contents(){return "e3x3:e5x5:seedClusEnergy:eMax:e2nd:eLeftRightDiffSumRatio:eTopBottomDiffSumRatio:sigmaIEtaIEta:sigmaIEtaIPhi:sigmaIPhiIPhi:e2x5Max:e2x5Top:e2x5Bottom:e2x5Left:e2x5Right:eTop:eBottom:eLeft:eRight";}
   void clear(){
-    e3x3=e5x5=seedClusEnergy=eMax=e2nd=eLeftRightDiffSumRatio=eTopBottomDiffSumRatio=sigmaIEtaIEta=sigmaIEtaIPhi=sigmaIPhiIPhi=e2x5Max=e2x5Top=e2x5Bottom=e2x5Left=e2x5Right=0.;
+    e3x3=e5x5=seedClusEnergy=eMax=e2nd=eLeftRightDiffSumRatio=eTopBottomDiffSumRatio=sigmaIEtaIEta=sigmaIEtaIPhi=sigmaIPhiIPhi=e2x5Max=e2x5Top=e2x5Bottom=e2x5Left=e2x5Right=eTop=eBottom=eLeft=eRight=0.;
   }
   template<bool full5x5>
   void fill(const reco::CaloCluster& clus,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo);  
@@ -117,13 +117,13 @@ void ShowerShapeStruct::fill(const reco::CaloCluster& clus,const EcalRecHitColle
   e5x5 = EcalClusterToolsT<full5x5>::e5x5(clus,&ecalHits,&topo);
   eMax = EcalClusterToolsT<full5x5>::eMax(clus,&ecalHits);
   e2nd = EcalClusterToolsT<full5x5>::e2nd(clus,&ecalHits);
-  const float eLeft = EcalClusterToolsT<full5x5>::eLeft(clus,&ecalHits,&topo);
-  const float eRight = EcalClusterToolsT<full5x5>::eRight(clus,&ecalHits,&topo);
+  eLeft = EcalClusterToolsT<full5x5>::eLeft(clus,&ecalHits,&topo);
+  eRight = EcalClusterToolsT<full5x5>::eRight(clus,&ecalHits,&topo);
   const float eLeftRightSum  = eLeft + eRight;
   const float eLeftRightDiff  = eLeft - eRight;
   eLeftRightDiffSumRatio  = eLeftRightSum !=0.f ? eLeftRightDiff/eLeftRightSum : 0.f;
-  const float eTop = EcalClusterToolsT<full5x5>::eTop(clus,&ecalHits,&topo);
-  const float eBottom = EcalClusterToolsT<full5x5>::eBottom(clus,&ecalHits,&topo);
+  eTop = EcalClusterToolsT<full5x5>::eTop(clus,&ecalHits,&topo);
+  eBottom = EcalClusterToolsT<full5x5>::eBottom(clus,&ecalHits,&topo);
   const float eTopBottomSum  = eTop + eBottom;
   const float eTopBottomDiff  = eTop - eBottom;
   eTopBottomDiffSumRatio  = eTopBottomSum !=0.f ? eTopBottomDiff/eTopBottomSum : 0.f;

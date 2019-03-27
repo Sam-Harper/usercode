@@ -115,8 +115,8 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc)
     const int iEtaCorr26 = ebDetId.ieta() - (ebDetId.ieta() > 0 ? +26 : -26);
     iEtaMod5 = iEtaCorr%5;
     iEtaMod20 = std::abs(ebDetId.ieta()<=25) ? iEtaCorr%20 : iEtaCorr26%20;
-    iPhiMod2 = ebDetId.iphi()%2;
-    iPhiMod20 = ebDetId.iphi()%20;
+    iPhiMod2 = (ebDetId.iphi()-1)%2;
+    iPhiMod20 = (ebDetId.iphi()-2)%20;
   }else{
     EEDetId eeDetId(seedClus.seed());
     iEtaOrX = eeDetId.ix();
@@ -146,7 +146,9 @@ void EleStruct::fill(const reco::GsfElectron& ele)
 {
   et = ele.et();
   energy = ele.energy();
+  energyErr = ele.p4Error(reco::GsfElectron::P4_COMBINATION);
   ecalEnergy = ele.ecalEnergy();
+  ecalEnergyErr = ele.ecalEnergyError();
   eta = ele.eta();
   phi = ele.phi();
   trkEtaMode = ele.gsfTrack()->etaMode();
@@ -164,4 +166,6 @@ void EleStruct::fill(const reco::GsfElectron& ele)
   corrSigma = 0.;
   hademTow = ele.hcalOverEcalBc();
   hademCone = ele.hcalOverEcal();
+  ecalDrivenSeed = ele.ecalDrivenSeed();
+  nrSatCrys = ele.nSaturatedXtals();
 }
