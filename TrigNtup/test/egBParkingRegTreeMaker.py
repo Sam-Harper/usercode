@@ -77,50 +77,18 @@ applyReg = True
 
 if applyReg:
     print "applying regression"
-    from RecoEgamma.EgammaTools.regressionModifier_cfi import regressionModifierBParking
+    from RecoEgamma.EgammaTools.regressionModifier_cfi import regressionModifierLowPtEle
     process.slimmedLowPtElectrons = cms.EDProducer(
         "ModifiedElectronProducer",
         src = cms.InputTag("slimmedLowPtElectrons",processName=cms.InputTag.skipCurrentProcess()),
-        modifierConfig = cms.PSet( modifications = cms.VPSet(regressionModifierBParking) )
+        modifierConfig = cms.PSet( modifications = cms.VPSet(regressionModifierLowPtEle) )
         )
 
     process.regressionApplication = cms.Sequence(process.slimmedLowPtElectrons)
     process.p.insert(0,process.regressionApplication)
-
-
-    from CondCore.CondDB.CondDB_cfi import *
-    CondDB.connect = 'sqlite_file:bParkingEleReg.db'
-    process.lowPtEleRegres = cms.ESSource("PoolDBESSource",CondDB,
-                                          DumpStat=cms.untracked.bool(True),
-                                          toGet = cms.VPSet(
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string('lowPtElectron_EB_ECALOnly'),
-                     tag = cms.string("lowPtElectron_EB_ECALOnly")),                  
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string('lowPtElectron_EB_ECALOnly_sigma'),
-                     tag = cms.string("lowPtElectron_EB_ECALOnly_sigma")),
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string('lowPtElectron_EE_ECALOnly'),
-                     tag = cms.string("lowPtElectron_EE_ECALOnly")),
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string('lowPtElectron_EE_ECALOnly_sigma'),
-                     tag = cms.string("lowPtElectron_EE_ECALOnly_sigma")),
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string("lowPtElectron_EB_ECALTrk"),
-                     tag = cms.string("lowPtElectron_EB_ECALTrk")),
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string("lowPtElectron_EB_ECALTrk_sigma"),
-                     tag = cms.string("lowPtElectron_EB_ECALTrk_sigma")),
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string("lowPtElectron_EE_ECALTrk"),
-                     tag = cms.string("lowPtElectron_EE_ECALTrk")),
-            cms.PSet(record = cms.string("GBRDWrapperRcd"),
-                     label = cms.untracked.string("lowPtElectron_EE_ECALTrk_sigma"),
-                     tag = cms.string("lowPtElectron_EE_ECALTrk_sigma")),
-            )
-                                          )
+    from RecoEgamma.EgammaTools.regressionTools_cfi import readLowPtEleRegresFromDBFile
+    readLowPtEleRegresFromDBFile(process,'lowPtEleRegres_V0_280319.db')
     
-    process.es_prefer_lowPtEleRegres = cms.ESPrefer("PoolDBESSource","lowPtEleRegres")
 
 
 print process.GlobalTag.globaltag
