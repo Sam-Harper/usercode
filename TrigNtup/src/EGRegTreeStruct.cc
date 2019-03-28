@@ -102,8 +102,8 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc)
   scPhi = sc.phi();
   seedEta = seedClus.eta();
   seedPhi = seedClus.phi();
-  dPhiSeedSC = reco::deltaPhi(seedPhi,scPhi);
-  dEtaSeedSC = seedEta-scEta;
+  dPhiSeedSC = reco::deltaPhi(seedClus.phi(),sc.position().Phi()); //needs this way due to rounding errors
+  dEtaSeedSC = seedClus.eta() - sc.position().Eta(); //needs this way due to rounding errors
   numberOfClusters = sc.clusters().size();
   numberOfSubClusters = std::max(0,static_cast<int>(sc.clusters().size())-1);
 
