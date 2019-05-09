@@ -33,7 +33,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if options.isMC:
-    process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v15', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '105X_mc2017_realistic_v5', '')
 #    process.GlobalTag = GlobalTag(process.GlobalTag, '103X_mc2017_realistic_v1', '')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
@@ -59,20 +59,17 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         verticesTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
                                         rhoTag = cms.InputTag("fixedGridRhoFastjetAll"),
                                         genPartsTag = cms.InputTag("prunedGenParticles"),
-#                                        scTag = cms.VInputTag("reducedEgamma:reducedSuperClusters",),
                                         scTag = cms.VInputTag("particleFlowSuperClusterECAL:particleFlowSuperClusterECALBarrel","particleFlowSuperClusterECAL:particleFlowSuperClusterECALEndcapWithPreshower"),
                                         ecalHitsEBTag = cms.InputTag("reducedEgamma","reducedEBRecHits"),
                                         ecalHitsEETag = cms.InputTag("reducedEgamma","reducedEERecHits"),
                                         elesTag = cms.InputTag("slimmedElectrons")
                                         )
-process.egRegTreeMaker.scTag = cms.VInputTag("lowPtGsfElectronSuperClusters")
-process.egRegTreeMaker.elesTag = cms.InputTag("slimmedLowPtElectrons")
-process.egRegTreeMaker.ecalHitsEBTag = cms.InputTag("ecalRecHit","EcalRecHitsEB")
-process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("ecalRecHit","EcalRecHitsEE")
 
+process.egRegTreeMaker.verticesTag = cms.InputTag("offlinePrimaryVertices")
+process.egRegTreeMaker.rhoTag = cms.InputTag("fixedGridRhoFastjetAllTmp")
+process.egRegTreeMaker.genPartsTag = cms.InputTag("genParticles")
+process.egRegTreeMaker.elesTag = cms.InputTag("gedGsfElectrons")
+process.egRegTreeMaker.ecalHitsEBTag = cms.InputTag("reducedEcalRecHitsEB")
+process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("reducedEcalRecHitsEE")
 
-process.p = cms.Path(process.egRegTreeMaker)
-
-process.egRegTreeMaker.ecalHitsEBTag = cms.InputTag("ecalRecHit","EcalRecHitsEB")
-process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("ecalRecHit","EcalRecHitsEE")
-print process.GlobalTag.globaltag
+process.p = cms.Path(process.process.egRegTreeMaker)
