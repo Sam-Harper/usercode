@@ -60,6 +60,7 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         rhoTag = cms.InputTag("fixedGridRhoFastjetAll"),
                                         genPartsTag = cms.InputTag("prunedGenParticles"),
                                         scTag = cms.VInputTag("particleFlowSuperClusterECAL:particleFlowSuperClusterECALBarrel","particleFlowSuperClusterECAL:particleFlowSuperClusterECALEndcapWithPreshower"),
+                                        scAltTag = cms.VInputTag("particleFlowSuperClusterECALNoThres:particleFlowSuperClusterECALBarrel","particleFlowSuperClusterECALNoThres:particleFlowSuperClusterECALEndcapWithPreshower"),
                                         ecalHitsEBTag = cms.InputTag("reducedEgamma","reducedEBRecHits"),
                                         ecalHitsEETag = cms.InputTag("reducedEgamma","reducedEERecHits"),
                                         elesTag = cms.InputTag("slimmedElectrons")
@@ -72,4 +73,20 @@ process.egRegTreeMaker.elesTag = cms.InputTag("gedGsfElectrons")
 process.egRegTreeMaker.ecalHitsEBTag = cms.InputTag("reducedEcalRecHitsEB")
 process.egRegTreeMaker.ecalHitsEETag = cms.InputTag("reducedEcalRecHitsEE")
 
-process.p = cms.Path(process.process.egRegTreeMaker)
+process.load("SHarper.TrigNtup.rePFSuperCluster_cff")
+
+process.p = cms.Path(process.rePFSuperClusterThresSeq*process.egRegTreeMaker)
+process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+    compressionAlgorithm = cms.untracked.string('LZMA'),
+    compressionLevel = cms.untracked.int32(4),
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('AODSIM'),
+        filterName = cms.untracked.string('')
+    ),
+    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+    fileName = cms.untracked.string(options.outputFile.replace(".root","_EDM.root")),
+    outputCommands = cms.untracked.vstring('drop *',
+                                           "keep *_*_*_HEEP",
+                                    )                                           
+                                   )
+#process.out = cms.EndPath(process.AODSIMoutput)
