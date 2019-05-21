@@ -20,6 +20,7 @@
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
 
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
@@ -49,6 +50,8 @@ private:
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEBToken_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalHitsEEToken_;
   edm::EDGetTokenT<std::vector<reco::GsfElectron> > elesToken_;
+  edm::EDGetTokenT<std::vector<reco::Photon> > phosToken_;
+  edm::EDGetTokenT<std::vector<PileupSummaryInfo> > puSumToken_;
 
   EGRegTreeMaker(const EGRegTreeMaker& rhs)=delete;
   EGRegTreeMaker& operator=(const EGRegTreeMaker& rhs)=delete;
@@ -91,6 +94,8 @@ EGRegTreeMaker::EGRegTreeMaker(const edm::ParameterSet& iPara):
   setToken(ecalHitsEBToken_,iPara,"ecalHitsEBTag");
   setToken(ecalHitsEEToken_,iPara,"ecalHitsEETag");
   setToken(elesToken_,iPara,"elesTag");
+  setToken(phosToken_,iPara,"phosTag");
+  setToken(puSumToken_,iPara,"puSumTag");
 }
 
 EGRegTreeMaker::~EGRegTreeMaker()
@@ -146,6 +151,12 @@ namespace{
     }
     return nullptr;
   }
+  const reco::Photon* matchPho(unsigned int seedId,const std::vector<reco::Photon>& phos){
+    for(auto& pho : phos){
+      if(pho.superCluster()->seed()->seed().rawId()==seedId) return &pho;
+    }
+    return nullptr;
+  }
 }
 
 void EGRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSetup)
@@ -158,26 +169,41 @@ void EGRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
   auto verticesHandle = getHandle(iEvent,verticesToken_);
   auto rhoHandle = getHandle(iEvent,rhoToken_);
   auto elesHandle = getHandle(iEvent,elesToken_);
+  auto phosHandle = getHandle(iEvent,phosToken_);
+  auto puSumHandle = getHandle(iEvent,puSumToken_);
   edm::ESHandle<CaloTopology> caloTopoHandle;
   iSetup.get<CaloTopologyRecord>().get(caloTopoHandle);
   edm::ESHandle<EcalChannelStatus> chanStatusHandle;
   iSetup.get<EcalChannelStatusRcd>().get(chanStatusHandle);
 
   int nrVert = verticesHandle->size();
+  float nrPUInt = -1;
+  float nrPUIntTrue = -1;
+  if(puSumHandle.isValid()){
+    for(auto& puInfo : *puSumHandle){
+      if(puInfo.getBunchCrossing()==0){
+	nrPUInt = puInfo.getPU_NumInteractions();
+	nrPUIntTrue = puInfo.getTrueNumInteractions();
+	break;
+      }
+    }
+  }
+
   bool fillFromSC = false;
   if(fillFromSC){
     for(const auto& scHandle : scHandles){
       for(const auto& sc: *scHandle){
 	const reco::GenParticle* genPart = genPartsHandle.isValid() ? matchGenPart(sc.eta(),sc.phi(),*genPartsHandle) : nullptr;
 	const reco::GsfElectron* ele = elesHandle.isValid() ? matchEle(sc.seed()->seed().rawId(),*elesHandle) : nullptr;
+	const reco::Photon* pho = phosHandle.isValid() ? matchPho(sc.seed()->seed().rawId(),*phosHandle) : nullptr;
 	const reco::SuperCluster* scAlt = matchSC(&sc,scAltHandles);
 	
 	if(hasBasicClusters(sc)){
-	  egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,
+	  egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,nrPUInt,nrPUIntTrue,
 			      *ecalHitsEBHandle,*ecalHitsEEHandle,
 			      *caloTopoHandle,
 			      *chanStatusHandle,
-			      &sc,genPart,ele,scAlt);
+			      &sc,genPart,ele,pho,scAlt);
 	  egRegTree_->Fill();
 	}
       }
@@ -189,13 +215,14 @@ void EGRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
 	const reco::SuperCluster* sc = matchSC(genPart.eta(),genPart.phi(),scHandles);
 	const reco::SuperCluster* scAlt = matchSC(sc,scAltHandles);
 	const reco::GsfElectron* ele = elesHandle.isValid() && sc ? matchEle(sc->seed()->seed().rawId(),*elesHandle) : nullptr;
+	const reco::Photon* pho = phosHandle.isValid() && sc ? matchPho(sc->seed()->seed().rawId(),*phosHandle) : nullptr;
 	
 
-	egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,
+	egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,nrPUInt,nrPUIntTrue,
 			    *ecalHitsEBHandle,*ecalHitsEEHandle,
 			    *caloTopoHandle,
 			    *chanStatusHandle,
-			    sc,&genPart,ele,scAlt);
+			    sc,&genPart,ele,pho,scAlt);
 	egRegTree_->Fill();
       }
     }
