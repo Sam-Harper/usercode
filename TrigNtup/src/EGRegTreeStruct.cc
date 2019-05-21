@@ -7,7 +7,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
-
+#include "CondFormats/EcalObjects/interface/EcalChannelStatus.h"
 
 void EGRegTreeStruct::createBranches(TTree* tree)
 {
@@ -57,7 +57,7 @@ void GenInfoStruct::fill(const reco::GenParticle& genPart,float iDR)
   dR = iDR;
 }
 
-void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle)
+void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const EcalChannelStatus& ecalChanStatus,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle,const reco::SuperCluster* scAlt)
 {
   clear();
 
@@ -65,7 +65,7 @@ void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,const 
   rho = iRho,
   evt.fill(event);
   if(iSC){
-    sc.fill(*iSC);
+    sc.fill(*iSC,ecalChanStatus,scAlt);
     ssFull.fill<true>(*iSC->seed(),ecalHitsEB,ecalHitsEE,topo);
     ssFrac.fill<false>(*iSC->seed(),ecalHitsEB,ecalHitsEE,topo);
     auto fillClus = [&iSC](ClustStruct& clus,size_t index){
@@ -87,7 +87,32 @@ void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,const 
 
 }
 
-void SuperClustStruct::fill(const reco::SuperCluster& sc)
+template<typename DetIdType>
+int getDeadCrysCode(const DetIdType& id,const EcalChannelStatus& ecalChanStatus)
+{
+  //constexpr int deadChanMask = EcalChannelStatusCode::kDeadFE | EcalChannelStatusCode::kDeadVFE | EcalChannelStatusCode::kNoDataNoTP | EcalChannelStatusCode::kNonRespondingIsolated;
+  constexpr int deadChanMask = EcalChannelStatusCode::kNoDataNoTP;
+  
+  int crysCode =0 ;
+
+  //meh I could derive this from iEtaOrXNr/iPhiOrYNr indices but sometimes simpliest is best
+  int bitNr=0;
+  for(int iEtaOrXNr=-1;iEtaOrXNr<=1;iEtaOrXNr++){
+    for(int iPhiOrYNr=-1;iPhiOrYNr<=1;iPhiOrYNr++){
+      if(iEtaOrXNr==0 && iPhiOrYNr==0) continue;
+      DetIdType currId = id.offsetBy(iEtaOrXNr,iPhiOrYNr);
+      if(currId.rawId()!=0){
+	int statusCode = ecalChanStatus[currId.rawId()].getEncodedStatusCode();
+	int bit = 0x1 << bitNr;
+	if((statusCode&deadChanMask)!=0) crysCode |=bit;
+      }
+      bitNr++;
+    }
+  }
+  return crysCode;
+}
+
+void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalChannelStatus& ecalChanStatus,const reco::SuperCluster* altSC)
 {
   auto& seedClus = *sc.seed(); 
   isEB = seedClus.seed().subdetId()==EcalBarrel;
@@ -117,10 +142,27 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc)
     iEtaMod20 = std::abs(ebDetId.ieta()<=25) ? iEtaCorr%20 : iEtaCorr26%20;
     iPhiMod2 = (ebDetId.iphi()-1)%2;
     iPhiMod20 = (ebDetId.iphi()-2)%20;
+    auto gapCode=[](int iEtaAbs){
+      if(iEtaAbs==25 || iEtaAbs==45 || iEtaAbs==65 || iEtaAbs==85) return -1;//before gap
+      else if(iEtaAbs==1 || iEtaAbs==26 || iEtaAbs==46 || iEtaAbs==66) return 1;//after gap
+      else return 0; //no gap
+    };
+    etaGapCode = gapCode(ebDetId.ietaAbs());
+    phiGapCode = ebDetId.iphi()%20 == 0 ? -1 : ebDetId.iphi()%20 ==1 ? 1 : 0;
+    nearbyChanStatus = getDeadCrysCode(ebDetId,ecalChanStatus);
+    
   }else{
     EEDetId eeDetId(seedClus.seed());
     iEtaOrX = eeDetId.ix();
     iPhiOrY = eeDetId.iy();
+    auto gapCode=[](int iAbs){
+      if(iAbs==45 || iAbs==50 || iAbs==55) return -1;//before gap
+      else if(iAbs==46 || iAbs==51 || iAbs==56) return 1;//before gap
+      else return 0; //no gap
+    };
+    etaGapCode = gapCode(eeDetId.ix());
+    phiGapCode = gapCode(eeDetId.iy());
+    nearbyChanStatus = getDeadCrysCode(eeDetId,ecalChanStatus);
   }
   clusterMaxDR     = 999.;
   clusterMaxDRDPhi = 999.;
@@ -138,6 +180,11 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc)
       clusterMaxDRDEta = clus->eta()-seedEta;
       clusterMaxDRRawEnergy = clus->energy();
     }
+  }
+  if(altSC){
+    corrEnergyAlt = altSC->energy();
+    rawEnergyAlt = altSC->rawEnergy();
+    nrClusAlt = altSC->clusters().size();
   }
 }
 
