@@ -49,7 +49,6 @@ private:
     edm::ESHandle<MagneticField> magField_;
     edm::ESHandle<TrackerGeometry> trackerHandle_;
     
-    MultiTrajectoryStateMode mtsMode_; 
     const MultiTrajectoryStateTransform * mtsTransform_; //we own it
   
 
@@ -66,7 +65,6 @@ private:
 
     edm::ESHandle<TrackerGeometry> trackerGeomHandle()const{return trackerHandle_;}
     const MultiTrajectoryStateTransform * mtsTransform()const{return mtsTransform_;}
-    const MultiTrajectoryStateMode* mtsMode()const{return &mtsMode_;}
   };
 
 public:

@@ -243,7 +243,7 @@ GlobalPoint HLTElectronTrackMatchFilter::EventSetupData::extrapolateTrackPosToPo
   TrajectoryStateOnSurface innTSOS = mtsTransform()->innerStateOnSurface(gsfTrack);
   TrajectoryStateOnSurface posTSOS = mtsTransform()->extrapolatedState(innTSOS,pointToExtrapTo);
   GlobalPoint  extrapolatedPos;
-  mtsMode()->positionFromModeCartesian(posTSOS,extrapolatedPos);
+  multiTrajectoryStateMode::positionFromModeCartesian(posTSOS,extrapolatedPos);
   return extrapolatedPos;
 }
 
@@ -252,7 +252,7 @@ GlobalVector HLTElectronTrackMatchFilter::EventSetupData::extrapolateTrackMomToP
   TrajectoryStateOnSurface innTSOS = mtsTransform()->innerStateOnSurface(gsfTrack);
   TrajectoryStateOnSurface posTSOS = mtsTransform()->extrapolatedState(innTSOS,pointToExtrapTo);
   GlobalVector  extrapolatedMom;
-  mtsMode()->momentumFromModeCartesian(posTSOS,extrapolatedMom);
+  multiTrajectoryStateMode::momentumFromModeCartesian(posTSOS,extrapolatedMom);
   return extrapolatedMom;
 }
 
@@ -260,9 +260,7 @@ HLTElectronTrackMatchFilter::EventSetupData::EventSetupData(const HLTElectronTra
   cacheIDTDGeom_(rhs.cacheIDTDGeom_),
   cacheIDMagField_(rhs.cacheIDMagField_),
   magField_(rhs.magField_),
-  trackerHandle_(rhs.trackerHandle_),
-  mtsMode_(rhs.mtsMode_)
- 
+  trackerHandle_(rhs.trackerHandle_) 
 {
   if(rhs.mtsTransform_) mtsTransform_ = new MultiTrajectoryStateTransform(*rhs.mtsTransform_);
   else mtsTransform_ =0;
@@ -276,7 +274,6 @@ HLTElectronTrackMatchFilter::EventSetupData* HLTElectronTrackMatchFilter::EventS
     cacheIDMagField_ = rhs.cacheIDMagField_;
     magField_ = rhs.magField_;
     trackerHandle_ = rhs.trackerHandle_;
-    mtsMode_ = rhs.mtsMode_;
     
     delete mtsTransform_;
     if(rhs.mtsTransform_) mtsTransform_ = new MultiTrajectoryStateTransform(*rhs.mtsTransform_);
