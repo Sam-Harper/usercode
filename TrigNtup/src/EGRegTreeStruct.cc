@@ -37,8 +37,8 @@ void EGRegTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("nrPUIntTrue",&nrPUIntTrue);
   tree->SetBranchAddress("evt",&evt);
   tree->SetBranchAddress("sc",&sc);
-  tree->SetBranchAddress("scFull",&ssFull);
-  tree->SetBranchAddress("scFrac",&ssFrac);
+  tree->SetBranchAddress("ssFull",&ssFull);
+  tree->SetBranchAddress("ssFrac",&ssFrac);
   tree->SetBranchAddress("ele",&ele);
   tree->SetBranchAddress("pho",&pho);
   tree->SetBranchAddress("eleSSFull",&eleSSFull);
