@@ -70,8 +70,9 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         )
 
 process.load("SHarper.TrigNtup.rePFSuperCluster_cff")
+process.load("SHarper.SHNtupliser.regressionApplicationAOD_cff")
 
-process.p = cms.Path(process.rePFSuperClusterThresSeq*process.egRegTreeMaker)
+process.p = cms.Path(process.rePFSuperClusterThresSeq*process.regressionApplication*process.egRegTreeMaker)
 process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
     compressionLevel = cms.untracked.int32(4),
@@ -86,3 +87,51 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
                                     )                                           
                                    )
 #process.out = cms.EndPath(process.AODSIMoutput)
+def readEleRegresFromDBFile(process,filename):
+    from CondCore.CondDB.CondDB_cfi import CondDB
+    CondDBReg = CondDB.clone(connect = 'sqlite_file:{}'.format(filename))
+    process.eleRegres = cms.ESSource("PoolDBESSource",CondDBReg,
+                                     DumpStat=cms.untracked.bool(False),
+                                     toGet = cms.VPSet(
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_eb_ecalOnly_1To300_0p2To2_mean"),
+         tag = cms.string("electron_eb_ecalOnly_1To300_0p2To2_mean_2017UL")),
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_ee_ecalOnly_1To300_0p2To2_mean"),
+         tag = cms.string("electron_ee_ecalOnly_1To300_0p2To2_mean_2017UL")),
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_eb_ecalOnly_1To300_0p0002To0p5_sigma"),
+         tag = cms.string("electron_eb_ecalOnly_1To300_0p0002To0p5_sigma_2017UL")),
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_ee_ecalOnly_1To300_0p0002To0p5_sigma"),
+         tag = cms.string("electron_ee_ecalOnly_1To300_0p0002To0p5_sigma_2017UL")),
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_eb_ecalTrk_1To300_0p2To2_mean"),
+         tag = cms.string("electron_eb_ecalTrk_1To300_0p2To2_mean_2017UL")),
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_ee_ecalTrk_1To300_0p2To2_mean"),
+         tag = cms.string("electron_ee_ecalTrk_1To300_0p2To2_mean_2017UL")),
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_eb_ecalTrk_1To300_0p0002To0p5_sigma"),
+         tag = cms.string("electron_eb_ecalTrk_1To300_0p0002To0p5_sigma_2017UL")),
+cms.PSet(record = cms.string("GBRDWrapperRcd"),
+         label = cms.untracked.string("electron_ee_ecalTrk_1To300_0p0002To0p5_sigma"),
+         tag = cms.string("electron_ee_ecalTrk_1To300_0p0002To0p5_sigma_2017UL")),
+                                     )
+    )
+    
+    process.es_prefer_eleRegres = cms.ESPrefer("PoolDBESSource","eleRegres")
+    return process
+readEleRegresFromDBFile(process,"eleReg_2017_UL.db")
+
+
+def setEventsToProcess(process,eventsToProcess):
+    process.source.eventsToProcess = cms.untracked.VEventRange()
+    for event in eventsToProcess:
+        runnr = event.split(":")[0]
+        eventnr = event.split(":")[2]
+        process.source.eventsToProcess.append('{runnr}:{eventnr}-{runnr}:{eventnr}'.format(runnr=runnr,eventnr=eventnr))
+
+#eventsToProcess = ['1:1:9322756']
+#setEventsToProcess(process,eventsToProcess)
+
