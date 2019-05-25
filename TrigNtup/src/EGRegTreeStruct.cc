@@ -166,7 +166,7 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalChannelStatus
     const int iEtaCorr26 = ebDetId.ieta() - (ebDetId.ieta() > 0 ? +26 : -26);
     iEtaMod5 = iEtaCorr%5;
     //warning bug here!
-    iEtaMod20 = std::abs(ebDetId.ieta()<=25) ? iEtaCorr%20 : iEtaCorr26%20;
+    iEtaMod20 = std::abs(ebDetId.ieta())<=25 ? iEtaCorr%20 : iEtaCorr26%20;
     iPhiMod2 = (ebDetId.iphi()-1)%2;
     iPhiMod20 = (ebDetId.iphi()-2)%20;
     auto gapCode=[](int iEtaAbs){
