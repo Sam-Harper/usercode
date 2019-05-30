@@ -211,7 +211,7 @@ void EGRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
   }else{
 
     for(const auto& genPart : *genPartsHandle){
-      if(std::abs(genPart.pdgId())==11 && genPart.statusFlags().isPrompt() && genPart.statusFlags().isFirstCopy()){
+      if((std::abs(genPart.pdgId())==11 || genPart.pdgId()==22) && genPart.statusFlags().isPrompt() && genPart.statusFlags().isFirstCopy()){
 	const reco::SuperCluster* sc = matchSC(genPart.eta(),genPart.phi(),scHandles);
 	const reco::SuperCluster* scAlt = matchSC(sc,scAltHandles);
 	const reco::GsfElectron* ele = elesHandle.isValid() && sc ? matchEle(sc->seed()->seed().rawId(),*elesHandle) : nullptr;
