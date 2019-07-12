@@ -109,32 +109,31 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
                                     )                                           
                                    )
 #process.out = cms.EndPath(process.AODSIMoutput)
-
-def readSCRegresFromDBFile(process,filename=None):
+def readSCRegresFromDBFile(process,filename=None,suffex="2017UL"):
     from CondCore.CondDB.CondDB_cfi import CondDB
     if filename:
         CondDBReg = CondDB.clone(connect = 'sqlite_file:{}'.format(filename))
     else:
-        CondDBReg = CondDB.clone(connect = 'frontier://FrontierPrep/CMS_CONDITIONS')
+        CondDBReg = CondDB.clone(connect = 'frontier://FrontierProd/CMS_CONDITIONS')
     process.scRegres = cms.ESSource("PoolDBESSource",CondDBReg,
                                      DumpStat=cms.untracked.bool(False),
                                      toGet = cms.VPSet(
 cms.PSet(record = cms.string("GBRDWrapperRcd"),
          label = cms.untracked.string("pfscecal_EBCorrection_offline_v2"),
-         tag = cms.string("pfscecal_EBCorrection_offline_v2_2017UL")),
+         tag = cms.string("pfscecal_EBCorrection_offline_v2_{}".format(suffex))),
 cms.PSet(record = cms.string("GBRDWrapperRcd"),
          label = cms.untracked.string("pfscecal_EECorrection_offline_v2"),
-         tag = cms.string("pfscecal_EECorrection_offline_v2_2017UL")),
+         tag = cms.string("pfscecal_EECorrection_offline_v2_{}".format(suffex))),
 cms.PSet(record = cms.string("GBRDWrapperRcd"),
          label = cms.untracked.string("pfscecal_EBUncertainty_offline_v2"),
-         tag = cms.string("pfscecal_EBUncertainty_offline_v2_2017UL")),
+         tag = cms.string("pfscecal_EBUncertainty_offline_v2_{}".format(suffex))),
 cms.PSet(record = cms.string("GBRDWrapperRcd"),
          label = cms.untracked.string("pfscecal_EEUncertainty_offline_v2"),
-         tag = cms.string("pfscecal_EEUncertainty_offline_v2_2017UL")),
+         tag = cms.string("pfscecal_EEUncertainty_offline_v2_{}".format(suffex))),
 ))
     process.es_prefer_scRegres = cms.ESPrefer("PoolDBESSource","scRegres")
     return process
-readSCRegresFromDBFile(process)
+readSCRegresFromDBFile(process,suffex="2018UL")
 
 
 
