@@ -62,7 +62,9 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         ecalHitsEBTag = cms.InputTag("reducedEcalRecHitsEB"),
                                         ecalHitsEETag = cms.InputTag("reducedEcalRecHitsEE"),
                                         elesTag = cms.InputTag("gedGsfElectrons"),
-                                        phosTag = cms.InputTag("gedPhotons")
+                                        phosTag = cms.InputTag("gedPhotons"),
+                                        elesAltTag = cms.VInputTag(),
+                                        phosAltTag = cms.VInputTag()
                                         )
 
 process.particleFlowSuperClusterECALNewReg = cms.EDProducer(

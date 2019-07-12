@@ -66,7 +66,10 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         scAltTag = cms.VInputTag(),
                                         ecalHitsEBTag = cms.InputTag("reducedEgamma","reducedEBRecHits"),
                                         ecalHitsEETag = cms.InputTag("reducedEgamma","reducedEERecHits"),
-                                        elesTag = cms.InputTag("slimmedElectrons")
+                                        elesTag = cms.InputTag("slimmedElectrons"),
+                                        phosTag = cms.InputTag("slimmedPhotons"),
+                                        elesAltTag = cms.VInputTag(),
+                                        phosAltTag = cms.VInputTag()
                                         )
 
 process.egRegTreeMaker.elesTag = cms.InputTag("gedGsfElectrons")

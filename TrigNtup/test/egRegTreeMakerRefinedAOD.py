@@ -33,8 +33,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if options.isMC:
-    process.GlobalTag = GlobalTag(process.GlobalTag, '105X_mc2017_realistic_v5', '')
-#    process.GlobalTag = GlobalTag(process.GlobalTag, '103X_mc2017_realistic_v1', '')
+#    process.GlobalTag = GlobalTag(process.GlobalTag, '105X_mc2017_realistic_v5', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '105X_upgrade2018_realistic_v4', '')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
@@ -66,7 +66,9 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         ecalHitsEBTag = cms.InputTag("reducedEcalRecHitsEB"),
                                         ecalHitsEETag = cms.InputTag("reducedEcalRecHitsEE"),
                                         elesTag = cms.InputTag("gedGsfElectrons"),
-                                        phosTag = cms.InputTag("gedPhotons")
+                                        phosTag = cms.InputTag("gedPhotons"),
+                                        elesAltTag = cms.VInputTag(),
+                                        phosAltTag = cms.VInputTag(),
                                         )
 
 process.load("SHarper.TrigNtup.rePFSuperCluster_cff")

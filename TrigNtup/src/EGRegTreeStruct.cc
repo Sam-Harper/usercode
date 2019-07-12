@@ -27,6 +27,14 @@ void EGRegTreeStruct::createBranches(TTree* tree)
   tree->Branch("clus1",&clus1,clus1.contents().c_str());
   tree->Branch("clus2",&clus2,clus2.contents().c_str());
   tree->Branch("clus3",&clus3,clus3.contents().c_str());
+  for(size_t eleNr=0;eleNr<eleEnergies.size();eleNr++){
+    std::string name = "eleAltEnergy"+std::to_string(eleNr+1);
+    tree->Branch(name.c_str(),&eleEnergies[eleNr],eleEnergies[eleNr].contents().c_str());
+  }
+  for(size_t phoNr=0;phoNr<phoEnergies.size();phoNr++){
+    std::string name = "phoAltEnergy"+std::to_string(phoNr+1);
+    tree->Branch(name.c_str(),&phoEnergies[phoNr],phoEnergies[phoNr].contents().c_str());
+  }
 }
 
 void EGRegTreeStruct::setBranchAddresses(TTree* tree)
@@ -47,6 +55,15 @@ void EGRegTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("clus1",&clus1);
   tree->SetBranchAddress("clus2",&clus2);
   tree->SetBranchAddress("clus3",&clus3);
+  for(size_t eleNr=0;eleNr<eleEnergies.size();eleNr++){
+    std::string name = "eleAltEnergy"+std::to_string(eleNr+1);
+    tree->SetBranchAddress(name.c_str(),&eleEnergies[eleNr]);
+  }
+  for(size_t phoNr=0;phoNr<phoEnergies.size();phoNr++){
+    std::string name = "phoAltEnergy"+std::to_string(phoNr+1);
+    tree->SetBranchAddress(name.c_str(),&phoEnergies[phoNr]);
+  }
+  
 }
 
 void EvtStruct::fill(const edm::Event& event)
@@ -68,7 +85,7 @@ void GenInfoStruct::fill(const reco::GenParticle& genPart,float iDR)
 }
 
 void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,float iNrPUInt,float iNrPUIntTrue,
-			   const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const EcalChannelStatus& ecalChanStatus,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle,const reco::Photon* iPho,const reco::SuperCluster* scAlt)
+			   const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const EcalChannelStatus& ecalChanStatus,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle,const reco::Photon* iPho,const reco::SuperCluster* scAlt, const std::vector<const reco::GsfElectron*>& altEles,const std::vector<const reco::Photon*>& altPhos)
 {
   clear();
 
@@ -104,7 +121,19 @@ void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,float 
     pho.fill(*iPho);
     phoSSFull.fill(iPho->full5x5_showerShapeVariables());
   }
-    
+  if(altEles.size() != eleEnergies.size()){
+    throw cms::Exception("LogicError") <<" alt electrons && eleEnergies are not equal in size "<<altEles.size()<<" "<<eleEnergies.size();
+  }
+  if(altPhos.size() != phoEnergies.size()){
+    throw cms::Exception("LogicError") <<" alt photons && phosEnergies are not equal in size "<<altPhos.size()<<" "<<phoEnergies.size();
+  }
+
+  for(size_t eleNr=0;eleNr<altEles.size();eleNr++){
+    if(altEles[eleNr]) eleEnergies[eleNr].fill(*altEles[eleNr]);
+  }
+  for(size_t phoNr=0;phoNr<altPhos.size();phoNr++){
+    if(altPhos[phoNr]) phoEnergies[phoNr].fill(*altPhos[phoNr]);
+  }
 
 }
 
