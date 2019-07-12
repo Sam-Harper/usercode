@@ -4,5 +4,24 @@
 /DoublePhoton_FlatPt-5To300/RunIIWinter19PFCalibDR-2017ConditionsFlatPU0to70_105X_mc2017_realistic_v5-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
 
 
-/DoubleElectron_FlatPt-1To300/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
-/DoubleElectron_FlatPt-1To300/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoubleElectron_FlatPt-1To300/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & core2018 
+/DoubleElectron_FlatPt-1To300/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 &  core2018
+/DoubleElectron_FlatPt-300To1000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoubleElectron_FlatPt-1000To1500/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v1/AODSIM  & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoubleElectron_FlatPt-1500To3000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v2/AODSIM  & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoubleElectron_FlatPt-3000To4000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v2/AODSIM  & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoubleElectron_FlatPt-4000To5000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v2/AODSIM  & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoublePhoton_FlatPt-5To300/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70ECALGT_105X_upgrade2018_realistic_IdealEcalIC_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoublePhoton_FlatPt-5To300/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 &  core2018
+/DoublePhoton_FlatPt-5To300/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 &  core2018
+/DoublePhoton_FlatPt-300To1000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoublePhoton_FlatPt-1000To1500/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoublePhoton_FlatPt-1500To3000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoublePhoton_FlatPt-3000To4000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoublePhoton_FlatPt-4000To5000/RunIIWinter19PFCalibDR-2018ConditionsFlatPU0to70RAW_105X_upgrade2018_realistic_v4-v2/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+
+
+/DoubleElectron_FlatPt-1To300/RunIIAutumn18DR-FlatPU0to70IdealECAL_102X_upgrade2018_realistic_forECAL_v15-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoubleElectron_FlatPt-1To300/RunIIAutumn18DR-FlatPU0to70RAW_102X_upgrade2018_realistic_v15-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & 
+/DoublePhoton_FlatPt-5To300/RunIIAutumn18DR-FlatPU0to70RAW_102X_upgrade2018_realistic_v15-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & pho102X
+/DoublePhoton_FlatPt-5To300/RunIIAutumn18DR-FlatPU0to70IdealECAL_102X_upgrade2018_realistic_forECAL_v15-v1/AODSIM & -1 & -1 & 1.0 & 1.0 & 101 & 500 & pho102X
