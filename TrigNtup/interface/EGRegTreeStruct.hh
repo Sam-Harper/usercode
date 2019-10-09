@@ -4,23 +4,25 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Utilities/interface/isFinite.h"
 
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/CaloRecHit/interface/CaloCluster.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
+#include "CondFormats/EcalObjects/interface/EcalChannelStatus.h"
 
 #include "TTree.h"
 
 namespace reco{
   class SuperCluster;
   class GenParticle;
-  class GsfElectron;
 }
 
 namespace edm{
   class Event;
 }
-
 class CaloTopology;
 
 struct ClustStruct { 
@@ -34,22 +36,45 @@ struct ClustStruct {
   }
 };
 
-
 struct EleStruct {
-  float et,energy,energyErr,ecalEnergy,ecalEnergyErr,eta,phi,trkEtaMode,trkPhiMode,trkPMode,trkPModeErr,fbrem,corrMean,corrSigma,hademTow,hademCone,trkPInn,trkPtInn,trkPVtx,trkPOut,trkChi2,trkNDof,ecalDrivenSeed,nrSatCrys;
-  static std::string contents(){return "et/F:energy:energyErr:ecalEnergy:ecalEnergyErr:eta:phi:trkEtaMode:trkPhiMode:trkPMode:trkPModeErr:fbrem:corrMean:corrSigma:hademTow:hademCone:trkPInn:trkPtInn:trkPVtx:trkPOut:trkChi2:trkNDof:ecalDrivenSeed:nrSatCrys";}
-  void clear(){et=energy=energyErr=ecalEnergy=ecalEnergyErr=eta=phi=trkEtaMode=trkPhiMode=trkPMode=trkPModeErr=fbrem=corrMean=corrSigma=hademTow=hademCone=trkPInn=trkPtInn=trkPVtx=trkPOut=trkChi2=trkNDof=ecalDrivenSeed=nrSatCrys=0.;}
+  float et,energy,energyErr,ecalEnergy,ecalEnergyErr,eta,phi,trkEtaMode,trkPhiMode,trkPMode,trkPModeErr,fbrem,corrMean,corrSigma,hademTow,hademCone,trkPInn,trkPtInn,trkPVtx,trkPOut,trkChi2,trkNDof,ecalDrivenSeed,nrSatCrys,scRawEnergy,scRawESEnergy;
+  static std::string contents(){return "et/F:energy:energyErr:ecalEnergy:ecalEnergyErr:eta:phi:trkEtaMode:trkPhiMode:trkPMode:trkPModeErr:fbrem:corrMean:corrSigma:hademTow:hademCone:trkPInn:trkPtInn:trkPVtx:trkPOut:trkChi2:trkNDof:ecalDrivenSeed:nrSatCrys:scRawEnergy:scRawESEnergy";}
+  void clear(){et=energy=energyErr=ecalEnergy=ecalEnergyErr=eta=phi=trkEtaMode=trkPhiMode=trkPMode=trkPModeErr=fbrem=corrMean=corrSigma=hademTow=hademCone=trkPInn=trkPtInn=trkPVtx=trkPOut=trkChi2=trkNDof=ecalDrivenSeed=nrSatCrys=scRawEnergy=scRawESEnergy=0.;}
   void fill(const reco::GsfElectron& ele);
 };
 
+struct EleEnergyStruct {
+  float ecalTrk,ecalTrkErr,ecal,ecalErr;
+  static std::string contents(){return "ecalTrk/F:ecalTrkErr:ecal:ecalErr";}
+  void clear(){ecalTrk=ecalTrkErr=ecal=ecalErr=0.;}
+  void fill(const reco::GsfElectron& ele){ecalTrk=ele.energy();ecalTrkErr=ele.p4Error(reco::GsfElectron::P4_COMBINATION);ecal=ele.ecalEnergy();ecalErr=ele.ecalEnergyError();}
+};
+
+struct PhoEnergyStruct {
+  float ecal,ecalErr;
+  static std::string contents(){return "ecal:ecalErr";}
+  void clear(){ecal=ecalErr=0.;}
+  void fill(const reco::Photon& pho){ecal=pho.energy();ecalErr=pho.getCorrectedEnergyError(reco::Photon::regression2);}
+
+};
+
+
+
+struct PhoStruct {
+  float et,energy,energyErr,eta,phi,corrMean,corrSigma,hademTow,hademCone,nrSatCrys,scRawEnergy,scRawESEnergy;
+  static std::string contents(){return "et/F:energy:energyErr:eta:phi:corrMean:corrSigma:hademTow:hademCone:nrSatCrys:scRawEnergy:scRawESEnergy";}
+  void clear(){et=energy=energyErr=eta=phi=corrMean=corrSigma=hademTow=hademCone=nrSatCrys=scRawEnergy=scRawESEnergy=0.;}
+  void fill(const reco::Photon& pho);
+};
+
 struct SuperClustStruct {
-  float rawEnergy,rawESEnergy,etaWidth,phiWidth,seedClusEnergy,numberOfClusters,numberOfSubClusters,clusterMaxDR,clusterMaxDRDPhi,clusterMaxDRDEta,clusterMaxDRRawEnergy,corrEnergy,scEta,scPhi,seedEta,seedPhi,dEtaSeedSC,dPhiSeedSC,isEB,iEtaOrX,iPhiOrY,iEtaMod5,iPhiMod2,iEtaMod20,iPhiMod20;
-  static std::string contents(){return "rawEnergy/F:rawESEnergy:etaWidth:phiWidth:seedClusEnergy:numberOfClusters:numberOfSubClusters:clusterMaxDR:clusterMaxDRDPhi:clusterMaxDRDEta:clusterMaxDRRawEnergy:corrEnergy:scEta:scPhi:seedEta:seedPhi:dEtaSeedSC:dPhiSeedSC:isEB:iEtaOrX:iPhiOrY:iEtaMod5:iPhiMod2:iEtaMod20:iPhiMod20";}
+  float rawEnergy,rawESEnergy,etaWidth,phiWidth,seedClusEnergy,numberOfClusters,numberOfSubClusters,clusterMaxDR,clusterMaxDRDPhi,clusterMaxDRDEta,clusterMaxDRRawEnergy,corrEnergy,scEta,scPhi,seedEta,seedPhi,dEtaSeedSC,dPhiSeedSC,isEB,iEtaOrX,iPhiOrY,iEtaMod5,iPhiMod2,iEtaMod20,iPhiMod20,etaGapCode,phiGapCode,nearbyChanStatus,corrEnergyAlt,rawEnergyAlt,nrClusAlt,scSinTheta,seedSinTheta;
+  static std::string contents(){return "rawEnergy/F:rawESEnergy:etaWidth:phiWidth:seedClusEnergy:numberOfClusters:numberOfSubClusters:clusterMaxDR:clusterMaxDRDPhi:clusterMaxDRDEta:clusterMaxDRRawEnergy:corrEnergy:scEta:scPhi:seedEta:seedPhi:dEtaSeedSC:dPhiSeedSC:isEB:iEtaOrX:iPhiOrY:iEtaMod5:iPhiMod2:iEtaMod20:iPhiMod20:etaGapCode:phiGapCode:nearbyChanStatus:corrEnergyAlt:rawEnergyAlt:nrClusAlt:scSinTheta:seedSinTheta";}
   void clear(){
-    rawEnergy=rawESEnergy=etaWidth=phiWidth=seedClusEnergy=numberOfClusters=numberOfSubClusters=clusterMaxDR=clusterMaxDRDPhi=clusterMaxDRDEta=clusterMaxDRRawEnergy=corrEnergy=scEta=scPhi=seedEta=seedPhi=dEtaSeedSC=dPhiSeedSC=isEB=iEtaOrX=iPhiOrY=iEtaMod5=iPhiMod2=iEtaMod20=iPhiMod20=0.;
+    rawEnergy=rawESEnergy=etaWidth=phiWidth=seedClusEnergy=numberOfClusters=numberOfSubClusters=clusterMaxDR=clusterMaxDRDPhi=clusterMaxDRDEta=clusterMaxDRRawEnergy=corrEnergy=scEta=scPhi=seedEta=seedPhi=dEtaSeedSC=dPhiSeedSC=isEB=iEtaOrX=iPhiOrY=iEtaMod5=iPhiMod2=iEtaMod20=iPhiMod20=etaGapCode=phiGapCode=nearbyChanStatus=corrEnergyAlt=rawEnergyAlt=nrClusAlt=scSinTheta=seedSinTheta=0.;
   }
 
-  void fill(const reco::SuperCluster& sc);
+  void fill(const reco::SuperCluster& sc,const EcalChannelStatus& ecalChanStatus,const reco::SuperCluster* altSC);
 };
 
 struct ShowerShapeStruct {
@@ -60,6 +85,9 @@ struct ShowerShapeStruct {
   }
   template<bool full5x5>
   void fill(const reco::CaloCluster& clus,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo);  
+  void fill(const reco::GsfElectron::ShowerShape& eleSS,const reco::GsfElectron& ele);
+  void fill(const reco::Photon::ShowerShape& phoSS);
+
 };
 
 struct EvtStruct {
@@ -79,30 +107,48 @@ struct GenInfoStruct {
 struct EGRegTreeStruct {
   int nrVert;
   float rho;
+  float nrPUInt;
+  float nrPUIntTrue;
   EvtStruct evt;
   SuperClustStruct sc;
   ShowerShapeStruct ssFull;
   ShowerShapeStruct ssFrac;
   EleStruct ele;
+  PhoStruct pho;
+  ShowerShapeStruct eleSSFull;
+  ShowerShapeStruct phoSSFull;
   GenInfoStruct mc;
   ClustStruct clus1;
   ClustStruct clus2;
   ClustStruct clus3;
+  std::vector<EleEnergyStruct> eleEnergies;
+  std::vector<PhoEnergyStruct> phoEnergies;
+
+  void setNrEnergies(unsigned int nrEleEnergies,unsigned int nrPhoEnergies){
+    eleEnergies.resize(nrEleEnergies);phoEnergies.resize(nrPhoEnergies);
+  }
   void createBranches(TTree* tree);
   void setBranchAddresses(TTree* tree);
-  void fill(const edm::Event& event,int iNrVert,float iRho,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle);
+  void fill(const edm::Event& event,int iNrVert,float iRho,float nrPUInt,float nrTruePUInt,const EcalRecHitCollection& ecalHitsEB,const EcalRecHitCollection& ecalHitsEE,const CaloTopology& topo,const EcalChannelStatus& ecalChanStatus,const reco::SuperCluster* iSC,const reco::GenParticle* iMC,const reco::GsfElectron* iEle,const reco::Photon* iPho,const reco::SuperCluster* altSC,const std::vector<const reco::GsfElectron*>& altEles,const std::vector<const reco::Photon*>& altPhos );
   void clear(){
     nrVert=0;
     rho=0.;
+    nrPUInt=0.;
+    nrPUIntTrue=0.;
     evt.clear();
     sc.clear();
     ssFull.clear();
     ssFrac.clear();
     ele.clear();
+    pho.clear();
+    eleSSFull.clear();
+    phoSSFull.clear();
     mc.clear();
     clus1.clear();
     clus2.clear();
     clus3.clear();
+    for(auto& x : eleEnergies) x.clear();
+    for(auto& x : phoEnergies) x.clear();
   }
 
 };

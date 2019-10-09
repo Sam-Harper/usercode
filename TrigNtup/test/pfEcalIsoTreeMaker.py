@@ -242,9 +242,11 @@ process.particleFlowClusterECALUncorrected = cms.EDProducer("PFClusterProducer",
     )
 )
 
+process.dumper = cms.EDAnalyzer("DumpPFRecHitThres")
 print process.GlobalTag.globaltag
 process.p = cms.Path(process.particleFlowRecHitECAL*
                      process.particleFlowClusterECALUncorrected*
+                     process.dumper*
                      process.pfEcalIsoTreeMaker)
 
 

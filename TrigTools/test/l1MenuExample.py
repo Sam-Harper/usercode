@@ -34,6 +34,7 @@ from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if options.isMC:
     process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v15', '')
+ #   process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14','')
 else:
     process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v11','')
 

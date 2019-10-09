@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from EgammaAnalysis.ElectronTools.regressionModifier_cfi import regressionModifier
+
+from RecoEgamma.EgammaTools.regressionModifier_cfi import regressionModifier
 
 gedGsfElectrons = cms.EDProducer("ModifiedGsfElectronProducer",
     src = cms.InputTag("gedGsfElectrons",processName=cms.InputTag.skipCurrentProcess()),
