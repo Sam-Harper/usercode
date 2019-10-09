@@ -43,6 +43,7 @@ public:
   static void setTrigNamesRun2016WPLoose(); 
   static void setTrigNamesPHYS14();
   static void setTrigNamesDebug();
+  static void setTrigNamesOpen();
   static void setTrigNames();
   static void write(TDirectory* dir);
 };
