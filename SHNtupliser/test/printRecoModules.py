@@ -25,7 +25,9 @@ def get_all_input_tags(pset):
             if para_type == "cms.PSet":
                 input_tag_names |= get_all_input_tags(para)
             if para_type == "cms.VPSet":
-                for pset in para:
+                #oddly iterating over it normally
+                #wipes out parameters after untracked paras
+                for index in range(0,len(para)):
                     input_tag_names |= get_all_input_tags(pset)
     return input_tag_names
 

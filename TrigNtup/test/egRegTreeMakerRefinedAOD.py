@@ -33,8 +33,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if options.isMC:
-    process.GlobalTag = GlobalTag(process.GlobalTag, '105X_mc2017_realistic_v5', '')
-#    process.GlobalTag = GlobalTag(process.GlobalTag, '103X_mc2017_realistic_v1', '')
+#    process.GlobalTag = GlobalTag(process.GlobalTag, '105X_mc2017_realistic_v5', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '105X_upgrade2018_realistic_v4', '')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
@@ -57,7 +57,7 @@ process.TFileService = cms.Service("TFileService",
 
 process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         verticesTag = cms.InputTag("offlinePrimaryVertices"),
-                                        rhoTag = cms.InputTag("fixedGridRhoFastjetAll"),
+                                        rhoTag = cms.InputTag("fixedGridRhoFastjetAllTmp"),
                                         genPartsTag = cms.InputTag("genParticles"),
                                         puSumTag = cms.InputTag("addPileupInfo"),
                                      #   scTag = cms.VInputTag("particleFlowSuperClusterECAL:particleFlowSuperClusterECALBarrel","particleFlowSuperClusterECAL:particleFlowSuperClusterECALEndcapWithPreshower"),
@@ -66,10 +66,13 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGRegTreeMaker",
                                         ecalHitsEBTag = cms.InputTag("reducedEcalRecHitsEB"),
                                         ecalHitsEETag = cms.InputTag("reducedEcalRecHitsEE"),
                                         elesTag = cms.InputTag("gedGsfElectrons"),
-                                        phosTag = cms.InputTag("gedPhotons")
+                                        phosTag = cms.InputTag("gedPhotons"),
+                                        elesAltTag = cms.VInputTag(),
+                                        phosAltTag = cms.VInputTag(),
                                         )
 
 process.load("SHarper.TrigNtup.rePFSuperCluster_cff")
+
 
 process.p = cms.Path(process.rePFSuperClusterThresSeq*process.egRegTreeMaker)
 process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
@@ -86,3 +89,14 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
                                     )                                           
                                    )
 #process.out = cms.EndPath(process.AODSIMoutput)
+
+def setEventsToProcess(process,eventsToProcess):
+    process.source.eventsToProcess = cms.untracked.VEventRange()
+    for event in eventsToProcess:
+        runnr = event.split(":")[0]
+        eventnr = event.split(":")[2]
+        process.source.eventsToProcess.append('{runnr}:{eventnr}-{runnr}:{eventnr}'.format(runnr=runnr,eventnr=eventnr))
+
+#eventsToProcess = ['1:1:9322756']
+#setEventsToProcess(process,eventsToProcess)
+
