@@ -325,7 +325,7 @@ getClustersWithHit(DetId id,const reco::PFClusterCollection& clusters)
 }
 struct SetComp{
   
-  bool operator()(const reco::CaloCluster* lhs,const reco::CaloCluster* rhs){return lhs->seed().rawId()<rhs->seed().rawId();}
+  bool operator()(const reco::CaloCluster* lhs,const reco::CaloCluster* rhs)const{return lhs->seed().rawId()<rhs->seed().rawId();}
 };
 
 std::vector<std::pair<DetId,float> > SCSizeTreeMaker::
