@@ -401,10 +401,10 @@ TBits SHTrigSumMaker::getL1Result_(const l1t::L1TGlobalUtil& l1UtilsConst)const
     LogErr<<" Error, L1 menu not set"<<std::endl;
     throw cms::Exception("BadSHL1Menu");
   }
-  if(l1Menu_->l1Seeds().size()!=l1Util.decisionsFinal().size()){
-    LogErr<<"  Error SHL1Menu has "<<l1Menu_->l1Seeds().size()<<" while CMSSW L1 menu has "<<l1Util.decisionsFinal().size()<<" seeds"<<std::endl;
-    throw cms::Exception("BadSHL1Menu");
-  }
+  // if(l1Menu_->l1Seeds().size()!=l1Util.decisionsFinal().size()){
+  //   //    LogErr<<"  Error SHL1Menu has "<<l1Menu_->l1Seeds().size()<<" while CMSSW L1 menu has "<<l1Util.decisionsFinal().size()<<" seeds"<<std::endl;
+  //   throw cms::Exception("BadSHL1Menu");
+  // }
 
   TBits result(l1Util.decisionsFinal().size());
   for(size_t bitNr=0;bitNr<l1Util.decisionsFinal().size();bitNr++){
