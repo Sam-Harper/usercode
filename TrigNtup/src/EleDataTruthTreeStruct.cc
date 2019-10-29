@@ -13,7 +13,7 @@ void EleDataTruthTreeStruct::createBranches(TTree* tree)
   tree->Branch("truthDR",&truthDR,"truthDR/F",buffSize);
   tree->Branch("cutCode",&cutCode,"cutCode/I",buffSize);
   addBranch(tree,"ele",ele,buffSize);
-  tree->Branch("truthNrgy",&eleTruthNrgy,"truthNrgy/F",buffSize);
+  tree->Branch("eleTruthNrgy",&eleTruthNrgy,"eleTruthNrgy/F",buffSize);
   tree->Branch("eleTruthPhi",&eleTruthPhi,"eleTruthPhi/F",buffSize);
   tree->Branch("eleTruthEta",&eleTruthEta,"eleTruthEta/F",buffSize); 
   tree->Branch("eleTruthDetEta",&eleTruthDetEta,"eleTruthDetEta/F",buffSize); 
@@ -39,7 +39,7 @@ void EleDataTruthTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("truthDR",&truthDR);
   tree->SetBranchAddress("cutCode",&cutCode);
   tree->SetBranchAddress("ele",&ele); 
-  tree->SetBranchAddress("truthNrgy",&eleTruthNrgy);
+  tree->SetBranchAddress("eleTruthNrgy",&eleTruthNrgy);
   tree->SetBranchAddress("eleTruthPhi",&eleTruthPhi);
   tree->SetBranchAddress("eleTruthEta",&eleTruthEta);
   tree->SetBranchAddress("eleTruthDetEta",&eleTruthDetEta); 
@@ -51,7 +51,7 @@ void EleDataTruthTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("eleTrigs",&eleTrigs); 
   tree->SetBranchAddress("evtTrigs",&evtTrigs); 
   tree->SetBranchAddress("egHLT",&egHLT);
-  tree->SetBranchAddress("egHLT",&egHLTUS);
+  tree->SetBranchAddress("egHLTUS",&egHLTUS);
  
 }
 
