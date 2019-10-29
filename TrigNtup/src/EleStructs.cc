@@ -112,13 +112,11 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   pmDRZ1Info=cand.var(pmProd+tag+"dRZ1Info");
   pmDRZ2Info=cand.var(pmProd+tag+"dRZ2Info");
   pmDRZ3Info=cand.var(pmProd+tag+"dRZ3Info");
-  pmDRZ4Info=cand.var(pmProd+tag+"dRZ4Info");
-  
+  pmDRZ4Info=cand.var(pmProd+tag+"dRZ4Info");  
   nrClus = cand.var(pmProd+tag+"nrClus");
   seedClusEFrac = cand.var(pmProd+tag+"seedClusEFrac");
   phiWidth = cand.var(pmProd+tag+"phiWidth");
   etaWidth = cand.var(pmProd+tag+"etaWidth");
-
   s2 = cand.var(pmProd+tag+"s2");
   dPhi1BestS2 = cand.var(pmProd+tag+"dPhi1BestS2");
   dPhi2BestS2 = cand.var(pmProd+tag+"dPhi2BestS2");
@@ -129,7 +127,6 @@ void EleStructs::HLTEgammaStruct::fill(const SHTrigObj & cand,const std::string&
   ecalIso = cand.var("hltEgammaEcalPFClusterIso"+tag);
   hcalIso = cand.var("hltEgammaHcalPFClusterIso"+tag);
   trkIso = cand.var("hltEgammaEleGsfTrackIso"+tag);
-  trkIso2016 = cand.var("hltEgammaEleGsfTrackIso2016"+tag);
 
 
   // auto convertBackToInt=[](int part1,int part2){

@@ -214,7 +214,7 @@ void TrigBitsDef::setTrigNames2012()
 }
 void TrigBitsDef::setTrigNames()
 {
-  setTrigNamesDebug2018();
+  setTrigNamesOpen();
 }
 
 void TrigBitsDef::setTrigNamesDebug()
@@ -698,6 +698,46 @@ void TrigBitsDef::setTrigNamesDebug2018()
   
 }
 
+void TrigBitsDef::setTrigNamesOpen()
+{
+  trigPathNames_.clear();
+  trigPathNames_.assign(32,"");
+  trigFilterNames_.clear();
+  trigFilterNames_.assign(32*4,"");
+    
+  trigPathNames_[0] = "HLT_Ele5_Open_v";
+  trigPathNames_[1] = "HLT_Ele5_Open_Unseeded_v";
+
+  trigFilterNames_[0] = "hltEGL1SingleEGOrFilter";
+  trigFilterNames_[1] = "hltEG5L1SingleEGOrEtFilter";
+  trigFilterNames_[2] = "hltEle5WPTightClusterShapeFilter";
+  trigFilterNames_[3] = "hltEle5WPTightHEFilter";
+  trigFilterNames_[4] = "hltEle5WPTightEcalIsoFilter";
+  trigFilterNames_[5] = "hltEle5WPTightHcalIsoFilter";
+  trigFilterNames_[6] = "hltEle5WPTightPixelMatchFilter";
+  trigFilterNames_[7] = "hltEle5WPTightPMS2Filter";
+  trigFilterNames_[8] = "hltEle5WPTightGsfOneOEMinusOneOPFilter";
+  trigFilterNames_[9] = "hltEle5WPTightGsfMissingHitsFilter";
+  trigFilterNames_[10] = "hltEle5WPTightGsfDetaFilter";
+  trigFilterNames_[11] = "hltEle5WPTightGsfDphiFilter";
+  trigFilterNames_[12] = "hltEle5WPTightGsfTrackIsoFilter";
+  
+
+  trigFilterNames_[1 + 1*32] = "hltEG5EtUnseededFilter";
+  trigFilterNames_[2 + 1*32] = "hltEle5WPTightClusterShapeUnseededFilter";
+  trigFilterNames_[3 + 1*32] = "hltEle5WPTightHEUnseededFilter";
+  trigFilterNames_[4 + 1*32] = "hltEle5WPTightEcalIsoUnseededFilter";
+  trigFilterNames_[5 + 1*32] = "hltEle5WPTightHcalIsoUnseededFilter";
+  trigFilterNames_[6 + 1*32] = "hltEle5WPTightPixelMatchUnseededFilter";
+  trigFilterNames_[7 + 1*32] = "hltEle5WPTightPMS2UnseededFilter";
+  trigFilterNames_[8 + 1*32] = "hltEle5WPTightGsfOneOEMinusOneOPUnseededFilter";
+  trigFilterNames_[9 + 1*32] = "hltEle5WPTightGsfMissingHitsUnseededFilter";
+  trigFilterNames_[10 + 1*32] = "hltEle5WPTightGsfDetaUnseededFilter";
+  trigFilterNames_[11 + 1*32] = "hltEle5WPTightGsfDphiUnseededFilter";
+  trigFilterNames_[12 + 1*32] = "hltEle5WPTightGsfTrackIsoUnseededFilter";
+
+
+}
 
 void TrigBitsDef::write(TDirectory* dir)
 {
