@@ -81,7 +81,8 @@ std::ostream& SHMCParticle::print(std::ostream& output)const
 	<< jmo2_ << std::setw(6) << jda1_ << std::setw(6) << jda2_ 
 	<< std::setw(10) << std::setprecision(5) << p4().Px() << std::setw(10) << std::setprecision(5) << p4().Py() 
 	<< std::setw(10) << std::setprecision(5) << p4().Pz() << std::setw(10) << std::setprecision(5) << p4().E() 
-	<< std::setw(10) << std::setprecision(5) << p4().Pt() << std::setw(15)<<p4().Mag();
+	<< std::setw(10) << std::setprecision(5) << p4().Pt() << std::setw(10) << std::setprecision(5) << p4().Eta() << std::setw(10) << std::setprecision(5) << p4().Phi() << std::setw(15)<<p4().Mag();
+
   return output;
 }
 

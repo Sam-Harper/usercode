@@ -7,6 +7,7 @@
 
 #include "SHarper/SHNtupliser/interface/SHCaloCellGeom.hh"
 #include "SHarper/SHNtupliser/interface/DetIdTools.hh"
+#include "SHarper/SHNtupliser/interface/LogErr.hh"
 
 #include "TVector3.h"
 #include <vector>
@@ -65,7 +66,8 @@ const SHCaloCellGeom& SHCaloGeom::getCell(int detId)const
    else if(detCode_==HCAL) indx = DetIdTools::getHashHcal(detId);
    if(indx>=0 && indx<(int)cellGeoms_.size())  return cellGeoms_[indx];
    else {
-     std::cout <<"SHCaloGeom::getCell : Warning indx "<<indx<<" is invalid, detid "<<std::hex<<detId<<std::dec<<" detCode "<<detCode_<<std::endl;
+     LogErr <<" Warning indx "<<indx<<" is invalid, detid "<<std::dec<<detId<<std::dec<<" detCode "<<detCode_<<" det ";
+     DetIdTools::printHcalDetId(detId);
      return nullCell_;
    }
 }

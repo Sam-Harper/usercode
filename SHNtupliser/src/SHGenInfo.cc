@@ -172,7 +172,7 @@ void SHGenInfo::printMCParts(size_t nrLines)const
     std::cout << std::setw(2)<<" "<< std::setw(6) << "indx" << std::setw(8) << "stdhep" << std::setw(6) << "idhep" 
 	      << std::setw(6) << "jmo1" << std::setw(6) << "jmo2" << std::setw(6) << "jda1" << std::setw(6) << "jda2" 
 	      << std::setw(6) << "Px" << std::setw(10) << "Py" << std::setw(10) << "Pz" << std::setw(10) <<"E" 
-	      << std::setw(10) << "Pt" <<std::setw(15)<< "Mass" << "\n";
+	      << std::setw(10) << "Pt" << std::setw(10) << "Eta" << std::setw(10) << "Phi" <<std::setw(15)<< "Mass" << "\n";
     for(size_t i=0;i<mcParticles_.size() && i<nrLines;i++){
       const SHMCParticle& mcPart = mcParticles_[i];
       std::cout << mcPart <<std::endl;
