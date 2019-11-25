@@ -119,7 +119,7 @@ int DetIdTools::CaloNavigator::moveInEta(int nrSteps)
   int newEta = offsetInEta(currEta_,nrSteps);
   
   if(changedPhiSeg(newEta,currEta_)){
-    if(abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
+    if(std::abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
       if(currPhi_%2==0) currPhi_--;
     }//going the other way is fine
   }
@@ -142,7 +142,7 @@ int DetIdTools::CaloNavigator::offsetInEta(int startEta,int nrSteps)
 int DetIdTools::CaloNavigator::moveInPhi(int nrSteps)
 {
   //okay so we need to 
-  if(abs(currEta_)>kIEtaPhiSegChange && !l1Navigator_) nrSteps*=2; //even segments are now invalid, we move 2 at time
+  if(std::abs(currEta_)>kIEtaPhiSegChange && !l1Navigator_) nrSteps*=2; //even segments are now invalid, we move 2 at time
   
   
   int newPhi = currPhi_+=nrSteps;
@@ -175,12 +175,12 @@ int DetIdTools::CaloNavigator::getIdAtPos(int nrStepsEta,int nrStepsPhi)const
   }
   int newPhi = currPhi_;
   if(changedPhiSeg(newEta,currEta_)){
-    if(abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
+    if(std::abs(newEta)>kIEtaPhiSegChange){ //going from 72->36 segments, even numbers are now invalid, so sub one if thats the case
       if(newPhi%2==0) newPhi--;
     }//going the other way is fine
   }
   
-  if(abs(newEta)>kIEtaPhiSegChange && !l1Navigator_) nrStepsPhi*=2; //even segments are now invalid, we move 2 at time  
+  if(std::abs(newEta)>kIEtaPhiSegChange && !l1Navigator_) nrStepsPhi*=2; //even segments are now invalid, we move 2 at time  
   newPhi+=nrStepsPhi;
   while(newPhi<=0) newPhi+= kNrPhiSeg;
   while(newPhi>kNrPhiSeg) newPhi-=kNrPhiSeg;
@@ -200,7 +200,7 @@ const int DetIdTools::nIntegral_[kIXMax_] = { 0, 20, 40, 60, 90, 120, 170, 220, 
 
 const std::vector<int> DetIdTools::ebFastHashTable_(DetIdTools::makeEBFastHashTable_());
 const std::vector<int> DetIdTools::eeFastHashTable_(DetIdTools::makeEEFastHashTable_());
-const std::vector<int> DetIdTools::hcalFastHashTable_(DetIdTools::makeHcalFastHashTable_());
+const std::unordered_map<int,int> DetIdTools::hcalFastHashTable_(DetIdTools::makeHcalFastHashTable_());
 
 
 
@@ -211,13 +211,14 @@ DetIdTools::DetIdTools()
 
 int DetIdTools::makeEcalBarrelId(int iEta,int iPhi)
 {
- 
-  int iEtaAbs = std::abs(iEta);
-  int detId=(kEcalCode | kBarrelCode);
-  detId |= (iEtaAbs<<9);
-  detId |= iPhi;
-  if(iEta>0) detId |= 0x10000;
-  return detId;
+  if(isValidEcalBarrelId(iEta,iPhi)){    
+    int iEtaAbs = std::abs(iEta);
+    int detId=(kEcalCode | kBarrelCode);
+    detId |= (iEtaAbs<<9);
+    detId |= iPhi;
+    if(iEta>0) detId |= 0x10000;
+    return detId;
+  }else return 0;
 
 }
 
@@ -253,11 +254,13 @@ int DetIdTools::dIPhiBarrel(int iPhi1,int iPhi2)
 
 int DetIdTools::makeEcalEndcapId(int ix,int iy,int iz)
 {
-  int detId=(kEcalCode | kEndcapCode);
-  detId |= (iy&0x7F);
-  detId |= ((ix&0x7F)<<7);
-  detId |= ((iz>0)?(0x4000):(0));
-  return detId;
+  if(isValidEcalEndcapId(ix,iy,iz)){
+    int detId=(kEcalCode | kEndcapCode);
+    detId |= (iy&0x7F);
+    detId |= ((ix&0x7F)<<7);
+    detId |= ((iz>0)?(0x4000):(0));
+    return detId;
+  }else return 0;
 }
 
 // int DetIdTools::getHashEcal(int detId)
@@ -286,7 +289,7 @@ int DetIdTools::makeEcalEndcapId(int ix,int iy,int iz)
 int DetIdTools::makeHcalDetIdOld(int iEta,int iPhi,int depth)
 {
   int subDetCode=0;
-  if(abs(iEta)>=17 || (abs(iEta)==16 && depth==3) ) subDetCode = kEndcapCode;
+  if(std::abs(iEta)>=17 || (std::abs(iEta)==16 && depth==3) ) subDetCode = kEndcapCode;
   else subDetCode=kBarrelCode;
   return makeHcalDetIdOld(subDetCode,iEta,iPhi,depth);
 }
@@ -306,7 +309,7 @@ int DetIdTools::makeHcalDetIdOld(int subDetCode,int iEta,int iPhi,int depth)
 int DetIdTools::makeHcalDetId(int iEta,int iPhi,int depth)
 {
   int subDetCode=0;
-  if(abs(iEta)>=17 || (abs(iEta)==16 && depth==3) ) subDetCode = kEndcapCode;
+  if(std::abs(iEta)>=17 || (std::abs(iEta)==16 && depth>=3) ) subDetCode = kEndcapCode;
   else subDetCode=kBarrelCode;
   return makeHcalDetId(subDetCode,iEta,iPhi,depth);
 }
@@ -314,13 +317,15 @@ int DetIdTools::makeHcalDetId(int iEta,int iPhi,int depth)
 int DetIdTools::makeHcalDetId(int subDetCode,int iEta,int iPhi,int depth)
 {
   int detId=0x0;
-  detId |= kHcalCode;
-  detId |= subDetCode;
-  detId |= (kHcalIdFormat2);
-  detId |= ((depth&kHcalDepthMask2)<<kHcalDepthOffset2);
-  if(iEta>0) detId |= kHcalZsideMask2 | (iEta<<kHcalEtaOffset2);
-  else detId |= (-iEta<<kHcalEtaOffset2);
-  detId |=  (iPhi&kHcalPhiMask2);
+  if(isValidHcalId(subDetCode,iEta,iPhi,depth)){
+    detId |= kHcalCode;
+    detId |= subDetCode;
+    detId |= (kHcalIdFormat2);
+    detId |= ((depth&kHcalDepthMask2)<<kHcalDepthOffset2);
+    if(iEta>0) detId |= kHcalZsideMask2 | (iEta<<kHcalEtaOffset2);
+    else detId |= (-iEta<<kHcalEtaOffset2);
+    detId |=  (iPhi&kHcalPhiMask2);
+  }
   return detId;
 }
 void DetIdTools::printHcalDetId(int detId)
@@ -552,7 +557,7 @@ void DetIdTools::getMatchingIdsHcal(int etaAbs,int phi,int side,int depth,std::v
 
 int DetIdTools::calHashL1Calo(int iEta,int iPhi)
 {
-  if(abs(iEta)<kL1CaloIEtaAbsMin || abs(iEta)>kL1CaloIEtaAbsMax || 
+  if(std::abs(iEta)<kL1CaloIEtaAbsMin || std::abs(iEta)>kL1CaloIEtaAbsMax || 
      iPhi<kL1CaloIPhiMin || iPhi>kL1CaloIPhiMax) return -1; //invalid id
 
   int etaIndex=iEta+kL1CaloIEtaAbsMax;
@@ -582,14 +587,14 @@ bool DetIdTools::isNextToBarrelEtaGap(int detId,int maxDistToGap)
     const int nrCellsNextToGap = 8;
     const int cellsNextToGap[nrCellsNextToGap]={1,25,26,45,46,65,66,85};
     for(int cellNr=0;cellNr<nrCellsNextToGap;cellNr++){
-      if(abs(iEtaAbs-cellsNextToGap[cellNr])<=maxDistToGap) return true;
+      if(std::abs(iEtaAbs-cellsNextToGap[cellNr])<=maxDistToGap) return true;
     }
   }else if(isHcal(detId)) { //hcal
     int iEtaAbs = iEtaAbsHcal(detId);
     const int nrCellsNextToGap = 8;
     const int cellsNextToGap[nrCellsNextToGap]={1,5,6,9,10,13,14,17};
     for(int cellNr=0;cellNr<nrCellsNextToGap;cellNr++){
-      if(abs(iEtaAbs-cellsNextToGap[cellNr])<=maxDistToGap) return true;
+      if(std::abs(iEtaAbs-cellsNextToGap[cellNr])<=maxDistToGap) return true;
     }
   }
   return false;
@@ -634,15 +639,22 @@ bool DetIdTools::isValidPhase0HcalId(int iEta,int iPhi,int depth)
 }
 
 bool DetIdTools::isValidPhase1HcalId(int iEta,int iPhi,int depth)
-{  
+{
   return isValidPhase1HcalBarrelId(iEta,iPhi,depth) || isValidPhase1HcalEndcapId(iEta,iPhi,depth);
+}
+
+bool DetIdTools::isValidPhase1HcalId(int subdetId,int iEta,int iPhi,int depth)
+{
+  if(subdetId==kBarrelCode) return isValidPhase1HcalBarrelId(iEta,iPhi,depth);
+  else if(subdetId==kEndcapCode) return isValidPhase1HcalEndcapId(iEta,iPhi,depth);
+  else return false;
 }
 
 
 bool DetIdTools::isValidCaloId(int iEta,int iPhi)
 {
-  if(abs(iEta)>=1 && abs(iEta)<=29 && iPhi>=1 && iPhi<=72){
-    if(abs(iEta)>20){
+  if(std::abs(iEta)>=1 && std::abs(iEta)<=29 && iPhi>=1 && iPhi<=72){
+    if(std::abs(iEta)>20){
       if(iPhi%2==1) return true;
       else return false;
     }else return true;
@@ -652,7 +664,7 @@ bool DetIdTools::isValidCaloId(int iEta,int iPhi)
 
 bool DetIdTools::isValidL1CaloId(int iEta,int iPhi)
 {
-  if(abs(iEta)>=1 && abs(iEta)<=28 && iPhi>=1 && iPhi<=72) return true;
+  if(std::abs(iEta)>=1 && std::abs(iEta)<=28 && iPhi>=1 && iPhi<=72) return true;
   else return false;
 }
 
@@ -713,9 +725,27 @@ bool DetIdTools::isValidPhase0HcalBarrelId(int iEta,int iPhi,int depth)
   const int hcalBarrelIPhiMin = 1;
   const int hcalBarrelIPhiMax = 72;
   
-  if(abs(iEta)>=1 && abs(iEta)<=hcalBarrelIEtaMax){ //iEta good
+  if(std::abs(iEta)>=1 && std::abs(iEta)<=hcalBarrelIEtaMax){ //iEta good
     if(iPhi>=hcalBarrelIPhiMin && iPhi<=hcalBarrelIPhiMax){ //iPhi good
-      if(depth==1 || (abs(iEta)>=15 && depth==2)){ //depth good
+      if(depth==1 || (std::abs(iEta)>=15 && depth==2)){ //depth good
+	return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool DetIdTools::isValidPhase1HcalBarrelId(int iEta,int iPhi,int depth)
+{
+  const int hcalBarrelIEtaMax = 16;
+  const int hcalBarrelIPhiMin = 1;
+  const int hcalBarrelIPhiMax = 72;
+  
+  const int maxDepth = std::abs(iEta)==16 ? 3 : 4;
+
+  if(std::abs(iEta)>=1 && std::abs(iEta)<=hcalBarrelIEtaMax){ //iEta good
+    if(iPhi>=hcalBarrelIPhiMin && iPhi<=hcalBarrelIPhiMax){ //iPhi good
+      if( depth<=maxDepth){ //depth good
 	return true;
       }
     }
@@ -733,27 +763,27 @@ bool DetIdTools::isValidPhase0HcalEndcapId(int iEta,int iPhi,int depth)
 
 
   //first check ieta and phi 
-  if(abs(iEta)<iEtaMin || abs(iEta)>iEtaMax) return false;
+  if(std::abs(iEta)<iEtaMin || std::abs(iEta)>iEtaMax) return false;
   else if(iPhi<iPhiMin || iPhi>iPhiMax) return false;
 
   //final phi check, if its above the eta boundary, it goes like 1,3,5,..,69,71
   //so we check it isnt odd
-  if(abs(iEta)>=iEtaPhiBoundary && iPhi%2==0) return false;
+  if(std::abs(iEta)>=iEtaPhiBoundary && iPhi%2==0) return false;
 
   //depth checks
-  if(abs(iEta)==16){
+  if(std::abs(iEta)==16){
     if(depth==3) return true;
     else return false;
-  }else if(abs(iEta)==17){
+  }else if(std::abs(iEta)==17){
     if(depth==1) return true;
     else return false;
-  } else if(abs(iEta)<=26){
+  } else if(std::abs(iEta)<=26){
     if(depth>=1 && depth<=2) return true;
     else return false;
-  }else if(abs(iEta)<=28){
+  }else if(std::abs(iEta)<=28){
     if(depth>=1 && depth<=3) return true;
     else return false;
-  }else if(abs(iEta)<=29){
+  }else if(std::abs(iEta)<=29){
     if(depth>=1 && depth<=2) return true;
     else return false;
   }else return false;
@@ -769,30 +799,30 @@ bool DetIdTools::isValidPhase1HcalEndcapId(int iEta,int iPhi,int depth)
 
 
   //first check ieta and phi 
-  if(abs(iEta)<iEtaMin || abs(iEta)>iEtaMax) return false;
+  if(std::abs(iEta)<iEtaMin || std::abs(iEta)>iEtaMax) return false;
   else if(iPhi<iPhiMin || iPhi>iPhiMax) return false;
 
   //final phi check, if its above the eta boundary, it goes like 1,3,5,..,69,71
   //so we check it isnt odd
-  if(abs(iEta)>=iEtaPhiBoundary && iPhi%2==0) return false;
+  if(std::abs(iEta)>=iEtaPhiBoundary && iPhi%2==0) return false;
 
   //depth checks
-  if(abs(iEta)==16){
+  if(std::abs(iEta)==16){
     if(depth==4) return true;
     else return false;
-  }else if(abs(iEta)==17){
+  }else if(std::abs(iEta)==17){
     if(depth==2 || depth==3) return true;
     else return false;
-  }else if(abs(iEta)==18){
+  }else if(std::abs(iEta)==18){
     if(depth>=1 && depth<=5) return true;
     else return false;
-  } else if(abs(iEta)<=25){
+  } else if(std::abs(iEta)<=25){
     if(depth>=1 && depth<=6) return true;
     else return false;
-  }else if(abs(iEta)<=28){
+  }else if(std::abs(iEta)<=28){
     if(depth>=1 && depth<=7) return true;
     else return false;
-  }else if(abs(iEta)<=29){
+  }else if(std::abs(iEta)<=29){
     if(depth>=1 && depth<=3) return true;
     else return false;
   }else return false;
@@ -820,7 +850,7 @@ bool DetIdTools::isValidEcalEndcapId(int crystal_ix,int crystal_iy,int iz)
 {
   bool valid = false;
   if (crystal_ix < kMinIXEndcap || crystal_ix > kMaxIXEndcap ||
-      crystal_iy < kMinIYEndcap || crystal_iy > kMaxIYEndcap || abs(iz) != 1 ) 
+      crystal_iy < kMinIYEndcap || crystal_iy > kMaxIYEndcap || std::abs(iz) != 1 ) 
     { 
       return valid ; 
     }
@@ -1012,28 +1042,30 @@ int DetIdTools::newToOldFormatHcal_(int detId)
 }
 
 
-std::vector<int> DetIdTools::makeHcalFastHashTable_()
+std::unordered_map<int,int> DetIdTools::makeHcalFastHashTable_()
 {
-  //not all entries will be filled, the 0x40000 is because the z, eta,phi depth max bit is 0x20000 so we are guaranteed to have enough space
-  //note that later it might be better to work out the max value for more eff memory use
-  const int nrEntries = 0x40000;
-  std::vector<int> hashTable(nrEntries,-1);
-  for(int index=0;index<nrEntries;index++){
-    //right this is complicated as we dont know if its the barrel or endcap
-    //but we need to know this to make the hcal det id
-    //so we check if either is valid
-    int depth =depthHcal(index);
-    int iEta =iEtaHcal(index);
-    int iPhi =iPhiHcal(index);
-    
-    if(isValidHcalBarrelId(iEta,iPhi,depth)){
-      const int detId = index+ kHcalCode + kBarrelCode;
-      hashTable[index]=calHashHcal(detId);
-    }else if(isValidHcalEndcapId(iEta,iPhi,depth)){
-      const int detId = index+ kHcalCode + kEndcapCode;
-      hashTable[index]=calHashHcal(detId);
+  std::unordered_map<int,int> hashTable;
+
+  for(int side=1;side>=0;side--){   
+    for(int iEtaAbs=kHcalIEtaAbsMin;iEtaAbs<=kHcalIEtaAbsMax;iEtaAbs++){
+      for(int iPhi=kHcalIPhiMin;iPhi<=kHcalIPhiMax;iPhi++){
+	for(int depth=kHcalDepthMin;depth<=kHcalDepthMax;depth++){
+	  int iEta = iEtaAbs*(2*side-1);  
+	  int detId =0;
+	  if(isValidHcalBarrelId(iEta,iPhi,depth)){
+	    detId = DetIdTools::makeHcalBarrelDetId(iEta,iPhi,depth);
+	  }else if(isValidHcalEndcapId(iEta,iPhi,depth)){
+	    detId = DetIdTools::makeHcalEndcapDetId(iEta,iPhi,depth);
+	  }
+	  if(detId){
+	    auto res = hashTable.insert({detId,calHashHcal(detId)});
+	    if(!res.second) LogErr<<" HCAL "<<iEta<<" "<<iPhi<<" "<<depth<<" already added "<<std::endl;
+	  }
+	}
+      }
     }
   }
+   
   return hashTable;
 }
  

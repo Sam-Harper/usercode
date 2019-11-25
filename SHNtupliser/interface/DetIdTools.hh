@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <cstdlib>
 
 class DetIdTools {
@@ -94,7 +95,7 @@ private:
   //it wastes a little memory but gives fast results (1mb for hcal, 0.5mb for eb, 128k for ee, I think its well worth it)
   static const std::vector<int> ebFastHashTable_;
   static const std::vector<int> eeFastHashTable_;
-  static const std::vector<int> hcalFastHashTable_;
+  static const std::unordered_map<int,int> hcalFastHashTable_;
 
   static std::vector<std::pair<int,int> > eeDetIdToTowerId_;
 
@@ -227,11 +228,13 @@ private:
   
   static bool isValidPhase1HcalId(int iEta,int iPhi,int depth); 
   static bool isValidPhase1HcalId(int detId){return isHcal(detId)&& isValidPhase1HcalId(iEtaHcal(detId),iPhiHcal(detId),depthHcal(detId));}
-  static bool isValidPhase1HcalBarrelId(int iEta,int iPhi,int depth){return isValidPhase0HcalBarrelId(iEta,iPhi,depth);} //phase0 and phase 1 are identical for HB
+  static bool isValidPhase1HcalId(int subdetId,int iEta,int iPhi,int depth);
+  static bool isValidPhase1HcalBarrelId(int iEta,int iPhi,int depth);
   static bool isValidPhase1HcalEndcapId(int iEta,int iPhi,int depth); 
 
   static bool isValidHcalId(int iEta,int iPhi,int depth){return isValidPhase1HcalId(iEta,iPhi,depth);}
   static bool isValidHcalId(int detId){return isValidPhase1HcalId(detId);}
+  static bool isValidHcalId(int subdetId,int iEta,int iPhi,int depth){return isValidPhase1HcalId(subdetId,iEta,iPhi,depth);}
   static bool isValidHcalBarrelId(int iEta,int iPhi,int depth){return isValidPhase1HcalBarrelId(iEta,iPhi,depth);}
   static bool isValidHcalEndcapId(int iEta,int iPhi,int depth){return isValidPhase1HcalEndcapId(iEta,iPhi,depth);}
 
@@ -259,9 +262,9 @@ private:
   static std::ostream& printEBDetId(int detId,std::ostream& out);
 
   static int dIEtaBarrel(int iEta1,int iEta2);
-  static int dAbsIEtaBarrel(int iEta1,int iEta2){return abs(dIEtaBarrel(iEta1,iEta2));}
+  static int dAbsIEtaBarrel(int iEta1,int iEta2){return std::abs(dIEtaBarrel(iEta1,iEta2));}
   static int dIPhiBarrel(int iPhi1,int iPhi2);
-  static int dAbsIPhiBarrel(int iPhi1,int iPhi2){return abs(dIEtaBarrel(iPhi1,iPhi2));}
+  static int dAbsIPhiBarrel(int iPhi1,int iPhi2){return std::abs(dIEtaBarrel(iPhi1,iPhi2));}
 
   //ECAL endcap tools
   static int iYEndcap(int detId){return detId&0x7f;}
@@ -336,7 +339,11 @@ private:
 
   static int calHashL1Calo(int iEta,int iPhi);
 
-  static int getHashHcal(int detId){return hcalFastHashTable_[convertToOldFormatHcal(detId) & ~(kDetMask | kSubDetMask)];}
+  static int getHashHcal(int detId){
+    auto res = hcalFastHashTable_.find(detId);
+    if(res!=hcalFastHashTable_.end()) return res->second;
+    else return -1;
+  }
   static int getHashEcal(int detId){return isEcal(detId) ? isBarrel(detId) ? getHashEcalBarrel(detId) : getHashEcalEndcap(detId) + kNrEcalCellsBarrel : 0;}
   static int getHashEcalBarrel(int detId){return ebFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
   static int getHashEcalEndcap(int detId){return eeFastHashTable_[detId & ~(kDetMask | kSubDetMask)];}
@@ -348,11 +355,9 @@ private:
 
 private:
   static int newToOldFormatHcal_(int detId);
-  //yes I'm aware these functions pass 1MB vectors by value, they
-  //are only called once and its the only way I can see
   static std::vector<int> makeEBFastHashTable_();
   static std::vector<int> makeEEFastHashTable_();
-  static std::vector<int> makeHcalFastHashTable_();
+  static std::unordered_map<int,int> makeHcalFastHashTable_();
   static std::vector<std::vector<int> > makeTowerToRecHitsHashTable_();
 
 };
