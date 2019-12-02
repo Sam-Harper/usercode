@@ -35,6 +35,7 @@ public:
     photon_.push_back(SHPFCandidate(pt,eta,phi,mass,mvaNothingGamma,scSeedCrysId,hadNrgyRaw,hadNrgyMap,hadNrgyMapRaw,hadClusterNrgy));
     return photon_.back();}
   
+  SHPFCandidate& addPhoton(const SHPFCandidate& cand){photon_.push_back(cand);return photon_.back();}
 
   template<class T> void copy(const SHPFCandContainer& rhs,T cutFunc){
     clear();

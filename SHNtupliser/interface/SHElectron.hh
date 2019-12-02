@@ -289,6 +289,7 @@ public:
   
   //track quantities
   float trkPt()const{return p3TrackVtx().Pt();}
+  float trkP()const{return p3TrackVtx().Mag();}
   const TVector3& p3TrackVtx()const{return p3TrackVtx_;}
   const TVector3& p3TrackCal()const{return p3TrackCal_;}
   const TVector3& p3TrackInn()const{return p3TrackInn_;}
@@ -323,8 +324,8 @@ public:
 
   float sigmaIPhiIPhi()const{return sigmaIPhiIPhi_;}
 
-  float invEinvP()const{return 1/nrgy() - 1/trkPt();}
-  float bremFrac()const{return (p3TrackVtx().Mag() - p3TrackOut().Mag())/p3TrackVtx().Mag();}
+  float invEinvP()const{return 1/nrgy() - 1/trkP();}
+  float bremFrac()const{return (p3TrackInn().Mag() - p3TrackOut().Mag())/p3TrackInn().Mag();}
   float e1x5Over5x5()const{return e1x5Over5x5_;}
   float e2x5Over5x5()const{return e2x5Over5x5_;}
 
@@ -375,7 +376,10 @@ public:
   float isolChargedHadron()const{return isolChargedHadron_;}
   float isolNeutralHadron()const{return isolNeutralHadron_;}
   float isolPhoton()const{return isolPhoton_;}
-
+  float isolEcalCluster()const{return isolEcalCluster_;}
+  float isolHcalCluster()const{return isolHcalCluster_;} 
+  float hademDepth1BC()const{return hademDepth1BC_;}
+  float hademDepth2BC()const{return hademDepth2BC_;}
   float isolMVA()const{return isolMVA_;}
   float nonIsolMVA()const{return nonIsolMVA_;}
 

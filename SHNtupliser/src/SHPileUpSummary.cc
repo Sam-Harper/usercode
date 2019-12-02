@@ -24,7 +24,7 @@ SHPileUpSummary& SHPileUpSummary::operator=(const SHPileUpSummary& rhs)
   return *this;
 }
 
-void SHPileUpSummary::addPUInfo(int iBx,int iNrInt,int iNrTrueInt)
+void SHPileUpSummary::addPUInfo(int iBx,int iNrInt,float iNrTrueInt)
 {
   new(puInfos_[nrPUInfos()]) SHPileUpInfo(iBx,iNrInt,iNrTrueInt);
 }
@@ -38,7 +38,7 @@ int SHPileUpSummary::nrInteractionsByBx(int bx)const
   return -1;
 }
 					    
-int SHPileUpSummary::nrTrueInteractions()const
+float SHPileUpSummary::nrTrueInteractions()const
 {
   for(size_t bxNr=0;bxNr<nrPUInfos();bxNr++){
     if(getPUInfo(bxNr)->bx()==0) return getPUInfo(bxNr)->nrTrueInteractions();
