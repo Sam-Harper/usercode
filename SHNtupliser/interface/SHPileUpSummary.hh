@@ -23,16 +23,16 @@ public:
   
   SHPileUpSummary& operator=(const SHPileUpSummary& rhs);
 
-  void addPUInfo(int iBx,int iNrInt,int iNrTrueInt);
+  void addPUInfo(int iBx,int iNrInt,float iNrTrueInt);
   void clear(){puInfos_.Delete();}
 
   const SHPileUpInfo* getPUInfo(int puNr)const{return static_cast<SHPileUpInfo*>(puInfos_[puNr]);}
 
   unsigned nrPUInfos()const{return puInfos_.GetLast()+1;}
   int nrInteractionsByBx(int bx)const;
-  int nrTrueInteractions()const;
+  float nrTrueInteractions()const;
 
-  ClassDef(SHPileUpSummary,1)
+  ClassDef(SHPileUpSummary,2)
 
 
 };
