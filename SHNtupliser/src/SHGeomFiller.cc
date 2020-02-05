@@ -61,6 +61,7 @@ void SHGeomFiller::fillEcalGeomBarrel(SHCaloGeom& ecalGeom)
 
 void SHGeomFiller::fillEcalGeomEndcap(SHCaloGeom& ecalGeom)
 {
+  return;
   TVector3 pos;
   for(int xNr=1;xNr<=100;xNr++){
     for(int yNr=1;yNr<=100;yNr++){
@@ -83,7 +84,7 @@ void SHGeomFiller::fillHcalGeomBarrel(SHCaloGeom& hcalGeom)
   TVector3 pos;
   for(int etaNr=-16;etaNr<=16;etaNr++){
     for(int phiNr=1;phiNr<=72;phiNr++){
-      for(int depth =1;depth<=2;depth++){
+      for(int depth =1;depth<=4;depth++){
 	if(DetIdTools::isValidHcalBarrelId(etaNr,phiNr,depth)){
 	  HcalDetId detId(HcalBarrel,etaNr,phiNr,depth);
 	  getCellPosition(detId,pos); 
@@ -99,6 +100,8 @@ void SHGeomFiller::fillHcalGeomBarrel(SHCaloGeom& hcalGeom)
 
 void SHGeomFiller::fillHcalGeomEndcap(SHCaloGeom& hcalGeom)
 {
+  return;
+
   TVector3 pos;
   for(int iEtaAbs=16;iEtaAbs<=29;iEtaAbs++){
     for(int side=0;side<=1;side++){
