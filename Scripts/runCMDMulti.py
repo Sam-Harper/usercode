@@ -36,13 +36,14 @@ class JobThread (threading.Thread):
         cmd = cmd.replace("%{inputFiles}",self.inputFiles)
         cmd = cmd.replace("%{jobNr}",str(self.jobNr))
         import subprocess
+#        print cmd
         output= subprocess.Popen(cmd.split(),stdout=subprocess.PIPE).communicate()[0].splitlines()
 
 import time
 import argparse
 parser = argparse.ArgumentParser(description='runs multiple instances of given cmd')
 parser.add_argument('cmd',help='cmd to run')
-parser.add_argument('--inputFiles',help='input file or file pattern to run over, replaces %{inputFiles} string')
+parser.add_argument('--inputFiles',help='input file or file pattern to run over, replaces %{inputFiles} string',required=True)
 parser.add_argument('--nrJobs',help='number of jobs to split into (can not be larger than #files to run over), replaces %{jobNr} string)',default=1,type=int)
 parser.add_argument('--nrThreads','-t',type=int,default=-1,help='number of python threads to use')
 parser.add_argument('--seperator','-s',help='seperator of files on the cmd line, usually space or ,',default=' ',type=str)
@@ -68,7 +69,8 @@ for jobNr in range(1,args.nrJobs+1):
     for inFile in inputFilesEachJob[jobNr%args.nrJobs]:
         inputFiles+=inFile+args.seperator
     inputFiles=inputFiles[:len(args.seperator)*-1] #chop the last seperator off
-   # print inputFiles
+    print inputFiles
+
     threads.append(JobThread(args,jobNr,inputFiles))
     threads[-1].start()
 
