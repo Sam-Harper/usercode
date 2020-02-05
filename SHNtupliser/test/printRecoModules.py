@@ -23,12 +23,13 @@ def get_all_input_tags(pset):
                     else:
                         input_tag_names.add(entry)
             if para_type == "cms.PSet":
-                input_tag_names |= get_all_input_tags(para)
+                input_tag_names |= get_all_input_tags(para)                
             if para_type == "cms.VPSet":
                 #oddly iterating over it normally
                 #wipes out parameters after untracked paras
+                continue
                 for index in range(0,len(para)):
-                    input_tag_names |= get_all_input_tags(pset)
+                    input_tag_names |= get_all_input_tags(para[index])
     return input_tag_names
 
 def print_mod_dependents(process,module_name,depth,indent_depth):

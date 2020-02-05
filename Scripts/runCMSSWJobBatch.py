@@ -31,7 +31,9 @@ def buildTar_(tgzNameWithPath):
                          if subDir=='data':
                              tar.add("src/"+package+"/"+subPackage+"/data");
                              print "adding dataDir: " + swArea+"/src/"+package+"/"+subPackage+"/data"
- 
+                         if subDir=='interface' and package=='DataFormats':
+                             tar.add("src/"+package+"/"+subPackage+"/interface");
+                             print "adding dataformats headers:" + swArea+"/src/"+package+"/"+subPackage+"/interface"
 
  
        
@@ -68,7 +70,12 @@ def create_release_area(cfg):
                             os.makedirs(target_dir)
                             shutil.copytree("{}/data".format(subpackage_dir),"{}/data".format(target_dir))
                             print "adding dataDir: {}/data".format(target_dir)
-                             
+                        if subdir=='interface' and package=='DataFormats':
+                            target_dir = '{cfg[working_area]}/src/{package}/{subpackage}'.format(cfg=cfg,package=package,subpackage=subpackage)                             
+                            os.makedirs(target_dir)
+                            shutil.copytree("{}/interface".format(subpackage_dir),"{}/interface".format(target_dir))
+                            print "adding DataFormats interface dir : {}/interface".format(target_dir)
+                        
 
 def split_input(input_files_raw,nrjobs,file_prefix=""):
 
@@ -170,7 +177,7 @@ echo "working area contents:"
 ls -lh
 echo "tmp dir contents:"
 ls $TMPDIR -lh
-cp $TMPDIR/{out_file_base}* {out_dir}
+cp $TMPDIR/*.root {out_dir}
 """.format(**cfg)
     return txt
 
@@ -181,11 +188,11 @@ Executable             = {working_area}/src/{job_script}
 Log                    = {log_dir}/job_$(Process).log
 Output                 = {log_dir}/job_$(Process)_out.log
 Error                  = {log_dir}/job_$(Process)_err.log
-Request_memory         = 8 GB
+Request_memory         = 2.5 GB
 Getenv                 = False  
 initialdir             = {working_area}/src
 requirements           = (OpSysAndVer =?= "CentOS7")
-request_cpus           = 4
+request_cpus           = 1
 
 {queue_cmd}
 """.format(**cfg)
