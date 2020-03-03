@@ -122,12 +122,12 @@ def make_queue_cmd(cfg,args):
             else: cmsrun_args+=" "
             cmsrun_args+=filename
 
-            cmsrun_args+=" "
-            if args.interfaceType==1: cmsrun_args+="outputFile="
-            if args.interfaceType==2: cmsrun_args+="outFile="
-            cmsrun_args+="$TMPDIR/{}\n".format(cfg['out_file'].format(jobnr=jobnr))
-            
-            queue_cmd+=cmsrun_args
+        cmsrun_args+=" "
+        if args.interfaceType==1: cmsrun_args+="outputFile="
+        if args.interfaceType==2: cmsrun_args+="outFile="
+        cmsrun_args+="$TMPDIR/{}\n".format(cfg['out_file'].format(jobnr=jobnr))
+        queue_cmd+=cmsrun_args
+
     queue_cmd += ")\n"
     return queue_cmd
 
