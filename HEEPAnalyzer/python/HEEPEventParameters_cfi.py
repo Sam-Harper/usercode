@@ -106,7 +106,7 @@ heepEventPara  = cms.PSet (
     gsFixMETEGClean = cms.InputTag("slimmedMETsEGClean"),
     extraJetTags = cms.VInputTag(),
     extraMETTags = cms.VInputTag(),
-
+    stageL1Trigger = cms.uint32(2)
     
 )
 
