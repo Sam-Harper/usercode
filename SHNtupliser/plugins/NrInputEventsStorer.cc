@@ -20,7 +20,7 @@ class NrInputEventsStorer : public edm::stream::EDProducer<edm::RunCache<Count>,
 public:
   
   NrInputEventsStorer(const edm::ParameterSet& pset){
-    produces<edm::MergeableCounter,edm::InRun>("nrEventsRun");
+    produces<edm::MergeableCounter,edm::Transition::EndRun>("nrEventsRun");
     // produces<edm::MergeableCounter,edm::InLumi>("nrEventsLumi");
   }
 
