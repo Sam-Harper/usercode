@@ -63,6 +63,22 @@ namespace{
     }//end loop over filter lables
     return passAnyFilter;
   }
+
+  //this function determines the index of the path in trigger results, if not
+  //found it returns an index equal to the size of triggerNames
+  //note it matches on whether the name in triggernames starts with the pathName
+  //this is because HLT paths are of form HLT_TriggerName_vX where X is the version number
+  //X changes frequiently so often you want to match all versions which can be
+  //achieved by passing in HLT_TriggerName_v to this function 
+  size_t getPathIndex(const std::string& pathName,const edm::TriggerNames& trigNames){
+    for(size_t index = 0;index<trigNames.size(); index++){
+      if(trigNames.triggerName(index).find(pathName)==0){
+	return index;
+      }
+    }
+    return trigNames.size();
+  }
+
 }
 
 
@@ -119,18 +135,30 @@ void MiniAODTriggerExample::analyze(const edm::Event& iEvent,const edm::EventSet
   const edm::TriggerNames& trigNames = iEvent.triggerNames(*trigResultsHandle);
   std::cout <<"checking paths "<<std::endl;
   for(auto& pathName : pathsToPass_){
-    //we need to figure out which path index the pathName corresponds too
-    size_t pathIndx = trigNames.triggerIndex(pathName);
-    if(pathIndx>=trigNames.size()) std::cout <<" path "<<pathName<<" not found in menu"<<std::endl;
+    size_t pathIndex = getPathIndex(pathName,trigNames);
+    if(pathIndex>=trigNames.size()) std::cout <<" path "<<pathName<<" not found in menu"<<std::endl;
     else{
-      if(trigResultsHandle->accept(pathIndx)) std::cout <<" path "<<pathName<<" passed"<<std::endl;
+      std::cout <<" path index "<<pathIndex << " "<<trigNames.triggerName(pathIndex)<<std::endl;
+      if(trigResultsHandle->accept(pathIndex)) std::cout <<" path "<<pathName<<" passed"<<std::endl;
       else std::cout <<" path "<<pathName<<" failed"<<std::endl;
     }
   }
  
+  //now we will look at the filters passed
+  //before we do this we need to make a new collection of trig objects
+  //with their filters unpacked
+  //we have to make a new copy as the unpacking modifies them and CMSSW
+  //forbids (for very good reasons) modification of products in the event
+  std::vector<pat::TriggerObjectStandAlone> trigObjsUnpacked;
+  for(auto& trigObj : *trigObjsHandle){
+    trigObjsUnpacked.push_back(trigObj);
+    trigObjsUnpacked.back().unpackFilterLabels(iEvent,*trigResultsHandle);
+  }
+
+
   std::cout <<"checking eles "<<std::endl;
   for(auto& ele : *elesHandle){
-    checkFilters(ele.superCluster()->eta(),ele.superCluster()->phi(),*trigObjsHandle,filtersToPass_);
+    checkFilters(ele.superCluster()->eta(),ele.superCluster()->phi(),trigObjsUnpacked,filtersToPass_);
   }
 
 }
