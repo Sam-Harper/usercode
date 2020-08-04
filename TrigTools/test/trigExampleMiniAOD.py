@@ -16,7 +16,7 @@ process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring("/store/data/Run2018D/EGamma/MINIAOD/22Jan2019-v2/60000/721D7ACD-5DDC-5941-8A30-D6A31914842A.root"),
+                            fileNames = cms.untracked.vstring("/store/data/Run2018A/Tau/MINIAOD/17Sep2018-v1/60000/BADFCDEF-F1FF-A743-A79F-BF4D64D65B9B.root")
 )
 
 # set the number of events
@@ -28,8 +28,8 @@ process.maxEvents = cms.untracked.PSet(
 process.trigExample = cms.EDAnalyzer("MiniAODTriggerExample",           
                                      trigObjs = cms.InputTag("slimmedPatTrigger"),
                                      trigResults = cms.InputTag("TriggerResults","","HLT"),
-                                     filtersToPass = cms.vstring("hltDiEle33CaloIdLPixelMatchUnseededFilter","hltDiEle33CaloIdLMWPMS2UnseededFilter"),
-                                     pathsToPass = cms.vstring("HLT_DoubleEle33_CaloIdL_MW_v",),
+                                     filtersToPass = cms.vstring("hltDoublePFTau40TrackPt1MediumChargedIsolationAndTightOOSCPhotonsDz02Reg"),
+                                     pathsToPass = cms.vstring("HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg_v",),
                                      eles = cms.InputTag("slimmedElectrons")
                                   )
 
