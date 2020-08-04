@@ -64,6 +64,27 @@ namespace{
     return passAnyFilter;
   }
 
+  bool checkFilters(const std::vector<pat::TriggerObjectStandAlone>& trigObjs,const std::vector<std::string>& filterNames)
+  {
+    bool passAnyFilter=false;
+    
+    for(const auto trigObj : trigObjs){
+      //normally would auto this but to make it clearer for the example
+      const std::vector<std::string>& objFilters = trigObj.filterLabels();
+      for(auto& filterName : filterNames){
+
+
+	//I dont think filterLabels are sorted so use std::find to see if filterName is in 
+	//the list of passed filters for this object
+	if(std::find(objFilters.begin(),objFilters.end(),filterName)!=objFilters.end()){
+	  std::cout <<" object "<<trigObj.eta()<<" "<<trigObj.phi()<<" passes "<<filterName<<std::endl;
+	  passAnyFilter=true;
+	}
+      }//end loop over matched trigger objects
+    }//end loop over filter lables
+    return passAnyFilter;
+  }
+
   //this function determines the index of the path in trigger results, if not
   //found it returns an index equal to the size of triggerNames
   //note it matches on whether the name in triggernames starts with the pathName
@@ -160,7 +181,8 @@ void MiniAODTriggerExample::analyze(const edm::Event& iEvent,const edm::EventSet
   for(auto& ele : *elesHandle){
     checkFilters(ele.superCluster()->eta(),ele.superCluster()->phi(),trigObjsUnpacked,filtersToPass_);
   }
-
+  std::cout <<"checking filters"<<std::endl;
+  checkFilters(trigObjsUnpacked,filtersToPass_);
 }
 
 
