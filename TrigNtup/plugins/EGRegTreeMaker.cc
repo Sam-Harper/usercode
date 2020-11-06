@@ -41,6 +41,7 @@ class EGRegTreeMaker : public edm::EDAnalyzer {
 private:
   EGRegTreeStruct egRegTreeData_;
   TTree* egRegTree_;
+  std::string treeName_;
 
   edm::EDGetTokenT<reco::VertexCollection>  verticesToken_;
   edm::EDGetTokenT<double> rhoToken_;
@@ -87,8 +88,12 @@ private:
 
 
 EGRegTreeMaker::EGRegTreeMaker(const edm::ParameterSet& iPara):
-  egRegTree_(nullptr)
+  egRegTree_(nullptr),
+  treeName_("egRegTree")
 {
+  if(iPara.exists("treeName")){
+    treeName_ = iPara.getParameter<std::string>("treeName");
+  }
   setToken(verticesToken_,iPara,"verticesTag");
   setToken(rhoToken_,iPara,"rhoTag");
   setToken(genPartsToken_,iPara,"genPartsTag");
@@ -114,7 +119,7 @@ void EGRegTreeMaker::beginJob()
 {
   edm::Service<TFileService> fs;
   fs->file().cd();
-  egRegTree_ = new TTree("egRegTree","");
+  egRegTree_ = new TTree(treeName_.c_str(),"");
   egRegTreeData_.setNrEnergies(eleAltTokens_.size(),phoAltTokens_.size());
   egRegTreeData_.createBranches(egRegTree_);
 } 
