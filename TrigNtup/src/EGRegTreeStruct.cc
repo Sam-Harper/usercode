@@ -240,6 +240,10 @@ void SuperClustStruct::fill(const reco::SuperCluster& sc,const EcalChannelStatus
     corrEnergyAlt = altSC->energy();
     rawEnergyAlt = altSC->rawEnergy();
     nrClusAlt = altSC->clusters().size();
+  }else{
+    corrEnergyAlt = -1;
+    rawEnergyAlt = -1;
+    nrClusAlt = -1;
   }
 }
 
