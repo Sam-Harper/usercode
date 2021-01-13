@@ -126,21 +126,27 @@ def make_queue_cmd(cfg,args):
         cmsrun_args+=" "
         if args.interfaceType==1: cmsrun_args+="outputFile="
         if args.interfaceType==2: cmsrun_args+="outFile="
-        cmsrun_args+="$TMPDIR/{}\n".format(cfg['out_file'].format(jobnr=jobnr))
-         
+        if args.interfaceType==3: cmsrun_args+="-o "
+        cmsrun_args+="$TMPDIR/{} {}\n".format(cfg['out_file'].format(jobnr=jobnr),cfg['extra_args'])
         queue_cmd+=cmsrun_args
     queue_cmd += ")\n"
     return queue_cmd
 
 def make_cfg(args):
+    base_eos = "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/EGM_PhaseII"
+    #base_eos = "/eos/home-s/sharper/batchJobs"
+  
     cfg = {}
     cfg['job_script'] = 'runCMSSW.sh'
     cfg['nrjobs'] = args.nrJobs
     cfg['cfg_name'] = args.config
-
+    cfg['prog_exe'] = args.prog_exe
+    cfg['extra_args'] = args.extra
+    
     cfg['base_dir']="/afs/cern.ch/user/s/sharper/work/batchJobs" 
     cfg['base_logdir'] = "{}/{}".format(cfg['base_dir'],args.baseOutDir)
-    cfg['base_outdir'] = "{}/{}".format("/eos/home-s/sharper/batchJobs",args.baseOutDir)
+    cfg['base_outdir'] = "{}/{}".format(base_eos,args.baseOutDir)
+
     cfg['base_batchdir'] = "{}/{}".format(cfg['base_dir'],"cmsswBatchJobFiles")
     cfg['cmssw_version'] = os.environ['CMSSW_VERSION']
     cfg['orginal_area'] = os.environ['CMSSW_BASE']
@@ -173,8 +179,8 @@ echo $CMSSW_RELEASE_BASE $CMSSW_BASE
 export X509_USER_PROXY={out_proxy_file}
 echo $X509_USER_PROXY
 voms-proxy-info -all
-echo cmsRun $*
-cmsRun $*
+echo {prog_exe} $*
+{prog_exe} $*
 echo "working area contents:"
 ls -lh
 echo "tmp dir contents:"
@@ -195,7 +201,7 @@ Getenv                 = False
 initialdir             = {working_area}/src
 requirements           = (OpSysAndVer =?= "CentOS7")
 request_cpus           = 2
-
++AccountingGroup       = "group_u_CMS.CAF.COMM"
 {queue_cmd}
 """.format(**cfg)
     return txt
@@ -213,6 +219,8 @@ def main():
     parser.add_argument('--baseOutDir',help='base output directory',default="mc")
     parser.add_argument('--globalTag',help='globalTag',default=None)
     parser.add_argument('--filePrefix',help='prefix to add to filenames',default="")
+    parser.add_argument('--prog_exe',default="cmsRun",help='executable to run')
+    parser.add_argument('--extra','-x',default="",help='extra cmds')
 
     args = parser.parse_args()
     print args.config
