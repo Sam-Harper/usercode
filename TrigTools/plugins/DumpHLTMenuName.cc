@@ -27,8 +27,11 @@ class DumpHLTMenuName : public edm::EDAnalyzer {
 
 private:
   std::string hltProcess_;
+  std::vector<std::string> pathsToPrintFilters_;
 public:
-  explicit DumpHLTMenuName(const edm::ParameterSet& iPara):hltProcess_(iPara.getParameter<std::string>("hltProcess")){}
+  explicit DumpHLTMenuName(const edm::ParameterSet& iPara):
+    hltProcess_(iPara.getParameter<std::string>("hltProcess")),
+    pathsToPrintFilters_(iPara.getParameter<std::vector<std::string>>("pathsToPrintFilters")){}
   ~DumpHLTMenuName(){}
   
  private:
@@ -46,7 +49,24 @@ void DumpHLTMenuName::beginRun(const edm::Run& run,const edm::EventSetup& setup)
   bool changed=false;
   HLTConfigProvider hltConfig;
   hltConfig.init(run,setup,hltProcess_,changed);
-  std::cout <<"table name "<<hltConfig.tableName()<<std::endl;
+  if(changed){
+    std::cout <<"table name "<<hltConfig.tableName()<<std::endl;
+    auto trigNames = hltConfig.triggerNames();
+  
+    for(const auto& pathPattern : pathsToPrintFilters_){
+      for(const auto& pathName : trigNames){
+	if(pathName.find(pathPattern)==0){
+	  std::cout <<"path "<<pathName<<" filters"<<std::endl;
+	  const auto modLabels = hltConfig.saveTagsModules(pathName);
+	  for(const auto& modLabel : modLabels){
+	    std::cout <<"   "<<modLabel<<std::endl;
+	  }
+	}
+      }
+    }
+  }
+	  
+ 
 }
 
 DEFINE_FWK_MODULE(DumpHLTMenuName);

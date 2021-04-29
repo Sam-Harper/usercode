@@ -1,27 +1,38 @@
-import os
 import FWCore.ParameterSet.Config as cms
-import sys
-process = cms.Process( "HLTDUMP" )
 
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-from Configuration.AlCa.autoCond import autoCond
-process.GlobalTag.globaltag = autoCond['startup']
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing ('analysis')
+options.register('hltProcess',"HLT",options.multiplicity.singleton,options.varType.string,"HLT process name")
+options.register('paths',"",options.multiplicity.list,options.varType.string,"paths to print")
+options.parseArguments()
 
-process.hltDumper =  cms.EDAnalyzer("DumpHLTMenuName",
-                                    hltProcess=cms.string(sys.argv[3])
-                                )
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+# set up process
+process = cms.Process("TrigExample")
+
+# initialize MessageLogger and output report
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkSummary = cms.untracked.PSet(
+    reportEvery = cms.untracked.int32(500000),
+    limit = cms.untracked.int32(10000000)
 )
- 
-import subprocess
-fileNameRAW = subprocess.Popen(['dasgoclient','--query','file dataset='+sys.argv[2],'--limit','1','--format','json'],stdout=subprocess.PIPE).communicate()[0]
-import json
-fileNameJson=json.loads(fileNameRAW)
-fileName=str(fileNameJson["data"][0]["file"][0]["name"])
+process.MessageLogger.cerr.FwkReport = cms.untracked.PSet(
+    reportEvery = cms.untracked.int32(500000),
+    limit = cms.untracked.int32(10000000)
+)
 
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(fileName),
-                            )
+                            fileNames = cms.untracked.vstring(options.inputFiles)
+)
 
-process.p = cms.Path(process.hltDumper) 
+# set the number of events
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(options.maxEvents)
+)
+
+process.hltDumper =  cms.EDAnalyzer("DumpHLTMenuName",
+                                    hltProcess=cms.string(options.hltProcess),
+                                    pathsToPrintFilters = cms.vstring(options.paths)
+                                )
+
+
+process.p = cms.Path(process.hltDumper)
