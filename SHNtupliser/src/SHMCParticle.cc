@@ -47,7 +47,7 @@ SHMCParticle::SHMCParticle(int partIndx,int partStdhep,int partIdhep,
 }
 
 
-SHMCParticle::SHMCParticle(const SHMCParticle& rhs):
+SHMCParticle::SHMCParticle(const SHMCParticle& rhs):TObject(rhs),
   pt_(rhs.pt_),
   eta_(rhs.eta_),
   phi_(rhs.phi_),

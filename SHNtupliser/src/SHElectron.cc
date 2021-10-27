@@ -113,7 +113,7 @@ SHElectron::SHElectron():
 
 }
 
-SHElectron::SHElectron(const SHElectron &rhs):
+SHElectron::SHElectron(const SHElectron &rhs):TObject(rhs),
   //classification variables
   type_(rhs.type_),
 //kinematic quantities

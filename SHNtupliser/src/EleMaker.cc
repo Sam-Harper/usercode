@@ -42,8 +42,8 @@ cmssw::ShowerShape EleMaker::getShowerShape(const reco::SuperCluster& superClus,
   const EcalRecHitCollection * recHits = 0 ;
   if (isEB) recHits = heepEvent.handles().ebRecHits.product();
   else recHits = heepEvent.handles().eeRecHits.product();
-  std::vector<float> covariances = EcalClusterTools::covariances(seedCluster,recHits,topology,geometry) ;
-  std::vector<float> localCovariances = EcalClusterTools::localCovariances(seedCluster,recHits,topology) ;
+  std::array<float,3> covariances = EcalClusterTools::covariances(seedCluster,recHits,topology,geometry) ;
+  std::array<float,3> localCovariances = EcalClusterTools::localCovariances(seedCluster,recHits,topology) ;
   showerShape.sigmaEtaEta = sqrt(covariances[0]) ;
   showerShape.sigmaIetaIeta = sqrt(localCovariances[0]) ;
   showerShape.e1x5 = EcalClusterTools::e1x5(seedCluster,recHits,topology)  ;

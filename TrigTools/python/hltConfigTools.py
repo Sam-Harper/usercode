@@ -15,7 +15,7 @@ def rmAllEndPathsWithOutput(process):
     outputModuleNames=process.outputModules_().keys()
     for endPathName in process.endpaths_().keys():
         if len(endPathName)-endPathName.find("Output")==6 and len(endPathName)>=6:
-            print "removing endpath ",endPathName
+            print("removing endpath ",endPathName)
             delattr(process,endPathName)
 #            rmPath(process,endPath)
             
@@ -24,12 +24,12 @@ def rmAllEndPathsWithOutput(process):
             pathModuleNames = endPath.moduleNames()
             for outModName in outputModuleNames:
                 if outModName in pathModuleNames: 
-                    print "removing endpath ",endPathName
+                    print("removing endpath ",endPathName)
                     delattr(process.endPathName)
 #                    rmPath(process,endPath)
                     break
 def rmPath(process,pathName):
-     print "removing path ",pathName   
+     print("removing path ",pathName)
      delattr(process,pathName)     
      try:
          for psSet in process.PrescaleService.prescaleTable:

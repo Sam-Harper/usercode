@@ -62,11 +62,11 @@ class Event (dict):
             self['event']   = int( pieces[2] )
             self['dataset'] =  Event.dataset
         except:
-            raise RuntimeError, "Can not parse '%s' as Event object" \
-                  % line.strip()
+            raise RuntimeError("Can not parse '%s' as Event object" \
+                  % line.strip())
         if not self['dataset']:
-            print "No dataset is defined for '%s'.  Aborting." % line.strip()
-            raise RuntimeError, 'Missing dataset'
+            print("No dataset is defined for '%s'.  Aborting." % line.strip())
+            raise RuntimeError('Missing dataset')
 
     def __getattr__ (self, key):
         return self[key]
@@ -91,14 +91,14 @@ def getFileNames (event):
   attemptNr=1
   while "data" not in jsondict and attemptNr<=3:
     if attemptNr>1:
-      print "query failed (likely das error), retrying"
+      print("query failed (likely das error), retrying")
     jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
     attemptNr+=1
 
 
   files=[]
   if "data" not in jsondict:
-    print "tried ",attempNr," times, failed to reach das, skipping  run=%(run)i lumi=%(lumi)i" % event
+    print("tried ",attempNr," times, failed to reach das, skipping  run=%(run)i lumi=%(lumi)i" % event)
     return files
 
 
@@ -106,7 +106,7 @@ def getFileNames (event):
     if len(f['file'])>0:
       files.append(f['file'][0]['name'])
     else:
-      print "run %(run)i lumi %(lumi)i in %(dataset)s not found in das" % event 
+      print("run %(run)i lumi %(lumi)i in %(dataset)s not found in das" % event )
          
   return files
       
@@ -133,7 +133,7 @@ def getLumis(filename):
    # print query
   while "data" not in jsondict and attemptNr<=3:
     if attemptNr>1:
-      print "query failed (likely das error), retrying"
+      print("query failed (likely das error), retrying")
     jsondict = das_client.get_data(host, query, idx, limit, debug, thr, ckey, cert)
     attemptNr+=1
 
@@ -144,7 +144,7 @@ def getLumis(filename):
       for lumiPair in f['lumi'][0]['number']:
         lumis.append(lumiPair)
     else:
-      print "file not found ",filename
+      print("file not found ",filename)
   return lumis
     
 

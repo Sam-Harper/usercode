@@ -51,7 +51,7 @@ class CrabJobInputs(SubCommand):
         crab_data =tarfile.open(self.crab_dir+"/inputs/debugFiles.tgz")    
         config_file = crab_data.extractfile(crab_data.getmember("debug/crabConfig.py"))
         exec(''.join(config_file.readlines()))
-        print config.Data.inputDataset
+        print(config.Data.inputDataset)
 #        print dictresult[0]['lumisToProcess']
 
         try:
@@ -60,7 +60,7 @@ class CrabJobInputs(SubCommand):
             
 
         except KeyError:
-            print "error"
+            print("error")
             return {},config.Data.inputDataset
 
 if __name__ == "__main__":
@@ -85,8 +85,8 @@ if __name__ == "__main__":
             for file_ in files:
                 f.write(file_+"\n")
         
-        print "job ",jobnr
-        print "    lumis: ",job_lumis[jobnr]
-        print "    files: ",files
+        print("job ",jobnr)
+        print("    lumis: ",job_lumis[jobnr])
+        print("    files: ",files)
             
         

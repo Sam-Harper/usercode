@@ -15,7 +15,7 @@ SHBasicCluster::SHBasicCluster():
 }
 
 
-SHBasicCluster::SHBasicCluster(const SHBasicCluster& rhs):
+SHBasicCluster::SHBasicCluster(const SHBasicCluster& rhs):TObject(rhs),
   totNrgy_(rhs.totNrgy_),
   nrCrys_(rhs.nrCrys_),
   eta_(rhs.eta_),

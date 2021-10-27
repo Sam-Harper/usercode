@@ -174,8 +174,8 @@ namespace heep {
     //next our isolation functions, if applyRhoIsolCorr()==true, these are all auto corrected
     float isolEm()const{return gsfEle_->dr03EcalRecHitSumEt();} 
     float isolHad()const{return gsfEle_->dr03HcalTowerSumEt();}
-    float isolHadDepth1()const{return gsfEle_->dr03HcalDepth1TowerSumEt();}
-    float isolHadDepth2()const{return gsfEle_->dr03HcalDepth2TowerSumEt();}
+    float isolHadDepth1()const{return gsfEle_->dr03HcalTowerSumEt(1);}
+    float isolHadDepth2()const{return gsfEle_->dr03HcalTowerSumEt(2);}
     float isolPtTrks()const{return gsfEle_->dr03TkSumPt();}  
     float isolEmHadDepth1()const{return isolEm()+isolHadDepth1();}
     

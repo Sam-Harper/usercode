@@ -14,7 +14,7 @@ SHSuperCluster::SHSuperCluster():
 
 }
 
-SHSuperCluster::SHSuperCluster(const SHSuperCluster& rhs):
+SHSuperCluster::SHSuperCluster(const SHSuperCluster& rhs):TObject(rhs),
   nrgy_(rhs.nrgy_),preShowerNrgy_(rhs.preShowerNrgy_),
   rho_(rhs.rho_),eta_(rhs.eta_),phi_(rhs.phi_),
   nrCrys_(rhs.nrCrys_),

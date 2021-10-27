@@ -8,18 +8,18 @@ def printEPValues(process,pathName):
         filt = getattr(process,filterName)
         if type(filt).__name__=="EDFilter":
             if filt.type_()=="HLTElectronOneOEMinusOneOPFilterRegional":
-                print "old school tracking detected in %s" % pathName
+                print("old school tracking detected in %s" % pathName)
                 barrelCut = filt.getParameter("barrelCut").value()
                 endcapCut = filt.getParameter("endcapCut").value()
-                print "%s in %s : 1/E - 1/p cuts < %s (barrel) < %s (endcap) " % (filterName,pathName,barrelCut,endcapCut)
+                print("%s in %s : 1/E - 1/p cuts < %s (barrel) < %s (endcap) " % (filterName,pathName,barrelCut,endcapCut))
             
             if filt.type_()=="EgammaGenericFilter":
-                if filt.getParameter("nonIsoTag").getModuleLabel()!="": print "mis configured E/gamma filter %s in %s" % (filterName,pathName)
+                if filt.getParameter("nonIsoTag").getModuleLabel()!="": print("mis configured E/gamma filter %s in %s" % (filterName,pathName))
                 if filt.getParameter("isoTag").getProductInstanceLabel()=="OneOESuperMinusOneOP":
-                    print "e/p filter detected"
+                    print("e/p filter detected")
                     barrelCut = filt.getParameter("thrRegularEB").value()
                     endcapCut = filt.getParameter("thrRegularEE").value()
-                    print "%s in %s : 1/E - 1/p cuts < %s (barrel) < %s (endcap) " % (filterName,pathName,barrelCut,endcapCut)
+                    print("%s in %s : 1/E - 1/p cuts < %s (barrel) < %s (endcap) " % (filterName,pathName,barrelCut,endcapCut))
                     
              
             
@@ -38,7 +38,7 @@ args = parser.parse_args()
 
 hltMenuName=args.hltMenuName.rstrip(".py")
 hltMenuName=hltMenuName.split("=")[1]
-print hltMenuName
+print(hltMenuName)
 import importlib
 
 mod = importlib.import_module(hltMenuName)

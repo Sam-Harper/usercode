@@ -6,6 +6,6 @@ def getGlobalTagNameData(version):
     if version.find("23Sep2016-v1")!=-1: return "80X_dataRun2_2016SeptRepro_v3"
     
     defaultGT= "80X_dataRun2_2016SeptRepro_v4"
-    print "getGlobalTagNameData, unknown dataset version ",version," returning ",defaultGT
+    print("getGlobalTagNameData, unknown dataset version ",version," returning ",defaultGT)
     
     return defaultGT

@@ -447,7 +447,7 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
   const trigger::TriggerObjectCollection & trigObjs = trigEvt.getObjects();
   for(auto& trigObj : trigObjs){
     size_t trigObjNr = shTrigObjsTmp.size();
-    int type = isUnseededEG(trigEvt,trigObjNr) ? SHTrigObj::EGUNSEEDED : 0;
+    int type = isUnseededEG(trigEvt,trigObjNr) ? SHTrigObj::EGUNSEEDED : SHTrigObj::UNSET;
     shTrigObjsTmp.push_back({{trigObj.pt(),trigObj.eta(),trigObj.phi(),trigObj.mass()},
 	  {TBits(),type}});
   }

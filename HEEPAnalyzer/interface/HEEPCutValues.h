@@ -97,7 +97,7 @@ namespace heep {
       return ele.full5x5_sigmaIetaIeta()<=maxSigmaIEtaIEta;
     }
     bool passIsolEmHadDepth1(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      const float isol = ele.dr03EcalRecHitSumEt()+ele.dr03HcalDepth1TowerSumEt();
+      const float isol = ele.dr03EcalRecHitSumEt()+ele.dr03HcalTowerSumEt(1);
       const float isolRhoCorr = isol - eleExtra.rho*isolEmHadDepth1RhoEA;
       const float etFromStart =  std::max(0.,getEt(ele)-isolEmHadDepth1GradStart);
       const float cutValue = isolEmHadDepth1ConstTerm + isolEmHadDepth1GradTerm*etFromStart;
@@ -111,7 +111,7 @@ namespace heep {
 	ele.full5x5_e1x5()/ele.full5x5_e5x5()>=minE1x5Over5x5;
     }
     bool passIsolHadDepth2(const reco::GsfElectron& ele,const heep::GsfEleExtra& eleExtra)const{
-      const float isol = ele.dr03HcalDepth2TowerSumEt();
+      const float isol = ele.dr03HcalTowerSumEt(2);
       const float isolRhoCorr = isol - eleExtra.rho*isolHadDepth2RhoEA;
       const float etFromStart =  std::max(0.,getEt(ele)-isolHadDepth2GradStart);
       const float cutValue = isolHadDepth2ConstTerm + isolHadDepth2GradTerm*etFromStart;

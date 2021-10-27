@@ -16,7 +16,7 @@ SHCaloHitContainer::SHCaloHitContainer():
 
 }
 
-SHCaloHitContainer::SHCaloHitContainer(const SHCaloHitContainer &rhs):
+SHCaloHitContainer::SHCaloHitContainer(const SHCaloHitContainer &rhs):TObject(rhs),
   ecalBarrelHitArray_(rhs.ecalBarrelHitArray_),
   ecalEndcapHitArray_(rhs.ecalEndcapHitArray_),
   hcalHitArray_(rhs.hcalHitArray_),
