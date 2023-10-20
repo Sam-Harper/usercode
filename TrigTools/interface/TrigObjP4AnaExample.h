@@ -11,7 +11,7 @@
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include <vector>
@@ -45,7 +45,7 @@ namespace edm{
 // means that you could see an object passing hltMET80 but not pass CentralJet80_MET80. This is rare but an effect 
 //you should be aware of
 
-class TrigObjP4AnaExample : public edm::EDAnalyzer {
+class TrigObjP4AnaExample : public edm::one::EDAnalyzer<> {
 
 
 private:

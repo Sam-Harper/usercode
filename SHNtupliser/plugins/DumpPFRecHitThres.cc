@@ -4,7 +4,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -21,7 +21,7 @@
 #include <string>
 
 
-class DumpPFRecHitThres : public edm::EDAnalyzer { 
+class DumpPFRecHitThres : public edm::one::EDAnalyzer<> { 
 
 
 public:

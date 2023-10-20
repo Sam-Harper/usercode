@@ -11,17 +11,9 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "Geometry/Records/interface/CaloTopologyRecord.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
  
-#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
-#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-
-#include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
-#include "CondFormats/DataRecord/interface/EcalIntercalibConstantsRcd.h"
-#include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
 
 void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollector & cc)
 {
@@ -87,6 +79,14 @@ void heep::EventHelper::setup_(const edm::ParameterSet& conf,edm::ConsumesCollec
   getToken_(gsFixMETEGCleanTag_,conf.getParameter<edm::InputTag>("gsFixMETEGClean"),cc);
   getToken_(extraJetTags_,conf.getParameter<std::vector<edm::InputTag> >("extraJetTags"),cc);
   getToken_(extraMETTags_,conf.getParameter<std::vector<edm::InputTag> >("extraMETTags"),cc);
+
+  caloGeom_ = cc.esConsumes();
+  caloTopology_ = cc.esConsumes();
+  bField_ = cc.esConsumes();
+  ecalADCToGeV_ = cc.esConsumes();
+  ecalLaser_ = cc.esConsumes();
+  ecalInterCalib_ = cc.esConsumes();
+
   
   //trig matching parameters
   hltProcName_ = conf.getParameter<std::string>("hltProcName");
@@ -192,15 +192,13 @@ void heep::EventHelper::setHandles(const edm::Event& event,const edm::EventSetup
   setHandles(event,extraJetTags_,handles.extraJets);
   setHandles(event,extraMETTags_,handles.extraMETs);
   
-
-  setup.get<CaloGeometryRecord>().get(handles.caloGeom);
-  setup.get<CaloTopologyRecord>().get(handles.caloTopology);
-  //setup.get<L1GtTriggerMenuRcd>().get(handles.l1Menu);
-  //setup.get<TrackerDigiGeometryRecord>().get(handles.trackGeom);
-  setup.get<IdealMagneticFieldRecord>().get(handles.bField);
-  setup.get<EcalADCToGeVConstantRcd>().get(handles.ecalADCToGeV);
-  setup.get<EcalLaserDbRecord>().get(handles.ecalLaser);
-  setup.get<EcalIntercalibConstantsRcd>().get(handles.ecalInterCalib);
+  
+  handles.caloGeom = setup.getHandle(caloGeom_);
+  handles.caloTopology = setup.getHandle(caloTopology_);
+  handles.bField = setup.getHandle(bField_);
+  handles.ecalADCToGeV = setup.getHandle(ecalADCToGeV_);
+  handles.ecalLaser = setup.getHandle(ecalLaser_);
+  handles.ecalInterCalib = setup.getHandle(ecalInterCalib_);
   
 
   gsfEleExtraFiller_.getEvtContent(event,setup);

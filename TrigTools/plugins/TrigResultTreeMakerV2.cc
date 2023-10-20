@@ -17,7 +17,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
 
@@ -40,7 +40,7 @@ namespace {
   
 }
 
-class TrigResultTreeMakerV2 : public edm::EDAnalyzer { 
+class TrigResultTreeMakerV2 : public edm::one::EDAnalyzer<> { 
 
 private:
    

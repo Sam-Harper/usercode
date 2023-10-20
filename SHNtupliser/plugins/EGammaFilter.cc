@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/one/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
@@ -18,7 +18,7 @@
 #include "TTree.h"
 
 
-class EGammaFilter : public edm::EDFilter {
+class EGammaFilter : public edm::one::EDFilter<> {
 
 private:
   edm::EDGetTokenT<edm::View<reco::Photon> > phoTag_;

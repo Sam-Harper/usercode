@@ -2,7 +2,7 @@
 #define SHARPER_TRIGTOOLS_JETFILTER
 
 
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/one/EDFilter.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
@@ -21,7 +21,7 @@ namespace edm{
   class ParameterSet;
 }
 
-class JetFilter : public edm::EDFilter {
+class JetFilter : public edm::one::EDFilter<> {
 private:
   int nrPass_;
 

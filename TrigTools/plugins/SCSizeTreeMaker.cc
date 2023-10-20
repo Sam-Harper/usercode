@@ -19,7 +19,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 
@@ -44,7 +44,7 @@
 
  
 
-class SCSizeTreeMaker : public edm::EDAnalyzer {
+class SCSizeTreeMaker : public edm::one::EDAnalyzer<> {
 private:
   using RecoEcalCandMap = edm::AssociationMap<edm::OneToValue<std::vector<reco::RecoEcalCandidate>, float > >;
   using CandToken = edm::EDGetTokenT<reco::RecoEcalCandidateCollection>;

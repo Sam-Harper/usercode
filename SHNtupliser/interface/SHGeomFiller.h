@@ -9,9 +9,11 @@
 //Author: Sam Harper
 
 #include "SHarper/SHNtupliser/interface/SHCaloCellGeom.hh"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 
-class CaloGeometry;
-class CaloTowerConstituentsMap;
+#include "Geometry/CaloTopology/interface/CaloTowerConstituentsMap.h"
 class SHCaloGeom;
 class DetId;
 class TVector3;
@@ -23,13 +25,18 @@ namespace edm{
 class SHGeomFiller{
   
 private:
-  const CaloGeometry* calGeometry_;
-  const CaloTowerConstituentsMap* calTowersConstits_;
+  const edm::ESGetToken<CaloGeometry,CaloGeometryRecord> calGeomToken_;
+  const edm::ESGetToken<CaloTowerConstituentsMap,CaloGeometryRecord> calTowersConstitsToken_;
+  edm::ESHandle<CaloGeometry> calGeometry_;
+  edm::ESHandle<CaloTowerConstituentsMap> calTowersConstits_;
   
 public:
-  SHGeomFiller(const edm::EventSetup& setup);
-  ~SHGeomFiller(){}
 
+  SHGeomFiller(edm::ConsumesCollector&& cc);
+  ~SHGeomFiller()=default;
+
+  void initRun(const edm::EventSetup& setup);
+  
   //the main user functions
   void fillEcalGeom(SHCaloGeom& ecalGeom);
   void fillHcalGeom(SHCaloGeom& hcalGeom);

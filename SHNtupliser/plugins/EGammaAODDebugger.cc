@@ -9,7 +9,7 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
 
@@ -27,7 +27,7 @@
 #include <string>
 
 template <typename T>
-class EGammaAODDebugger : public edm::EDAnalyzer { 
+class EGammaAODDebugger : public edm::one::EDAnalyzer<> { 
 
 public:
   explicit EGammaAODDebugger(const edm::ParameterSet& iPara);

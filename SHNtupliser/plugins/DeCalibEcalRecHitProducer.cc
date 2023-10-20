@@ -1,4 +1,4 @@
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -12,10 +12,13 @@
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
 
-class DeCalibEcalRecHitProducer : public edm::EDProducer {
+class DeCalibEcalRecHitProducer : public edm::stream::EDProducer {
 private:
   edm::InputTag inputEBRecHitTag_;
   edm::InputTag inputEERecHitTag_;
+  edm::ESGetToken<EcalLaserDbService,EcalLaserDbRecord> laserToken_;
+  edm::ESGetToken<EcalIntercalibConstants,EcalIntercalibConstantsRcd> interCalibToken_;
+  
   bool doLaser_;
   bool doInterCalib_;
   bool doADCToGeV_;
@@ -37,6 +40,8 @@ DeCalibEcalRecHitProducer::DeCalibEcalRecHitProducer(const edm::ParameterSet & i
 {
   inputEBRecHitTag_=iConfig.getParameter<edm::InputTag>("inputEBRecHitTag");
   inputEERecHitTag_=iConfig.getParameter<edm::InputTag>("inputEERecHitTag");
+  laserToken_ = esConsumes();
+  interCalibToken = esConsumes();
   doLaser_=iConfig.getParameter<bool>("doLaser");
   doInterCalib_=iConfig.getParameter<bool>("doInterCalib");
   doADCToGeV_=iConfig.getParameter<bool>("doADCToGeV");
@@ -58,10 +63,8 @@ void DeCalibEcalRecHitProducer::produce(edm::Event & iEvent, const edm::EventSet
   edm::Handle<EcalRecHitCollection> eeRecHitHandle;
   iEvent.getByLabel(inputEERecHitTag_,eeRecHitHandle);
 
-  edm::ESHandle<EcalLaserDbService> laserHandle;
-  iSetup.get<EcalLaserDbRecord>().get(laserHandle);
-  edm::ESHandle<EcalIntercalibConstants> interCalibHandle;
-  iSetup.get<EcalIntercalibConstantsRcd>().get(interCalibHandle);
+  edm::ESHandle<EcalLaserDbService> laserHandle = iSetup.getHandle(laserToken_)
+  edm::ESHandle<EcalIntercalibConstants> interCalibHandle = iSetup.getHandle(interCalibToken_);
   const EcalIntercalibConstantMap& interCalibMap = interCalibHandle->getMap(); 
 
   edm::ESHandle<EcalADCToGeVConstant> adcToGeVHandle;

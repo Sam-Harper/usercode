@@ -1,7 +1,8 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Utilities/interface/ESGetToken.h"
 
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
 #include "SHarper/SHNtupliser/interface/SHEventHelper.h"
@@ -19,7 +20,7 @@
 
 #include <string>
 
-class TrigNtupMaker : public edm::EDAnalyzer {
+class TrigNtupMaker : public edm::one::EDAnalyzer<> {
 
 private:
   heep::EventHelper evtHelper_; //this is our magic class where all the nastyness is contained
@@ -36,6 +37,7 @@ private:
   std::string outputFilename_;
 
   bool initGeom_;
+  SHGeomFiller shGeomFiller_;
 
   bool outputGeom_; //write out geom to file
 
@@ -45,6 +47,10 @@ private:
   std::unique_ptr<EgHLTBkgTreeMaker> hltTreeMaker_;
   std::unique_ptr<EgHLTTagProbeTreeMaker> hltTPTreeMaker_;
 
+  
+  edm::ESGetToken<CaloGeometry,CaloGeometryRecord> calGeomToken_;
+  edm::ESGetToken<CaloGeometry,CaloGeometryRecord> calTowersConstitsToken_;
+  
   TrigNtupMaker(const TrigNtupMaker& rhs)=delete;
   TrigNtupMaker& operator=(const TrigNtupMaker& rhs)=delete;
 
@@ -84,7 +90,7 @@ void TrigNtupMaker::fillTree()
 }
 
 TrigNtupMaker::TrigNtupMaker(const edm::ParameterSet& iPara):
-  shEvt_(nullptr),shEvtTree_(shEvt_),outFile_(nullptr),initGeom_(false)
+  shEvt_(nullptr),shEvtTree_(shEvt_),outFile_(nullptr),initGeom_(false),shGeomFiller_(consumesCollector())
 {
   evtHelper_.setup(iPara,consumesCollector(),*this);
   shEvtHelper_.setup(iPara,consumesCollector());
@@ -121,11 +127,11 @@ void TrigNtupMaker::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
   if(!initGeom_){
   //write out calogeometry
    
-    SHGeomFiller geomFiller(iSetup);  
+    shGeomFiller_.initRun(iSetup);  
     SHCaloGeom ecalGeom(SHCaloGeom::ECAL);
     SHCaloGeom hcalGeom(SHCaloGeom::HCAL);
-    geomFiller.fillEcalGeom(ecalGeom);
-    geomFiller.fillHcalGeom(hcalGeom);
+    shGeomFiller_.fillEcalGeom(ecalGeom);
+    shGeomFiller_.fillHcalGeom(hcalGeom);
     if(outputGeom_){
       std::cout <<"writing geom "<<std::endl;
       outFile_->WriteObject(&ecalGeom,"ecalGeom");

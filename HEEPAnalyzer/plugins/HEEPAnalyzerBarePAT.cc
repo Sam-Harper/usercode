@@ -14,7 +14,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 
@@ -32,7 +32,7 @@
 
 
 
-class HEEPAnalyzerBarePAT : public edm::EDAnalyzer {
+class HEEPAnalyzerBarePAT : public edm::one::EDAnalyzer<> {
 
 private:
   heep::EleSelector cuts_; //allows us to apply the heep selection

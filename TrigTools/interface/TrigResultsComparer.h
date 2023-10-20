@@ -7,7 +7,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "SHarper/TrigTools/interface/TrigToolsStructs.h"
@@ -43,7 +43,7 @@ namespace edm{
 
 
 
-class TrigResultsComparer : public edm::EDAnalyzer { 
+class TrigResultsComparer : public edm::one::EDAnalyzer<> { 
 
 public:
   struct TrigCompData {

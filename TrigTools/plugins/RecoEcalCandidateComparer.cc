@@ -1,7 +1,7 @@
 #ifndef SHARPER_TRIGTOOLS_ECALRECHITCOLLCOMPARER
 #define SHARPER_TRIGTOOLS_ECALRECHITCOLLCOMPARER
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -38,7 +38,7 @@ matchEcalCands(const std::vector<std::pair<const math::XYZTLorentzVector*,const 
 	       const reco::RecoEcalCandidateCollection &coll1,
 	       const reco::RecoEcalCandidateCollection &coll2);
 
-class RecoEcalCandidateComparer : public edm::EDAnalyzer {
+class RecoEcalCandidateComparer : public edm::one::EDAnalyzer<> {
 private:
 
   edm::EDGetTokenT<reco::RecoEcalCandidateCollection> coll1Token_;

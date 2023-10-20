@@ -5,7 +5,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include <vector>
@@ -22,7 +22,7 @@ namespace edm{
 }
 
 
-class DumpHLTMenuName : public edm::EDAnalyzer {
+class DumpHLTMenuName : public edm::one::EDAnalyzer<> {
 
 
 private:

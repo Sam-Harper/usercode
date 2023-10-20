@@ -18,7 +18,7 @@
 
 
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEventHelper.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
@@ -32,7 +32,7 @@ namespace edm {
 }
 
 
-class HEEPAnalyzer : public edm::EDAnalyzer {
+class HEEPAnalyzer : public edm::one::EDAnalyzer<> {
 
 private:
   heep::EventHelper evtHelper_; //this is our magic class where all the nastyness is contained

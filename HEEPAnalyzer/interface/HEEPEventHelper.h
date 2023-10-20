@@ -13,7 +13,14 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPGsfEleExtraFiller.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvtHandles.h"
 
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/Records/interface/CaloTopologyRecord.h"
+#include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
+#include "CondFormats/DataRecord/interface/EcalIntercalibConstantsRcd.h"
+#include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
 
 #include <vector>
 
@@ -99,6 +106,14 @@ namespace heep {
     edm::EDGetTokenT<edm::View<pat::MET> > gsFixMETEGCleanTag_;
     std::vector<edm::EDGetTokenT<edm::View<pat::Jet> > > extraJetTags_;
     std::vector<edm::EDGetTokenT<edm::View<reco::MET> > > extraMETTags_;
+
+    edm::ESGetToken<CaloGeometry,CaloGeometryRecord> caloGeom_;
+    edm::ESGetToken<CaloTopology,CaloTopologyRecord> caloTopology_;
+    edm::ESGetToken<MagneticField,IdealMagneticFieldRecord> bField_;
+    edm::ESGetToken<EcalADCToGeVConstant,EcalADCToGeVConstantRcd> ecalADCToGeV_;
+    edm::ESGetToken<EcalLaserDbService,EcalLaserDbRecord> ecalLaser_;
+    edm::ESGetToken<EcalIntercalibConstants,EcalIntercalibConstantsRcd> ecalInterCalib_;
+    
     
     std::shared_ptr<HLTPrescaleProvider> hltPSProvider_;
 
@@ -166,6 +181,8 @@ namespace heep {
 	tokens.push_back(cc.consumes<T>(tag));
       }
     }
+   
+    
     template<typename T>
     static void setHandles(const edm::Event& event,const std::vector<edm::EDGetTokenT<T> >& tokens,
 			   std::vector<edm::Handle<T> >& handles){

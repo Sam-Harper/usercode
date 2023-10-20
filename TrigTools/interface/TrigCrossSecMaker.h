@@ -10,7 +10,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include <vector>
@@ -28,7 +28,7 @@ namespace edm{
 
 
 
-class TrigCrossSecMaker : public edm::EDAnalyzer {
+class TrigCrossSecMaker : public edm::one::EDAnalyzer<> {
 private:
   class TrigCrossSecData {
     class LumiSecData {

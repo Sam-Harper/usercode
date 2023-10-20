@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/one/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -8,7 +8,7 @@
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-class VertexFilter : public edm::EDFilter {
+class VertexFilter : public edm::one::EDFilter<> {
 
 private:
   edm::InputTag vtxCollTag_;

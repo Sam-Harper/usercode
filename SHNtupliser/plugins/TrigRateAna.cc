@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -40,7 +40,7 @@ class PathComp {
   bool operator()(const std::string& lhs,const HLTPathData& rhs)const{return lhs<rhs.pathName;}
 };
 
-class TrigRateAna : public edm::EDAnalyzer {
+class TrigRateAna : public edm::one::EDAnalyzer<> {
 
 private:
 

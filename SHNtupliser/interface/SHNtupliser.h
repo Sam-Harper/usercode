@@ -24,6 +24,7 @@
 #include "SHarper/SHNtupliser/interface/SHEventTreeData.h"
 
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
+#include "FWCore/Utilities/interface/ESGetToken.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEventHelper.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
@@ -50,9 +51,11 @@ class SHTrigSummary;
 
 class SHTrigObjContainer;
 
-class SHNtupliser : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
+class SHNtupliser : public edm::one::EDAnalyzer<><edm::one::WatchRuns> {
 
 private:
+  SHGeomFiller geomFiller_;
+  
   heep::EventHelper evtHelper_; //this is our magic class where all the nastyness is contained
   heep::Event heepEvt_;
 
@@ -101,6 +104,7 @@ private:
   
   SHPFCandContainer* shPFCands_; 
   SHPFClusterContainer* shPFClusters_;
+
   // float oldSigmaIEtaIEta_,newSigmaIEtaIEta_,affectedByCaloNavBug_,scNrgy_,scEta_,scPhi_,scEt_;
   //TTree* scTree_;
   //disabling copy and assignment 

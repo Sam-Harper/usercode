@@ -1,7 +1,7 @@
 #ifndef SHARPER_TRIGTOOLS_MINIAODTRIGGEREXAMPLE
 #define SHARPER_TRIGTOOLS_MINIAODTRIGGEREXAMPLE
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -68,7 +68,7 @@ namespace{
   {
     bool passAnyFilter=false;
     
-    for(const auto trigObj : trigObjs){
+    for(const auto& trigObj : trigObjs){
       //normally would auto this but to make it clearer for the example
       const std::vector<std::string>& objFilters = trigObj.filterLabels();
       for(auto& filterName : filterNames){
@@ -103,7 +103,7 @@ namespace{
 }
 
 
-class MiniAODTriggerExample : public edm::EDAnalyzer {
+class MiniAODTriggerExample : public edm::one::EDAnalyzer<> {
 private:
 
   edm::InputTag trigObjsTag_;

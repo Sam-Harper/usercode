@@ -11,7 +11,7 @@ const std::vector<std::pair<int,std::vector<int> > > TrigFuncs::l1EG26Prescales_
 TrigFuncs::PreScaleWeights::PreScaleWeights():maxDR2_(0.1*0.1)
 {
   std::vector<std::pair<int,int> > etPairs={{30,36},{36,50},{50,75},{75,90},{90,120},{120,175},{175,99999999}};
-  for(const auto etPair : etPairs){
+  for(const auto& etPair : etPairs){
     std::ostringstream etStr;
     etStr<<etPair.first;
     bool l1EG26=false;

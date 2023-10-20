@@ -19,17 +19,17 @@ public:
   private:
     size_t bitNr_;
     std::string name_;
-    std::vector<unsigned int> preScales_;
+    std::vector<double> preScales_;
     bool masked_;
   public:
     Seed():bitNr_(std::numeric_limits<size_t>::max()),masked_(true){}
-    Seed(size_t iBitNr,std::string iName,std::vector<unsigned int> iPreScales,bool iMasked):
+    Seed(size_t iBitNr,std::string iName,std::vector<double> iPreScales,bool iMasked):
       bitNr_(iBitNr),name_(std::move(iName)),
       preScales_(std::move(iPreScales)),masked_(iMasked){}
 
     size_t bitNr()const{return bitNr_;}
     const std::string& name()const{return name_;}
-    int preScale(int preScaleColumn)const{
+    double preScale(int preScaleColumn)const{
       if(preScaleColumn>=0 && static_cast<size_t>(preScaleColumn)<preScales_.size()){
 	return preScales_[preScaleColumn];
       }else return -1;
@@ -77,7 +77,7 @@ private:
   void buildPathNameToNrMap_()const;
   bool cacheOutOfDate_()const{return l1NamesToBits_.empty();}
 
-  ClassDef(SHL1Menu,1)
+  ClassDef(SHL1Menu,2)
 };
 
 #endif

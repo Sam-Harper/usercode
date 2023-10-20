@@ -17,7 +17,7 @@
 
 
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 
@@ -30,7 +30,7 @@ namespace edm {
 }
 
 
-class HEEPAnalyzerPATHEEPId : public edm::EDAnalyzer {
+class HEEPAnalyzerPATHEEPId : public edm::one::EDAnalyzer<> {
 
 private:
  

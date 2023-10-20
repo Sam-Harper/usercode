@@ -1,7 +1,7 @@
 #ifndef SHARPER_TRIGTOOLS_ECALRECHITCOLLCOMPARER
 #define SHARPER_TRIGTOOLS_ECALRECHITCOLLCOMPARER
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -27,7 +27,7 @@ namespace edm{
   class ParameterSet;
 }
 
-class EcalRecHitCollComparer : public edm::EDAnalyzer {
+class EcalRecHitCollComparer : public edm::one::EDAnalyzer<> {
 private:
 
   std::vector< edm::EDGetTokenT<EcalRecHitCollection> > coll1Token_;

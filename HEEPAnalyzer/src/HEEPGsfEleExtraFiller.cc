@@ -34,6 +34,8 @@ void heep::GsfEleExtraFiller::setup(const edm::ParameterSet& iPara,edm::Consumes
   setToken(eeRecHitToken_,iC,iPara,"reducedEndcapRecHitTag");
   setToken(beamSpotToken_,iC,iPara,"beamSpotTag");
   setToken(trkToken_,iC,iPara,"ctfTrackTag");
+  caloTopoToken_ = iC.esConsumes();
+  
 }
 
 void heep::GsfEleExtraFiller::getEvtContent(const edm::Event& iEvent,const edm::EventSetup& iSetup)
@@ -46,7 +48,7 @@ void heep::GsfEleExtraFiller::getEvtContent(const edm::Event& iEvent,const edm::
   iEvent.getByToken(eeRecHitToken_,eeRecHitHandle_);
   iEvent.getByToken(beamSpotToken_,beamSpotHandle_);
   iEvent.getByToken(trkToken_,trkHandle_);
-  iSetup.get<CaloTopologyRecord>().get(caloTopoHandle_);
+  caloTopoHandle_ = iSetup.getHandle(caloTopoToken_);
 
 }
   

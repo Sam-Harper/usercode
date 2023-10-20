@@ -7,7 +7,7 @@
  *
  */
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
@@ -26,7 +26,7 @@
 #include "TFile.h"
 
 
-class HOverEComparer : public edm::EDAnalyzer {
+class HOverEComparer : public edm::one::EDAnalyzer<> {
  
 public:
   

@@ -83,7 +83,7 @@ namespace heep{
 
     const edm::Event& event()const{return *edmEvent_;}
     const edm::EventSetup& eventSetup()const{return *edmEventSetup_;}
-    int hltPreScale(const std::string& hltPath)const{return hltPSProvider_ && hltPSProvider_->hltConfigProvider().inited() ? hltPSProvider_->prescaleValue(event(),eventSetup(),hltPath) : -1;}
+    int hltPreScale(const std::string& hltPath)const{return hltPSProvider_ && hltPSProvider_->hltConfigProvider().inited() ? hltPSProvider_->prescaleValue<double>(event(),eventSetup(),hltPath) : -1;}
     int preScaleColumn()const{return hltPSProvider_ && hltPSProvider_->hltConfigProvider().inited() ? hltPSProvider_->prescaleSet(event(),eventSetup()) : -1;}
     double eleRhoCorr()const{return *handles_.eleRhoCorr;}
     double eleRhoCorr2012()const{return *handles_.eleRhoCorr2012;}

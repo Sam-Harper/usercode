@@ -8,7 +8,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -22,7 +22,7 @@
 
  
 
-class HLTZPeakMon : public edm::EDAnalyzer {
+class HLTZPeakMon : public edm::one::EDAnalyzer<> {
 private:
   
   TTree* tree_;

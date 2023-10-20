@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h" 
 #include "FWCore/Framework/interface/Run.h" 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -13,7 +13,7 @@
 #include "TTree.h"
 
 
-class CrossSecDumper : public edm::EDAnalyzer {
+class CrossSecDumper : public edm::one::EDAnalyzer<> {
 
 private:
 

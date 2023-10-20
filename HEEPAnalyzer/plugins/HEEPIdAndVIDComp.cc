@@ -1,7 +1,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -16,7 +16,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-class HEEPIdAndVIDComp : public edm::EDAnalyzer {
+class HEEPIdAndVIDComp : public edm::one::EDAnalyzer<> {
 
 private:
  

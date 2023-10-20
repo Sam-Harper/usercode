@@ -1,11 +1,10 @@
 #include "SHarper/SHNtupliser/interface/SHGeomFiller.h"
 
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-#include "Geometry/CaloTopology/interface/CaloTowerConstituentsMap.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Utilities/interface/Transition.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
@@ -17,18 +16,17 @@
 
 #include "TVector3.h"
 
-SHGeomFiller::SHGeomFiller(const edm::EventSetup& setup)
+SHGeomFiller::SHGeomFiller(edm::ConsumesCollector&& cc):
+  calGeomToken_(cc.esConsumes<edm::Transition::BeginRun>()),
+  calTowersConstitsToken_(cc.esConsumes<edm::Transition::BeginRun>())
+{ 
+  
+}
+
+void SHGeomFiller::initRun(const edm::EventSetup& setup)
 {
-  //setup.get<IdealGeometryRecord>().get(calGeometry_);
-  //setup.get<IdealGeometryRecord>().get(calTowersConstits_);
-  edm::ESHandle<CaloGeometry> calGeometryHandle;
-  edm::ESHandle<CaloTowerConstituentsMap> calTowersConstitsHandle;
-  setup.get<CaloGeometryRecord>().get(calGeometryHandle);
-  setup.get<CaloGeometryRecord>().get(calTowersConstitsHandle);
-  
-  calGeometry_=calGeometryHandle.product();
-  calTowersConstits_=calTowersConstitsHandle.product();
-  
+  calGeometry_= setup.getHandle(calGeomToken_);
+  calTowersConstits_= setup.getHandle(calTowersConstitsToken_);  
 }
 
 void SHGeomFiller::fillEcalGeom(SHCaloGeom& ecalGeom)

@@ -7,7 +7,7 @@
 
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -16,7 +16,7 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPGsfEleExtraFiller.h"
 
-class HEEPAttStatusToPAT : public edm::EDProducer {
+class HEEPAttStatusToPAT : public edm::stream::EDProducer<> {
 
 private:
   heep::EleSelector cuts_; //allows us to apply the heep selection

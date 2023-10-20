@@ -1,6 +1,6 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/Framework/interface/Event.h"
@@ -36,7 +36,7 @@
 
 #include <string>
 
-class EGRegTreeMaker : public edm::EDAnalyzer {
+class EGRegTreeMaker : public edm::one::EDAnalyzer<> {
 
 private:
   EGRegTreeStruct egRegTreeData_;
