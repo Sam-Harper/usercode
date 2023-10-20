@@ -20,18 +20,18 @@ public:
   private:
     size_t pathNr_;
     std::string name_;
-    std::vector<unsigned int> preScales_;
+    std::vector<double> preScales_;
     std::vector<std::string> l1Seeds_;
     
   public:
     Path():pathNr_(std::numeric_limits<size_t>::max()){}
-    Path(size_t iPathNr,std::string iName,std::vector<unsigned int> iPreScales,std::vector<std::string> iL1Seeds):
+    Path(size_t iPathNr,std::string iName,std::vector<double> iPreScales,std::vector<std::string> iL1Seeds):
       pathNr_(iPathNr),name_(std::move(iName)),
       preScales_(std::move(iPreScales)),l1Seeds_(std::move(iL1Seeds)){}
 
     size_t pathNr()const{return pathNr_;}
     const std::string& name()const{return name_;}
-    int preScale(int preScaleColumn)const{
+    double preScale(int preScaleColumn)const{
       if(preScaleColumn>=0 && static_cast<size_t>(preScaleColumn)<preScales_.size()){
 	return preScales_[preScaleColumn];
       }else return -1;
@@ -94,7 +94,7 @@ private:
   void buildPathNameToNrMap_()const;
   bool cacheOutOfDate_()const{return pathNameToNrs_.empty();}
 
-  ClassDef(SHHLTMenu,1)
+  ClassDef(SHHLTMenu,2)
 };
 
 #endif

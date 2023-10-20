@@ -18,7 +18,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -32,7 +32,7 @@
 
  
 
-class L1SeedingEffMaker : public edm::EDAnalyzer {
+class L1SeedingEffMaker : public edm::one::EDAnalyzer<> {
 
 
 private:

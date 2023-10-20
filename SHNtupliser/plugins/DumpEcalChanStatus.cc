@@ -4,7 +4,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -25,7 +25,7 @@
 #include <string>
 
 
-class DumpEcalChanStatus : public edm::EDAnalyzer { 
+class DumpEcalChanStatus : public edm::one::EDAnalyzer<> { 
 
 
 public:
@@ -42,19 +42,20 @@ public:
   }
   
   virtual void beginJob()override{}
-  virtual void beginRun(const edm::Run& run,const edm::EventSetup& iSetup)override{}
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;
   virtual void endJob()override{}
   
 private:
   std::string name_;
   bool written_;
+  edm::ESGetToken<EcalChannelStatus,EcalChannelStatusRcd> chanStatusToken_;
 };
 
 
 DumpEcalChanStatus::DumpEcalChanStatus(const edm::ParameterSet& iPara):
   name_(iPara.getParameter<std::string>("name")),
-  written_(false)
+  written_(false),
+  chanStatusToken_(esConsumes())
 {
 
 
@@ -107,8 +108,7 @@ void DumpEcalChanStatus::analyze(const edm::Event& iEvent, const edm::EventSetup
     deadChanEBHist->SetDirectory(&fs->file());
     deadChanEEPosHist->SetDirectory(&fs->file());
     deadChanEENegHist->SetDirectory(&fs->file());
-    edm::ESHandle<EcalChannelStatus> chanStatusHandle;
-    iSetup.get<EcalChannelStatusRcd>().get(chanStatusHandle);
+    edm::ESHandle<EcalChannelStatus> chanStatusHandle = iSetup.getHandle(chanStatusToken_);
     std::unordered_map<int,int> outMap;
     
     auto& chanStatusCont = *chanStatusHandle;

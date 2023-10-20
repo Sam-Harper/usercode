@@ -1,4 +1,4 @@
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -17,7 +17,7 @@
 #include "TTree.h"
 #include <iostream>
 #include <numeric>
-class TrigRateTree : public edm::EDAnalyzer {
+class TrigRateTree : public edm::one::EDAnalyzer<> {
   edm::EDGetTokenT<edm::MergeableCounter> nrEventsRunToken_;
   edm::EDGetTokenT<edm::MergeableCounter> nrEventsRunPostPUFilterToken_;
   edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;

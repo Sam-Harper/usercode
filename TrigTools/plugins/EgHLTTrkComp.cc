@@ -19,7 +19,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 
@@ -52,7 +52,7 @@
 
  
 
-class EgHLTTrkComp : public edm::EDAnalyzer {
+class EgHLTTrkComp : public edm::one::EDAnalyzer<> {
 public:
   using RecoEcalCandMap = edm::AssociationMap<edm::OneToValue<std::vector<reco::RecoEcalCandidate>, float > >;
   using CandSeedVec =  std::vector<std::pair<reco::RecoEcalCandidateRef,const reco::ElectronSeed*> >;

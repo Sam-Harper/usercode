@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/one/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -14,7 +14,7 @@
 #include <fstream>
 #include <sstream>
 
-class EventListSkimmer : public edm::EDFilter {
+class EventListSkimmer : public edm::one::EDFilter<>{
   
 public:
   

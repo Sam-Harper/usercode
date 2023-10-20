@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -13,7 +13,7 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "TTree.h"
 
-class PatEleCTFTrkTester : public edm::EDAnalyzer {
+class PatEleCTFTrkTester : public edm::one::EDAnalyzer<> {
 
 private:
   edm::EDGetTokenT<edm::View<pat::Electron> > patElesToken_;

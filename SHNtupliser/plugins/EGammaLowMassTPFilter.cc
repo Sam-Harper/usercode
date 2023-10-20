@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/one/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
@@ -15,7 +15,7 @@
 #include "TTree.h"
 
 
-class EGammaLowMassTPFilter : public edm::EDFilter {
+class EGammaLowMassTPFilter : public edm::one::EDFilter<> {
 
 private:
   edm::EDGetTokenT<edm::View<pat::Electron> > eleTag_;

@@ -4,11 +4,6 @@
 #include "SHarper/SHNtupliser/interface/SHTrigSummary.hh"
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 
-#include "CondFormats/DataRecord/interface/L1TUtmTriggerMenuRcd.h"
-#include "CondFormats/L1TObjects/interface/L1TUtmTriggerMenu.h"
-#include "CondFormats/DataRecord/interface/L1TGlobalPrescalesVetosRcd.h"
-#include "CondFormats/L1TObjects/interface/L1TGlobalPrescalesVetos.h"
-
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
@@ -273,15 +268,15 @@ void SHTrigSumMaker::addHLTMenu_(const HLTConfigProvider& hltConfig)
 			
 {  
   std::vector<SHHLTMenu::Path> hltPaths;
-  std::vector<unsigned int> defaultPSes(hltConfig.prescaleSize(),1);
+  std::vector<double> defaultPSes(hltConfig.prescaleSize(),1);
   for(size_t pathNr=0;pathNr<hltConfig.triggerNames().size();pathNr++){
     const std::string& trigName  = hltConfig.triggerNames()[pathNr];
 
     std::vector<std::string> l1Seeds = getL1Seeds_(hltConfig,pathNr,trigName);
     if(l1Seeds.size()>kMaxNrL1SeedsToStore_) l1Seeds.clear();
     
-    auto psTblEntry = hltConfig.prescaleTable().find(trigName);
-    const std::vector<unsigned int>& preScales = psTblEntry!=hltConfig.prescaleTable().end() ? 
+    auto psTblEntry = hltConfig.prescaleTable<double>().find(trigName);
+    const std::vector<double>& preScales = psTblEntry!=hltConfig.prescaleTable<double>().end() ? 
       psTblEntry->second : defaultPSes;
     
     hltPaths.emplace_back(SHHLTMenu::Path(pathNr,rmTrigVersionFromName(trigName),
@@ -317,7 +312,7 @@ void SHTrigSumMaker::addL1Menu_(const HLTConfigProvider& hltConfig,
   //because L1TGlobalUtil is garbage and broken
   l1t::L1TGlobalUtil& l1GtUtils = const_cast<l1t::L1TGlobalUtil&>(l1GtUtilsConst);
 
-  std::vector<unsigned int> defaultPSes(hltConfig.prescaleSize(),1);
+  std::vector<double> defaultPSes(hltConfig.prescaleSize(),1);
   for(size_t bitNr=0;bitNr<l1GtUtils.decisionsFinal().size();bitNr++){
     const std::string& l1Name = l1GtUtils.decisionsFinal()[bitNr].first;
     seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Name,defaultPSes,false));
@@ -341,12 +336,11 @@ void SHTrigSumMaker::addL1Menu_(const edm::EventSetup& edmEventSetup,
   std::vector<SHL1Menu::Seed> seeds;
 
   
-  edm::ESHandle<L1TUtmTriggerMenu> l1GtMenu;
-  edmEventSetup.get<L1TUtmTriggerMenuRcd>().get(l1GtMenu);
+  edm::ESHandle<L1TUtmTriggerMenu> l1GtMenu = edmEventSetup.getHandle(l1MenuToken_);
   
-  edm::ESHandle<L1TGlobalPrescalesVetos> psAndVetos;
-  auto psRcd = edmEventSetup.tryToGet<L1TGlobalPrescalesVetosRcd>();
-  if(psRcd) psRcd->get(psAndVetos);
+  edm::ESHandle<L1TGlobalPrescalesVetosFract> psAndVetos;
+  auto psRcd = edmEventSetup.tryToGet<L1TGlobalPrescalesVetosFractRcd>();
+  if(psRcd) psRcd->getHandle(psAndVetosToken_);
   
   std::array<std::string,kNrL1Seeds_> l1Names;
   l1Names.fill("NULL");
@@ -375,7 +369,7 @@ void SHTrigSumMaker::addL1Menu_(const edm::EventSetup& edmEventSetup,
     }
   }else{
     for(size_t bitNr=0;bitNr<l1Names.size();bitNr++){
-      seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Names[bitNr],std::vector<unsigned int>(),false));
+      seeds.emplace_back(SHL1Menu::Seed(bitNr,l1Names[bitNr],std::vector<double>(),false));
     }
   }
 
@@ -548,10 +542,10 @@ std::vector<std::string> SHTrigSumMaker::splitL1SeedExpr_(const std::string& l1S
 
 
 //converts vector[columnNr][bitNr] -> vector[columnNr] for a given bitNr 
-std::vector<unsigned int> 
-SHTrigSumMaker::getSeedPreScales(size_t bitNr,const std::vector<std::vector<int> >& psTbl)
+std::vector<double> 
+SHTrigSumMaker::getSeedPreScales(size_t bitNr,const std::vector<std::vector<double> >& psTbl)
 {
-  if(psTbl.empty()) return std::vector<unsigned int>();
+  if(psTbl.empty()) return std::vector<double>();
 
   bool badTbl=false;
   for(size_t colNr=1;colNr<psTbl.size() && !badTbl;colNr++){
@@ -564,9 +558,9 @@ SHTrigSumMaker::getSeedPreScales(size_t bitNr,const std::vector<std::vector<int>
     std::cout <<std::endl;
   }
 
-  if(badTbl || bitNr>=psTbl[0].size()) return std::vector<unsigned int>(psTbl.size(),1);
+  if(badTbl || bitNr>=psTbl[0].size()) return std::vector<double>(psTbl.size(),1);
   else {
-    std::vector<unsigned int> preScales;
+    std::vector<double> preScales;
     for(size_t colNr=0;colNr<psTbl.size();colNr++){
       preScales.push_back(psTbl[colNr][bitNr]);
     }

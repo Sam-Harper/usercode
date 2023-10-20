@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -14,7 +14,7 @@
 #include <fstream>
 #include <sstream>
 
-class EventListDumper : public edm::EDAnalyzer {
+class EventListDumper : public edm::one::EDAnalyzer<> {
   
 public:
  

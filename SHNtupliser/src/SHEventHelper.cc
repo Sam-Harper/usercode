@@ -55,7 +55,7 @@ void SHEventHelper::setup(const edm::ParameterSet& conf,edm::ConsumesCollector &
   datasetCode_ = conf.getParameter<int>("datasetCode");    
   applyMuonId_ = conf.getParameter<bool>("applyMuonId");
   fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
-
+  trigSumMaker_.setup(cc);
 
   isMC_=datasetCode_!=0;
   branches_.setup(conf);

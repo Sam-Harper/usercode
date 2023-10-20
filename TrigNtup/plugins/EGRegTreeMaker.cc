@@ -1,6 +1,6 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/Framework/interface/Event.h"
@@ -36,7 +36,7 @@
 
 #include <string>
 
-class EGRegTreeMaker : public edm::EDAnalyzer {
+class EGRegTreeMaker : public edm::one::EDAnalyzer<> {
 
 private:
   EGRegTreeStruct egRegTreeData_;
@@ -57,6 +57,10 @@ private:
   std::vector<edm::EDGetTokenT<std::vector<reco::GsfElectron> > > eleAltTokens_;
   std::vector<edm::EDGetTokenT<std::vector<reco::Photon> > > phoAltTokens_;
 
+  edm::ESGetToken<CaloTopology,CaloTopologyRecord> caloTopoToken_;
+  edm::ESGetToken<EcalChannelStatus,EcalChannelStatusRcd> chanStatusToken_;
+  
+  
   EGRegTreeMaker(const EGRegTreeMaker& rhs)=delete;
   EGRegTreeMaker& operator=(const EGRegTreeMaker& rhs)=delete;
 
@@ -89,7 +93,9 @@ private:
 
 EGRegTreeMaker::EGRegTreeMaker(const edm::ParameterSet& iPara):
   egRegTree_(nullptr),
-  treeName_("egRegTree")
+  treeName_("egRegTree"),
+  caloTopoToken_(esConsumes()),
+  chanStatusToken_(esConsumes())
 {
   if(iPara.exists("treeName")){
     treeName_ = iPara.getParameter<std::string>("treeName");
@@ -202,10 +208,8 @@ void EGRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSetup& iSe
   auto phosHandle = getHandle(iEvent,phosToken_);
   auto phoAltHandles = getHandle(iEvent,phoAltTokens_);
   auto puSumHandle = getHandle(iEvent,puSumToken_);
-  edm::ESHandle<CaloTopology> caloTopoHandle;
-  iSetup.get<CaloTopologyRecord>().get(caloTopoHandle);
-  edm::ESHandle<EcalChannelStatus> chanStatusHandle;
-  iSetup.get<EcalChannelStatusRcd>().get(chanStatusHandle);
+  edm::ESHandle<CaloTopology> caloTopoHandle = iSetup.getHandle(caloTopoToken_);
+  edm::ESHandle<EcalChannelStatus> chanStatusHandle = iSetup.getHandle(chanStatusToken_);
 
   int nrVert = verticesHandle->size();
   float nrPUInt = -1;

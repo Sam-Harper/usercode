@@ -4,6 +4,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
+#include "FWCore/Utilities/interface/ESGetToken.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
@@ -37,6 +38,7 @@ namespace heep {
     edm::EDGetTokenT<EcalRecHitCollection> eeRecHitToken_;
     edm::Handle<EcalRecHitCollection> ebRecHitHandle_;
     edm::Handle<EcalRecHitCollection> eeRecHitHandle_;
+    edm::ESGetToken<CaloTopology,CaloTopologyRecord> caloTopoToken_;
     edm::ESHandle<CaloTopology> caloTopoHandle_;
     //trk isol stuff
     edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_;

@@ -4,7 +4,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -21,7 +21,7 @@
 #include <string>
 
 
-class DumpPFRecHitThres : public edm::EDAnalyzer { 
+class DumpPFRecHitThres : public edm::one::EDAnalyzer<> { 
 
 
 public:
@@ -38,7 +38,6 @@ public:
   }
   
   virtual void beginJob()override{}
-  virtual void beginRun(const edm::Run& run,const edm::EventSetup& iSetup)override{}
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;
   virtual void endJob()override{}
   
@@ -48,12 +47,14 @@ public:
 private:
   bool written_;
   std::string logPrefix_;
+  edm::ESGetToken<EcalPFRecHitThresholds,EcalPFRecHitThresholdsRcd> thresToken_;
 };
 
 
 DumpPFRecHitThres::DumpPFRecHitThres(const edm::ParameterSet& iPara):
   written_(false),
-  logPrefix_("pfrechit thres ")
+  logPrefix_("pfrechit thres "),
+  thresToken_(esConsumes())
 {
 
 
@@ -97,8 +98,7 @@ void DumpPFRecHitThres::analyze(const edm::Event& iEvent, const edm::EventSetup&
 {
   if(!written_){
     //edm::Service<TFileService> fs;
-    edm::ESHandle<EcalPFRecHitThresholds> thresHandle;
-    iSetup.get<EcalPFRecHitThresholdsRcd>().get(thresHandle);
+    edm::ESHandle<EcalPFRecHitThresholds> thresHandle = iSetup.getHandle(thresToken_);
     
     dumpBarrelThres(*thresHandle,1);
     dumpEndcapThres(*thresHandle,50,1);

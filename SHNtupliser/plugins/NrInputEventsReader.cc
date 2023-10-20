@@ -1,4 +1,4 @@
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
@@ -11,7 +11,7 @@
 
 #include <iostream>
 
-class NrInputEventsReader : public edm::EDAnalyzer {
+class NrInputEventsReader : public edm::one::EDAnalyzer<edm::one::WatchRuns,edm::one::WatchLuminosityBlocks> {
   edm::EDGetTokenT<edm::MergeableCounter> nrEventsRunToken_;
   edm::EDGetTokenT<edm::MergeableCounter> nrEventsLumiToken_;
   unsigned int nrEventsRunSum_;
@@ -32,7 +32,8 @@ public:
     run.getByToken(nrEventsRunToken_,nrEventsHandle);
     nrEventsRunSum_+=nrEventsHandle->value;
   }
- 
+
+  void beginLuminosityBlock(const edm::LuminosityBlock& lumi,const edm::EventSetup& setup ) override{}
   void endLuminosityBlock(const edm::LuminosityBlock& lumi,const edm::EventSetup& setup ) override{
     edm::Handle<edm::MergeableCounter> nrEventsHandle;
     lumi.getByToken(nrEventsLumiToken_,nrEventsHandle);

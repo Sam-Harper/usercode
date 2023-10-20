@@ -9,7 +9,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -19,7 +19,7 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
 #include "SHarper/HEEPAnalyzer/interface/HEEPGsfEleExtraFiller.h"
 
-class HEEPIdValueMapProducer : public edm::EDProducer {
+class HEEPIdValueMapProducer : public edm::stream::EDProducer<> {
 
 private:
   heep::EleSelector cuts_; //allows us to apply the heep selection 

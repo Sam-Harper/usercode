@@ -61,7 +61,7 @@ namespace{
   {
     bool passAnyFilter=false;
     
-    for(const auto trigObj : trigObjs){
+    for(const auto& trigObj : trigObjs){
       //normally would auto this but to make it clearer for the example
       const std::vector<std::string>& objFilters = trigObj.filterLabels();
       for(auto& filterName : filterNames){

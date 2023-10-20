@@ -4,7 +4,7 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
 
@@ -25,7 +25,7 @@
  author Sam  Harper (RAL), 2019
 *****************************************************************************/
 
-class L1MenuExample : public edm::EDAnalyzer {
+class L1MenuExample : public edm::one::EDAnalyzer<> {
  
 private:
   

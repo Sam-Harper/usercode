@@ -23,7 +23,7 @@
 
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -36,7 +36,7 @@
 
 #include "TTree.h"
 
-class CrossSecTreeMaker : public edm::EDAnalyzer {
+class CrossSecTreeMaker : public edm::one::EDAnalyzer<> {
 
   TTree* tree_;
   float mass_;

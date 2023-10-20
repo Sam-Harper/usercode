@@ -7,10 +7,10 @@
 
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-class HEEPGsfEleEnergyCorrector : public edm::EDProducer {
+class HEEPGsfEleEnergyCorrector : public edm::stream::EDProducer<> {
 
 private:
   edm::InputTag inputEleTag_;

@@ -1,7 +1,7 @@
 #ifndef SHARPER_TRIGTOOLS_ECALRECHITCOLLCOMPARER
 #define SHARPER_TRIGTOOLS_ECALRECHITCOLLCOMPARER
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -28,7 +28,7 @@ namespace edm{
   class ParameterSet;
 }
 
-class EleSeedTreeMaker : public edm::EDAnalyzer {
+class EleSeedTreeMaker : public edm::one::EDAnalyzer<> {
 private:
   struct SeedInfo {
     float nrgy,eta,phi,pmDPhi1Pos,pmDPhi1Neg,pmDPhi2Pos,pmDPhi2Neg,pmDRZ1Pos,pmDRZ1Neg,pmDRZ2Pos,pmDRZ2Neg,hitsMask,subDet1,subDet2,ecalDriven,trackerDriven,nrHits;

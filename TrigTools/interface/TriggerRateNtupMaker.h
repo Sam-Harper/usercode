@@ -3,7 +3,7 @@
 
 #include "SHarper/TrigTools/interface/TrigToolsStructs.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TLorentzVector.h"
@@ -25,7 +25,7 @@ class TFile;
 
 
 
-class TriggerRateNtupMaker : public edm::EDAnalyzer {
+class TriggerRateNtupMaker : public edm::one::EDAnalyzer<> {
   
 
 private:

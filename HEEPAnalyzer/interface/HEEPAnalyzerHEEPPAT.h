@@ -17,7 +17,7 @@
 
 
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "SHarper/HEEPAnalyzer/interface/HEEPEleSelector.h"
@@ -37,7 +37,7 @@ namespace edm {
 //this analyser shows you how to use pat electrons that have been remade by HEEPAttStatusToPAT to have 
 //the heep ID in and the energy of the electron used for the p4 to be reset to the ecal energy
 
-class HEEPAnalyzerHEEPPAT : public edm::EDAnalyzer {
+class HEEPAnalyzerHEEPPAT : public edm::one::EDAnalyzer<> {
 
 private:
 

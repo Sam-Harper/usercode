@@ -3,7 +3,6 @@
 #include "SHarper/SHNtupliser/interface/SHEvent.hh"
 #include "SHarper/SHNtupliser/interface/SHCaloGeom.hh"
 #include "SHarper/SHNtupliser/interface/GeomFuncs.hh"
-#include "SHarper/SHNtupliser/interface/SHGeomFiller.h"
 #include "SHarper/SHNtupliser/interface/TrigDebugObjHelper.h"
 #include "SHarper/SHNtupliser/interface/SHTrigObjContainer.hh"
 #include "SHarper/SHNtupliser/interface/SHPFCandContainer.hh"
@@ -57,6 +56,7 @@ void SHNtupliser::fillTree()
 }
 
 SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
+  shGeomFiller_(consumesCollector()),
   shEvt_(nullptr),shEvtTree_(shEvt_),outFile_(nullptr),nrTot_(0),nrPass_(0),initGeom_(false)
 {
   evtHelper_.setup(iPara,consumesCollector(),*this);
@@ -90,12 +90,11 @@ void SHNtupliser::beginRun(const edm::Run& run,const edm::EventSetup& iSetup)
   std::cout <<"begin run "<<initGeom_<<std::endl;
   if(!initGeom_){
   //write out calogeometry
-   
-    SHGeomFiller geomFiller(iSetup);  
+    shGeomFiller_.initRun(iSetup);
     SHCaloGeom ecalGeom(SHCaloGeom::ECAL);
     SHCaloGeom hcalGeom(SHCaloGeom::HCAL);
-    geomFiller.fillEcalGeom(ecalGeom);
-    geomFiller.fillHcalGeom(hcalGeom);
+    shGeomFiller_.fillEcalGeom(ecalGeom);
+    shGeomFiller_.fillHcalGeom(hcalGeom);
     if(outputGeom_){
       std::cout <<"writing geom "<<std::endl;
       outFile_->WriteObject(&ecalGeom,"ecalGeom");

@@ -7,7 +7,13 @@
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidateFwd.h"
 #include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "CondFormats/DataRecord/interface/L1TUtmTriggerMenuRcd.h"
+#include "CondFormats/L1TObjects/interface/L1TUtmTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1TGlobalPrescalesVetosFractRcd.h"
+#include "CondFormats/L1TObjects/interface/L1TGlobalPrescalesVetosFract.h"
+#include "FWCore/Utilities/interface/ESGetToken.h"
 #include "FWCore/Framework/interface/GenericHandle.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 
 #include "SHarper/SHNtupliser/interface/TrigMenuMgr.hh"
 
@@ -84,11 +90,22 @@ public:
   //debug information
   int verboseLvl_;
 
+  edm::ESGetToken<L1TUtmTriggerMenu,L1TUtmTriggerMenuRcd> l1MenuToken_;
+  edm::ESGetToken<L1TGlobalPrescalesVetosFract,L1TGlobalPrescalesVetosFractRcd> psAndVetosToken_;
+  
   static constexpr size_t kMaxNrL1SeedsToStore_=20;
   static constexpr size_t kNrL1Seeds_=512;//this is hardcoded everywhere in the L1 code, its a bad idea but even when there are 256 seeds, it still things theres 512 so we do it this way for now
 public:
   SHTrigSumMaker():l1Menu_(nullptr),hltMenu_(nullptr),verboseLvl_(0){}
+		
+  explicit SHTrigSumMaker(edm::ConsumesCollector&& cc):l1Menu_(nullptr),hltMenu_(nullptr),verboseLvl_(0),
+					      l1MenuToken_(cc.esConsumes()),psAndVetosToken_(cc.esConsumes()){}
   ~SHTrigSumMaker(){}
+
+  void setup(edm::ConsumesCollector cc){
+    l1MenuToken_ = cc.esConsumes();
+    psAndVetosToken_ = cc.esConsumes();
+  }
   
   void makeSHTrigSum(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
   
@@ -161,7 +178,7 @@ private:
 
   static std::vector<std::string> splitL1SeedExpr_(const std::string& l1SeedExpr);
   //converts vector[columnNr][bitNr] -> vector[columnNr] for a given bitNr 
-  static std::vector<unsigned int> getSeedPreScales(size_t bitNr,const std::vector<std::vector<int> >& psTbl);
+  static std::vector<double> getSeedPreScales(size_t bitNr,const std::vector<std::vector<double> >& psTbl);
 
 };
   

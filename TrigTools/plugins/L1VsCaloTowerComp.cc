@@ -1,5 +1,5 @@
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -20,7 +20,7 @@
 
 #include "TTree.h"
 
-class L1VsCaloTowerComp : public edm::EDAnalyzer {
+class L1VsCaloTowerComp : public edm::one::EDAnalyzer<> {
 
 public:
   struct TowerStruct {

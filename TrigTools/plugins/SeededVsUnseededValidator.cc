@@ -19,7 +19,7 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/L1Trigger/interface/EGamma.h"
 
@@ -42,7 +42,7 @@
 
  
 
-class SeededVsUnseededValidator : public edm::EDAnalyzer {
+class SeededVsUnseededValidator : public edm::one::EDAnalyzer<> {
   using RecoEcalCandMap = edm::AssociationMap<edm::OneToValue<std::vector<reco::RecoEcalCandidate>, float > >;
   using FilterToken = edm::EDGetTokenT<trigger::TriggerFilterObjectWithRefs>;
   using VarToken = edm::EDGetTokenT<RecoEcalCandMap>;
