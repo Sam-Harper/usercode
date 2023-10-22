@@ -30,6 +30,7 @@
 #include "SHarper/HEEPAnalyzer/interface/HEEPEvent.h"
 
 #include "SHarper/SHNtupliser/interface/SHPileUpSummary.hh"
+#include "SHarper/SHNtupliser/interface/SHGeomFiller.h"
 
 #include <string>
 
@@ -51,10 +52,10 @@ class SHTrigSummary;
 
 class SHTrigObjContainer;
 
-class SHNtupliser : public edm::one::EDAnalyzer<><edm::one::WatchRuns> {
+class SHNtupliser : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
 
 private:
-  SHGeomFiller geomFiller_;
+  SHGeomFiller shGeomFiller_;
   
   heep::EventHelper evtHelper_; //this is our magic class where all the nastyness is contained
   heep::Event heepEvt_;

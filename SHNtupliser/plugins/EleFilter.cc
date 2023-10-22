@@ -17,7 +17,7 @@
 #include "TTree.h"
 
 
-class EleFilter : public edm::stream::EDProducer {
+class EleFilter : public edm::stream::EDProducer<> {
 
 private:
  

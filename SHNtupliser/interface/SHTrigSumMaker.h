@@ -102,7 +102,7 @@ public:
 					      l1MenuToken_(cc.esConsumes()),psAndVetosToken_(cc.esConsumes()){}
   ~SHTrigSumMaker(){}
 
-  void setup(edm::ConsumesCollector&& cc){
+  void setup(edm::ConsumesCollector cc){
     l1MenuToken_ = cc.esConsumes();
     psAndVetosToken_ = cc.esConsumes();
   }
