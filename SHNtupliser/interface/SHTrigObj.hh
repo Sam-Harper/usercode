@@ -10,7 +10,7 @@ class SHTrigObj {
 public:
  
   enum Type{
-    UNSET = 0x0,
+    UNSET=0x0,
     UNDEFINED=0x80000000,
     PHOTON=0x1,ELECTRON=0x2,EGAMMA=0x3,JET=0x4,TAU=0x8,MUON=0x10,SUM=0x20,MISC=0x40,EGUNSEEDED=0x80,//EGUNSEEDED new for V3 (version bump for our book keeping, root doesnt care about this change)
     HLT=0x7F, //note, the EGUNSEEDED is not included here as it must EGUNSEEDED + TYPE
