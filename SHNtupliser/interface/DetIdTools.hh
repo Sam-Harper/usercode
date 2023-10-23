@@ -128,6 +128,7 @@ private:
   static const int kMinIYEndcap = 1;
   static const int kMaxIYEndcap = 100;
 
+  //
   static const int kNrHcalCellsBarrel = 1296*2;
   static const int kNrHcalCellsEndcap = 3384*2;
   static const int kNrEcalCellsBarrel = 61200; 
