@@ -34,6 +34,7 @@ shNtupPara = cms.PSet(
     filterCaloTowers=cms.bool(True),
     fillFromGsfEle = cms.bool(True),
     minEtToPromoteSC = cms.double(-1.),
+    minEtToSaveEle = cms.double(-1),
     outputGeom = cms.bool(True),                  
   
    

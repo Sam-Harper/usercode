@@ -51,6 +51,7 @@ SHEventHelper::SHEventHelper():
 void SHEventHelper::setup(const edm::ParameterSet& conf,edm::ConsumesCollector && cc)
 { 
   minEtToPromoteSC_ = conf.getParameter<double>("minEtToPromoteSC");
+  minEtToSaveEle_ = conf.getParameter<double>("minEtToSaveEle");
   eventWeight_ = conf.getParameter<double>("sampleWeight");
   datasetCode_ = conf.getParameter<int>("datasetCode");    
   applyMuonId_ = conf.getParameter<bool>("applyMuonId");
@@ -149,9 +150,10 @@ void SHEventHelper::addElectrons(const heep::Event& heepEvent, SHEvent& shEvent)
   std::vector<int> usedSCSeedIds;
   for(size_t eleNr=0;eleNr<eleHandle->size();eleNr++){
     edm::Ptr<reco::GsfElectron> elePtr(eleHandle,eleNr);
+    if(elePtr->et()<minEtToSaveEle_) continue;
     if(elePtr->superCluster().isNonnull()) usedSCSeedIds.push_back(elePtr->superCluster()->seed()->seed().rawId());  
     //  std::cout <<"adding electron "<<eleNr<<" / "<<eleHandle->size()<<" ele "<<elePtr->energy()<<" "<<elePtr->eta()<<" "<<elePtr->phi()<<" hadem "<<elePtr->hcalOverEcal()<<" ecal driven "<<elePtr->ecalDriven()<<" sc energy " <<elePtr->superCluster()->energy()<<std::endl;
-
+   
     addElectron(heepEvent,shEvent,elePtr);
   }
   

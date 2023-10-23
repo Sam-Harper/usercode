@@ -88,15 +88,17 @@ process.shNtupliser.trkIsoNoJetCoreTag = cms.InputTag("")
 process.shNtupliser.nrSatCrysIn5x5Tag = cms.InputTag("") 
 process.shNtupliser.addPFCands = True
 process.shNtupliser.stageL1Trigger = cms.uint32(2)
+process.shNtupliser.minEtToPromoteSC = 20
+process.shNtupliser.minEtToSaveEle = 20
 disableLargeCollections=True
 if disableLargeCollections:
     print("*******************************************")
     print("*******disabling large collections*********")
     print("*******************************************")
-#    process.shNtupliser.addPFCands = False
-#    process.shNtupliser.addPFClusters = False
+    process.shNtupliser.addPFCands = False
+    process.shNtupliser.addPFClusters = False
     process.shNtupliser.addIsolTrks = False
-    #process.shNtupliser.addCaloHits = False
+    process.shNtupliser.addCaloHits = False
 
 
 if options.isMiniAOD:
@@ -147,6 +149,7 @@ if isCrabJob:
 else:
     datasetName = options.datasetName
 
+datasetName = datasetName.rstrip("0123456789")
 if datasetName=="DoubleEG":
     print("setting up HLT skim for DoubleEG")
     process.skimHLTFilter.HLTPaths = cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle25*","HLT_DoubleEle37*","HLT_DoublePhoton60_v*","HLT_DoublePhoton70_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*","HLT_DiEle27_WPTightCaloOnly_*")

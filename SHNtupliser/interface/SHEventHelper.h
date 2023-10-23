@@ -51,6 +51,7 @@ private:
   bool isMC_;// if we are running on mc or not
   
   float minEtToPromoteSC_;
+  float minEtToSaveEle_;
   bool fillFromGsfEle_;
   bool applyMuonId_;
 
