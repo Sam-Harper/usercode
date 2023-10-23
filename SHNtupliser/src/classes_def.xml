@@ -50,4 +50,5 @@
    <class name="SHGainSwitchInfo"/>
    <class name="SHJetMETExtra"/>
    <class name="SHEventProvenance"/>
+   <class name="std::map<std::string,std::vector<SHCaloHit>>"/>
 </lcgdict>

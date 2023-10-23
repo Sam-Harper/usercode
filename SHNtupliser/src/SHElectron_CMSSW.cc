@@ -74,7 +74,7 @@ isolEm_(ele.dr03EcalRecHitSumEt()),
 isolHad_(ele.dr03HcalTowerSumEt()),
 isolHadDepth1_(ele.dr03HcalTowerSumEt(1)),
 isolHadDepth2_(ele.dr03HcalTowerSumEt(2)),
-isolPtTrks_(ele.dr03TkSumPt()),
+isolPtTrks_(ele.dr03TkSumPtHEEP()),
 isolNrTrks_(-1), //not really supported anymore
 cutCode_(-1),
 cutCodeVID_(-1),

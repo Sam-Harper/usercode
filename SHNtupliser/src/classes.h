@@ -43,3 +43,6 @@
 #include "SHarper/SHNtupliser/interface/SHGainSwitchInfo.hh"
 #include "SHarper/SHNtupliser/interface/SHJetMETExtra.hh"
 #include "SHarper/SHNtupliser/interface/SHEventProvenance.hh"
+#include <map>
+#include <vector>
+#include <string>
