@@ -107,6 +107,7 @@ SHElectron::SHElectron():
   pmDRz2_(-999.),
   pmSubDets_(0),
   nrSatCrysIn5x5_(-1),
+  chargeInfo_(0),
   rhoCorr_(-999.),
   mEvent_(NULL)
 {
@@ -220,6 +221,7 @@ SHElectron::SHElectron(const SHElectron &rhs):TObject(rhs),
   userFloats_(rhs.userFloats_),
   userInts_(rhs.userInts_),
   userIDs_(rhs.userIDs_),
+  chargeInfo_(rhs.chargeInfo_),
   rhoCorr_(rhs.rhoCorr_),
   mEvent_(NULL)//dito for mEvent, its unlikely to be correct anymore
 {

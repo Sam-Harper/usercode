@@ -121,12 +121,16 @@ pmDRz1_(ele.pixelMatchDRz1()),
 pmDRz2_(ele.pixelMatchDRz2()),
 pmSubDets_(ele.pixelMatchSubdetector1()*10+ele.pixelMatchSubdetector2()),
 nrSatCrysIn5x5_(-1),
+chargeInfo_(0),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
- 
- 
-
+  if(ele.charge() > 0) chargeInfo_ |=0x1;
+  if(ele.scPixCharge() > 0) chargeInfo_ |=0x2;
+  if(ele.isGsfCtfScPixChargeConsistent() ) chargeInfo_ |=0x4;
+  if(ele.isGsfScPixChargeConsistent()  ) chargeInfo_ |=0x8;
+  if(ele.isGsfCtfChargeConsistent() ) chargeInfo_ |=0x10;
+    
 }
 //fills off a GsfElectron, doesnt fill nr trks isol or cutcode
 SHElectron::SHElectron(const reco::Photon& pho,int superClusNr):
@@ -231,6 +235,7 @@ pmDRz1_(-999.),
 pmDRz2_(-999.),
 pmSubDets_(0),
 nrSatCrysIn5x5_(-1),
+chargeInfo_(0),
 rhoCorr_(-999.),
 mEvent_(NULL)
 {
@@ -343,6 +348,7 @@ SHElectron::SHElectron(const TLorentzVector&p4,const reco::SuperCluster& superCl
   pmDRz2_(-999.),
   pmSubDets_(0),
   nrSatCrysIn5x5_(-1),
+  chargeInfo_(0),
   rhoCorr_(-999.),
   mEvent_(NULL)
 {

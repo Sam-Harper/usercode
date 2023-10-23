@@ -181,7 +181,7 @@ class SHElectron : public TObject {
   using UserIntSorter = TempFuncs::PairComp<std::string,int,std::less<std::string> >;
   using UserIDSorter = TempFuncs::PairComp<std::string,float,std::less<std::string> >;
   
-
+  int chargeInfo_;
   float rhoCorr_; //! set by the event each time we get it
 
   //backwards link to the mother event
@@ -334,6 +334,7 @@ public:
   float trkChi2()const{return trkChi2_;}
   int nrDof()const{return nrDof_;}
   int charge()const{return posCharge_ ? 1 : -1;}
+  int chargeInfo()const{return chargeInfo_;}
 
   //should gradually fad out one set of accessors
   float isolEm()const{return isolEm_;}
@@ -426,7 +427,7 @@ private:
     return std::numeric_limits<T>::max();
   }
   
-  ClassDef(SHElectron,32) 
+  ClassDef(SHElectron,34) 
 
 };
 
