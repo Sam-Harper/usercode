@@ -109,6 +109,8 @@ if options.isMiniAOD:
     #process.shNtupliser.oldGsfEleTag = cms.InputTag("slimmedElectronsReg")
     #process.load("SHarper.SHNtupliser.regressionApplicationMiniAOD_newNames_cff")
 
+process.load("SHarper.SHNtupliser.egammaFilter_cfi")
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output.root")
 )
@@ -184,10 +186,17 @@ process.p = cms.Path(
    #c process.egammaPostRecoSeq*
  #   process.regressionApplication*
     process.shNtupliser)
- 
+
+filterEles=True
+if filterEles:
+    process.egammaFilter.nrElesRequired = 2
+    process.egammaFilter.eleTag = "slimmedElectrons"
+    process.p.insert(0,process.egammaFilter)
+
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
 
+    
 process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
     compressionLevel = cms.untracked.int32(4),
@@ -209,6 +218,7 @@ if not isCrabJob:
     #process.out = cms.EndPath(process.AODSIMoutput)
     pass 
 print(process.GlobalTag.globaltag)
+
 
 
 

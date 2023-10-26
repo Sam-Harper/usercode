@@ -1,5 +1,6 @@
-import tarfile
+import CRABClient
 from CRABAPI.RawCommand import crabCommand
+import tarfile
 import datetime
 import glob
 import time
@@ -53,9 +54,16 @@ def get_grid_output_dir(base_dir,timestamp):
 def check_crab_output(crab_dir,resubmit_failed,verbose):
     
     #first get the config file to figure out where the data was written too
-    job_data =tarfile.open(crab_dir+"/inputs/debugFiles.tgz")    
+    try:
+        job_data =tarfile.open(crab_dir+"/inputs/debugFiles.tgz")
+    except FileNotFoundError as e:
+        print(f"error getting config file\n{e}")
+        return
     config_file = job_data.extractfile(job_data.getmember("debug/crabConfig.py"))
-    exec(''.join(config_file.readlines()))
+    config_python = config_file.read()
+    config_dict = {"config" : None}
+    exec(config_python,config_dict)
+    config = config_dict["config"]
 
     with nostdout():
         try_nr = 1
@@ -68,7 +76,7 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
                 time.sleep(10)
    # print status
     if status == []:
-        print crab_dir," : failed to get crab status"
+        print(crab_dir," : failed to get crab status")
         return
 
     #jobsPerStatus
@@ -81,28 +89,28 @@ def check_crab_output(crab_dir,resubmit_failed,verbose):
     missing_jobs = find_missing_jobs(grid_output_dir,nrjobs)
     
     if status["taskWarningMsg"]!=[] and status["taskWarningMsg"]!='[]':
-        print crab_dir, ":",status["taskWarningMsg"][0]
+        print(crab_dir, ":",status["taskWarningMsg"][0])
     elif status['jobsPerStatus']=={}:
-        print crab_dir, ": no jobs created"
+        print(crab_dir, ": no jobs created")
     elif not missing_jobs:
-        print crab_dir," : all jobs completed"
+        print(crab_dir," : all jobs completed")
     else:
-        print crab_dir," : jobs missing"
+        print(crab_dir," : jobs missing")
         job_states={'failed' : [],'running' : [],'finished' : [],'idle' : [],'transferring' : []}
         
         for jobnr in missing_jobs:
             job_states[ status['jobs'][str(jobnr)]['State'] ].append(jobnr)
             #print "   ",jobnr,status['jobs'][str(jobnr)]['State']
         for state in job_states.keys():
-            print state,":",job_states[state]
+            print(state,":",job_states[state])
 
         if resubmit_failed and job_states['failed']:
-            print "resubmiting jobs",job_states['failed'] 
+            print("resubmiting jobs",job_states['failed'] )
             crabCommand('resubmit',dir = crab_dir)
 
         if verbose:
             for jobnr in job_states['failed']:
-                print  status['jobs'][str(jobnr)]
+                print(status['jobs'][str(jobnr)])
 
        # print crabCommand('report',dir = crab_dir)
 
