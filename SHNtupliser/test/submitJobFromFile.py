@@ -23,7 +23,7 @@ parser.add_option('--crabDryRun',help='crab dry run',default=False)
 options,args = parser.parse_args()
 if not options.input or not options.pattern or not options.shNtupVersion or not options.cmsswVersion or not options.config:
     parser.error("input, pattern, shNtupVersion, config and cmsswVersion are manditory")
-print options.config
+print(options.config)
 
 
 crabProjDir='crab_projects'
@@ -38,7 +38,7 @@ for line in datasetDefFile:
     datasetFormat = datasetPath.split("/")[-1]
     
 
- #   print datasetPath,nrJobs,datasetCode
+
     dataset=datasetPath.split("/")[1]
     datasetId = datasetPath.split("/")[2]
     datasetId = datasetId[datasetId.find("-")+1:]
@@ -90,16 +90,16 @@ for line in datasetDefFile:
                     " General.transferLogs="+str(options.transferLogFiles)
     if options.crabDryRun=="True":
         crabSubmitCmd=crabSubmitCmd.replace("--wait","--dryrun")
-    print "will submit:"
-    print crabSubmitCmd
-    print " "
+    print("will submit:")
+    print(crabSubmitCmd)
+    print(" ")
     
     #so we can redo our cmd later easily
     scriptCmd = sys.argv[0]+" "
     for entry in sys.argv[1:]: scriptCmd+=entry+" "
 
     if options.dryRun=="False":
-        print "submitting for REAL"
+        print("submitting for REAL")
         time.sleep(5)
         os.system(crabSubmitCmd)
         tmp_crab_dir = crabProjDir+"/crab_"+workingDirTmp
@@ -115,4 +115,4 @@ for line in datasetDefFile:
 
         
 
-print "All done"
+print("All done")
