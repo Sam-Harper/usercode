@@ -96,9 +96,9 @@ if disableLargeCollections:
     print("*******disabling large collections*********")
     print("*******************************************")
     process.shNtupliser.addPFCands = False
-    process.shNtupliser.addPFClusters = False
-    process.shNtupliser.addIsolTrks = False
-    process.shNtupliser.addCaloHits = False
+    process.shNtupliser.addPFClusters = True
+    process.shNtupliser.addIsolTrks = True
+    process.shNtupliser.addCaloHits = True
 
 
 if options.isMiniAOD:
@@ -163,7 +163,7 @@ elif datasetName=="SinglePhoton":
     process.skimHLTFilter.HLTPaths =cms.vstring("HLT_Photon22_v*","HLT_Photon30_v*","HLT_Photon33_v*","HLT_Photon36_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon165_HE10_v*","HLT_Photon175_v*","HLT_Photon200_v*","HLT_Photon250_NoHE_v*","HLT_Photon300_NoHE_v*")
 elif datasetName=="EGamma":
     print("setting up HLT skim for EGamma")
-    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle25*","HLT_DoublePhoton70_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*","HLT_DiEle27_WPTightCaloOnly_*","HLT_Ele115_CaloIdVT_GsfTrkIdT_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_*","HLT_Photon33_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon175_v*","HLT_Photon175_v*","HLT_Photon200_v*","HLT_Photon300_NoHE_v*")
+    process.skimHLTFilter.HLTPaths =cms.vstring("HLT_DoubleEle33*","HLT_DoubleEle25*","HLT_DoubleEle27*","HLT_DoublePhoton33*","HLT_DoublePhoton70_v*","HLT_DoublePhoton85_v*","HLT_ECALHT800_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL*","HLT_DiEle27_WPTightCaloOnly_*","HLT_Ele115_CaloIdVT_GsfTrkIdT_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele30_WPTight_Gsf_*", "HLT_Ele32_WPTight_Gsf_*","HLT_Photon33_v*","HLT_Photon50_v*","HLT_Photon75_v*","HLT_Photon90_v*","HLT_Photon120_v*","HLT_Photon175_v*","HLT_Photon200_v*","HLT_Photon300_NoHE_v*")
 elif datasetName=="JetHT":
     print("setting up HLT skim for JetHT")
     process.skimHLTFilter.HLTPaths =cms.vstring("HLT_CaloJet500_NoJetID_v*",)
