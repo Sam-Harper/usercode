@@ -1,4 +1,5 @@
 #include "SHarper/TrigNtup/interface/EGScoutingRegTreeStruct.hh"
+#include "SHarper/SHNtupliser/interface/MathFuncs.hh"
 #include "DataFormats/Scouting/interface/Run3ScoutingElectron.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -15,6 +16,7 @@ namespace {
       arr[i] = vec[i];
     }
   }
+
 }
 
 
@@ -129,9 +131,38 @@ void ScoutShowerShapeStruct::fill(const int seedId,const std::vector<unsigned in
   
 }
       
+{
+  
+  float safeDivide(float numer,float denom,float zeroVal=0. ){
+    return denom!=0 ? numer / denom : zeroVal;
+  }
+  float ptToP(float pt,float eta){
+    return safeDivide(pt,std::sin(MathFuncs::etaToTheta(eta),0));
+  }
+  int getBestTrkIndx(const Run3ScoutingElectron& ele,int maxTrks=ScoutEleStruct::kMaxTracks){
+
+    int bestIndx = 0;
+    float bestAbsEPM1 = 999;
+    float eleEnergy = ptToP(ele.pt(),ele.eta());
+    for(size_t trkNr=0;trkNr<ele.trkpt().size() && trkNr<maxTrks;trkNr++){
+      if(ele.trkpt()[trkNr]==0){
+	continue;
+      }
       
+      float trkP = ptToP(ele.trkpt()[trkNr],ele.trketa()[trkNr]);
+      float absEPM1 = std::abs(eleEnergy/trkP-1);
+      if(absEPM1<bestAbsEPM1){
+	bestAbsEPM1 = absEPM1;
+	bestIndx = trkNr;
+      }
+    }
+    return bestIndx;
+  }
+}
+
 void ScoutEleStruct::fill(const Run3ScoutingElectron& ele){
   pt = ele.pt();
+  energy = ptToP(ele.pt(),ele.eta());
   eta = ele.eta();
   phi = ele.phi();
   m = ele.m();
@@ -142,6 +173,7 @@ void ScoutEleStruct::fill(const Run3ScoutingElectron& ele){
   fillArrayFromVector(ele.trketa(), trketa, kMaxTracks);
   fillArrayFromVector(ele.trkphi(), trkphi, kMaxTracks);
   fillArrayFromVector(ele.trkchi2overndf(), trkchi2overndf, kMaxTracks);
+  bestTrkIndx = getBestTrkIndx(ele);
 
   dEtaIn = ele.dEtaIn();
   dPhiIn = ele.dPhiIn();
@@ -156,8 +188,8 @@ void ScoutEleStruct::fill(const Run3ScoutingElectron& ele){
   hcalIso = ele.hcalIso();
   trackIso = ele.trackIso();
   r9 = ele.r9();
-  sMin = ele.sMin();
-  sMaj = ele.sMaj();
+  sMin = std::isnan(ele.sMin()) ? 0.f : ele.sMin();
+  sMaj = std::isnan(ele.sMaj()) ? 0.f : ele.sMaj();
   seedId = ele.seedId();
  
   rechitZeroSuppression = ele.rechitZeroSuppression();
@@ -184,6 +216,7 @@ void ScoutEleStruct::fill(const Run3ScoutingElectron& ele){
 
 void ScoutEleStruct::clear() {
     pt = 0.0f;
+    energy = 0.0f;
     eta = 0.0f;
     phi = 0.0f;
     m = 0.0f;
@@ -216,4 +249,5 @@ void ScoutEleStruct::clear() {
     isEB=0;
     iEtaOrIX=0;
     iPhiOrIY=0;
+    bestTrkIndx=0;
 }

@@ -22,6 +22,7 @@ namespace edm{
 struct ScoutEleStruct {
   static constexpr int kMaxTracks = 4;
   float pt;
+  float energy;
   float eta;
   float phi;
   float m;
@@ -50,9 +51,10 @@ struct ScoutEleStruct {
   int isEB;
   int iEtaOrIX;
   int iPhiOrIY;
+  int bestTrkIndx;
   void fill(const Run3ScoutingElectron& ele);
   static std::string contents(){return
-      "pt/F:eta:phi:m:trkd0[4]:trkdz[4]:trkpt[4]:trketa[4]:trkphi[4]:trkchi2overndf[4]:trkcharge[4]:dEtaIn:dPhiIn:sigmaIetaIeta:hOverE:ooEMOop:missingHits:ecalIso:hcalIso:trackIso:r9:sMin:sMaj:seedId/i:rechitZeroSuppression:nrTrks/I:isEB:iEtaOrIX:iPhiOrIY";
+      "pt/F:energy:eta:phi:m:trkd0[4]:trkdz[4]:trkpt[4]:trketa[4]:trkphi[4]:trkchi2overndf[4]:trkcharge[4]:dEtaIn:dPhiIn:sigmaIetaIeta:hOverE:ooEMOop:missingHits:ecalIso:hcalIso:trackIso:r9:sMin:sMaj:seedId/i:rechitZeroSuppression:nrTrks/I:isEB:iEtaOrIX:iPhiOrIY:bestTrkIndx";
   }
   void clear();
 

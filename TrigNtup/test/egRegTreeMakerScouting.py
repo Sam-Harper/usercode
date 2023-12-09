@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 import os
 import sys
 # set up process
-process = cms.Process("REG")
+process = cms.Process("REG2")
 
 import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing ('analysis') 
@@ -57,25 +57,32 @@ process.egRegTreeMaker = cms.EDAnalyzer("EGScoutingRegTreeMaker",
                                         scoutElesTag = cms.InputTag("hltScoutingEgammaPacker") 
                                         )
 
+process.p = cms.Path(process.egRegTreeMaker)
+isAOD=False
+if isAOD:
+    process.load("PhysicsTools.PatAlgos.slimming.slimmedAddPileupInfo_cfi")
+    process.p.insert(process.slimmedAddPileupInfo,0)
 
-process.load("PhysicsTools.PatAlgos.slimming.slimmedAddPileupInfo_cfi")
 
 
-process.p = cms.Path(process.egRegTreeMaker+process.slimmedAddPileupInfo)
-process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-    compressionAlgorithm = cms.untracked.string('LZMA'),
-    compressionLevel = cms.untracked.int32(4),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('AODSIM'),
-        filterName = cms.untracked.string('')
-    ),
-    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    fileName = cms.untracked.string(options.outputFile.replace(".root","_EDM.root")),
-    outputCommands = cms.untracked.vstring('drop *',
-                                           "keep *_*_*_HLT",
-                                           "drop *_hltTriggerSummaryAOD_*_*",
-                                           "drop PileupSummaryInfos_*_*_*",
-                                           "keep *_slimmedAddPileupInfo_*_*"
-                                    )                                           
-)
-process.out = cms.EndPath(process.AODSIMoutput)
+
+    process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+                                            compressionAlgorithm = cms.untracked.string('LZMA'),
+                                            compressionLevel = cms.untracked.int32(4),
+                                            dataset = cms.untracked.PSet(
+                                            dataTier = cms.untracked.string('AODSIM'),
+                                                filterName = cms.untracked.string('')
+                                            ),
+                                            eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+                                            fileName = cms.untracked.string(options.outputFile.replace(".root","_EDM.root")),
+                                            outputCommands = cms.untracked.vstring('drop *',
+                                                                                   "keep *_*_*_HLT",
+                                                                                   "drop *_hltTriggerSummaryAOD_*_*",
+                                                                                   "drop PileupSummaryInfos_*_*_*",
+                                                                                   "keep *_slimmedAddPileupInfo_*_*"
+                                        )                                           
+    )
+    process.out = cms.EndPath(process.AODSIMoutput)
+
+else:
+    process.egRegTreeMaker.puSumTag = "slimmedAddPileupInfo"
