@@ -35,8 +35,9 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
-#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
+
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
+
 
 SHEventHelper::SHEventHelper():
   isMC_(false),
@@ -48,21 +49,6 @@ SHEventHelper::SHEventHelper():
   initHcalHitVec_();
 }
 
-void SHEventHelper::setup(const edm::ParameterSet& conf,edm::ConsumesCollector && cc)
-{ 
-  minEtToPromoteSC_ = conf.getParameter<double>("minEtToPromoteSC");
-  minEtToSaveEle_ = conf.getParameter<double>("minEtToSaveEle");
-  eventWeight_ = conf.getParameter<double>("sampleWeight");
-  datasetCode_ = conf.getParameter<int>("datasetCode");    
-  applyMuonId_ = conf.getParameter<bool>("applyMuonId");
-  fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
-  trigSumMaker_.setup(cc);
-
-  isMC_=datasetCode_!=0;
-  branches_.setup(conf);
-  if(branches_.addHLTDebug) cc.consumesMany<reco::RecoEcalCandidateIsolationMap>();
-  
-}
 
 
 
@@ -443,8 +429,11 @@ void SHEventHelper::addPUInfo(const heep::Event& heepEvent,SHEvent& shEvent)cons
 void SHEventHelper::addTrigInfo(const heep::Event& heepEvent,SHEvent& shEvent)const
 {
   trigSumMaker_.makeSHTrigSum(heepEvent,shEvent.getTrigSum());
-  if(branches_.addHLTDebug) SHTrigSumMaker::associateEgHLTDebug(heepEvent,shEvent.getTrigSum());
-  
+  if(branches_.addHLTDebug){
+    std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap>> valueMapHandles;
+    getterOfProducts_.fillHandles(heepEvent.event(), valueMapHandles);
+    SHTrigSumMaker::associateEgHLTDebug(heepEvent,shEvent.getTrigSum(),valueMapHandles);
+  }
 }
 
 void SHEventHelper::addJets(const heep::Event& heepEvent,SHEvent& shEvent)const

@@ -60,7 +60,7 @@ SHNtupliser::SHNtupliser(const edm::ParameterSet& iPara):
   shEvt_(nullptr),shEvtTree_(shEvt_),outFile_(nullptr),nrTot_(0),nrPass_(0),initGeom_(false)
 {
   evtHelper_.setup(iPara,consumesCollector(),*this);
-  shEvtHelper_.setup(iPara,consumesCollector());
+  shEvtHelper_.setup(iPara,consumesCollector(),*this);
   shEvtTree_.setup(iPara);
 
   outputFilename_ = iPara.getParameter<std::string>("outputFilename");

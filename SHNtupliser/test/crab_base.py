@@ -11,8 +11,9 @@ config.section_("JobType")
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'shNtupliser_autoGen_cfg.py'
 config.JobType.maxJobRuntimeMin = 180
+#config.JobType.inputFiles = ['L1Trigger']
 #config.JobType.maxMemoryMB = 3000
-#config.JobType.numCores = 4
+config.JobType.numCores = 4
 #config.JobType.inputFiles=['ged_regression_20161208.db',]
 #TOSED:EXTRAJOBTYPEINFO
 

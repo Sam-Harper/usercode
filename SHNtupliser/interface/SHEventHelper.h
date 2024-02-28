@@ -19,6 +19,10 @@
 
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 //#include "RecoEgamma/EgammaTools/interface/GainSwitchTools.h"
+#include "FWCore/Framework/interface/GetterOfProducts.h"
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/ProcessMatch.h"
 
 #include <vector>
 #include <memory>
@@ -26,7 +30,7 @@ namespace heep{
   class Event;
 }
 namespace edm{
-  class ParameterSet;
+
   class Run;
   class EventSetup;
   class ConsumesCollector;
@@ -56,6 +60,7 @@ private:
   bool applyMuonId_;
 
   SHEventTreeData::BranchData branches_;
+  edm::GetterOfProducts<reco::RecoEcalCandidateIsolationMap> getterOfProducts_;
   mutable SHTrigSumMaker trigSumMaker_;
 
   //storage for SHCaloHits so we dont have to keep reallocating the memory 
@@ -74,9 +79,24 @@ private:
   static constexpr float kMaxDRCaloTowers_=0.5;
 public:
   SHEventHelper();
+  template<typename T>
+  void setup(const edm::ParameterSet& conf,edm::ConsumesCollector && cc,T& module){   
+    minEtToPromoteSC_ = conf.getParameter<double>("minEtToPromoteSC");
+    minEtToSaveEle_ = conf.getParameter<double>("minEtToSaveEle");
+    eventWeight_ = conf.getParameter<double>("sampleWeight");
+    datasetCode_ = conf.getParameter<int>("datasetCode");    
+    applyMuonId_ = conf.getParameter<bool>("applyMuonId");
+    fillFromGsfEle_ = conf.getParameter<bool>("fillFromGsfEle");
+    trigSumMaker_.setup(cc);
+    
+    isMC_=datasetCode_!=0;
+    branches_.setup(conf);
+    if(branches_.addHLTDebug){
+      getterOfProducts_ = edm::GetterOfProducts<reco::RecoEcalCandidateIsolationMap>(edm::ProcessMatch("*"), &module);
+      module.callWhenNewProductsRegistered(getterOfProducts_);
+    }
+  }
   
-  void setup(const edm::ParameterSet& conf,edm::ConsumesCollector && cc);
-
   void setupRun(const edm::Run& run,const edm::EventSetup& setup);
 
   //the two modifiers

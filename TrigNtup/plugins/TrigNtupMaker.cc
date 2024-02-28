@@ -93,7 +93,7 @@ TrigNtupMaker::TrigNtupMaker(const edm::ParameterSet& iPara):
   shEvt_(nullptr),shEvtTree_(shEvt_),outFile_(nullptr),initGeom_(false),shGeomFiller_(consumesCollector())
 {
   evtHelper_.setup(iPara,consumesCollector(),*this);
-  shEvtHelper_.setup(iPara,consumesCollector());
+  shEvtHelper_.setup(iPara,consumesCollector(),*this);
   shEvtTree_.setup(iPara);
 
   outputFilename_ = iPara.getParameter<std::string>("outputFilename");

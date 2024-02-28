@@ -142,26 +142,24 @@ bool SHTrigSumMaker::isUnseededEG(const trigger::TriggerEvent& trigEvt,size_t tr
   return isUnseededEG(collName);
 }
 
-void SHTrigSumMaker::associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum)
+void SHTrigSumMaker::associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum,const std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> >& valueMapHandles)
 {
-  if(heepEvent.handles().egHLTCands.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCands,shTrigSum);
-  if(heepEvent.handles().egHLTCandsUnseeded.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCandsUnseeded,shTrigSum);
+  if(heepEvent.handles().egHLTCands.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCands,shTrigSum,valueMapHandles);
+  if(heepEvent.handles().egHLTCandsUnseeded.isValid()) associateEgHLTDebug(heepEvent.event(),heepEvent.handles().egHLTCandsUnseeded,shTrigSum,valueMapHandles);
 }
 
-void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum)
+void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum,const std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> >& valueMapHandles)
 {
   for(auto& ecalCand : *ecalCands){
     reco::RecoEcalCandidateRef ecalCandRef(ecalCands,&ecalCand -&(*ecalCands)[0]);
     std::vector<SHTrigObj*> matchedObjs = shTrigSum.getTrigObjs(ecalCand.eta(),ecalCand.phi(),SHTrigObj::HLT,0.001);
-    if(!matchedObjs.empty()) associateEgHLTDebug(edmEvent,ecalCandRef,matchedObjs);
+    if(!matchedObjs.empty()) associateEgHLTDebug(edmEvent,ecalCandRef,matchedObjs,valueMapHandles);
   }
 }
 
-void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs)
+void SHTrigSumMaker::associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs, const std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> >& valueMapHandles)
 {
-  //first we need to retrieve all the value maps and get their names in a nice little format
-  std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> > valueMapHandles;
-  edmEvent.getManyByType(valueMapHandles);
+
   std::vector<std::pair<std::string,float>> values;
   for(auto& valueMapHandle : valueMapHandles){
     auto mapIt = valueMapHandle->find(ecalCand);
@@ -457,7 +455,8 @@ void SHTrigSumMaker::fillSHTrigObjs_(const trigger::TriggerEvent& trigEvt,
     }
 
     //might be better to use filterLabel()
-    size_t bitNr=shTrigSum.filterBitsDef().getBitNr(trigEvt.filterLabel(filterNr));
+    const std::string filterLabel(trigEvt.filterLabel(filterNr));
+    size_t bitNr=shTrigSum.filterBitsDef().getBitNr(filterLabel);
     if(bitNr==SHBitsDef::npos) LogErr <<"filter tag "<<trigEvt.filterLabel(filterNr)<<" not found"<<std::endl;
 
     for(size_t objNr=0;objNr<trigKeys.size();objNr++){

@@ -67,8 +67,8 @@ int heep::trigtools::getMinNrObjsRequiredByFilter(const std::string& filterName)
   const edm::pset::Registry* psetRegistry = edm::pset::Registry::instance();
   if(psetRegistry==NULL) return -1;
   for(edm::pset::Registry::const_iterator psetIt=psetRegistry->begin();psetIt!=psetRegistry->end();++psetIt){ //loop over every pset for every module ever run
-    const std::map<std::string,edm::Entry>& mapOfPara  = psetIt->second.tbl(); //contains the parameter name and value for all the parameters of the pset
-    const std::map<std::string,edm::Entry>::const_iterator itToModLabel = mapOfPara.find("@module_label"); 
+    const std::map<std::string,edm::Entry,std::less<void>>& mapOfPara  = psetIt->second.tbl(); //contains the parameter name and value for all the parameters of the pset
+    const std::map<std::string,edm::Entry,std::less<void>>::const_iterator itToModLabel = mapOfPara.find("@module_label"); 
     if(itToModLabel!=mapOfPara.end()){
       if(itToModLabel->second.getString()==filterName){ //moduleName is the filter name, we have found filter, we will now return something
 	std::map<std::string,edm::Entry>::const_iterator itToCandCut = mapOfPara.find("ncandcut");

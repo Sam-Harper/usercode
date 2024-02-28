@@ -14,7 +14,7 @@
 #include "FWCore/Utilities/interface/ESGetToken.h"
 #include "FWCore/Framework/interface/GenericHandle.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
-
+#include "DataFormats/RecoCandidate/interface/RecoEcalCandidateIsolation.h"
 #include "SHarper/SHNtupliser/interface/TrigMenuMgr.hh"
 
 namespace edm{
@@ -133,9 +133,9 @@ public:
     return collName.compare(0,27,"hltEgammaCandidatesUnseeded")==0;
   }
 
-  static void associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum);
-  static void associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum);
-  static void associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs);
+  static void associateEgHLTDebug(const heep::Event& heepEvent,SHTrigSummary& shTrigSum,const std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> >& valueMapHandles);
+  static void associateEgHLTDebug(const edm::Event& edmEvent,const edm::Handle<std::vector<reco::RecoEcalCandidate>>& ecalCands,SHTrigSummary& shTrigSum,const std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> >& valueMapHandles);
+  static void associateEgHLTDebug(const edm::Event& edmEvent,const reco::RecoEcalCandidateRef& ecalCand,const std::vector<SHTrigObj*> trigObjs,const std::vector<edm::Handle<reco::RecoEcalCandidateIsolationMap> >& valueMapHandles);
   
 private: 
   void makeSHTrigSumNoFilters_(const edm::TriggerResults& trigResults,

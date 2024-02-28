@@ -30,7 +30,9 @@ public:
   void endRun(const edm::Run& run,const edm::EventSetup& setup ) override{
     edm::Handle<edm::MergeableCounter> nrEventsHandle;
     run.getByToken(nrEventsRunToken_,nrEventsHandle);
-    nrEventsRunSum_+=nrEventsHandle->value;
+    if(nrEventsHandle.isValid()){
+      nrEventsRunSum_+=nrEventsHandle->value;
+    }
   }
 
   void beginLuminosityBlock(const edm::LuminosityBlock& lumi,const edm::EventSetup& setup ) override{}
