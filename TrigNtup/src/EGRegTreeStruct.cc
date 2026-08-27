@@ -8,6 +8,8 @@
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "CondFormats/EcalObjects/interface/EcalChannelStatus.h"
 
+#include "SHarper/SHNtupliser/interface/SHElectron.hh"
+
 
 void EGRegTreeStruct::createBranches(TTree* tree)
 {
@@ -20,6 +22,7 @@ void EGRegTreeStruct::createBranches(TTree* tree)
   tree->Branch("ssFull",&ssFull,ssFull.contents().c_str());
   tree->Branch("ssFrac",&ssFrac,ssFrac.contents().c_str());
   tree->Branch("ele",&ele,ele.contents().c_str());
+  tree->Branch("eleExtra",&eleExtra,eleExtra.contents().c_str());
   tree->Branch("pho",&pho,pho.contents().c_str());
   tree->Branch("eleSSFull",&eleSSFull,eleSSFull.contents().c_str());
   tree->Branch("phoSSFull",&phoSSFull,phoSSFull.contents().c_str());  
@@ -48,6 +51,7 @@ void EGRegTreeStruct::setBranchAddresses(TTree* tree)
   tree->SetBranchAddress("ssFull",&ssFull);
   tree->SetBranchAddress("ssFrac",&ssFrac);
   tree->SetBranchAddress("ele",&ele);
+  tree->SetBranchAddress("eleExtra",&eleExtra);
   tree->SetBranchAddress("pho",&pho);
   tree->SetBranchAddress("eleSSFull",&eleSSFull);
   tree->SetBranchAddress("phoSSFull",&phoSSFull);
@@ -82,6 +86,7 @@ void GenInfoStruct::fill(const reco::GenParticle& genPart,float iDR)
   pdgId = genPart.pdgId();
   status = genPart.status();
   dR = iDR;
+  vz = genPart.vz();
 }
 
 void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,float iNrPUInt,float iNrPUIntTrue,
@@ -115,6 +120,8 @@ void EGRegTreeStruct::fill(const edm::Event& event,int iNrVert,float iRho,float 
   if(iMC) mc.fill(*iMC, iSC ? std::sqrt(reco::deltaR2(iSC->eta(),iSC->phi(),iMC->eta(),iMC->phi())) : 999);
   if(iEle){
     ele.fill(*iEle);
+    eleExtra.fill(SHElectron(*iEle));
+    eleExtra.dEtaInSeed = iEle->deltaEtaSeedClusterTrackAtVtx();
     eleSSFull.fill(iEle->full5x5_showerShape(),*iEle);
   }
   if(iPho){ 

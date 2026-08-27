@@ -13,6 +13,8 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "CondFormats/EcalObjects/interface/EcalChannelStatus.h"
 
+#include "EleStructs.hh"
+
 #include "TTree.h"
 
 namespace reco{
@@ -98,9 +100,9 @@ struct EvtStruct {
 };
 
 struct GenInfoStruct {
-  float energy,pt,eta,phi,pdgId,status,dR;
-  static std::string contents(){return "energy/F:pt:eta:phi:pdgId:status:dR";}
-  void clear(){energy=pt=eta=phi=pdgId=status=dR=0;}
+  float energy,pt,eta,phi,pdgId,status,dR,vz;
+  static std::string contents(){return "energy/F:pt:eta:phi:pdgId:status:dR:vz";}
+  void clear(){energy=pt=eta=phi=pdgId=status=dR=vz=0;}
   void fill(const reco::GenParticle& genPart, float iDR);
 };
 
@@ -114,6 +116,7 @@ struct EGRegTreeStruct {
   ShowerShapeStruct ssFull;
   ShowerShapeStruct ssFrac;
   EleStruct ele;
+  EleStructs::EleSimpleStruct eleExtra;
   PhoStruct pho;
   ShowerShapeStruct eleSSFull;
   ShowerShapeStruct phoSSFull;
@@ -140,6 +143,7 @@ struct EGRegTreeStruct {
     ssFull.clear();
     ssFrac.clear();
     ele.clear();
+    eleExtra.clear();
     pho.clear();
     eleSSFull.clear();
     phoSSFull.clear();
