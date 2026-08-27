@@ -23,6 +23,8 @@ private:
   int pid_;
   double minPt_;
   double maxPt_;
+  double minEta_;
+  double maxEta_;
   
 public:
   explicit MCPtFilter(const edm::ParameterSet& para);
@@ -38,6 +40,8 @@ MCPtFilter::MCPtFilter(const edm::ParameterSet& para)
   pid_ = para.getParameter<int>("pid");
   minPt_ = para.getParameter<double>("minPt");
   maxPt_ = para.getParameter<double>("maxPt");
+  minEta_ = para.getParameter<double>("minEta");
+  maxEta_ = para.getParameter<double>("maxEta");
 }
 
 void MCPtFilter::fillDescriptions(edm::ConfigurationDescriptions & descriptions)
@@ -47,7 +51,10 @@ void MCPtFilter::fillDescriptions(edm::ConfigurationDescriptions & descriptions)
   desc.add<int>("pid", 11);
   desc.add<double>("minPt", 0.0);
   desc.add<double>("maxPt", std::numeric_limits<double>::max());
-  descriptions.add("produceMuons", desc);
+  desc.add<double>("minEta", -std::numeric_limits<double>::max());
+  desc.add<double>("maxEta", std::numeric_limits<double>::max());
+
+  descriptions.add("produceElectrons", desc);
 }
 
 bool MCPtFilter::filter(edm::Event& event,const edm::EventSetup& setup)
@@ -57,7 +64,7 @@ bool MCPtFilter::filter(edm::Event& event,const edm::EventSetup& setup)
   edm::Handle<reco::GenParticleCollection> genPartsHandle;
   event.getByToken(genPartsToken_,genPartsHandle);
   for(const auto& part : *genPartsHandle){
-    if(std::abs(part.pdgId())==pid_ && part.pt()>=minPt_ && part.pt()<maxPt_) return true;
+    if(std::abs(part.pdgId())==pid_ && part.pt()>=minPt_ && part.pt()<maxPt_ && part.eta()>=minEta_ && part.eta()<maxEta_) return true;
   }
   return false;
 }  
