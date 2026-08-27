@@ -172,7 +172,13 @@ void ScoutEleStruct::fill(const Run3ScoutingElectron& ele){
   fillArrayFromVector(ele.trkpt(), trkpt, kMaxTracks);
   fillArrayFromVector(ele.trketa(), trketa, kMaxTracks);
   fillArrayFromVector(ele.trkphi(), trkphi, kMaxTracks);
+  fillArrayFromVector(ele.trkpMode(), trkpMode, kMaxTracks);
+  fillArrayFromVector(ele.trketaMode(), trketaMode, kMaxTracks);
+  fillArrayFromVector(ele.trkphiMode(), trkphiMode, kMaxTracks);
+  fillArrayFromVector(ele.trkqoverpModeError(), trkqoverpModeError, kMaxTracks);
+  
   fillArrayFromVector(ele.trkchi2overndf(), trkchi2overndf, kMaxTracks);
+
   bestTrkIndx = getBestTrkIndx(ele);
 
   dEtaIn = ele.dEtaIn();
@@ -181,6 +187,7 @@ void ScoutEleStruct::fill(const Run3ScoutingElectron& ele){
   hOverE = ele.hOverE();
   ooEMOop = ele.ooEMOop();
   missingHits = ele.missingHits();
+  trackfbrem = ele.trackfbrem();
 
   fillArrayFromVector(ele.trkcharge(), trkcharge, kMaxTracks);
 
@@ -191,6 +198,9 @@ void ScoutEleStruct::fill(const Run3ScoutingElectron& ele){
   sMin = std::isnan(ele.sMin()) ? 0.f : ele.sMin();
   sMaj = std::isnan(ele.sMaj()) ? 0.f : ele.sMaj();
   seedId = ele.seedId();
+  nClusters = ele.nClusters();
+  nCrystals = ele.nCrystals();
+
  
   rechitZeroSuppression = ele.rechitZeroSuppression();
   nrTrks = ele.trkd0().size();

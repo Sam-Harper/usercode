@@ -39,6 +39,7 @@ private:
   edm::EDGetTokenT<reco::GenParticleCollection> genPartsToken_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo> > puSumToken_;
   edm::EDGetTokenT<std::vector<Run3ScoutingElectron>> scoutElesToken_;
+  edm::EDGetTokenT<std::unordered_map<unsigned int,std::vector<float>>> scoutToRecoTrackMapToken_;
   EGScoutingRegTreeMaker(const EGScoutingRegTreeMaker& rhs)=delete;
   EGScoutingRegTreeMaker& operator=(const EGScoutingRegTreeMaker& rhs)=delete;
 
@@ -81,6 +82,7 @@ EGScoutingRegTreeMaker::EGScoutingRegTreeMaker(const edm::ParameterSet& iPara):
   setToken(genPartsToken_,iPara,"genPartsTag");
   setToken(puSumToken_,iPara,"puSumTag");
   setToken(scoutElesToken_,iPara,"scoutElesTag");
+  setToken(scoutToRecoTrackMapToken_,iPara,"scoutToRecoTrackMapTag");
   
 
 }
@@ -127,7 +129,7 @@ void EGScoutingRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSe
   auto rhoHandle = iEvent.getHandle(rhoToken_);
   auto scoutElesHandle = iEvent.getHandle(scoutElesToken_);
   auto puSumHandle = iEvent.getHandle(puSumToken_);
-
+  auto scoutToRecoTrackMapHandle = iEvent.getHandle(scoutToRecoTrackMapToken_);
   int nrVert = verticesHandle->size();
   float nrPUInt = -1;
   float nrPUIntTrue = -1;
@@ -147,6 +149,21 @@ void EGScoutingRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSe
 
       egRegTreeData_.fill(iEvent,nrVert,*rhoHandle,nrPUInt,nrPUIntTrue,
 			  &genPart,scoutEle);
+      //this patches the missing track info with reco info
+      //hack to deal with this info is missing in 13X but we need it
+      //also we need to set this for all the tracks as we dont know the correct one
+      if (scoutEle && scoutToRecoTrackMapHandle.isValid()){
+        auto it = scoutToRecoTrackMapHandle->find(scoutEle->seedId());
+        if(it != scoutToRecoTrackMapHandle->end()){
+          const auto & recoTrackInfo = it->second;
+          for (size_t i = 0; i < egRegTreeData_.ele.kMaxTracks; ++i) {              
+            egRegTreeData_.ele.trkpMode[i] = recoTrackInfo[0];
+            egRegTreeData_.ele.trketaMode[i] = recoTrackInfo[1];
+            egRegTreeData_.ele.trkphiMode[i] = recoTrackInfo[2];
+            egRegTreeData_.ele.trkqoverpModeError[i] = recoTrackInfo[3];
+          }
+        }
+      }
       egRegTree_->Fill();
     }
   }

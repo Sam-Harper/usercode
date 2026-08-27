@@ -31,6 +31,10 @@ struct ScoutEleStruct {
   float trkpt[kMaxTracks];
   float trketa[kMaxTracks];
   float trkphi[kMaxTracks];
+  float trkpMode[kMaxTracks];
+  float trketaMode[kMaxTracks];
+  float trkphiMode[kMaxTracks];
+  float trkqoverpModeError[kMaxTracks];
   float trkchi2overndf[kMaxTracks];
   float trkcharge[kMaxTracks];
   float dEtaIn;
@@ -39,6 +43,7 @@ struct ScoutEleStruct {
   float hOverE;
   float ooEMOop;
   float missingHits;
+  float trackfbrem;
   float ecalIso;
   float hcalIso;
   float trackIso;
@@ -46,6 +51,8 @@ struct ScoutEleStruct {
   float sMin;
   float sMaj;
   unsigned int seedId; 
+  unsigned int nClusters;
+  unsigned int nCrystals;
   unsigned int rechitZeroSuppression;
   int nrTrks;
   int isEB;
@@ -54,7 +61,7 @@ struct ScoutEleStruct {
   int bestTrkIndx;
   void fill(const Run3ScoutingElectron& ele);
   static std::string contents(){return
-      "pt/F:energy:eta:phi:m:trkd0[4]:trkdz[4]:trkpt[4]:trketa[4]:trkphi[4]:trkchi2overndf[4]:trkcharge[4]:dEtaIn:dPhiIn:sigmaIetaIeta:hOverE:ooEMOop:missingHits:ecalIso:hcalIso:trackIso:r9:sMin:sMaj:seedId/i:rechitZeroSuppression:nrTrks/I:isEB:iEtaOrIX:iPhiOrIY:bestTrkIndx";
+      "pt/F:energy:eta:phi:m:trkd0[4]:trkdz[4]:trkpt[4]:trketa[4]:trkphi[4]:trkpMode[4]:trketaMode[4]:trkphiMode[4]:trkqoverpModeError[4]:trkchi2overndf[4]:trkcharge[4]:dEtaIn:dPhiIn:sigmaIetaIeta:hOverE:ooEMOop:missingHits:trackfbrem:ecalIso:hcalIso:trackIso:r9:sMin:sMaj:seedId/i:nClusters:nCrystals:rechitZeroSuppression:nrTrks/I:isEB:iEtaOrIX:iPhiOrIY:bestTrkIndx";
   }
   void clear();
 
@@ -96,6 +103,8 @@ struct EGScoutingRegTreeStruct {
   void createBranches(TTree* tree);
   void setBranchAddresses(TTree* tree);
   void fill(const edm::Event& event,int iNrVert,float iRho,float nrPUInt,float nrTruePUInt,const reco::GenParticle* iMC,const Run3ScoutingElectron* ele);
+  void patchWithRecoTrackInfo(const std::unordered_map<unsigned int,std::vector<float>>& scoutToRecoTrackMap);
+  
   void clear(){
     nrVert=0;
     rho=0.;
