@@ -1,0 +1,5 @@
+<lcgdict>
+ <class name="std::pair<const unsigned int,std::vector<float>>"/>
+ <class name="std::unordered_map<unsigned int,std::vector<float>>"/>
+ <class name="edm::Wrapper<std::unordered_map<unsigned int,std::vector<float>>>"/>
+</lcgdict>  

@@ -26,6 +26,10 @@
 <use   name="HLTrigger/HLTcore"/>
 <use   name="SHarper/SHNtupliser"/>
 
+<use name="rootcling"/>
+<flags LCG_DICT_HEADER="classes_map.h"/>
+<flags LCG_DICT_XML="classes_def_map.xml"/>
 <export>
-  <lib   name="1"/>
+  <lib name="1"/>
 </export>
+
