@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import math
 import sys
 
 def splitInput(inputFilesRAW,nrJobsRAW):
@@ -16,10 +17,10 @@ def splitInput(inputFilesRAW,nrJobsRAW):
         nrJobs=nrJobsRAW
 
 #    print inputFiles
-    inputFilesEachJob=nrJobs*[None];
+    inputFilesEachJob=[[] for _ in range(nrJobs)]
 
     nrFiles=len(inputFiles)
-    nrFilesPerJob=nrFiles/nrJobs
+    nrFilesPerJob=int(math.floor(nrFiles/nrJobs))
     nrLeftOverFiles=nrFiles%nrJobs
     
     for jobNr in range(0,nrJobs):
@@ -28,7 +29,7 @@ def splitInput(inputFilesRAW,nrJobsRAW):
         inputFilesEachJob[jobNr]=inputFiles[minFileNr:maxFileNr]
 
     for leftFileNr in range(0,nrLeftOverFiles):
-        inputFilesEachJob[leftFileNr].append(inputFiles[(jobNr+1)*nrFilesPerJob+leftFileNr])
+        inputFilesEachJob[leftFileNr].append(inputFiles[-nrLeftOverFiles+leftFileNr])
     return inputFilesEachJob,nrJobs
 
 
@@ -40,7 +41,7 @@ class JobThread (threading.Thread):
         self.jobNr=jobNr
         self.inputFiles=inputFiles
     def run(self):
-        cmd = args.cmd
+        cmd = self.args.cmd
         cmd = cmd.replace("%{inputFiles}",self.inputFiles)
         cmd = cmd.replace("%{jobNr}",str(self.jobNr))
         import subprocess
@@ -58,10 +59,10 @@ parser.add_argument('--seperator','-s',help='seperator of files on the cmd line,
 args = parser.parse_args()
 
 if args.cmd.find("%{jobNr}")==-1 and args.nrJobs!=1:
-    print "error, no %{jobNr} found in cmd string and number of jobs is not 1"
+    print("error, no %{jobNr} found in cmd string and number of jobs is not 1")
     sys.exit()
 if args.cmd.find("%{inputFiles}")==-1 and args.inputFiles:
-    print "error, no %{inputFiles} found in cmd string and inputFiles is specificed"
+    print("error, no %{inputFiles} found in cmd string and inputFiles is specificed")
     sys.exit()
     
 
@@ -72,22 +73,22 @@ if args.inputFiles is not None:
 
 if args.nrThreads <=0:
     args.nrThreads = nrJobs
-print inputFilesEachJob
+print(inputFilesEachJob)
 threads=[]
-print nrJobs
+print(nrJobs)
 for jobNr in range(1,nrJobs+1):
     while len(threads)>=args.nrThreads:
 #        print "waiting for job {}".format(jobNr)
         time.sleep(10)
         for thread in threads:
-            if not thread.isAlive():
+            if not thread.is_alive():
                 threads.remove(thread)
-    print "starting job {}, nr running {}".format(jobNr,len(threads))
+    print("starting job {}, nr running {}".format(jobNr,len(threads)))
     inputFiles=""
     for inFile in inputFilesEachJob[jobNr%nrJobs]:
         inputFiles+=inFile+args.seperator
     inputFiles=inputFiles[:len(args.seperator)*-1] #chop the last seperator off
-    print inputFiles
+    print(inputFiles)
 
     threads.append(JobThread(args,jobNr,inputFiles))
     threads[-1].start()
@@ -95,6 +96,6 @@ for jobNr in range(1,nrJobs+1):
 while len(threads)!=0:
     time.sleep(10)
     for thread in threads:
-        if not thread.isAlive():
+        if not thread.is_alive():
             threads.remove(thread)
     
