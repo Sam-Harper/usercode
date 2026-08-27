@@ -103,8 +103,7 @@ struct EGScoutingRegTreeStruct {
   void createBranches(TTree* tree);
   void setBranchAddresses(TTree* tree);
   void fill(const edm::Event& event,int iNrVert,float iRho,float nrPUInt,float nrTruePUInt,const reco::GenParticle* iMC,const Run3ScoutingElectron* ele);
-  void patchWithRecoTrackInfo(const std::unordered_map<unsigned int,std::vector<float>>& scoutToRecoTrackMap);
-  
+
   void clear(){
     nrVert=0;
     rho=0.;
