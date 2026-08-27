@@ -100,3 +100,5 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
                                     )                                           
                                    )
 #process.out = cms.EndPath(process.AODSIMoutput)
+if isCrabJob:
+    process.TFileService.fileName = 'OUTPUTFILE'

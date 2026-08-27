@@ -51,10 +51,11 @@ process.TFileService = cms.Service("TFileService",
 process.egRegTreeMaker = cms.EDAnalyzer("EGScoutingRegTreeMaker",
                                         verticesTag = cms.InputTag("hltScoutingPrimaryVertexPacker","primaryVtx"),
                                         rhoTag = cms.InputTag("hltScoutingPFPacker","rho"),
-                                        #genPartsTag = cms.InputTag("prunedGenParticles"),
-                                        genPartsTag = cms.InputTag("genParticles"),
+                                        genPartsTag = cms.InputTag("prunedGenParticles"),
+                                        #genPartsTag = cms.InputTag("genParticles"),
                                         puSumTag = cms.InputTag("addPileupInfo"),
-                                        scoutElesTag = cms.InputTag("hltScoutingEgammaPacker") 
+                                        scoutElesTag = cms.InputTag("hltScoutingEgammaPacker"),
+                                        scoutToRecoTrackMapTag = cms.InputTag("scoutingToRecoTrackAssociator")
                                         )
 
 process.p = cms.Path(process.egRegTreeMaker)
