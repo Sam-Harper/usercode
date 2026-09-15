@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import optparse
@@ -45,7 +45,7 @@ for line in datasetDefFile:
 
     nrEvents = int(splitLine[1])
     if nrEvents!=-1:
-        totalUnits = int(nrEvents/100)
+        totalUnits = int(nrEvents)
     else:
         totalUnits = -1
     

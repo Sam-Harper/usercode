@@ -10,17 +10,18 @@ config.General.transferOutputs = True
 config.section_("JobType")
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'shNtupliser_autoGen_cfg.py'
-config.JobType.maxJobRuntimeMin = 180
+#config.JobType.maxJobRuntimeMin = 180
 #config.JobType.inputFiles = ['L1Trigger']
 #config.JobType.maxMemoryMB = 3000
-config.JobType.numCores = 4
+config.JobType.numCores = 1
 #config.JobType.inputFiles=['ged_regression_20161208.db',]
 #TOSED:EXTRAJOBTYPEINFO
 
 config.section_("Data")
 config.Data.inputDataset = 'TOSED:DATASETPATH'
 config.Data.inputDBS = 'global'
-config.Data.splitting = 'LumiBased'
+#config.Data.splitting = 'LumiBased'
+config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 'TOSED:UNITSPERJOB'
 config.Data.totalUnits = 'TOSED:TOTALUNITS'
 config.Data.publication = False

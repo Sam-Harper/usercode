@@ -21,6 +21,7 @@
 
 #include "SHarper/TrigNtup/interface/EGRegTreeStruct.hh"
 #include "SHarper/TrigNtup/interface/EGScoutingRegTreeStruct.hh"
+#include "SHarper/TrigNtup/interface/GsfTrackInfo.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -39,7 +40,7 @@ private:
   edm::EDGetTokenT<reco::GenParticleCollection> genPartsToken_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo> > puSumToken_;
   edm::EDGetTokenT<std::vector<Run3ScoutingElectron>> scoutElesToken_;
-  edm::EDGetTokenT<std::unordered_map<unsigned int,std::vector<float>>> scoutToRecoTrackMapToken_;
+  edm::EDGetTokenT<std::unordered_map<unsigned int,std::vector<GsfTrackInfo>>> scoutToRecoTrackMapToken_;
   EGScoutingRegTreeMaker(const EGScoutingRegTreeMaker& rhs)=delete;
   EGScoutingRegTreeMaker& operator=(const EGScoutingRegTreeMaker& rhs)=delete;
 
@@ -156,11 +157,21 @@ void EGScoutingRegTreeMaker::analyze(const edm::Event& iEvent,const edm::EventSe
         auto it = scoutToRecoTrackMapHandle->find(scoutEle->seedId());
         if(it != scoutToRecoTrackMapHandle->end()){
           const auto & recoTrackInfo = it->second;
-          for (size_t i = 0; i < egRegTreeData_.ele.kMaxTracks; ++i) {              
-            egRegTreeData_.ele.trkpMode[i] = recoTrackInfo[0];
-            egRegTreeData_.ele.trketaMode[i] = recoTrackInfo[1];
-            egRegTreeData_.ele.trkphiMode[i] = recoTrackInfo[2];
-            egRegTreeData_.ele.trkqoverpModeError[i] = recoTrackInfo[3];
+          if(!recoTrackInfo.empty()){
+            //std::cout <<" GsfTrk " << recoTrackInfo[0].pt << ", eta " << recoTrackInfo[0].eta << ", phi " << recoTrackInfo[0].phi << std::endl;
+            //for (size_t i = 1; i < recoTrackInfo.size(); ++i) {
+            //  std::cout << "  Ambiguous Track " << i << ": pt "<<recoTrackInfo[i].pt << ", eta " << recoTrackInfo[i].eta << ", phi " << recoTrackInfo[i].phi << std::endl;
+              
+            //}
+            for (size_t i = 0; i < egRegTreeData_.ele.kMaxTracks; ++i) {              
+              egRegTreeData_.ele.trkpMode[i] =  recoTrackInfo[0].pMode;
+              egRegTreeData_.ele.trketaMode[i] = recoTrackInfo[0].etaMode;
+              egRegTreeData_.ele.trkphiMode[i] = recoTrackInfo[0].phiMode;
+              egRegTreeData_.ele.trkqoverpModeError[i] = recoTrackInfo[0].qoverpModeError;
+              egRegTreeData_.ele.trackfbrem = recoTrackInfo[0].fbrem;
+
+              //std::cout << "  Track " << i << ": pt "<<egRegTreeData_.ele.trkpt[i] << ", eta " << egRegTreeData_.ele.trketa[i] << ", phi " << egRegTreeData_.ele.trkphi[i] << std::endl;
+            }
           }
         }
       }

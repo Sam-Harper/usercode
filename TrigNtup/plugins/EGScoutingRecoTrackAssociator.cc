@@ -14,10 +14,12 @@
 
 #include "DataFormats/Math/interface/deltaR.h"
 
+#include "SHarper/TrigNtup/interface/GsfTrackInfo.hh"
 
 #include <string>
 #include <vector>
 #include <unordered_map>
+
 
 class EGScoutingRecoTrackAssociator : public edm::stream::EDProducer<> {
 
@@ -27,7 +29,7 @@ private:
   
   edm::EDGetTokenT<std::vector<Run3ScoutingElectron>> scoutElesToken_;
   edm::EDGetTokenT<edm::View<reco::GsfElectron>> recoElesToken_;
-  edm::EDPutTokenT<std::unordered_map<unsigned int,std::vector<float>>> mapToken_;
+  edm::EDPutTokenT<std::unordered_map<unsigned int,std::vector<GsfTrackInfo>>> mapToken_;
   EGScoutingRecoTrackAssociator(const EGScoutingRecoTrackAssociator& rhs)=delete;
   EGScoutingRecoTrackAssociator& operator=(const EGScoutingRecoTrackAssociator& rhs)=delete;
 
@@ -104,22 +106,26 @@ void EGScoutingRecoTrackAssociator::produce(edm::Event& iEvent,const edm::EventS
   auto scoutElesHandle = iEvent.getHandle(scoutElesToken_);
   auto recoElesHandle = iEvent.getHandle(recoElesToken_);
 
-  std::unordered_map<unsigned int,std::vector<float>> trkMap;
+  std::unordered_map<unsigned int,std::vector<GsfTrackInfo>> trkMap;
   
   for(const auto& scoutEle : *scoutElesHandle){
     const reco::GsfElectron* recoEle = matchToReco(scoutEle,*recoElesHandle);
     //std::cout <<"scout ele pt "<<scoutEle.pt()<<" eta "<<scoutEle.eta()<<" phi "<<scoutEle.phi()<<" reco match "<<(recoEle ? "yes" : "no")<<std::endl;
     if(recoEle){
       //std::cout <<"reco ele pt "<<recoEle->pt()<<" eta "<<recoEle->superCluster()->eta()<<" phi "<<recoEle->superCluster()->phi()<<std::endl;
-    
-      float pMode = recoEle->gsfTrack()->pMode();
-      float etaMode = recoEle->gsfTrack()->etaMode();
-      float phiMode = recoEle->gsfTrack()->phiMode();
-      float qoverpModeError = recoEle->gsfTrack()->qoverpModeError();
 
-      trkMap.emplace(scoutEle.seedId(),std::vector<float>{pMode,etaMode,phiMode,qoverpModeError});
+      std::vector<GsfTrackInfo> trkInfos;
+      trkInfos.emplace_back(GsfTrackInfo(*recoEle->gsfTrack(),recoEle->fbrem()));
 
-      //std::cout <<"reco ele gsf track pMode "<<pMode<<" etaMode "<<etaMode<<" phiMode "<<phiMode<<" qoverpModeError "<<qoverpModeError<<std::endl;
+      for(const auto gsfTrk : recoEle->ambiguousGsfTracks()){
+        trkInfos.emplace_back(*gsfTrk);
+      }
+
+      //std::cout <<"scout pt "<<scoutEle.pt()<<" bestTrk "
+
+      trkMap.emplace(scoutEle.seedId(),std::move(trkInfos));
+
+      //std::cout <<"reco ele gsf track pMode "<<pMode<<"etaMode "<<etaMode<<" phiMode "<<phiMode<<" qoverpModeError "<<qoverpModeError<<std::endl;
     }
 
   }

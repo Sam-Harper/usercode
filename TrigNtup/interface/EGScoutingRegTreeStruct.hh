@@ -23,6 +23,9 @@ struct ScoutEleStruct {
   static constexpr int kMaxTracks = 4;
   float pt;
   float energy;
+  float rawEnergy;
+  float preshowerEnergy;
+  float corrEcalEnergyError;
   float eta;
   float phi;
   float m;
@@ -61,7 +64,7 @@ struct ScoutEleStruct {
   int bestTrkIndx;
   void fill(const Run3ScoutingElectron& ele);
   static std::string contents(){return
-      "pt/F:energy:eta:phi:m:trkd0[4]:trkdz[4]:trkpt[4]:trketa[4]:trkphi[4]:trkpMode[4]:trketaMode[4]:trkphiMode[4]:trkqoverpModeError[4]:trkchi2overndf[4]:trkcharge[4]:dEtaIn:dPhiIn:sigmaIetaIeta:hOverE:ooEMOop:missingHits:trackfbrem:ecalIso:hcalIso:trackIso:r9:sMin:sMaj:seedId/i:nClusters:nCrystals:rechitZeroSuppression:nrTrks/I:isEB:iEtaOrIX:iPhiOrIY:bestTrkIndx";
+      "pt/F:energy:rawEnergy:preshowerEnergy:corrEcalEnergyError:eta:phi:m:trkd0[4]:trkdz[4]:trkpt[4]:trketa[4]:trkphi[4]:trkpMode[4]:trketaMode[4]:trkphiMode[4]:trkqoverpModeError[4]:trkchi2overndf[4]:trkcharge[4]:dEtaIn:dPhiIn:sigmaIetaIeta:hOverE:ooEMOop:missingHits:trackfbrem:ecalIso:hcalIso:trackIso:r9:sMin:sMaj:seedId/i:nClusters:nCrystals:rechitZeroSuppression:nrTrks/I:isEB:iEtaOrIX:iPhiOrIY:bestTrkIndx";
   }
   void clear();
 

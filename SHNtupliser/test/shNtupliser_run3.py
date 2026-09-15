@@ -50,6 +50,7 @@ from Configuration.AlCa.autoCond import autoCond
 from Configuration.AlCa.GlobalTag import GlobalTag
 if isMC:
     process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v15', '')
+    process.GlobalTag = GlobalTag(process.GlobalTag, '133X_mcRun3_2024_realistic_v9','')
 else:
     from SHarper.SHNtupliser.globalTags_cfi import getGlobalTagNameData
     globalTagName = getGlobalTagNameData(datasetVersion)
@@ -88,16 +89,17 @@ process.shNtupliser.trkIsoNoJetCoreTag = cms.InputTag("")
 process.shNtupliser.nrSatCrysIn5x5Tag = cms.InputTag("") 
 process.shNtupliser.addPFCands = True
 process.shNtupliser.stageL1Trigger = cms.uint32(2)
-process.shNtupliser.minEtToPromoteSC = 20
-process.shNtupliser.minEtToSaveEle = 20
+process.shNtupliser.minEtToPromoteSC = 0
+process.shNtupliser.minEtToSaveEle = 0
+process.shNtupliser.addTrigSum = False
 disableLargeCollections=True
 if disableLargeCollections:
     print("*******************************************")
     print("*******disabling large collections*********")
     print("*******************************************")
     process.shNtupliser.addPFCands = False
-    process.shNtupliser.addPFClusters = True
-    process.shNtupliser.addIsolTrks = True
+    process.shNtupliser.addPFClusters = False
+    process.shNtupliser.addIsolTrks = False
     process.shNtupliser.addCaloHits = True
 
 
@@ -187,11 +189,24 @@ process.p = cms.Path(
  #   process.regressionApplication*
     process.shNtupliser)
 
-filterEles=True
+filterEles=False
 if filterEles:
     process.egammaFilter.nrElesRequired = 2
     process.egammaFilter.eleTag = "slimmedElectrons"
     process.p.insert(0,process.egammaFilter)
+
+genFilter=True
+if isMC and genFilter:
+    process.genFilter = cms.EDFilter("MCPtFilter",
+        genParts = cms.InputTag("prunedGenParticles"),
+        pid = cms.int32(11),
+        minPt = cms.double(20.0),
+        maxPt = cms.double(999999.0),
+        minEta = cms.double(-1.5),
+        maxEta = cms.double(1.5)
+    )
+    process.p.insert(0,process.genFilter)
+
 
 if not isMC:
     process.p.insert(0,process.skimHLTFilter)
