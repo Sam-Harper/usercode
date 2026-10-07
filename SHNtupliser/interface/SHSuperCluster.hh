@@ -48,12 +48,13 @@ class SHSuperCluster : public TObject {
   float et()const{return nrgy()*std::sin(theta());}
   float rawNrgy()const;
   float preShowerNrgy()const{return preShowerNrgy_;}
-  TVector3 pos()const{TVector3 posVec;posVec.SetMagThetaPhi(rho(),theta(),phi());return posVec;}
+  TVector3 pos()const{TVector3 posVec;posVec.SetPtThetaPhi(rho(),theta(),phi());return posVec;}
   TVector3 position()const{return pos();}
   int nrCrys()const{return nrCrys_;}
   int nrClus()const{return clusterArray_.GetLast()+1;}
   //int nrPreShowerClus()const{return preShowerArray_.GetLast()+1;}
   float rho()const{return rho_;}
+  float r()const{return rho();}
   float eta()const{return eta_;} 
   float theta()const{return MathFuncs::etaToTheta(eta());}
   float phi()const{return phi_;}

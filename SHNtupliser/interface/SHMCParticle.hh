@@ -66,6 +66,9 @@ public:
   float mass()const{return mass_;}
   TVector3 pos()const{TVector3 val(vx_,vy_,vz_);return val;}
   float detEta()const;
+  float vx()const{return vx_;}
+  float vy()const{return vy_;}
+  float vz()const{return vz_;}
   
   ClassDef(SHMCParticle,3)
 

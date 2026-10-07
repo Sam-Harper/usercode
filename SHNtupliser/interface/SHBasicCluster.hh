@@ -20,6 +20,7 @@ class SHBasicCluster : public TObject {
  private:
   float totNrgy_;
   int nrCrys_;
+  float r_;
   float eta_;
   float phi_;
   int seedId_;
@@ -28,7 +29,7 @@ class SHBasicCluster : public TObject {
   SHBasicCluster();
   SHBasicCluster(const SHBasicCluster& rhs);
   SHBasicCluster(const reco::CaloCluster& clus);
-  SHBasicCluster(float nrgy,int seedId,float eta,float phi,int nrCrys);
+  SHBasicCluster(float nrgy,int seedId,float r,float eta,float phi,int nrCrys);
   ~SHBasicCluster(){}
 
   float totNrgy()const{return totNrgy_;}
@@ -39,14 +40,15 @@ class SHBasicCluster : public TObject {
   
   float eta()const{return eta_;}
   float phi()const{return phi_;}
+  float r()const{return r_;}
   
-  TVector3 pos()const{TVector3 thePos;thePos.SetPtEtaPhi(1.,eta_,phi_);return thePos;}
+  TVector3 pos()const{TVector3 thePos;thePos.SetPtEtaPhi(r_,eta_,phi_);return thePos;}
   TLorentzVector p4()const{TLorentzVector theP4;theP4.SetPtEtaPhiM(et(),eta(),phi(),0);return theP4;}
 
  private:
   SHBasicCluster& operator=(const SHBasicCluster &){return *this;}
 
-  ClassDef(SHBasicCluster,6)
+  ClassDef(SHBasicCluster,7)
 
 };
 
