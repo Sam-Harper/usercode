@@ -62,3 +62,8 @@ process.scoutOutput = cms.OutputModule("PoolOutputModule",
     )                                           
 )
 process.out = cms.EndPath(process.scoutOutput)
+
+#if 1, its a crab job...
+if isCrabJob:
+    print("using crab specified filename")
+    process.scoutOutput.fileName= "OUTPUTFILE"
