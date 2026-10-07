@@ -684,7 +684,7 @@ void AnaFuncs::readFilelistFromPattern(const std::string& filelistPattern,std::v
     filenameStr.pop_back(); //removing end of line character
     filenames.push_back(filenameStr);
   }
-  std::fclose(file);
+  if(file) pclose(file);
 }
 
 void AnaFuncs::readFilelistFromFile(const std::string& fileListName,std::vector<std::string> &filenames)
